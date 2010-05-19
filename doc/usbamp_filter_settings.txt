@@ -1,0 +1,439 @@
+Filter Setting nr.: 0
+filter -- fu:0.10000000149, fo:0, fs:32, type:1, order:8
+Filter Setting nr.: 1
+filter -- fu:1, fo:0, fs:32, type:1, order:8
+Filter Setting nr.: 2
+filter -- fu:2, fo:0, fs:32, type:1, order:8
+Filter Setting nr.: 3
+filter -- fu:5, fo:0, fs:32, type:1, order:8
+Filter Setting nr.: 4
+filter -- fu:0, fo:15, fs:32, type:1, order:8
+Filter Setting nr.: 5
+filter -- fu:0.00999999977648, fo:15, fs:32, type:1, order:8
+Filter Setting nr.: 6
+filter -- fu:0.10000000149, fo:15, fs:32, type:1, order:8
+Filter Setting nr.: 7
+filter -- fu:0.5, fo:15, fs:32, type:1, order:8
+Filter Setting nr.: 8
+filter -- fu:2, fo:15, fs:32, type:1, order:8
+Filter Setting nr.: 9
+filter -- fu:0.10000000149, fo:0, fs:64, type:1, order:8
+Filter Setting nr.: 10
+filter -- fu:1, fo:0, fs:64, type:1, order:8
+Filter Setting nr.: 11
+filter -- fu:2, fo:0, fs:64, type:1, order:8
+Filter Setting nr.: 12
+filter -- fu:5, fo:0, fs:64, type:1, order:8
+Filter Setting nr.: 13
+filter -- fu:0, fo:30, fs:64, type:1, order:8
+Filter Setting nr.: 14
+filter -- fu:0.00999999977648, fo:30, fs:64, type:1, order:8
+Filter Setting nr.: 15
+filter -- fu:0.10000000149, fo:30, fs:64, type:1, order:8
+Filter Setting nr.: 16
+filter -- fu:0.5, fo:30, fs:64, type:1, order:8
+Filter Setting nr.: 17
+filter -- fu:2, fo:30, fs:64, type:1, order:8
+Filter Setting nr.: 18
+filter -- fu:0.10000000149, fo:0, fs:128, type:1, order:8
+Filter Setting nr.: 19
+filter -- fu:1, fo:0, fs:128, type:1, order:8
+Filter Setting nr.: 20
+filter -- fu:2, fo:0, fs:128, type:1, order:8
+Filter Setting nr.: 21
+filter -- fu:5, fo:0, fs:128, type:1, order:8
+Filter Setting nr.: 22
+filter -- fu:0, fo:30, fs:128, type:1, order:8
+Filter Setting nr.: 23
+filter -- fu:0, fo:60, fs:128, type:1, order:8
+Filter Setting nr.: 24
+filter -- fu:0.00999999977648, fo:30, fs:128, type:1, order:8
+Filter Setting nr.: 25
+filter -- fu:0.00999999977648, fo:60, fs:128, type:1, order:8
+Filter Setting nr.: 26
+filter -- fu:0.10000000149, fo:30, fs:128, type:1, order:8
+Filter Setting nr.: 27
+filter -- fu:0.10000000149, fo:60, fs:128, type:1, order:8
+Filter Setting nr.: 28
+filter -- fu:0.5, fo:30, fs:128, type:1, order:8
+Filter Setting nr.: 29
+filter -- fu:0.5, fo:60, fs:128, type:1, order:8
+Filter Setting nr.: 30
+filter -- fu:2, fo:30, fs:128, type:1, order:8
+Filter Setting nr.: 31
+filter -- fu:2, fo:60, fs:128, type:1, order:8
+Filter Setting nr.: 32
+filter -- fu:0.10000000149, fo:0, fs:256, type:1, order:8
+Filter Setting nr.: 33
+filter -- fu:1, fo:0, fs:256, type:1, order:8
+Filter Setting nr.: 34
+filter -- fu:2, fo:0, fs:256, type:1, order:8
+Filter Setting nr.: 35
+filter -- fu:5, fo:0, fs:256, type:1, order:8
+Filter Setting nr.: 36
+filter -- fu:0, fo:30, fs:256, type:1, order:8
+Filter Setting nr.: 37
+filter -- fu:0, fo:60, fs:256, type:1, order:8
+Filter Setting nr.: 38
+filter -- fu:0, fo:100, fs:256, type:1, order:8
+Filter Setting nr.: 39
+filter -- fu:0.00999999977648, fo:30, fs:256, type:1, order:6
+Filter Setting nr.: 40
+filter -- fu:0.00999999977648, fo:60, fs:256, type:1, order:8
+Filter Setting nr.: 41
+filter -- fu:0.00999999977648, fo:100, fs:256, type:1, order:8
+Filter Setting nr.: 42
+filter -- fu:0.10000000149, fo:30, fs:256, type:1, order:8
+Filter Setting nr.: 43
+filter -- fu:0.10000000149, fo:60, fs:256, type:1, order:8
+Filter Setting nr.: 44
+filter -- fu:0.10000000149, fo:100, fs:256, type:1, order:8
+Filter Setting nr.: 45
+filter -- fu:0.5, fo:30, fs:256, type:1, order:8
+Filter Setting nr.: 46
+filter -- fu:0.5, fo:60, fs:256, type:1, order:8
+Filter Setting nr.: 47
+filter -- fu:0.5, fo:100, fs:256, type:1, order:8
+Filter Setting nr.: 48
+filter -- fu:2, fo:30, fs:256, type:1, order:8
+Filter Setting nr.: 49
+filter -- fu:2, fo:60, fs:256, type:1, order:8
+Filter Setting nr.: 50
+filter -- fu:2, fo:100, fs:256, type:1, order:8
+Filter Setting nr.: 51
+filter -- fu:5, fo:30, fs:256, type:1, order:8
+Filter Setting nr.: 52
+filter -- fu:5, fo:60, fs:256, type:1, order:8
+Filter Setting nr.: 53
+filter -- fu:5, fo:100, fs:256, type:1, order:8
+Filter Setting nr.: 54
+filter -- fu:0.10000000149, fo:0, fs:512, type:1, order:8
+Filter Setting nr.: 55
+filter -- fu:1, fo:0, fs:512, type:1, order:8
+Filter Setting nr.: 56
+filter -- fu:2, fo:0, fs:512, type:1, order:8
+Filter Setting nr.: 57
+filter -- fu:5, fo:0, fs:512, type:1, order:8
+Filter Setting nr.: 58
+filter -- fu:0, fo:30, fs:512, type:1, order:8
+Filter Setting nr.: 59
+filter -- fu:0, fo:60, fs:512, type:1, order:8
+Filter Setting nr.: 60
+filter -- fu:0, fo:100, fs:512, type:1, order:8
+Filter Setting nr.: 61
+filter -- fu:0, fo:200, fs:512, type:1, order:8
+Filter Setting nr.: 62
+filter -- fu:0.00999999977648, fo:30, fs:512, type:1, order:6
+Filter Setting nr.: 63
+filter -- fu:0.00999999977648, fo:60, fs:512, type:1, order:6
+Filter Setting nr.: 64
+filter -- fu:0.00999999977648, fo:100, fs:512, type:1, order:6
+Filter Setting nr.: 65
+filter -- fu:0.00999999977648, fo:200, fs:512, type:1, order:8
+Filter Setting nr.: 66
+filter -- fu:0.10000000149, fo:30, fs:512, type:1, order:8
+Filter Setting nr.: 67
+filter -- fu:0.10000000149, fo:60, fs:512, type:1, order:8
+Filter Setting nr.: 68
+filter -- fu:0.10000000149, fo:100, fs:512, type:1, order:8
+Filter Setting nr.: 69
+filter -- fu:0.10000000149, fo:200, fs:512, type:1, order:8
+Filter Setting nr.: 70
+filter -- fu:0.5, fo:30, fs:512, type:1, order:8
+Filter Setting nr.: 71
+filter -- fu:0.5, fo:60, fs:512, type:1, order:8
+Filter Setting nr.: 72
+filter -- fu:0.5, fo:100, fs:512, type:1, order:8
+Filter Setting nr.: 73
+filter -- fu:0.5, fo:200, fs:512, type:1, order:8
+Filter Setting nr.: 74
+filter -- fu:2, fo:30, fs:512, type:1, order:8
+Filter Setting nr.: 75
+filter -- fu:2, fo:60, fs:512, type:1, order:8
+Filter Setting nr.: 76
+filter -- fu:2, fo:100, fs:512, type:1, order:8
+Filter Setting nr.: 77
+filter -- fu:2, fo:200, fs:512, type:1, order:8
+Filter Setting nr.: 78
+filter -- fu:5, fo:30, fs:512, type:1, order:8
+Filter Setting nr.: 79
+filter -- fu:5, fo:60, fs:512, type:1, order:8
+Filter Setting nr.: 80
+filter -- fu:5, fo:100, fs:512, type:1, order:8
+Filter Setting nr.: 81
+filter -- fu:5, fo:200, fs:512, type:1, order:8
+Filter Setting nr.: 82
+filter -- fu:0.10000000149, fo:0, fs:600, type:1, order:8
+Filter Setting nr.: 83
+filter -- fu:1, fo:0, fs:600, type:1, order:8
+Filter Setting nr.: 84
+filter -- fu:2, fo:0, fs:600, type:1, order:8
+Filter Setting nr.: 85
+filter -- fu:5, fo:0, fs:600, type:1, order:8
+Filter Setting nr.: 86
+filter -- fu:0, fo:30, fs:600, type:1, order:8
+Filter Setting nr.: 87
+filter -- fu:0, fo:60, fs:600, type:1, order:8
+Filter Setting nr.: 88
+filter -- fu:0, fo:100, fs:600, type:1, order:8
+Filter Setting nr.: 89
+filter -- fu:0, fo:200, fs:600, type:1, order:8
+Filter Setting nr.: 90
+filter -- fu:0, fo:250, fs:600, type:1, order:8
+Filter Setting nr.: 91
+filter -- fu:0.00999999977648, fo:60, fs:600, type:1, order:6
+Filter Setting nr.: 92
+filter -- fu:0.00999999977648, fo:100, fs:600, type:1, order:6
+Filter Setting nr.: 93
+filter -- fu:0.00999999977648, fo:200, fs:600, type:1, order:6
+Filter Setting nr.: 94
+filter -- fu:0.00999999977648, fo:250, fs:600, type:1, order:8
+Filter Setting nr.: 95
+filter -- fu:0.10000000149, fo:60, fs:600, type:1, order:8
+Filter Setting nr.: 96
+filter -- fu:0.10000000149, fo:100, fs:600, type:1, order:8
+Filter Setting nr.: 97
+filter -- fu:0.10000000149, fo:200, fs:600, type:1, order:8
+Filter Setting nr.: 98
+filter -- fu:0.10000000149, fo:250, fs:600, type:1, order:8
+Filter Setting nr.: 99
+filter -- fu:0.5, fo:30, fs:600, type:1, order:8
+Filter Setting nr.: 100
+filter -- fu:0.5, fo:60, fs:600, type:1, order:8
+Filter Setting nr.: 101
+filter -- fu:0.5, fo:100, fs:600, type:1, order:8
+Filter Setting nr.: 102
+filter -- fu:0.5, fo:200, fs:600, type:1, order:8
+Filter Setting nr.: 103
+filter -- fu:0.5, fo:250, fs:600, type:1, order:8
+Filter Setting nr.: 104
+filter -- fu:2, fo:30, fs:600, type:1, order:8
+Filter Setting nr.: 105
+filter -- fu:2, fo:60, fs:600, type:1, order:8
+Filter Setting nr.: 106
+filter -- fu:2, fo:100, fs:600, type:1, order:8
+Filter Setting nr.: 107
+filter -- fu:2, fo:200, fs:600, type:1, order:8
+Filter Setting nr.: 108
+filter -- fu:2, fo:250, fs:600, type:1, order:8
+Filter Setting nr.: 109
+filter -- fu:5, fo:30, fs:600, type:1, order:8
+Filter Setting nr.: 110
+filter -- fu:5, fo:60, fs:600, type:1, order:8
+Filter Setting nr.: 111
+filter -- fu:5, fo:100, fs:600, type:1, order:8
+Filter Setting nr.: 112
+filter -- fu:5, fo:200, fs:600, type:1, order:8
+Filter Setting nr.: 113
+filter -- fu:5, fo:250, fs:600, type:1, order:8
+Filter Setting nr.: 114
+filter -- fu:0.10000000149, fo:0, fs:1200, type:1, order:8
+Filter Setting nr.: 115
+filter -- fu:1, fo:0, fs:1200, type:1, order:8
+Filter Setting nr.: 116
+filter -- fu:2, fo:0, fs:1200, type:1, order:8
+Filter Setting nr.: 117
+filter -- fu:5, fo:0, fs:1200, type:1, order:8
+Filter Setting nr.: 118
+filter -- fu:0, fo:30, fs:1200, type:1, order:8
+Filter Setting nr.: 119
+filter -- fu:0, fo:60, fs:1200, type:1, order:8
+Filter Setting nr.: 120
+filter -- fu:0, fo:100, fs:1200, type:1, order:8
+Filter Setting nr.: 121
+filter -- fu:0, fo:200, fs:1200, type:1, order:8
+Filter Setting nr.: 122
+filter -- fu:0, fo:250, fs:1200, type:1, order:8
+Filter Setting nr.: 123
+filter -- fu:0, fo:500, fs:1200, type:1, order:8
+Filter Setting nr.: 124
+filter -- fu:0.00999999977648, fo:100, fs:1200, type:1, order:6
+Filter Setting nr.: 125
+filter -- fu:0.00999999977648, fo:200, fs:1200, type:1, order:6
+Filter Setting nr.: 126
+filter -- fu:0.00999999977648, fo:250, fs:1200, type:1, order:6
+Filter Setting nr.: 127
+filter -- fu:0.00999999977648, fo:500, fs:1200, type:1, order:6
+Filter Setting nr.: 128
+filter -- fu:0.10000000149, fo:100, fs:1200, type:1, order:6
+Filter Setting nr.: 129
+filter -- fu:0.10000000149, fo:200, fs:1200, type:1, order:8
+Filter Setting nr.: 130
+filter -- fu:0.10000000149, fo:250, fs:1200, type:1, order:8
+Filter Setting nr.: 131
+filter -- fu:0.10000000149, fo:500, fs:1200, type:1, order:8
+Filter Setting nr.: 132
+filter -- fu:0.5, fo:100, fs:1200, type:1, order:8
+Filter Setting nr.: 133
+filter -- fu:0.5, fo:200, fs:1200, type:1, order:8
+Filter Setting nr.: 134
+filter -- fu:0.5, fo:250, fs:1200, type:1, order:8
+Filter Setting nr.: 135
+filter -- fu:0.5, fo:500, fs:1200, type:1, order:8
+Filter Setting nr.: 136
+filter -- fu:2, fo:100, fs:1200, type:1, order:8
+Filter Setting nr.: 137
+filter -- fu:2, fo:200, fs:1200, type:1, order:8
+Filter Setting nr.: 138
+filter -- fu:2, fo:250, fs:1200, type:1, order:8
+Filter Setting nr.: 139
+filter -- fu:2, fo:500, fs:1200, type:1, order:8
+Filter Setting nr.: 140
+filter -- fu:5, fo:100, fs:1200, type:1, order:8
+Filter Setting nr.: 141
+filter -- fu:5, fo:200, fs:1200, type:1, order:8
+Filter Setting nr.: 142
+filter -- fu:5, fo:250, fs:1200, type:1, order:8
+Filter Setting nr.: 143
+filter -- fu:5, fo:500, fs:1200, type:1, order:8
+Filter Setting nr.: 144
+filter -- fu:0.10000000149, fo:0, fs:2400, type:1, order:8
+Filter Setting nr.: 145
+filter -- fu:1, fo:0, fs:2400, type:1, order:8
+Filter Setting nr.: 146
+filter -- fu:2, fo:0, fs:2400, type:1, order:8
+Filter Setting nr.: 147
+filter -- fu:5, fo:0, fs:2400, type:1, order:8
+Filter Setting nr.: 148
+filter -- fu:0, fo:30, fs:2400, type:1, order:8
+Filter Setting nr.: 149
+filter -- fu:0, fo:60, fs:2400, type:1, order:8
+Filter Setting nr.: 150
+filter -- fu:0, fo:100, fs:2400, type:1, order:8
+Filter Setting nr.: 151
+filter -- fu:0, fo:200, fs:2400, type:1, order:8
+Filter Setting nr.: 152
+filter -- fu:0, fo:250, fs:2400, type:1, order:8
+Filter Setting nr.: 153
+filter -- fu:0, fo:500, fs:2400, type:1, order:8
+Filter Setting nr.: 154
+filter -- fu:0, fo:1000, fs:2400, type:1, order:8
+Filter Setting nr.: 155
+filter -- fu:0.00999999977648, fo:200, fs:2400, type:1, order:4
+Filter Setting nr.: 156
+filter -- fu:0.00999999977648, fo:250, fs:2400, type:1, order:6
+Filter Setting nr.: 157
+filter -- fu:0.00999999977648, fo:500, fs:2400, type:1, order:6
+Filter Setting nr.: 158
+filter -- fu:0.00999999977648, fo:1000, fs:2400, type:1, order:6
+Filter Setting nr.: 159
+filter -- fu:0.10000000149, fo:200, fs:2400, type:1, order:6
+Filter Setting nr.: 160
+filter -- fu:0.10000000149, fo:250, fs:2400, type:1, order:6
+Filter Setting nr.: 161
+filter -- fu:0.10000000149, fo:500, fs:2400, type:1, order:8
+Filter Setting nr.: 162
+filter -- fu:0.10000000149, fo:1000, fs:2400, type:1, order:8
+Filter Setting nr.: 163
+filter -- fu:0.5, fo:200, fs:2400, type:1, order:8
+Filter Setting nr.: 164
+filter -- fu:0.5, fo:250, fs:2400, type:1, order:8
+Filter Setting nr.: 165
+filter -- fu:0.5, fo:500, fs:2400, type:1, order:8
+Filter Setting nr.: 166
+filter -- fu:0.5, fo:1000, fs:2400, type:1, order:8
+Filter Setting nr.: 167
+filter -- fu:2, fo:200, fs:2400, type:1, order:8
+Filter Setting nr.: 168
+filter -- fu:2, fo:250, fs:2400, type:1, order:8
+Filter Setting nr.: 169
+filter -- fu:2, fo:500, fs:2400, type:1, order:8
+Filter Setting nr.: 170
+filter -- fu:2, fo:1000, fs:2400, type:1, order:8
+Filter Setting nr.: 171
+filter -- fu:5, fo:200, fs:2400, type:1, order:8
+Filter Setting nr.: 172
+filter -- fu:5, fo:250, fs:2400, type:1, order:8
+Filter Setting nr.: 173
+filter -- fu:5, fo:500, fs:2400, type:1, order:8
+Filter Setting nr.: 174
+filter -- fu:5, fo:1000, fs:2400, type:1, order:8
+Filter Setting nr.: 175
+filter -- fu:0.10000000149, fo:0, fs:4800, type:1, order:6
+Filter Setting nr.: 176
+filter -- fu:1, fo:0, fs:4800, type:1, order:8
+Filter Setting nr.: 177
+filter -- fu:2, fo:0, fs:4800, type:1, order:8
+Filter Setting nr.: 178
+filter -- fu:5, fo:0, fs:4800, type:1, order:8
+Filter Setting nr.: 179
+filter -- fu:0, fo:30, fs:4800, type:1, order:8
+Filter Setting nr.: 180
+filter -- fu:0, fo:60, fs:4800, type:1, order:8
+Filter Setting nr.: 181
+filter -- fu:0, fo:100, fs:4800, type:1, order:8
+Filter Setting nr.: 182
+filter -- fu:0, fo:200, fs:4800, type:1, order:8
+Filter Setting nr.: 183
+filter -- fu:0, fo:250, fs:4800, type:1, order:8
+Filter Setting nr.: 184
+filter -- fu:0, fo:500, fs:4800, type:1, order:8
+Filter Setting nr.: 185
+filter -- fu:0, fo:1000, fs:4800, type:1, order:8
+Filter Setting nr.: 186
+filter -- fu:0, fo:2000, fs:4800, type:1, order:8
+Filter Setting nr.: 187
+filter -- fu:0.00999999977648, fo:500, fs:4800, type:1, order:6
+Filter Setting nr.: 188
+filter -- fu:0.00999999977648, fo:1000, fs:4800, type:1, order:6
+Filter Setting nr.: 189
+filter -- fu:0.00999999977648, fo:2000, fs:4800, type:1, order:6
+Filter Setting nr.: 190
+filter -- fu:0.10000000149, fo:500, fs:4800, type:1, order:6
+Filter Setting nr.: 191
+filter -- fu:0.10000000149, fo:1000, fs:4800, type:1, order:6
+Filter Setting nr.: 192
+filter -- fu:0.10000000149, fo:2000, fs:4800, type:1, order:8
+Filter Setting nr.: 193
+filter -- fu:0.5, fo:500, fs:4800, type:1, order:8
+Filter Setting nr.: 194
+filter -- fu:0.5, fo:1000, fs:4800, type:1, order:8
+Filter Setting nr.: 195
+filter -- fu:0.5, fo:2000, fs:4800, type:1, order:8
+Filter Setting nr.: 196
+filter -- fu:2, fo:500, fs:4800, type:1, order:8
+Filter Setting nr.: 197
+filter -- fu:2, fo:1000, fs:4800, type:1, order:8
+Filter Setting nr.: 198
+filter -- fu:2, fo:2000, fs:4800, type:1, order:8
+Filter Setting nr.: 199
+filter -- fu:5, fo:500, fs:4800, type:1, order:8
+Filter Setting nr.: 200
+filter -- fu:5, fo:1000, fs:4800, type:1, order:8
+Filter Setting nr.: 201
+filter -- fu:5, fo:2000, fs:4800, type:1, order:8
+
+
+
+
+Nr of notch filters: 14
+Filter Setting nr.: 0
+filter -- fu:48, fo:52, fs:128, type:1, order:4
+Filter Setting nr.: 1
+filter -- fu:58, fo:62, fs:128, type:1, order:4
+Filter Setting nr.: 2
+filter -- fu:48, fo:52, fs:256, type:1, order:4
+Filter Setting nr.: 3
+filter -- fu:58, fo:62, fs:256, type:1, order:4
+Filter Setting nr.: 4
+filter -- fu:48, fo:52, fs:512, type:1, order:4
+Filter Setting nr.: 5
+filter -- fu:58, fo:62, fs:512, type:1, order:4
+Filter Setting nr.: 6
+filter -- fu:48, fo:52, fs:600, type:1, order:4
+Filter Setting nr.: 7
+filter -- fu:58, fo:62, fs:600, type:1, order:4
+Filter Setting nr.: 8
+filter -- fu:48, fo:52, fs:1200, type:1, order:4
+Filter Setting nr.: 9
+filter -- fu:58, fo:62, fs:1200, type:1, order:4
+Filter Setting nr.: 10
+filter -- fu:48, fo:52, fs:2400, type:1, order:4
+Filter Setting nr.: 11
+filter -- fu:58, fo:62, fs:2400, type:1, order:4
+Filter Setting nr.: 12
+filter -- fu:48, fo:52, fs:4800, type:1, order:4
+Filter Setting nr.: 13
+filter -- fu:58, fo:62, fs:4800, type:1, order:4
+
+
