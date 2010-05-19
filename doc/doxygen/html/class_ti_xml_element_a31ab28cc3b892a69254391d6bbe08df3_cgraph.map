@@ -1,7 +1,0 @@
-<map id="G" name="G">
-<area shape="rect" href="$class_ti_xml_node.html#acc0f88b7462c6cb73809d410a4f5bb86" title="TiXmlNode::Accept" alt="" coords="219,5,352,35"/>
-<area shape="rect" href="$class_ti_xml_node.html#a44c8eee26bbe2d1b2762038df9dde2f0" title="The first child of this node. Will be null if there are no children." alt="" coords="212,59,359,88"/>
-<area shape="rect" href="$class_ti_xml_node.html#af854baeba384f5fe9859f5aee03b548e" title="Navigate to a sibling node." alt="" coords="207,112,364,141"/>
-<area shape="rect" href="$class_ti_xml_visitor.html#a07baecb52dd7d8716ae2a48ad0956ee0" title="Visit a document." alt="" coords="208,165,363,195"/>
-<area shape="rect" href="$class_ti_xml_visitor.html#aa0ade4f27087447e93974e975c3246ad" title="Visit a document." alt="" coords="212,219,359,248"/>
-</map>

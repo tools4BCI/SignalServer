@@ -1,3 +1,0 @@
-<map id="G" name="G">
-<area shape="rect" href="$class_sample_block.html" title="{SampleBlock\&lt; double \&gt;\n|&#45; blocks\l&#45; channels\l&#45; homogenous\l&#45; curr_block\l&#45; types_ordered\l&#45; types_input\l&#45; block_info\l&#45; samples\l|+ SampleBlock()\l+ ~SampleBlock()\l+ getNrOfBlocks()\l+ getNrOfChannels()\l+ getNrOfSamples()\l+ getNrOfSignalTypes()\l+ deleteSamples()\l+ reset()\l+ at()\l+ operator[]()\l+ init()\l+ getTypes()\l+ getSamples()\l+ getFlagByNr()\l+ getSignalByFlag()\l+ getSignalByNr()\l+ appendBlock()\l+ setSamples()\l&#45; sort()\l&#45; checkBlockIntegrity()\l}" alt="" coords="5,645,165,1219"/>
-</map>

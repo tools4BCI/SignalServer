@@ -1,5 +1,0 @@
-<map id="G" name="G">
-<area shape="rect" href="$data__packet_8h.html" title="The DataPacket stores all sampled data from every connected device." alt="" coords="5,83,365,112"/>
-<area shape="rect" href="$hw__access_8h.html" title="hw_access manages all objects representing different data acquisition devices." alt="" coords="8,160,363,189"/>
-<area shape="rect" href="$test__hardware_8cpp.html" title="File including Main() &#45;&#45; only for hardware testing purposes." alt="" coords="21,237,349,267"/>
-</map>

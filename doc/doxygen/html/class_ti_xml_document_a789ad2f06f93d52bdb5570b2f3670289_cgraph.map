@@ -1,9 +1,0 @@
-<map id="G" name="G">
-<area shape="rect" href="$class_ti_xml_document.html#ac66b8c28db86363315712a3574e87c35" title="TiXmlDocument::ClearError" alt="" coords="209,5,388,35"/>
-<area shape="rect" href="$class_ti_xml_declaration.html#a5d974231f9e9a2f0542f15f3a46cdb76" title="Encoding. Will return an empty string if none was found." alt="" coords="209,59,388,88"/>
-<area shape="rect" href="$class_ti_xml_node.html#a1a881212554b759865f6cac79a851d38" title="TiXmlNode::LinkEndChild" alt="" coords="215,112,383,141"/>
-<area shape="rect" href="$class_ti_xml_node.html#a9f43e6984fc7d4afd6eb32714c6b7b72" title="Cast to a more defined type. Will return null if not of the requested type." alt="" coords="213,165,384,195"/>
-<area shape="rect" href="$class_ti_xml_node.html#aa66f4ebcd175204a168ed7c2d7b43071" title="TiXmlNode::GetDocument" alt="" coords="439,85,609,115"/>
-<area shape="rect" href="$class_ti_xml_node.html#a57b99d5c97d67a42b9752f5210a1ba5e" title="TiXmlNode::Type" alt="" coords="464,139,584,168"/>
-<area shape="rect" href="$class_ti_xml_node.html#a8a4cda4b15c29f64cff419309aebed08" title="Cast to a more defined type. Will return null if not of the requested type." alt="" coords="659,85,824,115"/>
-</map>

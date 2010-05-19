@@ -1,4 +1,0 @@
-<map id="G" name="G">
-<area shape="rect" href="$class_ti_xml_node.html#af854baeba384f5fe9859f5aee03b548e" title="Navigate to a sibling node." alt="" coords="196,5,353,35"/>
-<area shape="rect" href="$class_ti_xml_handle.html#aba18fd7bdefb942ecdea4bf4b8e29ec8" title="Create a handle from any node (at any depth of the tree.) This can be a null pointer..." alt="" coords="187,59,363,88"/>
-</map>

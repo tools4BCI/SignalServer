@@ -1,3 +1,0 @@
-<map id="G" name="G">
-<area shape="rect" href="$class_ti_xml_printer.html" title="{TiXmlPrinter\n|&#45; depth\l&#45; simpleTextPrint\l&#45; buffer\l&#45; indent\l&#45; lineBreak\l|+ TiXmlPrinter()\l+ VisitEnter()\l+ VisitExit()\l+ VisitEnter()\l+ VisitExit()\l+ Visit()\l+ Visit()\l+ Visit()\l+ Visit()\l+ Visit()\l+ SetIndent()\l+ Indent()\l+ SetLineBreak()\l+ LineBreak()\l+ SetStreamPrinting()\l+ CStr()\l+ Size()\l&#45; DoIndent()\l&#45; DoLineBreak()\l}" alt="" coords="5,309,152,808"/>
-</map>
