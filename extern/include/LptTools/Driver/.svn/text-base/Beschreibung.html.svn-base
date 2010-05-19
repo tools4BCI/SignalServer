@@ -1,0 +1,307 @@
+
+<table border="0" width="100%" bgcolor="#99CCFF">
+  <tr>
+    <td width="100%">
+      <p align="center"><b><font size="6">LPT_Driver</font></b></td>
+  </tr>
+</table>
+<p align="center">&nbsp;</p>
+<blockquote>
+  <p align="left"><font size="3"><b><a href="#WO">Was ist wo</a></b></font></p>
+  <p align="left"><font size="3"><b><a href="#TREIBER">Treiberfunktion</a></b></font></p>
+  <p align="left"><font size="3"><b><a href="#KOMPILIEREN">Kompilieren des
+  Treibers</a></b></font></p>
+  <p align="left"><font size="3"><b><a href="#API">Das Treiber-API</a></b></font></p>
+  <p align="left"><font size="3"><b><a href="#TEST">Tests und bekante
+  Probleme&nbsp;</a></b></font></p>
+</blockquote>
+<p align="center">&nbsp;</p>
+<hr>
+<p align="left"><b><a name="WO"></a><font size="4">Was ist wo:</font></b></p>
+<blockquote>
+  <p>Im Verzeichnis <i>Driver</i>:</p>
+  <blockquote>
+    <p>Hier sind alle Dateien enthalten für die Erstellung des Treibers (<i>LPT_Driver.sys</i>).<br>
+    Außerdem ist hier die neueste Version des <i>LPT_Driver.sys</i> Treibers
+    vorhanden.</p>
+  </blockquote>
+  <p>Im Verzeichnis <i>LptTools</i>:</p>
+  <blockquote>
+    <p>Hier ist der Source-Code für das API mit dem man den Treiber
+    anspricht.&nbsp;</p>
+  </blockquote>
+  <p>Im Verzeichnis <i>LptDemo</i>:</p>
+  <blockquote>
+    <p>Hier liegt ein Demo-Programm, das zeigt wie man das API einsetzt.</p>
+  </blockquote>
+  <p>&nbsp;</p>
+</blockquote>
+<hr>
+<p align="left"><b><font size="4"><a name="TREIBER"></a>Treiberfunktion:</font></b></p>
+<blockquote>
+  <p>Der Treiber macht nichts anderes als dass er den Zugriff auf IO-Adressen
+  für Programme im User-Mode freigibt.<br>
+  Das wird erreicht mit den undokumentierten Kernel-Funktionen:</p>
+  <blockquote>
+    <b>
+    <p><font face="Courier New" size="2"><font COLOR="#0000ff">void</font></font></b><font face="Courier New" size="2">
+    Ke386SetIoAccessMap&nbsp; <font COLOR="#900000">(</font><b><font COLOR="#0000ff">int</font></b>,
+    IOPM <font COLOR="#900000">*)</font>;<br>
+    <b><font COLOR="#0000ff">void</font></b> Ke386QueryIoAccessMap<font COLOR="#900000">(</font><b><font COLOR="#0000ff">int</font></b>,
+    IOPM <font COLOR="#900000">*)</font>;<br>
+    <b><font COLOR="#0000ff">void</font></b> Ke386IoSetAccessProcess<font COLOR="#900000">(</font>PEPROCESS,
+    <b><font COLOR="#0000ff">int</font></b><font COLOR="#900000">)</font>;</font></p>
+  </blockquote>
+  <p>Diese Funktionen stehen nur auf Intel-Plattformen zur Verfügung. Daher
+  kann der Treiber nicht auf anderen Plattformen wie Alpha eingesetzt
+  werden.&nbsp;</p>
+  <p>Der Treiber ist nicht auf den IO-Adressbereich der LPT-Ports beschränkt.
+  Es können alle möglichen IO-Adressen freigegeben werden. Weiters sind
+  Funktionen im Treiber vorhanden, mit denen man auch IO-Memory-Bereiche in den
+  User-Adressbereich einblenden kann. Der Treiber kann daher theoretisch alle
+  möglichen ISA-Karten und Geräte ansprechen.&nbsp;</p>
+  <p>Im Treiber-API sind dafür folgende Funktionen vorgesehen:</p>
+  <blockquote>
+    <p><font face="Courier New" size="2">BOOL LptMapPorts&nbsp; <font COLOR="#900000">(</font><b><font COLOR="#0000ff">unsigned</font></b>
+    uPort,<b><font COLOR="#0000ff">unsigned</font></b> uSize<font COLOR="#900000">)</font><br>
+    BOOL LptUnmapPorts<font COLOR="#900000">(</font><b><font COLOR="#0000ff">unsigned</font></b>
+    uPort,<b><font COLOR="#0000ff">unsigned</font></b> uSize<font COLOR="#900000">)</font></font></p>
+  </blockquote>
+  <p>Die Funktionen für das einblenden des Speichers sind nicht ausgeführt,
+  weil sie für die parallele Schnittstelle nicht benötigt werden. Strukturen
+  und Definitionen sind aber in <i>LPT_Driver_Ioctl.h</i> enthalten.&nbsp;</p>
+  <p>Nach dem ein IO-Bereich freigegeben wurde kann man auf ihn auch direkt
+  greifen, z.B.:</p>
+  <blockquote>
+    <p><font face="Courier New" size="2">_outp( 0x378 , 0x55
+    );&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font color="#008000">// C-Funktionen
+    aus &lt;conio.h&gt;<br>
+    </font>_inp ( 0x379 );<br>
+    _asm{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <font color="#008000">// Inline Assembler</font><br>
+    &nbsp;&nbsp;&nbsp; mov
+    dx,378h&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+    &nbsp;&nbsp;&nbsp; mov al,55h<br>
+    &nbsp;&nbsp;&nbsp; out dx,al<br>
+    &nbsp;&nbsp;&nbsp; mov dx,378h<br>
+    &nbsp;&nbsp;&nbsp; in&nbsp; al,dx<br>
+    &nbsp;&nbsp;&nbsp; }</font></p>
+  </blockquote>
+  <p>Das Treiber-API hat hauptsächlich die Aufgabe den Treiber zu laden, und
+  ihn als Service zu starten. Außerdem wird noch die Registry abgesucht, welche
+  LPT-Schnittstellen vorhanden sind.</p>
+</blockquote>
+<hr>
+<p align="left"><b><font size="4"><a name="KOMPILIEREN"></a>Kompilieren des
+Treibers:</font></b></p>
+<blockquote>
+  <p align="left">Um den Treiber zu kompilieren muss der Win2000-DDK (
+  Win2000-Device-Developmen-Kit ) installieren sein. Dieser kann  bei Microsoft
+  gratis herunterladen werden. Außerdem muss  Visual C++ 5.0 oder 6.0 installiert
+  sein. Ob auch Visual 2003 oder 2005 funktioniert geht weis ich nicht.</p>
+  <p align="left">So geht man dann vor:</p>
+  <ol>
+    <li>
+      <p align="left"><i>&quot;Start - Programme - Development Kits - Windows
+      2000 DDK - Checked Build Environment&quot; </i>aufrufen.</li>
+    <li>
+      <p align="left">In der Konsole zum Treiberverzeichnis wechseln.</li>
+    <li>
+      <p align="left">make.bat aufrufen.</li>
+    <li>
+      <p align="left">Der Treiber müsste jetzt kompiliert sein, und im <i>.\objchk\i386</i>
+      Verzeichnis liegen.</li>
+  </ol>
+      <p align="left">Man kann auch den Treiber direkt mit Visualstudio 
+      kompilieren. Dazu muss die DDKROOT Umgebungsvariabel auf das Win2000-DDK 
+      Verzeichnis zeigen. Bitte prüfen sie ob folgende Pfade gültig sind:<ul>
+    <li>
+      <p align="left">$(DDKROOT)\inc</li>
+    <li>
+      <p align="left">$(DDKROOT)\inc\ddk</li>
+    <li>
+      <p align="left">$(DDKROOT)\libfre\i386</li>
+    <li>
+      <p align="left">$(DDKROOT)\libchk\i386</li>
+  </ul>
+      <p align="left">Wenn das der Fall ist kann LPT_Driver.dsw geöffnet und das 
+      Projekt kompiliert werden.</blockquote>
+<hr>
+<p align="left"><b><font size="4"><a name="API"></a>Das Treiber-API:</font></b></p>
+<blockquote>
+  <p><font face="Courier New"><b><font SIZE="2" COLOR="#0000ff">int</font></b><font SIZE="2">
+  LptInit</font><font SIZE="2" COLOR="#900000">()</font><font SIZE="2">;&nbsp;</font></font></p>
+  <blockquote>
+    <p>Mit diesem Befehl wird der Treiber geladen, und ein Service eingerichtet.
+    Die Datei <i>LPT_Driver.sys</i> wird ins Windows- Systemverzeichnis <i>C:\WinNT\system32\drivers</i>
+    ( oder <i>C:\Windows\...</i> ) kopiert, sofern dort noch keine Treiber Datei
+    vorhanden ist. Damit der Treiber installiert werden kann muss die Datei <i>LPT_Driver.sys</i>
+    im selben Verzeichnis liegen wie die EXE-Datei.</p>
+    <p>Nachdem der Treiber geladen wurde, werden die IO-Ports freigegeben.&nbsp;<br>
+    <br>
+    <font face="Courier New">LptInit</font> ergibt 1 wenn der Treiber gestartet
+    wurde, bei einem Fehler wird 0 zurückgegeben.<br>
+    <br>
+    <b>Anmerkung:</b> Wenn das Programm keine Administrator-Rechte hat, und der
+    Treiber noch nie installiert wurde dann schlägt diese Funktion fehl. In
+    diesem Fall muss man sich als Administrator einloggen und den Treiber mit <font SIZE="2" face="Courier New"><a href="#INSTALL">LptDriverInstall</a>
+    </font>neu installieren.</p>
+    <p>&nbsp;</p>
+  </blockquote>
+  <p><font face="Courier New"><b><font SIZE="2" COLOR="#0000ff"><br>
+  int</font></b><font SIZE="2"> LptExit</font><font SIZE="2" COLOR="#900000">()</font><font SIZE="2">;&nbsp;</font></font></p>
+  <blockquote>
+    <p>Mit diesem Befehl wird der Treiber wieder geschlossen, das Service und
+    der Treiber bleiben aber installiert.</p>
+    <p><font face="Courier New">LptExit</font> ergibt 1 wenn der Treiber
+    geschlossen wurde, bei einem Fehler wird 0 zurückgegeben.</p>
+  </blockquote>
+  <p>&nbsp;</p>
+  <p><font face="Courier New"><b><font SIZE="2" COLOR="#0000ff">int</font></b><font SIZE="2">
+  LptPort </font><font SIZE="2" COLOR="#900000">(</font><b><font SIZE="2" COLOR="#0000ff">unsigned</font></b><font SIZE="2">
+  Nr</font><font SIZE="2" COLOR="#900000">)</font><font SIZE="2">;&nbsp;</font></font></p>
+  <blockquote>
+    <p>	Ergibt die Port-Adresse einer LPT-Schnittstelle bzw. 0 wenn die Schnittstelle nicht vorhanden oder nicht
+    initialisiert ist.&nbsp;<br>
+    <br>
+    <font face="Courier New">Nr</font>	: Ist die Nummer der LPT-Schnittstelle (
+    0=LPT1 , 1=LPT2 , ... )<br>
+    </p>
+    <p>&nbsp;</p>
+  </blockquote>
+  <p><font face="Courier New"><b><font SIZE="2" COLOR="#0000ff">int</font></b><font SIZE="2">
+  LptPortIn </font><font SIZE="2" COLOR="#900000">(</font><b><font SIZE="2" COLOR="#0000ff">unsigned</font></b><font SIZE="2">
+  Nr,</font><b><font SIZE="2" COLOR="#0000ff">unsigned</font></b><font SIZE="2">
+  Port</font><font SIZE="2" COLOR="#900000">)</font><font SIZE="2">;&nbsp;</font></font></p>
+  <blockquote>
+    <p>Liest den Wert von einem Port ein. Ergibt den Wert bzw. -1 wenn die Schnittstelle nicht vorhanden oder nicht
+    initialisiert ist.<br>
+    <br>
+    <font face="Courier New">Nr&nbsp;&nbsp; </font>: Ist die Nummer der LPT-Schnittstelle
+    ( 0=LPT1 , 1=LPT2 , ... )<br>
+    <font face="Courier New">Port </font>	: Ist der Port-Offset ( 0 - 4 )<br>
+    </p>
+  </blockquote>
+  <p><font face="Courier New"><b><font SIZE="2" COLOR="#0000ff">int</font></b><font SIZE="2">
+  LptPortOut</font><font SIZE="2" COLOR="#900000">(</font><b><font SIZE="2" COLOR="#0000ff">unsigned</font></b><font SIZE="2">
+  Nr,</font><b><font SIZE="2" COLOR="#0000ff">unsigned</font></b><font SIZE="2">
+  Port,</font><b><font SIZE="2" COLOR="#0000ff">unsigned</font></b><font SIZE="2">
+  Data</font><font SIZE="2" COLOR="#900000">)</font><font SIZE="2">;</font></font></p>
+  <blockquote>
+    <p>Schreibt einen Wert auf ein Port. Ergibt 0 bei Erfolg&nbsp; bzw. -1 wenn die	Schnittstelle nicht vorhanden oder nicht
+    initialisiert ist.<br>
+    <br>
+    <font face="Courier New">	Nr&nbsp;&nbsp; </font>: Ist die Nummer der LPT-Schnittstelle
+    ( 0=LPT1 , 1=LPT2 , ... )<br>
+    <font face="Courier New">	Port </font>	: Ist der Port-Offset ( 0 - 4 )<br>
+    <font face="Courier New">Data </font>: Ist der Wert der auf das Port
+    geschrieben wird.<br>
+    </p>
+  </blockquote>
+  <font SIZE="2"><b><font SIZE="2" COLOR="#0000ff">
+  <p><font face="Courier New"><br>
+  void</font></font></b><font face="Courier New"><font SIZE="2"> LptDetectPorts</font><font SIZE="2" COLOR="#900000">(</font><b><font SIZE="2" COLOR="#0000ff">int</font></b><font SIZE="2">
+  </font><font SIZE="2" COLOR="#900000">&amp;</font><font SIZE="2">iCount,</font><b><font SIZE="2" COLOR="#0000ff">unsigned</font></b><font SIZE="2">
+  </font><b><font SIZE="2" COLOR="#0000ff">short</font></b><font SIZE="2"> </font><font SIZE="2" COLOR="#900000">*</font><font SIZE="2">wAddress,</font><b><font SIZE="2" COLOR="#0000ff">int</font></b><font SIZE="2">
+  iMaxPorts</font><font SIZE="2" COLOR="#900000">)</font></font><font SIZE="2"><font face="Courier New">;</font></p>
+  </font></font>
+  <blockquote>
+    <p>	Speichert in <font face="Courier New">iCount</font> die Anzahl der gefundenen LPT-Ports.<br>
+    Im Array <font face="Courier New">wAddress</font> werden die Portadressen gespeichert.<br>
+    <font face="Courier New">iMaxPorts </font>ist die Größe des Arrays <font face="Courier New">wAddress</font>
+    .</p>
+  </blockquote>
+  <p>&nbsp;</p>
+  <p><font face="Courier New"><b><font SIZE="2" COLOR="#0000ff"><a name="INSTALL"></a>int</font></b><font SIZE="2">
+  LptDriverInstall</font><font SIZE="2" COLOR="#900000">()</font><font SIZE="2">;&nbsp;</font></font></p>
+  <blockquote>
+    <p>Mit dieser Funktion wird der Treiber installiert. Sie ist vor allem
+    gedacht wenn der Treiber installiert werden muss, und das Programm keine
+    Administrator-Rechte besitzt. Und so geht man vor:</p>
+    <font color="#000000">
+    <blockquote>
+      <p>1. Sich als Administrator einloggen.<br>
+      2. Diesen Code ausführen:</p>
+      <font color="#00008b">
+      <blockquote>
+        <p><font face="Courier New" size="2">#include </font></font><font color="#008080"><font face="Courier New" size="2">&quot;LptTools.h&quot;</font></p>
+      </font><font color="#0000ff">
+      <p><font face="Courier New" size="2">int</font></font><font face="Courier New" size="2"><font color="#000000">
+      </font><font color="#880000">main</font>()<br>
+      {<br>
+      </font><font face="Courier New" color="#0000ff" size="2">if</font><font face="Courier New" color="#000000">(!</font></font><font color="#800000"><font face="Courier New" size="2">LptDriver</font><font size="2">In</font><font face="Courier New" size="2">stall</font></font><font color="#000000"><font size="2"><font face="Courier New" color="#000000">())&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      </font><font face="Courier New" color="#008000">// Treiber initialisieren<br>
+      &nbsp;&nbsp; </font></font><font face="Courier New" size="2">{<br>
+      </font><font face="Courier New" color="#008000" size="2">&nbsp;&nbsp; </font><font face="Courier New" color="#800000" size="2">printf</font><font face="Courier New" color="#000000" size="2">(</font><font face="Courier New" color="#008080" size="2">&quot;Der
+      Treiber </font></font><font face="Courier New" color="#008080" size="2">wurde</font><font color="#000000"><font face="Courier New" color="#008080" size="2">
+      nicht installiert.&quot;</font><font face="Courier New" color="#008000" size="2">);</font><font face="Courier New" size="2">&nbsp;<br>
+      </font><font face="Courier New" color="#0000ff" size="2">&nbsp;&nbsp; </font><font face="Courier New" color="#000000">}<br>
+      </font></font><font face="Courier New" color="#0000ff" size="2">return</font><font face="Courier New" color="#000000"><font size="2">
+      0;</font><br>
+      }</font></p>
+    </blockquote>
+    <p><font color="#000000">3. Als Benutzer ohne Administratorrechte einloggen.&nbsp;</p>
+    </blockquote>
+    </font>
+    <p><font face="Courier New">LptDriverInstall</font> ergibt 1 wenn der
+    Treiber installiert wurde, bei einem Fehler wird 0 zurückgegeben.<br>
+    </p>
+  </blockquote>
+  <p><font face="Courier New"><b><font SIZE="2" COLOR="#0000ff"><br>
+  int</font></b><font SIZE="2"> LptDriverRemove</font><font SIZE="2" COLOR="#900000">()</font><font SIZE="2">;&nbsp;</font></font></p>
+  <blockquote>
+    <p>Mit dieser Funktion wird der Treiber wieder deinstalliert. Dabei wird die
+    Datei <i>C:\WinNT\system32\drivers\LPT_Driver.sys </i>gelöscht, und der
+    Registry-Schlüssel <i>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LPT_Driver</i>
+    enfernt.</p>
+    <p>Damit die Änderungen wirksam werden muss neu gebootet werden.<br>
+    Der Befehl kann nur ausgeführt werden wenn das Programm
+    Administrator-Rechte besitzt.</p>
+    <p><font face="Courier New">LptDriverRemove</font> ergibt 1 wenn der Treiber
+    deinstalliert wurde, bei einem Fehler wird 0 zurückgegeben.<br>
+    </p>
+  </blockquote>
+  <font SIZE="2">
+  <p></font></p>
+</blockquote>
+<hr>
+<p align="left"><b><font size="4"><a name="TEST"></a>Tests und bekante Probleme:</font></b>
+</p>
+<blockquote>
+  <p>&nbsp;</p>
+  <p><b>OS-Tests:</b></p>
+  <blockquote>
+    <p>Der Treiber wurde auf Win2000, XP und Win98 getestet. Auf WinNT hat der
+    Treber bis jetzt immer funktioniert, genauere Test&nbsp; habe ich aber nicht
+    durch geführt. Test für Vista wurden nicht gemacht. Für die 64-Bit-Version 
+    von Vista gibt es keinen Treiber, da Vista64 nur signierte Treiber 
+    akzeptiert und der Aufwand für eine Signierung für ein nicht kommerzielles 
+    Produkt zu hoch ist.</p>
+  </blockquote>
+  <p><b>Compiler:</b></p>
+  <blockquote>
+    <p>Das Treiber-API funktioniert auf Visual C++ 5.0 und 6.0. Unter 
+    VisualStudio 2003 und höher habe
+    ich es noch nicht ausprobiert. Aus Rückmeldungen vom Internet weis ich das
+    das API auch auf&nbsp; Borland-Compilern funktioniert. </p>
+  </blockquote>
+  <p><b>Treiberinstallation:</b></p>
+  <blockquote>
+    <p>Die Treiberinstallation schlägt immer fehl, wenn das ausführende
+    Programm keine Administrator-Rechte besitzt. Zum Lösen des Problems siehe <a href="#INSTALL"><font face="Courier New" size="2">LptDriverInstall</font></a>.</p>
+  </blockquote>
+  <p><b>Automatische Port-Adressenerkennung:</b></p>
+  <blockquote>
+    <p>Unter Win2000, XP oder WinNt könnte es zu Problemen kommen wenn die
+    LPT-Ports nicht auf den Standartadressen ( 0x378 , 0x278 ) liegen. Bis jetzt 
+    wurde die automatische Erkennung von Erweiterungskarten nur mit einer 
+    Pci-Express-Karte von Longshine (LCS-6322) getestet. Ob auch andere Karten 
+    fehlerfrei erkannt werden wurde nicht verifiziert. </p>
+  </blockquote>
+  <p><b>LPT-Ports auf USB-Schnitttellen :</b></p>
+  <blockquote>
+    <p>LPT-Ports auf USB-Schnittstellen werden vom Treiber nicht unterstützt.</p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+  </blockquote>
+</blockquote>

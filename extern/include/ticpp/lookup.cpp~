@@ -1,0 +1,89 @@
+// lookup.cpp: a simple program to look up numbers and addresses in
+//             a phonebook stored in XML format
+
+#include "header/ticpp.h"
+#include <string>
+#include <iostream>
+
+using namespace std;
+//using namespace ticpp;
+
+// file to read
+const string phonebook_filename = "phonebook.xml";
+
+int main(int argc, char* argv[])
+{
+   // get name to look up
+   string target;
+   if ( argc > 1 )
+      target = argv[1];
+   else
+   {
+      cout << "Enter name to look up: ";
+      getline(cin, target);
+   }
+
+   // need the try/catch since TinyXML++ operations generally throw an error
+   //   if you request something that's not
+   try
+   {
+      // declare the document for the phone book
+      Document phbook(phonebook_filename);
+      // actually load the information
+      phbook.LoadFile();
+
+      // make sure the top level element is "phonebook"; if it isn't, an
+      //   exception is thrown
+      ticpp::Element *phonebook_object = phbook.FirstChildElement("phonebook");
+      // alternatively, one could print an error:
+      // phonebook_object = phbook.FirstChildElement("phonebook", false);
+      // if ( phonebook_object == NULL ) cerr << "not a phonebook"...
+
+      // iterate over all "entry" items
+      ticpp::Iterator<ticpp::Element>
+         entry(phonebook_object->FirstChildElement("entry"), "entry");
+      while ( entry != entry.end() )
+      {
+         string entry_name;
+         // read the attribute <entry name="[attribute]"...
+         entry->GetAttribute("name", &entry_name);
+         if ( entry_name == target )
+            break;              // exit loop!
+         // advance to next item
+         ++entry;
+      }
+      if ( entry == entry.end() )
+      {
+         cout << "Could not find entry for '" << target << "'" << endl;
+         return 1;              // signal not found
+      }
+      else
+      {
+         int number;
+         // get phone number; OrDefault allows for case where it's not
+         //   specified, in which case number is set to -1
+         entry->GetAttributeOrDefault("extension", &number, -1);
+         if ( number < 0 )
+            cout << "No extension given for " << target << endl;
+         else
+            cout << "Extension for " << target << ": " << number << endl;
+
+         // find <address> element if it exists; returns NULL if not there
+         //   because pass 'false' as second parameter
+         ticpp::Element *addressElement =
+            entry->FirstChildElement("address", /*no fail if not found:*/false);
+         if ( addressElement != NULL )
+         {
+            string address = addressElement->GetText();
+            cout << "Address for " << target << ": " << address << endl;
+         }
+      }
+   }
+   catch(ticpp::Exception& error)
+   {
+      cerr << "Error: " << error.m_details << endl;
+      return 2;                 // signal error
+   }
+
+   return 0;
+}

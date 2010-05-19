@@ -1,0 +1,29 @@
+
+#include "ticpp.h"
+// #include "header/ticpprc.h"
+// #include "header/tinyxml.h"
+//#include "header/ticpp.h"
+
+#include <iostream>
+#include <string>
+
+using namespace std;
+//using namespace ticpp;
+
+const string phonebook_filename = "phonebook.xml";
+
+int main(int argc, char* argv[])
+{
+   // get name to look up
+   string target;
+   if ( argc > 1 )
+      target = argv[1];
+   else
+   {
+      cout << "Enter name to look up: ";
+      getline(cin, target);
+   }
+
+   ticpp::Document phbook(phonebook_filename);
+
+}
