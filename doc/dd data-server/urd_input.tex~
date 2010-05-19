@@ -1,0 +1,133 @@
+
+\documentclass[11pt]{scrartcl}
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{setspace}
+
+\usepackage{pdfpages}
+
+\setlength{\parindent}{0cm}
+
+
+\begin{document}
+
+  \begin{center}
+    \textbf{TOBI - Hybrid BCI \linebreak Design Document}\\
+    Christian Breitwieser,\quad Graz, \today{}
+  \end{center}
+
+
+
+
+
+
+
+\section{Startup and Connection-Setup -- an idea}
+
+  Before any network activity:
+  \begin{itemize}
+    \item Server starts with HW-configuration and UDP/TCP ports specified in .xml file
+    \item Client starts with configuration in .xml file\\
+      \hspace*{0.2cm} (server-IP + ports are familiar to the client)
+  \end{itemize}
+
+  Every network-messages are in xml-style, except EEG-data!\\
+  UDP-packets will be broadcasted into the whole subnet.\\
+
+  Connection-scheme shown in Figure\,\ref{fig:client-server}.
+
+
+  Client-Server handshake shown in Figure\,\ref{fig:handshake}.
+
+    \begin{figure}[hb]
+      \centering
+        \includegraphics[scale=0.7]{Client-Server.pdf}
+      \caption{Connection-Scheme Client-Server}
+      \label{fig:client-server}
+    \end{figure}
+
+    \begin{figure}
+      \centering
+        \includegraphics[scale=0.7]{Client-Server-Handshake.pdf}
+      \caption{Client-Server Handshake}
+      \label{fig:handshake}
+    \end{figure}
+
+  \begin{itemize}
+%     \item Automatic HW-detection possible (generate List of hardware)
+    \item Client connects to server and requests configuration\\
+      \hspace*{0.2cm} (sampling-rate, nr. of channels, EEG data-type (int, float,\dots))
+    \item Server sends configuration
+    \item Optional: Client requests a TCP data connection\\
+      \hspace*{0.2cm} (data-loss unacceptable $\rightarrow$ EEG data over TCP connection)
+    \item Server responds if TCP-connection OK or not
+    \item Client requests start of EEG transmission
+    \item Server starts EEG transmission
+    \newline
+    \item Optional: Other Clients connect to the server
+    \newline
+    \item Client requests to stop EEG-stream
+    \item Server closes connection to specific client\\
+      \hspace*{0.2cm} if other clients available: keep transmitting EEG
+    \item Client specific shutdown
+    \item Last clients requests to stop EEG-stream
+    \item Server closes connection to last client and stops transmitting EEG
+    \item Client specific shutdown
+  \end{itemize}
+
+\section{The Connection -- TCP, UDP, creation, termination, \dots}
+
+  \begin{itemize}
+    \item Protocol application dependent
+      \quad (UDP for scope, TCP for critical apps \dots data-loss unaccaptable)
+    \item Data-sending can't stop while clients are attached
+    \item Only the first client is allowed to reconfigure the system if no others are attached
+    \item Configuration over network -- no user-interface (only for debugging)
+  \end{itemize}
+
+\section{The Packet -- what's inside}
+
+  \begin{itemize}
+    \item Running Number $\rightarrow$ loss of data can be recognized
+    \item EEG ;-) (RAW, XML,\dots)
+    \item Additional Information (Channels, Frequency,\dots)
+  \end{itemize}
+
+  EEG packet structure shown in Figure\,\ref{fig:eeg-packet-structure}.
+
+    \begin{figure}
+      \centering
+        \includegraphics[scale=0.7]{EEG-packet-structure.pdf}
+      \caption{EEG packet structure}
+      \label{fig:eeg-packet-structure}
+    \end{figure}
+
+  Approximate estimation of needed bandwidth:\\
+  \\
+    \hspace*{0.2cm} Extreme values, overhead not included:\\
+  \\
+  Sampling Rate $f_s$ = 512\,Hz\\
+  Nr. of channels: n = 128\\
+  Needed memory per channel and packet: s = 8 byte (double)\\
+
+  \begin{displaymath}
+    B = f_s \cdot n \cdot s \quad = \quad 512\, \frac{kbyte}{s}
+  \end{displaymath}
+  \\
+
+    \hspace*{0.2cm} Expected values, overhead not included:\\
+  \\
+  Sampling Rate $f_s$ = 256\,Hz\\
+  Nr. of channels: n = 16\\
+  Needed memory per channel and packet: s = 8 byte (double)\\
+
+  \begin{displaymath}
+    B = f_s \cdot n \cdot s \quad = \quad 32\, \frac{kbyte}{s}
+  \end{displaymath}
+  \\
+  
+
+\end{document}

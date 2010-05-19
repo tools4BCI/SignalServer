@@ -1,0 +1,175 @@
+
+\documentclass[11pt]{scrartcl}
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{setspace}
+
+\usepackage{pdfpages}
+
+\setlength{\parindent}{0cm}
+
+\pagestyle{myheadings}
+\markright{\tiny{DD - EEG Transmission, Version\,0.2, \today}}
+
+\begin{document}
+
+  \begin{center}
+    \textbf{\Large{TOBI - Hybrid BCI -- EEG Transmission\linebreak \textit{Design Document}}}\\
+    \vspace*{0.1cm}
+    Christian Breitwieser,\quad Graz, \today{}
+  \end{center}
+
+
+\section{Reqirements}
+  \begin{itemize}
+    \item EEG transmission over network (or localhost) using NW-sockets
+    \item Software should be platform independent (portable framework and libraries)
+    \item Multiple clients possible
+    \item Possibility against package leakage
+    \item Hardware requirements low
+    \item Configuration communication over Network
+    \item Variable number of EEG channels
+    \item Variable sampling frequency
+    \item Variety of EEG acquisition hardware possible\\
+      \hspace*{0.2cm} (at the beginning only g-tec USBAmp)
+    \item Delivery of EEG data ``in time''
+  \end{itemize}
+
+\section{Client - Server Architecture}
+  \begin{itemize}
+    \item One EEG server
+    \item ``Many'' EEG clients
+    \item Communication seperated into ``configuration communication'' and data transmission 
+    \item Server provides one TCP socket for ``configuration communication''
+    \item ``Configuration communication'' done in xml-style
+    \item Server provides one UDP socket for EEG broadcast\\
+      \hspace*{0.2cm} (packet loss acceptable)
+    \item Server provides one TCP socket for connection oriented EEG transmission\\
+      \hspace*{0.2cm} (packet loss \textbf{un}acceptable)
+    \newline
+    \item EEG clients create connections to respective server socket
+    \item EEG transmission to multiple clients done by broad- or multicast
+  \end{itemize}
+  
+\section{Startup and Connection-Setup -- an idea}
+
+  Before any network activity:
+  \begin{itemize}
+    \item Server starts with HW configuration and UDP/TCP ports specified in .xml file
+    \item Client starts with configuration in .xml file\\
+      \hspace*{0.2cm} (server-IP and ports are familiar to the client)
+  \end{itemize}
+
+  All network-messages are in xml-style, except EEG data\\
+  UDP packets will be broadcasted into the whole subnet.\\
+
+  Connection scheme shown in Figure\,\ref{fig:client-server}.
+
+
+  Client-Server handshake shown in Figure\,\ref{fig:handshake}.
+
+    \begin{figure}[htb]
+      \centering
+        \includegraphics[scale=0.7]{Client-Server.pdf}
+      \caption{Connection Scheme Client-Server}
+      \label{fig:client-server}
+    \end{figure}
+
+    \begin{figure}
+      \centering
+        \includegraphics[scale=0.7]{Client-Server-Handshake.pdf}
+      \caption{Client-Server Handshake}
+      \label{fig:handshake}
+    \end{figure}
+
+  \begin{itemize}
+%     \item Automatic HW-detection possible (generate List of hardware)
+    \item Client connects to server and requests configuration\\
+      \hspace*{0.2cm} (sampling rate, nr. of channels, EEG data type (int, float,\dots))
+    \item Server sends configuration
+    \item Client requests start of UDP or TCP EEG transmission\\
+      \hspace*{0.2cm} (data loss unacceptable $\rightarrow$ EEG data over TCP connection\\
+      \hspace*{0.2cm} ~if TCP connection: connect to server TCP socket)
+    \item Server starts EEG transmission
+    \newline
+    \item One keep alive packet from client within one minute
+      \hspace*{0.2cm} (otherwise remove client from connection list)
+    \newline
+    \item Optional: Other Clients connect to the server
+    \newline
+    \item Client requests to stop EEG stream
+    \item UDP: if other clients available: keep transmitting EEG\\
+          TCP: stop transmitting EEG data over TCP connection
+    \item Client closes connection to server (client specific shutdown)
+    \item Last clients requests to stop EEG stream
+    \item Server closes connection to last client and stops transmitting EEG
+    \item Client specific shutdown
+  \end{itemize}
+
+\section{The Connection -- TCP, UDP, creation, termination, \dots}
+
+  \begin{itemize}
+    \item Protocol application dependent\\
+      \quad (UDP for scope, TCP for critical apps \dots data loss unacceptable)
+    \item Data stream can't stop while clients are attached
+    \item Configuration done by xml files
+    \item Communication between client and server done in xml-style
+  \end{itemize}
+
+\section{The Packet -- what's inside}
+
+  \begin{itemize}
+    \item Running Number $\rightarrow$ loss of data can be recognized
+    \item EEG (RAW values -- type EEG amplifier specific)
+    \item Additional Information ?? (again Channels, Frequency,\dots)
+  \end{itemize}
+
+  EEG packet structure shown in Figure\,\ref{fig:eeg-packet-structure}.\\
+
+    \begin{figure}[htbp]
+      \centering
+        \includegraphics[scale=0.7]{EEG-packet-structure.pdf}
+      \caption{EEG packet structure}
+      \label{fig:eeg-packet-structure}
+    \end{figure}
+
+  \subsection{Estimation of needed bandwidth:}
+
+  \underline{High values, overhead not included:}\\
+  \\
+  Sampling Rate $f_s$ = 512\,Hz\\
+  Nr. of channels: n = 128\\
+  Needed memory per channel and packet: s = 8 byte (double)\\
+
+  \begin{displaymath}
+    B = f_s \cdot n \cdot s \quad = \quad 512\, \frac{kbyte}{s}
+  \end{displaymath}
+  \\
+
+  \underline{Expected values, overhead not included:}\\
+  \\
+  Sampling Rate $f_s$ = 256\,Hz\\
+  Nr. of channels: n = 16 (USBAmp)\\
+  Needed memory per channel and packet: s = 8 byte (double)\\
+
+  \begin{displaymath}
+    B = f_s \cdot n \cdot s \quad = \quad 32\, \frac{kbyte}{s}
+  \end{displaymath}
+  \\
+
+\section{Pending Questions}
+
+  \begin{itemize}
+    \item Additional requirements?
+    \item More than one client over UDP \dots broadcast or multicast?? (preferably broadcast into subnet)
+    \item Realtime protocol required?\\
+      \hspace*{0.2cm} (250\,Hz \dots $\frac{1~packet}{4\,ms}$, mean RTT in small subnet ca. 0.5\,ms,\\
+      \hspace*{0.2cm} ~maybe use of own 192.168.xxx.xxx subnet with 2$^{nd}$ network interface card)
+    \item Additional information in EEG packet
+    \item Definition of xml tags
+  \end{itemize}
+
+\end{document}
