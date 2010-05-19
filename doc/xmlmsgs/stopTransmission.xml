@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<message>
+  <header>
+    <type>stopTransmission</type>
+    <seqNr></seqNr>
+    <sender></sender>
+  </header>
+  <stopTransmission/>
+</message>

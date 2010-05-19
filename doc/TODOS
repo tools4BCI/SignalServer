@@ -1,0 +1,18 @@
+TODOS
+
+ Created on: Feb 25, 2010
+     Author: andreas
+
+1) Connection Loss handling implementieren
+2) Streambasiertes lesen der XML Messages async_read_until(...)
+3) Streambasiertes lesen der DataPackages
+4) Error Handling: logging, Signaturen ueberpruefen etc.
+5) BOOSTLOGGER verwenden
+6) XML Protocol Version definieren
+7) Server data ports auf einen in der Config definierbaren Bereich einschraenken (Firewall)
+8) KeepAlive handling; Client arbeitet blocking momentan, wie kann KeepAlive regelmeaßig verschickt werden?
+9) Asynchronen SSClient implementieren? 
+10) Doxygen
+
+
+

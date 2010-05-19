@@ -1,0 +1,143 @@
+
+//////////////////////////////////////////
+// Server Applikation
+//////////////////////////////////////////
+
+class Main
+{
+	public static void main ( string args )
+	{
+		ServerThread s = new ServerThread ( );
+
+		s.mainLoop ( );
+	}
+}
+
+class ServerThread
+{
+	public void mainLoop ( )
+	{
+		Thread control = new TCPControlThread ( this ); 
+		Thread TCPData = new TCPDataThread ( this );
+		Thread UDPData = new UDPDataThread ( this );
+
+		t.start ( );
+
+		while ( ! Abbruchbedingung erfüllt )
+		{
+			aktuellesFrame = HW-Auslesen ();
+			
+			sendUDPBC ( aktuellesFrame );
+
+			for each ( TCP-Connection in ConnectionVector )
+				sendTCP ( aktuellesFrame );
+		} 	
+	}
+}
+
+class TCPDataThread extends Thread
+{
+	public TCPDataThread ( ServerThread instance )
+	{
+		this.instance = instance;
+	}
+
+	public void run ( )
+	{
+		ServerSocket myserv_sock = new ServerSocket ( Port-Literal );
+
+		Socket mysock = null;
+
+		while ( mysock = myserv_sock.accept ( ) && ! Abbruchbedingung )
+		{
+			instance.addTCPDataSocket ( mysock );
+		}
+	}
+}
+
+////////////////////////////////////
+// Analog für UDPDataThread
+////////////////////////////////////
+
+
+class TCPControlThread extends Thread
+{
+	public TCPControlThread ( ServerThread instance )
+	{
+		this.instance = instance;	
+	}
+
+	public void run ( )
+	{
+		ServerSocket myserv_sock = new ServerSocket ( Port-Literal );
+
+		Socket mysock = null;
+
+		while ( mysock = myserv_sock.accept ( ) && ! Abbruchbedingung )
+		{
+			new SingleControlThread ( mySock, instance );
+		}
+	}
+}
+
+class SingleControlThread extends Thread
+{
+	public SingleControlThread ( Socket mySock, ServerThread instance )
+	{
+		this.mySock = mySock;
+		this.instance = instance;
+	}
+
+	public void run ( )
+	{
+		String mycommand = "";
+
+		while ( ( mycommand = mySock.getNetworkData ( ) ) != EOF )
+		{
+			// mycommand entsprechend verarbeiten
+
+			// Ggf. instance verändern
+		}
+	}
+}
+
+
+//////////////////////////////////////////
+// Client Applikation
+//////////////////////////////////////////
+
+
+class ClientMain
+{
+	public static void main ( string args )
+	{
+		Socket s = new Socket ( Addresse, Port );
+
+		s.send ( "get-XML-config" );
+
+		// Wartet auf response
+		xml_string = s.receiveResponse ( );
+
+		this.process ( xml_string );
+
+		if ( datagram_mode )
+		{
+			// Verbindung erstellen, ...
+		}
+		else if ( tcp_mode )
+		{
+			Socket sData = new Socket ( Adresse, DatenPort );
+
+			while ( ( mydata = sData.getNetworkData ( ) ) != EOF )
+			{
+				print mydata;   // Hier können Daten verarbeitet werden; 
+				// Ggf auch zeichnen oder was immer...
+			}
+		}
+		else
+		{
+			throw ( exception );
+		}
+	}
+}
+

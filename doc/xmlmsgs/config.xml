@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<message>
+  <header>
+    <msgID></msgID>
+    <sender></sender>
+  </header>
+  <config>
+    <hardwareConfig>
+      <hardware name="g.usbamp" version="1.4" serial="UA-2008.06.42">
+        <mode> master </mode>
+        <device_settings>
+          <sampling_rate> 512 </sampling_rate>
+          <measurement_channels nr="16" names="eeg" type="eeg" />
+          <filter type="chebyshev" order="8" f_low="0.5" f_high="30"/>
+          <notch f_center="50"/>
+          <buffersize> 8 </buffersize>
+          <operation_mode> normal </operation_mode>
+          <shortcut> off </shortcut>
+          <usbamp_master> yes </usbamp_master>
+          <common_ground>
+            <gnd block="a" value="1" /> 
+          </common_ground>
+          <common_reference>
+           <cr block="a" value="1" />
+          </common_reference>
+        </device_settings>
+      </hardware>
+    <hardwareConfig>
+  </config>
+</message>
