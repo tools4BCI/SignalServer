@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tobi-config version="1.0">
+	<subject>
+		<id>asd52</id>
+		<name>Nobody Nowhereman</name>
+		<birthday>01.01.1900 </birthday>
+		<sex>m </sex>
+		<handedness>r </handedness>
+		<medication>none</medication>
+		<!-- To be extended by the user -->
+	</subject>
+	<server_settings>
+		<TCP_port port="9876"/>
+		<UDP_port port="8765"/>
+	</server_settings>
+	<hardware name="g.usbamp" dev_nr="1" data_type="float" bits="24" version="1.4" serial="2008.06.42">
+		<io channels="17" di_in="2" di_out="2"  an_out="0"/>
+		<!-- For Calibration purposes use the demo-software delivered with the g.USBamp -->
+		<!-- Mandatory Settings:  -->
+		<!-- master or slave  ...  important if combined with different amplifiers
+            only one master device allowed -->
+		<mode> master </mode>
+		<global_settings>
+			<sampling_rate fs="512"/>
+			<!--possible rates: 32, 64, 128, 256, 512, 600, 1200, 2400, 4800, 9600 -->
+			<filter type="butterworth" order="6" f_low="0.5" f_high="100"/>
+			<notch f_center="50"/>
+			<!-- Not every filter setting with sampling rate possible - see settings.txt/.pdf,
+               notch filtering only possible up to 4800Hz, butterworth, 4th order -->
+			<buffersize value="1"/>
+			<!-- IMPORTANT: Too small buffersize may cause loss of data
+               buffersize = 1  only up to 512Hz possible  ...  see  settings.txt/.pdf -->
+			<!-- Optional Settings:  -->
+			<operation_mode value="normal"/>
+			<!-- up to now only normal mode supported-->
+			<shortcut value="1"/>
+			<!-- multiple usbamps: master or slave device  ...  important if connected with other USBamps
+            through SYNC-Plugs   ->   only one master device allowed -->
+			<usbamp_master value="yes"/>
+			<!-- connect grounds to common ground:  on or off  ... default: on = connected -->
+			<common_ground>
+        <gnd block="a" value="on" />
+        <gnd block="b" value="on" />
+        <gnd block="c" value="on" />
+        <gnd block="d" value="on" />
+      </common_ground>
+			<!-- connect references:  on or off  ... default: on = connected  -->
+			<common_reference>
+        <cr block="a" value="on" />
+        <cr block="b" value="on" />
+        <cr block="c" value="on" />
+        <cr block="d" value="on" />
+      </common_reference>
+
+		</global_settings>
+		<channel_settings>
+			<selection>
+				<ch nr="01" name="eeg"/>
+				<ch nr="02" name="eeg"/>
+				<ch nr="03" name="eeg"/>
+				<ch nr="04" name="eeg"/>
+				<ch nr="05" name="eeg"/>
+				<ch nr="06" name="eeg"/>
+				<ch nr="07" name="eeg"/>
+				<ch nr="08" name="eeg"/>
+				<ch nr="09" name="eeg"/>
+				<ch nr="10" name="eeg"/>
+				<ch nr="11" name="eeg"/>
+				<ch nr="12" name="eeg"/>
+				<ch nr="13" name="eeg"/>
+				<ch nr="14" name="eeg"/>
+				<ch nr="15" name="eeg"/>
+				<ch nr="16" name="eeg"/>
+				<ch nr="17" name="digital"/>
+				<!-- corresponds to the 17th channel synchonously sampled with analog input
+                ... the so called TriggerLine -->
+				<ch nr="di1" name="digital"/>
+				<ch nr="di2" name="digital"/>
+				<ch nr="do1" name="digital"/>
+				<ch nr="do2" name="digital"/>
+			</selection>
+			<!-- define channel dependent filter and notch settings
+             ... settings defined above will be overwritten for respective channels -->
+			<filter>
+				<ch nr="15" type="butterworth" order="6" f_low="0.5" f_high="30"/>
+				<ch nr="16" type="butterworth" order="6" f_low="0.5" f_high="30"/>
+			</filter>
+			<notch>
+				<ch nr="15" f_center="50"/>
+				<ch nr="16" f_center="50"/>
+			</notch>
+			<!-- define bipolar combinations  ... default: all monopolar -->
+			<!--  ... remove this comment if needed or define no bipolar combination
+        <bipolar>
+          <ch nr="1" with="16" />
+          <ch nr="2" with="3" />
+        </bipolar>
+        -->
+			<!-- define channels for driven right leg calculation  ... default: no drl channel set -->
+			<!--  ... remove this comment if needed or define no drl calculation
+        <driven_right_leg>
+          <ch nr="1" value="0" />
+          <ch nr="2" value="1" />
+        </driven_right_leg>
+        -->
+			<!-- define different scaling for individual channels  ... default: g.tec settings
+             IMPORTANT:  Values are stored in permanent memory! -->
+			<!--  ... remove this comment if needed or define no specialized scaling
+        <scaling>
+          <ch nr="01" offset="0" factor="1" />
+        </scaling>
+        -->
+		</channel_settings>
+	</hardware>
+</tobi-config>

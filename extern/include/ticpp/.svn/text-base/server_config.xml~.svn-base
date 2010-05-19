@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tobi-config version="1.0">
+	<subject>
+		<id>asd52</id>
+		<name>Nobody Nowhereman</name>
+
+		<sex>m </sex>
+    <birthday>31.12.1900 </birthday>
+		<handedness>r </handedness>
+		<medication>none</medication>
+
+    <optional glasses="yes" smoker="no" />
+	</subject>
+
+	<server_settings>
+		<TCP_Port> 9876 </TCP_Port>
+		<UDP_Port> 8765 </UDP_Port>
+	</server_settings>
+
+	<hardware name="g.usbamp" dev_nr="1" data_type="float" bits="24" version="1.4" serial="2008.06.42">
+		<io channels="17" di_in="2" di_out="2" an_out="0" />
+		<mode> master </mode>
+		<global_settings>
+			<sampling_rate fs="512"/>
+
+      <measurement_channels value="16"/>
+			<filter type="butterworth" order="6" f_low="0.5" f_high="100"/>
+			<notch f_center="50"/>
+			<buffersize value="1"/>
+			<operation_mode value="normal"/>
+
+			<shortcut value="1"/>
+
+			<usbamp_master value="yes"/>
+
+			<common_ground>
+        <gnd block="a" value="on" />
+        <gnd block="b" value="on" />
+        <gnd block="c" value="on" />
+        <gnd block="d" value="on" />
+      </common_ground>
+
+			<common_reference>
+        <cr block="a" value="on" />
+        <cr block="b" value="on" />
+        <cr block="c" value="on" />
+        <cr block="d" value="on" />
+      </common_reference>
+		</global_settings>
+
+    <channel_settings>
+			<selection>
+				<ch nr="01" name="eeg"/>
+				<ch nr="02" name="eeg"/>
+				<ch nr="03" name="eeg"/>
+				<ch nr="04" name="eeg"/>
+				<ch nr="05" name="eeg"/>
+				<ch nr="06" name="eeg"/>
+				<ch nr="07" name="eeg"/>
+				<ch nr="08" name="eeg"/>
+				<ch nr="09" name="eeg"/>
+				<ch nr="10" name="eeg"/>
+				<ch nr="11" name="eeg"/>
+				<ch nr="12" name="eeg"/>
+				<ch nr="13" name="eeg"/>
+				<ch nr="14" name="eeg"/>
+				<ch nr="15" name="eeg"/>
+				<ch nr="16" name="eeg"/>
+
+				<ch nr="17" name="digital"/>
+
+				<ch nr="di1" name="digital"/>
+				<ch nr="di2" name="digital"/>
+				<ch nr="do1" name="digital"/>
+				<ch nr="do2" name="digital"/>
+			</selection>
+			<filter>
+				<ch nr="15" type="butterworth" order="6" f_low="0.5" f_high="30"/>
+				<ch nr="16" type="butterworth" order="6" f_low="0.5" f_high="30"/>
+			</filter>
+			<notch>
+				<ch nr="15" f_center="50"/>
+				<ch nr="16" f_center="50"/>
+			</notch>
+
+
+        <bipolar>
+          <ch nr="1" with="16" />
+          <ch nr="2" with="3" />
+        </bipolar>
+
+
+        <driven_right_leg>
+          <ch nr="1" value="0" />
+          <ch nr="2" value="1" />
+        </driven_right_leg>
+
+		</channel_settings>
+	</hardware>
+
+  <hardware name="g.usbamp" dev_nr="2" data_type="float" bits="24" version="1.4" serial="2008.06.42">
+    <io channels="17" di_in="2" di_out="2" an_out="0" />
+    <mode> slave </mode>
+    <global_settings>
+      <sampling_rate fs="512"/>
+
+      <filter type="butterworth" order="6" f_low="0.5" f_high="100"/>
+      <notch f_center="50"/>
+      <buffersize value="1"/>
+      <operation_mode value="normal"/>
+
+      <shortcut value="1"/>
+
+      <usbamp_master value="no"/>
+
+      <common_ground>
+        <gnd block="a" value="on" />
+        <gnd block="b" value="on" />
+        <gnd block="c" value="on" />
+        <gnd block="d" value="on" />
+      </common_ground>
+
+      <common_reference>
+        <cr block="a" value="on" />
+        <cr block="b" value="on" />
+        <cr block="c" value="on" />
+        <cr block="d" value="on" />
+      </common_reference>
+    </global_settings>
+
+  </hardware>
+
+  <hardware name="g.mobilab" dev_nr="1" data_type="float" bits="16" version="1.0" serial="">
+    <io channels="8" di_in="0" di_out="0" an_out="0"/>
+    <mode> slave </mode>
+    <global_settings>
+      <sampling_rate fs="512"/>
+      <filter f_low="0.5" f_high="100"/>
+    </global_settings>
+
+    <channel_settings>
+      <selection>
+        <ch nr="01" name="eeg"/>
+        <ch nr="02" name="eeg"/>
+        <ch nr="03" name="eeg"/>
+        <ch nr="04" name="eeg"/>
+        <ch nr="05" name="eeg"/>
+        <ch nr="06" name="eeg"/>
+        <ch nr="07" name="eeg"/>
+        <ch nr="08" name="eeg"/>
+      </selection>
+    </channel_settings>
+
+  </hardware>
+
+</tobi-config>

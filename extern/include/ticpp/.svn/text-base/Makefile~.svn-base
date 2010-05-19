@@ -1,0 +1,48 @@
+# Makefile: build miniread which illustrates using TinyXML++ (ticpp)
+#
+# To update after changing any dependencies: make depend
+#
+
+.SUFFIXES: .cpp
+
+CXXFLAGS=-g
+
+%.o : %.cpp
+	$(CXX) -c $(CPPFLAGS) $(CXXFLAGS) $< -o $@
+
+MINIREAD_CFILES=checklist.cpp miniread.cpp
+MINIREAD_OBJFILES=$(MINIREAD_CFILES:.cpp=.o) $(TINYXML_CFILES:.cpp=.o)
+
+LOOKUP_CFILES=lookup.cpp
+LOOKUP_OBJFILES=$(LOOKUP_CFILES:.cpp=.o) $(TINYXML_CFILES:.cpp=.o)
+
+TINYXML_CFILES=tinyxmlerror.cpp ticpp.cpp tinyxml.cpp tinyxmlparser.cpp
+
+ALL_CFILES=$(TINYXML_CFILES) $(MINIREAD_CFILES) $(LOOKUP_CFILES)
+
+default:
+	@echo 'Type "make lookup" to make the smaller example;'
+	@echo '"make miniread" to build the larger example.'
+
+lookup: $(LOOKUP_OBJFILES)
+	$(CXX) $(CXXFLAGS) -o lookup $(LOOKUP_OBJFILES)
+
+miniread: $(MINIREAD_OBJFILES)
+	$(CXX) $(CXXFLAGS) -o miniread $(MINIREAD_OBJFILES)
+
+clean:
+	rm -f *.o miniread lookup
+
+depend:
+	sed -n '1,/^##DEPENDENCIES##/p' <Makefile >Makefile.bak
+	gcc -MM $(CXXFLAGS) $(ALL_CFILES) | cat Makefile.bak - >Makefile
+	rm Makefile.bak
+
+##DEPENDENCIES##
+tinyxmlerror.o: tinyxmlerror.cpp tinyxml.h ticpprc.h
+ticpp.o: ticpp.cpp ticpp.h tinyxml.h ticpprc.h
+tinyxml.o: tinyxml.cpp tinyxml.h ticpprc.h
+tinyxmlparser.o: tinyxmlparser.cpp tinyxml.h ticpprc.h
+checklist.o: checklist.cpp checklist.h ticpp.h tinyxml.h ticpprc.h
+miniread.o: miniread.cpp checklist.h ticpp.h tinyxml.h ticpprc.h
+lookup.o: lookup.cpp ticpp.h tinyxml.h ticpprc.h

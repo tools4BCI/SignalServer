@@ -1,0 +1,493 @@
+#include <iostream>
+#include <map>
+#include <vector>
+#include "header/ticpp.h"
+
+using namespace std;
+
+
+void Load(const char* pcFilename);
+void Parse(ticpp::Iterator<ticpp::Element> &elem);
+map<string,string> parseSubject(ticpp::Iterator<ticpp::Element>const &sj);
+map<string,string> parseServerSettings(ticpp::Iterator<ticpp::Element>const &ss);
+map<string,string> parseHardware(ticpp::Iterator<ticpp::Element>const &hw);
+
+void parseGlobalSettings(ticpp::Iterator<ticpp::Element>const &elem,
+                                       map<string,string> &m);
+void parseChannelSettings(ticpp::Iterator<ticpp::Element>const &elem,
+                                        map<string,string> &m);
+bool isNumber(const std::string& s);
+void checkHardwareAttributes(map<string,string>& m);
+void checkIOAttributes(map<string,string>& m);
+
+//---------------------------------------------------------------------------------------
+
+int main()
+{
+  try
+  {
+    Load("server_config.xml");
+  }
+  catch(ticpp::Exception& ex)
+  {
+    cout << endl << " ***** Exception caught! *****" << endl;
+    cout << " --> " << ex.what() << endl << endl;
+  }
+
+  return -1;
+}
+
+//---------------------------------------------------------------------------------------
+
+void Load(const char* pcFilename)
+{
+  // first load the xml file
+  ticpp::Document doc(pcFilename);
+  doc.LoadFile();
+
+  ticpp::Iterator<ticpp::Element> config(doc.FirstChildElement("tobi-config", true));
+
+  ticpp::Iterator<ticpp::Element> subject(config->FirstChildElement("subject", true));
+  for(ticpp::Iterator<ticpp::Element> it(subject); ++it != it.end(); )
+  if(it->Value() == "subject")
+    throw(ticpp::Exception("Error -- Only one subject definition allowed!"));
+
+  ticpp::Iterator<ticpp::Element> server_settings(config->FirstChildElement("server_settings", true));
+  for(ticpp::Iterator<ticpp::Element> it(server_settings); ++it != it.end(); )
+  if(it->Value() == "server_settings")
+    throw(ticpp::Exception("Error -- Multiple server settings found!"));
+
+
+  vector< ticpp::Iterator<ticpp::Element> > hardware;
+  for(ticpp::Iterator<ticpp::Element> it(config->FirstChildElement("hardware", true));
+      it != it.end(); it++)
+    if(it->Value() == "hardware")
+    {
+      hardware.push_back(it);
+      ticpp::Iterator< ticpp::Attribute > attribute;
+      attribute = attribute.begin(it.Get());
+      cout << attribute->Name() << ": " <<  attribute->Value() << endl;
+    }
+
+  map<string, string> m;
+  m = parseSubject(subject);
+  cout << "   --------------  " << endl;
+  for (map<string,string>::iterator it=m.begin() ; it != m.end(); it++ )
+    cout << " <" << (*it).first << "> " << (*it).second << endl;
+
+  m = parseServerSettings(server_settings);
+  cout << "   --------------  " << endl;
+  for (map<string,string>::iterator it=m.begin() ; it != m.end(); it++ )
+    cout << " <" << (*it).first << "> " << (*it).second << endl;
+
+  vector< map<string,string> > vm;
+  for(int n = 0; n < hardware.size(); n++)
+  {
+    vm.push_back(parseHardware(hardware.at(n)));
+    cout << "   --------------  " << endl;
+    for (map<string,string>::iterator it = vm.at(n).begin() ; it != vm.at(n).end(); it++ )
+      cout << " <" << (*it).first << "> " << (*it).second << endl;
+  }
+}
+
+//---------------------------------------------------------------------------------------
+
+map<string,string> parseHardware(ticpp::Iterator<ticpp::Element>const &hw)
+{
+  map<string, string> m;   // map with generic hardware information  ...  mandatory
+  map<string, string> m_gs;  // map with global settings  ...  mandatory
+  map<string, string> m_cs;  // map with channel specific settings  ... optional
+  ticpp::Iterator<ticpp::Element> elem(hw);
+  ticpp::Iterator< ticpp::Attribute > attribute;
+
+  for(attribute = attribute.begin(elem.Get()); attribute != attribute.end();
+      attribute++)
+    m.insert(pair<string, string>(attribute->Name(), attribute->Value()));
+  checkHardwareAttributes(m);
+
+  elem = hw->FirstChildElement("io", true);
+
+  for(attribute = attribute.begin(elem.Get()); attribute != attribute.end();
+      attribute++)
+    m.insert(pair<string, string>(attribute->Name(), attribute->Value()));
+  try
+  {
+    checkIOAttributes(m);
+  }
+  catch(ticpp::Exception& ex)
+  {
+    string ex_str;
+    ex_str = "Error in <hardware> - " + m.find("name")->second + " Dev.Nr. " + m.find("dev_nr")->second + " -- ";
+    ex_str += ex.what();
+    ex.m_details = ex_str;
+    throw;
+  }
+
+  elem = hw->FirstChildElement("mode", true);
+  if( !(elem->GetText(true) == "master" || elem->GetText(true) == "slave"))
+  {
+    string ex_str;
+    ex_str = "Error in <hardware> - " + m.find("name")->second + " Dev.Nr. " + m.find("dev_nr")->second + " -- ";
+    ex_str += " -- Mode is neither master or slave!";
+    throw(ticpp::Exception(ex_str));
+  }
+
+
+  ticpp::Iterator<ticpp::Element> gs(hw->FirstChildElement("global_settings", true));
+  for(ticpp::Iterator<ticpp::Element> it(gs); ++it != it.end(); )
+    if(it->Value() == "global_settings")
+    {
+      string ex_str;
+      ex_str = "Error in <hardware> - " + m.find("name")->second + " Dev.Nr. " + m.find("dev_nr")->second + " -- ";
+      ex_str += " -- Multiple global_settings found!";
+      throw(ticpp::Exception(ex_str));
+    }
+  parseGlobalSettings(gs, m);
+
+
+  ticpp::Iterator<ticpp::Element> cs(hw->FirstChildElement("channel_settings", false));
+  if (cs != 0)
+  {
+    for(ticpp::Iterator<ticpp::Element> it(cs); ++it != it.end(); )
+      if(it->Value() == "channel_settings")
+      {
+        string ex_str;
+        ex_str = "Error in <hardware> - " + m.find("name")->second + " Dev.Nr. " + m.find("dev_nr")->second + " -- ";
+        ex_str += " -- Multiple channel_settings found!";
+        throw(ticpp::Exception(ex_str));
+      }
+    parseChannelSettings(cs, m);
+  }
+
+  return(m);
+}
+
+//---------------------------------------------------------------------------------------
+void parseGlobalSettings(ticpp::Iterator<ticpp::Element>const &father,
+                                        map<string, string> &m)
+{
+  ticpp::Iterator< ticpp::Attribute > attribute;
+
+  ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement("sampling_rate",true));
+  attribute = attribute.begin(elem.Get());
+  m.insert(pair<string, string>(elem->Value(), attribute->Value()));
+
+  elem = father->FirstChildElement("filter",false);
+  if(elem != 0)
+    for(attribute = attribute.begin(elem.Get()); attribute != attribute.end();
+        attribute++)
+      m.insert(pair<string, string>("filter_" + attribute->Name(), attribute->Value()));
+
+  elem = father->FirstChildElement("measurement_channels",false);
+  if(elem != 0)
+    for(attribute = attribute.begin(elem.Get()); attribute != attribute.end();
+        attribute++)
+      m.insert(pair<string, string>(elem->Value(), attribute->Value()));
+
+  elem = father->FirstChildElement("notch",false);
+  if(elem != 0)
+    for(attribute = attribute.begin(elem.Get()); attribute != attribute.end();
+        attribute++)
+      m.insert(pair<string, string>("notch_" + attribute->Name(), attribute->Value()));
+
+  elem = father->FirstChildElement("buffersize",false);
+  if(elem != 0)
+    for(attribute = attribute.begin(elem.Get()); attribute != attribute.end();
+        attribute++)
+      m.insert(pair<string, string>(elem->Value(), attribute->Value()));
+
+  elem = father->FirstChildElement("operation_mode",false);
+  if(elem != 0)
+    for(attribute = attribute.begin(elem.Get()); attribute != attribute.end();
+        attribute++)
+      m.insert(pair<string, string>(elem->Value(), attribute->Value()));
+
+  elem = father->FirstChildElement("shortcut",false);
+  if(elem != 0)
+    for(attribute = attribute.begin(elem.Get()); attribute != attribute.end();
+        attribute++)
+      m.insert(pair<string, string>(elem->Value(), attribute->Value()));
+
+  elem = father->FirstChildElement("usbamp_master",false);
+  if(elem != 0)
+    for(attribute = attribute.begin(elem.Get()); attribute != attribute.end();
+        attribute++)
+      m.insert(pair<string, string>(elem->Value(), attribute->Value()));
+
+  elem = father->FirstChildElement("common_ground",false);
+  if(elem != 0)
+    for(elem = elem->FirstChildElement("gnd",false); elem != elem.end();
+        elem = elem->NextSiblingElement("gnd",false))
+    {
+      attribute = attribute.begin(elem.Get());
+      string s1(elem->Value() +"_" + attribute->Name() + "_" +  attribute->Value());
+      string s2((++attribute)->Value());
+      m.insert(pair<string, string>(s1, s2));
+    }
+
+  elem = father->FirstChildElement("common_reference",false);
+  if(elem != 0)
+    for(elem = elem->FirstChildElement("cr",false); elem != elem.end();
+        elem = elem->NextSiblingElement("cr",false))
+    {
+      attribute = attribute.begin(elem.Get());
+      string s1(elem->Value() +"_" + attribute->Name() + "_" +  attribute->Value());
+      string s2((++attribute)->Value());
+      m.insert(pair<string, string>(s1, s2));
+    }
+}
+
+//---------------------------------------------------------------------------------------
+
+void parseChannelSettings(ticpp::Iterator<ticpp::Element>const &father,
+                           map<string, string> &m)
+{
+  ticpp::Iterator< ticpp::Attribute > attribute;
+  ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement("selection",true));
+  if(elem != 0)
+    if(elem != 0)
+      for(elem = elem->FirstChildElement("ch",false); elem != elem.end();
+          elem = elem->NextSiblingElement("ch",false))
+      {
+        attribute = attribute.begin(elem.Get());
+        string s1(elem->Value() +"_" + attribute->Name() + "_" +  attribute->Value());
+        string s2((++attribute)->Value());
+        m.insert(pair<string, string>(s1, s2));
+      }
+
+  elem = father->FirstChildElement("filter",false);
+  if(elem != 0)
+    for(elem = elem->FirstChildElement("ch",false); elem != elem.end();
+        elem = elem->NextSiblingElement("ch",false))
+    {
+      string s1;
+      vector< pair<string,string> > s2;
+      for(attribute = attribute.begin(elem.Get()); attribute != attribute.end();
+          attribute++)
+        if(attribute->Name() == "nr")
+          s1 = "filter_ch_" + attribute->Value() + s1 + "_";
+        else
+          s2.push_back(pair<string,string> (attribute->Name(), attribute->Value()) );
+      for(int n = 0; n < s2.size(); n++)
+        m.insert(pair<string, string>(s1 + s2[n].first, s2[n].second));
+    }
+
+  elem = father->FirstChildElement("notch",false);
+  if(elem != 0)
+    for(elem = elem->FirstChildElement("ch",false); elem != elem.end();
+        elem = elem->NextSiblingElement("ch",false))
+    {
+      string s1;
+      vector< pair<string,string> > s2;
+      for(attribute = attribute.begin(elem.Get()); attribute != attribute.end();
+          attribute++)
+        if(attribute->Name() == "nr")
+          s1 = "notch_ch_" + attribute->Value() + s1 + "_";
+        else
+          s2.push_back(pair<string,string> (attribute->Name(), attribute->Value()) );
+      for(int n = 0; n < s2.size(); n++)
+        m.insert(pair<string, string>(s1 + s2[n].first, s2[n].second));
+    }
+
+  elem = father->FirstChildElement("bipolar",false);
+  if(elem != 0)
+    for(elem = elem->FirstChildElement("ch",false); elem != elem.end();
+        elem = elem->NextSiblingElement("ch",false))
+    {
+      string s1;
+      vector< pair<string,string> > s2;
+      for(attribute = attribute.begin(elem.Get()); attribute != attribute.end();
+          attribute++)
+        if(attribute->Name() == "nr")
+          s1 = "bipolar_ch_" + attribute->Value() + s1 + "_";
+        else
+          s2.push_back(pair<string,string> (attribute->Name(), attribute->Value()) );
+      for(int n = 0; n < s2.size(); n++)
+        m.insert(pair<string, string>(s1 + s2[n].first, s2[n].second));
+    }
+
+  elem = father->FirstChildElement("driven_right_leg",false);
+  if(elem != 0)
+    for(elem = elem->FirstChildElement("ch",false); elem != elem.end();
+        elem = elem->NextSiblingElement("ch",false))
+    {
+      string s1;
+      vector< pair<string,string> > s2;
+      for(attribute = attribute.begin(elem.Get()); attribute != attribute.end();
+          attribute++)
+        if(attribute->Name() == "nr")
+          s1 = "drl_ch_" + attribute->Value() + s1 + "_";
+        else
+          s2.push_back(pair<string,string> (attribute->Name(), attribute->Value()) );
+      for(int n = 0; n < s2.size(); n++)
+        m.insert(pair<string, string>(s1, s2[n].second));
+    }
+}
+
+//---------------------------------------------------------------------------------------
+map<string,string> parseServerSettings(ticpp::Iterator<ticpp::Element>const &ss)
+{
+  map<string, string> m;
+  ticpp::Iterator<ticpp::Element> elem(ss->FirstChildElement("TCP_Port",true));
+  m.insert(pair<string, string>(elem->Value(), elem->GetText(false)));
+
+  elem = ss->FirstChildElement("UDP_Port", true);
+  m.insert(pair<string, string>(elem->Value(), elem->GetText(false)));
+
+  for(elem = ss->FirstChildElement(true) ; elem != elem.end(); elem++)
+  {
+    string tmp(elem->Value());
+    if(tmp == "TCP_Port" || tmp == "UDP_Port")
+      continue;
+    if(elem->GetText(false) != "")
+      m.insert(pair<string, string>(elem->Value(), elem->GetText(false)));
+
+    ticpp::Iterator< ticpp::Attribute > attribute;
+    for(attribute = attribute.begin(elem.Get()); attribute != attribute.end();
+        attribute++)
+      m.insert(pair<string, string>(attribute->Name(), attribute->Value()));
+  }
+  return(m);
+}
+
+//---------------------------------------------------------------------------------------
+
+
+map<string,string> parseSubject(ticpp::Iterator<ticpp::Element>const &subject)
+{
+  map<string, string> m;
+  ticpp::Iterator<ticpp::Element> elem(subject->FirstChildElement("id",true));
+  m.insert(pair<string, string>(elem->Value(), elem->GetText(false)));
+
+  elem = subject->FirstChildElement("name", true);
+  m.insert(pair<string, string>(elem->Value(), elem->GetText(false)));
+
+  elem = subject->FirstChildElement("birthday", true);
+  m.insert(pair<string, string>(elem->Value(), elem->GetText(false)));
+
+  elem = subject->FirstChildElement("sex", true);
+  m.insert(pair<string, string>(elem->Value(), elem->GetText(false)));
+
+  for(elem = subject->FirstChildElement(true) ; elem != elem.end(); elem++)
+  {
+    string tmp(elem->Value());
+    if(tmp == "id" || tmp == "name" || tmp == "birthday" || tmp == "sex")
+      continue;
+    if(elem->GetText(false) != "")
+      m.insert(pair<string, string>(elem->Value(), elem->GetText(false)));
+
+    ticpp::Iterator< ticpp::Attribute > attribute;
+    for(attribute = attribute.begin(elem.Get()); attribute != attribute.end();
+        attribute++)
+      m.insert(pair<string, string>(attribute->Name(), attribute->Value()));
+  }
+  return(m);
+}
+
+//---------------------------------------------------------------------------------------
+
+bool isNumber(const std::string& s)
+{
+  for (int i = 0; i < s.length(); i++) {
+    if (!isdigit(s[i]))
+      return false;
+  }
+
+  return true;
+}
+
+//---------------------------------------------------------------------------------------
+
+void checkHardwareAttributes(map<string,string>& m)
+{
+  map<string,string>::iterator it;
+  string error;
+  if( (it = m.find("name")) == m.end())
+  {
+    throw(ticpp::Exception("Error in <hardware> -- Device name not specified!"));
+  }
+  if(it->second.empty() || it->second == " ")
+  {
+    throw(ticpp::Exception("Error in <hardware> -- Device has to be named!"));
+  }
+
+  if( (it = m.find("dev_nr")) == m.end())
+  {
+    error = "Error in <hardware> - " + m.find("name")->second + " -- Device nr. not specified!";
+    throw(ticpp::Exception(error));
+  }
+  if(it->second.empty() || !isNumber(it->second))
+  {
+    error = "Error in <hardware> - " + m.find("name")->second + " -- Device nr. not an integer!";
+    throw(ticpp::Exception(error));
+  }
+
+  if( (it = m.find("data_type")) == m.end())
+  {
+    error = "Error in <hardware> - " + m.find("name")->second + " Dev.Nr. " + m.find("dev_nr")->second;
+    error += " -- No data_type field given!";
+    throw(ticpp::Exception(error));
+  }
+  if(it->second.empty() || it->second == " ")
+  {
+    error = "Error in <hardware> - " + m.find("name")->second + " Dev.Nr. " + m.find("dev_nr")->second;
+    error += " -- data_type has to be specified!";
+    throw(ticpp::Exception(error));
+  }
+
+  if( (it = m.find("bits")) == m.end())
+  {
+    error = "Error in <hardware> - " + m.find("name")->second + " Dev.Nr. " + m.find("dev_nr")->second;
+    error += " -- Resolution field \"bits\" not given!";
+    throw(ticpp::Exception(error));
+  }
+  if(it->second.empty() || !isNumber(it->second))
+  {
+    error = "Error in <hardware> - " + m.find("name")->second + " Dev.Nr. " + m.find("dev_nr")->second;
+    error += " -- Resolution not an integer!";
+    throw(ticpp::Exception(error));
+  }
+}
+
+//---------------------------------------------------------------------------------------
+
+void checkIOAttributes(map<string,string>& m)
+{
+  map<string,string>::iterator it;
+  string error;
+  if( (it = m.find("channels")) == m.end())
+  {
+    throw(ticpp::Exception("Number of channels not specified!"));
+  }
+  if(it->second.empty() || !isNumber(it->second))
+  {
+    throw(ticpp::Exception("Number of channels not an integer"));
+  }
+
+  if( (it = m.find("di_in")) == m.end())
+  {
+    throw(ticpp::Exception("Number of digital input channels not specified!"));
+  }
+  if(it->second.empty() || !isNumber(it->second))
+  {
+    throw(ticpp::Exception("Number of digital input channels not an integer"));
+  }
+
+  if( (it = m.find("di_out")) == m.end())
+  {
+    throw(ticpp::Exception("Number of digital output channels not specified!"));
+  }
+  if(it->second.empty() || !isNumber(it->second))
+  {
+    throw(ticpp::Exception("Number of digital output channels not an integer"));
+  }
+
+  if( (it = m.find("an_out")) == m.end())
+  {
+    throw(ticpp::Exception("Number of analog output channels not specified!"));
+  }
+  if(it->second.empty() || !isNumber(it->second))
+  {
+    throw(ticpp::Exception("Number of analog output channels not an integer"));
+  }
+}

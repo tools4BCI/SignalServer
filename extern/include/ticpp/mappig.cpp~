@@ -1,0 +1,64 @@
+subject:
+  (id, asd52)
+  (name, xyzasdfg)
+  (birthday, 31.12.1900)
+  (sex, m)
+   + (handedness, r)
+   + (medication, none)
+   + ...
+      --> (string, string)
+
+server_settings:
+  (TCP_Port, 9876)
+  (UDP_Port, 8765)
+  ... ??
+      --> (string, int) ??
+
+harwdare:  (n-times)
+  (name, g.usbamp)
+  (data_type, float)
+  (bits, 24)
+  (version, 1.4)
+  (serial, 2008.06.42)
+
+  (nr_channels, 17)
+  (dig_in, 2)
+  (dig_out ,2)
+  (an_out, 0)
+
+  (mode, master)
+
+  global_settings:
+
+    (fs, 512)
+    (filter_type, butterworth)
+    (filter_order, 6)
+    (filter_f_low, 0.5)
+    (filter_f_high, 100)
+    (notch_center, 50)
+
+    (buffersize, 1)
+
+     + (operation_mode, master)
+     + gnd:
+        (a, on)
+        (b, on)
+        (c, on)
+        (d, on)
+     + comref:
+        (a, on)
+        (b, on)
+        (c, on)
+        (d, on)
+
+    + channel_settings:
+      selection:
+        (1, eeg)
+        (2, eeg)
+         ...
+      filter:
+        (1, ???)
+        (2, ???)
+         ...
+      notch:
+        (1, 50)
