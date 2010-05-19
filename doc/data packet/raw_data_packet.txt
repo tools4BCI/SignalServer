@@ -1,0 +1,64 @@
+RAW data packet:
+==================
+
+Included signal types:
+* EEG
+* EMG
+* EOG
+* ECG
+* HR (heart rate)
+* BP (blood pressure)
+
+* Buttons   (binary ... on/off)
+* Joystick (x and y values ... raw)
+* Sensors  (raw values)
+
+* Events
+
+* User defined signals (I - IV)
+* Undefined signal type (I - IV)
+
+--> Signals in predefined order:
+EEG   |   EMG   |   EOG   |   ECG   |   HR    |   BP    |   Buttons   |   Joystick    |   Sensors   |   Events
+
+
+32 bit flags:
+°°°°°°°°°°°°°°°
+01  EEG (0x0001)
+02  EMG (0x0002)
+03  EOG (0x0004)
+04  ECG (0x0008)
+05  HR  (0x0010)
+06  BP  (0x0020)
+07  Buttons  (0x0040)
+08  Joystick (0x0080)
+09  Sensors  (0x0100)
+10  Events   (0x0200)
+11
+12
+13
+14
+15
+16
+17
+18  User Defined I    (0x020000)
+19  User Defined II   (0x040000)
+20  User Defined III  (0x080000)
+21  User Defined IV   (0x100000)
+22  UNDEFINED         (0x200000)
+23
+24
+25
+26
+27  RESERVED: 6 bits for Packet Version
+28  RESERVED: 6 bits for Packet Version
+29  RESERVED: 6 bits for Packet Version
+30  RESERVED: 6 bits for Packet Version
+31  RESERVED: 6 bits for Packet Version
+32  RESERVED: 6 bits for Packet Version
+
+
+Packet header structure:
+
+uint32 Flags   |    uint64 SampleNr    |   uint64 PacketNr   |   uint16[NrOfSignalTypes] NrOfValues    |   uint16[NrOfSignalTypes] NrOfBlocks
+  (... NrOfSignalTypes can be determined through flags)
