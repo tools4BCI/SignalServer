@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/TOBI_SignalServer_v2/!svn/ver/1/include/signalserver-client
+END
+ssclientimpl_base.h
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/TOBI_SignalServer_v2/!svn/ver/1/include/signalserver-client/ssclientimpl_base.h
+END
+ssclient.h
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/TOBI_SignalServer_v2/!svn/ver/1/include/signalserver-client/ssclient.h
+END
+ssclientimpl.h
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/TOBI_SignalServer_v2/!svn/ver/1/include/signalserver-client/ssclientimpl.h
+END
