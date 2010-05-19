@@ -1,3 +1,0 @@
-<map id="G" name="G">
-<area shape="rect" href="$class_ti_xml_string.html" title="{TiXmlString\n|+ npos\l&#45; rep_\l&#45; nullrep_\l|+ TiXmlString()\l+ TiXmlString()\l+ TiXmlString()\l+ TiXmlString()\l+ ~TiXmlString()\l+ operator=()\l+ operator=()\l+ operator+=()\l+ operator+=()\l+ operator+=()\l+ c_str()\l+ data()\l+ length()\l+ size()\l+ empty()\l+ capacity()\l+ at()\l+ operator[]()\l+ find()\l+ find()\l+ clear()\l+ reserve()\l+ assign()\l+ append()\l+ swap()\l&#45; init()\l&#45; set_size()\l&#45; start()\l&#45; finish()\l&#45; init()\l&#45; quit()\l}" alt="" coords="7,5,121,691"/>
-</map>

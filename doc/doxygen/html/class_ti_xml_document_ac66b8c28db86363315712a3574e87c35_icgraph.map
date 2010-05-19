@@ -1,6 +1,0 @@
-<map id="G" name="G">
-<area shape="rect" href="$class_ti_xml_document.html#a789ad2f06f93d52bdb5570b2f3670289" title="TiXmlDocument::Parse" alt="" coords="264,5,419,35"/>
-<area shape="rect" href="$class_ti_xml_document.html#a9f5e84335708fde98400230f9f12659c" title="Create an empty document, that has no name." alt="" coords="235,59,448,88"/>
-<area shape="rect" href="$class_ti_xml_document.html#a41f6fe7200864d1dca663d230caf8db6" title="TiXmlDocument::LoadFile" alt="" coords="496,5,667,35"/>
-<area shape="rect" href="$class_ti_xml_document.html#ac9e8f09b23454d953b32d1b65cd1409e" title="TiXmlDocument::Clone" alt="" coords="504,59,659,88"/>
-</map>

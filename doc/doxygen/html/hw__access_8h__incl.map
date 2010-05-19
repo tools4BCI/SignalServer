@@ -1,7 +1,0 @@
-<map id="G" name="G">
-<area shape="rect" href="$data__packet_8h.html" title="The DataPacket stores all sampled data from every connected device." alt="" coords="468,160,572,189"/>
-<area shape="rect" href="$hw__thread_8h.html" title="hw_thread is a base class for all hardware objects ( &#45;&#45; bad naming &#45;&#45;&gt; object..." alt="" coords="1087,160,1177,189"/>
-<area shape="rect" href="$sine__generator_8h.html" title="sine_generator is a dummy hardware device for simulation purposes." alt="" coords="1312,83,1429,112"/>
-<area shape="rect" href="$raw__mem_8h.html" title="raw_mem holds memory regions containing a raw representation of a datapacket" alt="" coords="359,237,447,267"/>
-<area shape="rect" href="$sample__block_8h.html" title="sample_block is designed to store and sort samples directly acquired from hardware..." alt="" coords="895,237,1007,267"/>
-</map>

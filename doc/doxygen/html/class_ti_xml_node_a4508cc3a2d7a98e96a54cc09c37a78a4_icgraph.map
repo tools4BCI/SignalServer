@@ -1,6 +1,0 @@
-<map id="G" name="G">
-<area shape="rect" href="$class_ti_xml_node.html#a274db3292218202805c093f66a964cb5" title="TiXmlNode::InsertAfterChild" alt="" coords="184,5,365,35"/>
-<area shape="rect" href="$class_ti_xml_node.html#a71e54e393336382bc9875f64aab5cb15" title="TiXmlNode::InsertBeforeChild" alt="" coords="179,59,371,88"/>
-<area shape="rect" href="$class_ti_xml_node.html#af287a913ce46d8dbf7ef24fec69bbaf0" title="TiXmlNode::InsertEndChild" alt="" coords="187,112,363,141"/>
-<area shape="rect" href="$class_ti_xml_node.html#a543208c2c801c84a213529541e904b9f" title="TiXmlNode::ReplaceChild" alt="" coords="191,165,359,195"/>
-</map>

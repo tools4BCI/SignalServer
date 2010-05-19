@@ -1,6 +1,0 @@
-<map id="G" name="G">
-<area shape="rect" href="$class_constants.html#ac68da3efa9f4431daedf508f0577049e" title="Checks, if the given string represents the g.tec g.Mobilab+." alt="" coords="271,5,415,35"/>
-<area shape="rect" href="$class_constants.html#a2a0486841708b429d3a9ba6292702dd2" title="Checks, if the given string represents the Sine Generator." alt="" coords="269,59,416,88"/>
-<area shape="rect" href="$class_constants.html#a9783854161bd324f9aa14f66d460b7a5" title="Checks, if the given string represents the g.tec g.USBamp." alt="" coords="268,112,417,141"/>
-<area shape="rect" href="$class_h_w_access.html#a13743506121dae31b4b8622ed8996897" title="Constructor." alt="" coords="467,59,624,88"/>
-</map>
