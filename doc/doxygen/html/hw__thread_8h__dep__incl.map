@@ -1,0 +1,6 @@
+<map id="G" name="G">
+<area shape="rect" href="$hw__access_8h.html" title="hw_access manages all objects representing different data acquisition devices." alt="" coords="5,160,360,189"/>
+<area shape="rect" href="$sine__generator_8h.html" title="sine_generator is a dummy hardware device for simulation purposes." alt="" coords="108,83,481,112"/>
+<area shape="rect" href="$usbamp_8h.html" title="usbamp.h is designed to gather access to the g.USBamp for the TOBI siganlserver." alt="" coords="505,83,841,112"/>
+<area shape="rect" href="$test__hardware_8cpp.html" title="File including Main() &#45;&#45; only for hardware testing purposes." alt="" coords="19,237,347,267"/>
+</map>

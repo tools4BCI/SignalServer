@@ -1,0 +1,283 @@
+\hypertarget{class_data_packet}{
+\subsection{DataPacket Class Reference}
+\label{class_data_packet}\index{DataPacket@{DataPacket}}
+}
+
+
+A Class to manage the \hyperlink{class_data_packet}{DataPacket} to be distributed over network.  
+
+
+{\ttfamily \#include $<$data\_\-packet.h$>$}\subsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_data_packet_a2790f5d5d053c3cd4e15792c6a57bed9}{
+\hyperlink{class_data_packet_a2790f5d5d053c3cd4e15792c6a57bed9}{DataPacket} ()}
+\label{class_data_packet_a2790f5d5d053c3cd4e15792c6a57bed9}
+
+\begin{DoxyCompactList}\small\item\em Default constructor -\/-\/ building an empty \hyperlink{class_data_packet}{DataPacket}. \item\end{DoxyCompactList}\item 
+\hyperlink{class_data_packet_abcb0afec0bf5e6c21175f25d7911b1d7}{DataPacket} (void $\ast$mem)
+\begin{DoxyCompactList}\small\item\em Constructor to (re)build a \hyperlink{class_data_packet}{DataPacket} from raw memory. \item\end{DoxyCompactList}\item 
+virtual \hyperlink{class_data_packet_a6865aaea072c8af4caf7e4cb6baa0155}{$\sim$DataPacket} ()
+\begin{DoxyCompactList}\small\item\em Destructor. \item\end{DoxyCompactList}\item 
+\hyperlink{class_data_packet_a0419e5f0113aad80d8c92f59bf990c26}{DataPacket} (const \hyperlink{class_data_packet}{DataPacket} \&src)
+\begin{DoxyCompactList}\small\item\em Copy constructor -\/-\/ does NOT copy the raw memory representation. \item\end{DoxyCompactList}\item 
+\hypertarget{class_data_packet_a36f3ab573fdeff022c6a5742795fc552}{
+void \hyperlink{class_data_packet_a36f3ab573fdeff022c6a5742795fc552}{reset} ()}
+\label{class_data_packet_a36f3ab573fdeff022c6a5742795fc552}
+
+\begin{DoxyCompactList}\small\item\em Resets the whole \hyperlink{class_data_packet}{DataPacket} (samples are deleted). \item\end{DoxyCompactList}\item 
+\hypertarget{class_data_packet_ada10e1ebb83a49faeca732765793cfa2}{
+void \hyperlink{class_data_packet_ada10e1ebb83a49faeca732765793cfa2}{incSampleNr} ()}
+\label{class_data_packet_ada10e1ebb83a49faeca732765793cfa2}
+
+\begin{DoxyCompactList}\small\item\em Increase the static sample number by one. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_data_packet_ab83c192471bb4d70cd21653adcc7da7f}{insertDataBlock} (vector$<$ double $>$ v, uint32\_\-t signal\_\-flag, uint16\_\-t blocks)
+\begin{DoxyCompactList}\small\item\em Insert data (only one signal type) from a hardware device into the \hyperlink{class_data_packet}{DataPacket} (will be automatically placed correct). \item\end{DoxyCompactList}\item 
+\hypertarget{class_data_packet_a1b2a26a56f1a1a414fdbf20c6b8aff8f}{
+void \hyperlink{class_data_packet_a1b2a26a56f1a1a414fdbf20c6b8aff8f}{setPacketNr} (uint64\_\-t)}
+\label{class_data_packet_a1b2a26a56f1a1a414fdbf20c6b8aff8f}
+
+\begin{DoxyCompactList}\small\item\em Set the packet number (can differ from the samplenumber -\/-\/ e.g. if sending with different rates). \item\end{DoxyCompactList}\item 
+bool \hyperlink{class_data_packet_a8fed63bfc2f0903b49d88805368d2161}{hasFlag} (uint32\_\-t f)
+\begin{DoxyCompactList}\small\item\em Check, if a flag is already set. \item\end{DoxyCompactList}\item 
+uint8\_\-t \hyperlink{class_data_packet_ad86138bd32d1dd9b44fda5b830b6cd6a}{getNrOfSignalTypes} ()
+\begin{DoxyCompactList}\small\item\em Get the number of signal types stored in the \hyperlink{class_data_packet}{DataPacket}. \item\end{DoxyCompactList}\item 
+uint32\_\-t \hyperlink{class_data_packet_ab4bd49f2f36a2a15bc37235f388c33d1}{getFlags} ()
+\begin{DoxyCompactList}\small\item\em Get the flags (including packetversion) of the \hyperlink{class_data_packet}{DataPacket}. \item\end{DoxyCompactList}\item 
+uint64\_\-t \hyperlink{class_data_packet_a74e9c0a441f1bb05d1134cc1a10f2cb6}{getSampleNr} ()
+\begin{DoxyCompactList}\small\item\em Get the sample number of the \hyperlink{class_data_packet}{DataPacket}. \item\end{DoxyCompactList}\item 
+vector$<$ uint16\_\-t $>$ \hyperlink{class_data_packet_a73d518fa486ca53a334a061187063be7}{getNrOfBlocks} ()
+\begin{DoxyCompactList}\small\item\em Get a vector containing the blocksizes for every signal type. \item\end{DoxyCompactList}\item 
+vector$<$ uint16\_\-t $>$ \hyperlink{class_data_packet_a42a952fa11cc5247ce65e8a124eddcac}{getNrOfValues} ()
+\begin{DoxyCompactList}\small\item\em Get a vector containing the number of values (NOT channels!) for every signal type. \item\end{DoxyCompactList}\item 
+vector$<$ double $>$ \hyperlink{class_data_packet_ae12c2a5fae637439431ddd66376ff797}{getData} ()
+\begin{DoxyCompactList}\small\item\em Get all samples stored in the \hyperlink{class_data_packet}{DataPacket} as a vector. \item\end{DoxyCompactList}\item 
+vector$<$ double $>$ \hyperlink{class_data_packet_a4342e5412615ed2d09990b557bdb700a}{getSingleDataBlock} (uint32\_\-t flag)
+\begin{DoxyCompactList}\small\item\em Get a vector containing all samples for a specific signal type. \item\end{DoxyCompactList}\item 
+void $\ast$ \hyperlink{class_data_packet_a6d05054482f9844487d5253a1b903a1e}{getRaw} ()
+\begin{DoxyCompactList}\small\item\em Get a pointer to a memory region, containing the raw representation of the \hyperlink{class_data_packet}{DataPacket}. \item\end{DoxyCompactList}\item 
+uint16\_\-t \hyperlink{class_data_packet_a20f62ad94659c0f7f2faf143084764e5}{getRawMemorySize} ()
+\begin{DoxyCompactList}\small\item\em Get the size (in bytes) of the raw memory region holding the raw \hyperlink{class_data_packet}{DataPacket}. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsubsection{Detailed Description}
+A Class to manage the \hyperlink{class_data_packet}{DataPacket} to be distributed over network. The \hyperlink{class_data_packet}{DataPacket} class provides methods inserting Samples of different, predefined signal types (see \hyperlink{defines_8h}{defines.h}) into a packet. Inserted data is identified through flags. The datapacket stores the acquired samples in ascending order by their signal types. (EEG first, then EMG, EOG, ...). It provides methods to get stored data wether again as a vector or in a raw representation. For raw representations, it holds raw memory objects, storing the respective representation.
+
+\begin{Desc}
+\item[\hyperlink{todo__todo000001}{Todo}]Implementing the possibility to built a raw \hyperlink{class_data_packet}{DataPacket} representation with freely selectable content. \end{Desc}
+
+
+\subsubsection{Constructor \& Destructor Documentation}
+\hypertarget{class_data_packet_abcb0afec0bf5e6c21175f25d7911b1d7}{
+\index{DataPacket@{DataPacket}!DataPacket@{DataPacket}}
+\index{DataPacket@{DataPacket}!DataPacket@{DataPacket}}
+\paragraph[{DataPacket}]{\setlength{\rightskip}{0pt plus 5cm}DataPacket::DataPacket (void $\ast$ {\em mem})}\hfill}
+\label{class_data_packet_abcb0afec0bf5e6c21175f25d7911b1d7}
+
+
+Constructor to (re)build a \hyperlink{class_data_packet}{DataPacket} from raw memory. 
+\begin{DoxyParams}{Parameters}
+\item[\mbox{$\leftarrow$} {\em mem}]Raw memory containing the raw representation of a \hyperlink{class_data_packet}{DataPacket}. \end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+\item[{\em std::invalid\_\-argument}]if packet version missmatch \end{DoxyExceptions}
+\begin{Desc}
+\item[\hyperlink{todo__todo000002}{Todo}]Implementing safety checks, as far as possible.\end{Desc}
+This method (re)builds a \hyperlink{class_data_packet}{DataPacket} object from a raw memory region, containing the raw representation of a \hyperlink{class_data_packet}{DataPacket}. \hypertarget{class_data_packet_a6865aaea072c8af4caf7e4cb6baa0155}{
+\index{DataPacket@{DataPacket}!$\sim$DataPacket@{$\sim$DataPacket}}
+\index{$\sim$DataPacket@{$\sim$DataPacket}!DataPacket@{DataPacket}}
+\paragraph[{$\sim$DataPacket}]{\setlength{\rightskip}{0pt plus 5cm}virtual DataPacket::$\sim$DataPacket ()\hspace{0.3cm}{\ttfamily  \mbox{[}inline, virtual\mbox{]}}}\hfill}
+\label{class_data_packet_a6865aaea072c8af4caf7e4cb6baa0155}
+
+
+Destructor. \begin{Desc}
+\item[\hyperlink{todo__todo000003}{Todo}]Check for memory leaks! (can occur, if raw\_\-mem objects are built)\end{Desc}
+Deletes all dynamically built raw\_\-mem objects stored in raw\_\-map. \hypertarget{class_data_packet_a0419e5f0113aad80d8c92f59bf990c26}{
+\index{DataPacket@{DataPacket}!DataPacket@{DataPacket}}
+\index{DataPacket@{DataPacket}!DataPacket@{DataPacket}}
+\paragraph[{DataPacket}]{\setlength{\rightskip}{0pt plus 5cm}DataPacket::DataPacket (const {\bf DataPacket} \& {\em src})\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}\hfill}
+\label{class_data_packet_a0419e5f0113aad80d8c92f59bf990c26}
+
+
+Copy constructor -\/-\/ does NOT copy the raw memory representation. \begin{Desc}
+\item[\hyperlink{todo__todo000004}{Todo}]Check for memory leaks! (can occur, if raw\_\-mem objects are built) \end{Desc}
+
+
+\subsubsection{Member Function Documentation}
+\hypertarget{class_data_packet_ae12c2a5fae637439431ddd66376ff797}{
+\index{DataPacket@{DataPacket}!getData@{getData}}
+\index{getData@{getData}!DataPacket@{DataPacket}}
+\paragraph[{getData}]{\setlength{\rightskip}{0pt plus 5cm}vector$<$ double $>$ DataPacket::getData ()}\hfill}
+\label{class_data_packet_ae12c2a5fae637439431ddd66376ff797}
+
+
+Get all samples stored in the \hyperlink{class_data_packet}{DataPacket} as a vector. \begin{DoxyReturn}{Returns}
+A vector containing the samples stored in the \hyperlink{class_data_packet}{DataPacket}. 
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+\item[{\em std::logic\_\-error}]if flags are not OK. \end{DoxyExceptions}
+\hypertarget{class_data_packet_ab4bd49f2f36a2a15bc37235f388c33d1}{
+\index{DataPacket@{DataPacket}!getFlags@{getFlags}}
+\index{getFlags@{getFlags}!DataPacket@{DataPacket}}
+\paragraph[{getFlags}]{\setlength{\rightskip}{0pt plus 5cm}uint32\_\-t DataPacket::getFlags ()}\hfill}
+\label{class_data_packet_ab4bd49f2f36a2a15bc37235f388c33d1}
+
+
+Get the flags (including packetversion) of the \hyperlink{class_data_packet}{DataPacket}. \begin{DoxyReturn}{Returns}
+flags 
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+\item[{\em std::logic\_\-error}]if flags are not OK. \end{DoxyExceptions}
+\hypertarget{class_data_packet_a73d518fa486ca53a334a061187063be7}{
+\index{DataPacket@{DataPacket}!getNrOfBlocks@{getNrOfBlocks}}
+\index{getNrOfBlocks@{getNrOfBlocks}!DataPacket@{DataPacket}}
+\paragraph[{getNrOfBlocks}]{\setlength{\rightskip}{0pt plus 5cm}vector$<$ uint16\_\-t $>$ DataPacket::getNrOfBlocks ()}\hfill}
+\label{class_data_packet_a73d518fa486ca53a334a061187063be7}
+
+
+Get a vector containing the blocksizes for every signal type. \begin{DoxyReturn}{Returns}
+A vector containing the blocksizes for every signal type. 
+\end{DoxyReturn}
+\hypertarget{class_data_packet_ad86138bd32d1dd9b44fda5b830b6cd6a}{
+\index{DataPacket@{DataPacket}!getNrOfSignalTypes@{getNrOfSignalTypes}}
+\index{getNrOfSignalTypes@{getNrOfSignalTypes}!DataPacket@{DataPacket}}
+\paragraph[{getNrOfSignalTypes}]{\setlength{\rightskip}{0pt plus 5cm}uint8\_\-t DataPacket::getNrOfSignalTypes ()}\hfill}
+\label{class_data_packet_ad86138bd32d1dd9b44fda5b830b6cd6a}
+
+
+Get the number of signal types stored in the \hyperlink{class_data_packet}{DataPacket}. \begin{DoxyReturn}{Returns}
+The amount of signal types stored in the \hyperlink{class_data_packet}{DataPacket}. 
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+\item[{\em std::logic\_\-error}]if flags are not OK. \end{DoxyExceptions}
+\hypertarget{class_data_packet_a42a952fa11cc5247ce65e8a124eddcac}{
+\index{DataPacket@{DataPacket}!getNrOfValues@{getNrOfValues}}
+\index{getNrOfValues@{getNrOfValues}!DataPacket@{DataPacket}}
+\paragraph[{getNrOfValues}]{\setlength{\rightskip}{0pt plus 5cm}vector$<$ uint16\_\-t $>$ DataPacket::getNrOfValues ()}\hfill}
+\label{class_data_packet_a42a952fa11cc5247ce65e8a124eddcac}
+
+
+Get a vector containing the number of values (NOT channels!) for every signal type. \begin{DoxyReturn}{Returns}
+A vector containing the number of values (NOT channels!)for every signal type. 
+\end{DoxyReturn}
+\hypertarget{class_data_packet_a6d05054482f9844487d5253a1b903a1e}{
+\index{DataPacket@{DataPacket}!getRaw@{getRaw}}
+\index{getRaw@{getRaw}!DataPacket@{DataPacket}}
+\paragraph[{getRaw}]{\setlength{\rightskip}{0pt plus 5cm}void $\ast$ DataPacket::getRaw ()}\hfill}
+\label{class_data_packet_a6d05054482f9844487d5253a1b903a1e}
+
+
+Get a pointer to a memory region, containing the raw representation of the \hyperlink{class_data_packet}{DataPacket}. \begin{DoxyReturn}{Returns}
+A pointer pointing to the beginning of the memory region.
+\end{DoxyReturn}
+Calling this function the first time will also build the raw representation of the DataPacket! \begin{Desc}
+\item[\hyperlink{todo__todo000006}{Todo}]Inserting data after building a raw representation, won't change the raw memory and will deliver a pointer pointing to \char`\"{}the old\char`\"{} \hyperlink{class_data_packet}{DataPacket}. \end{Desc}
+\hypertarget{class_data_packet_a20f62ad94659c0f7f2faf143084764e5}{
+\index{DataPacket@{DataPacket}!getRawMemorySize@{getRawMemorySize}}
+\index{getRawMemorySize@{getRawMemorySize}!DataPacket@{DataPacket}}
+\paragraph[{getRawMemorySize}]{\setlength{\rightskip}{0pt plus 5cm}uint16\_\-t DataPacket::getRawMemorySize ()}\hfill}
+\label{class_data_packet_a20f62ad94659c0f7f2faf143084764e5}
+
+
+Get the size (in bytes) of the raw memory region holding the raw \hyperlink{class_data_packet}{DataPacket}. \begin{DoxyReturn}{Returns}
+The size of the raw memory region. 
+\end{DoxyReturn}
+\hypertarget{class_data_packet_a74e9c0a441f1bb05d1134cc1a10f2cb6}{
+\index{DataPacket@{DataPacket}!getSampleNr@{getSampleNr}}
+\index{getSampleNr@{getSampleNr}!DataPacket@{DataPacket}}
+\paragraph[{getSampleNr}]{\setlength{\rightskip}{0pt plus 5cm}uint64\_\-t DataPacket::getSampleNr ()}\hfill}
+\label{class_data_packet_a74e9c0a441f1bb05d1134cc1a10f2cb6}
+
+
+Get the sample number of the \hyperlink{class_data_packet}{DataPacket}. \begin{DoxyReturn}{Returns}
+sample number 
+\end{DoxyReturn}
+\hypertarget{class_data_packet_a4342e5412615ed2d09990b557bdb700a}{
+\index{DataPacket@{DataPacket}!getSingleDataBlock@{getSingleDataBlock}}
+\index{getSingleDataBlock@{getSingleDataBlock}!DataPacket@{DataPacket}}
+\paragraph[{getSingleDataBlock}]{\setlength{\rightskip}{0pt plus 5cm}vector$<$ double $>$ DataPacket::getSingleDataBlock (uint32\_\-t {\em flag})}\hfill}
+\label{class_data_packet_a4342e5412615ed2d09990b557bdb700a}
+
+
+Get a vector containing all samples for a specific signal type. 
+\begin{DoxyParams}{Parameters}
+\item[\mbox{$\leftarrow$} {\em flag}]\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A vector containing all samples for a specific signal type. 
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+\item[{\em std::logic\_\-error}]if flags are not OK. \item[{\em std::invalid\_\-argument}]if flag is not set in the \hyperlink{class_data_packet}{DataPacket} \end{DoxyExceptions}
+
+
+Here is the call graph for this function:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=173pt]{class_data_packet_a4342e5412615ed2d09990b557bdb700a_cgraph}
+\end{center}
+\end{figure}
+\hypertarget{class_data_packet_a8fed63bfc2f0903b49d88805368d2161}{
+\index{DataPacket@{DataPacket}!hasFlag@{hasFlag}}
+\index{hasFlag@{hasFlag}!DataPacket@{DataPacket}}
+\paragraph[{hasFlag}]{\setlength{\rightskip}{0pt plus 5cm}bool DataPacket::hasFlag (uint32\_\-t {\em f})}\hfill}
+\label{class_data_packet_a8fed63bfc2f0903b49d88805368d2161}
+
+
+Check, if a flag is already set. \begin{DoxyReturn}{Returns}
+bool 
+\end{DoxyReturn}
+
+
+Here is the caller graph for this function:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=258pt]{class_data_packet_a8fed63bfc2f0903b49d88805368d2161_icgraph}
+\end{center}
+\end{figure}
+\hypertarget{class_data_packet_ab83c192471bb4d70cd21653adcc7da7f}{
+\index{DataPacket@{DataPacket}!insertDataBlock@{insertDataBlock}}
+\index{insertDataBlock@{insertDataBlock}!DataPacket@{DataPacket}}
+\paragraph[{insertDataBlock}]{\setlength{\rightskip}{0pt plus 5cm}void DataPacket::insertDataBlock (vector$<$ double $>$ {\em v}, \/  uint32\_\-t {\em signal\_\-flag}, \/  uint16\_\-t {\em blocks})}\hfill}
+\label{class_data_packet_ab83c192471bb4d70cd21653adcc7da7f}
+
+
+Insert data (only one signal type) from a hardware device into the \hyperlink{class_data_packet}{DataPacket} (will be automatically placed correct). 
+\begin{DoxyParams}{Parameters}
+\item[\mbox{$\leftarrow$} {\em v}]Vector containing homogenous samples (only one signal type). \item[\mbox{$\leftarrow$} {\em signal\_\-flag}]The flag specifiying the inserted signal. \item[\mbox{$\leftarrow$} {\em blocks}]The number of blocks, the vector contains. \end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+\item[{\em std::logic\_\-error}]if flags in the \hyperlink{class_data_packet}{DataPacket} on not OK, if flag already defined or if more than on flag passed\end{DoxyExceptions}
+This mehtod inserts a homogenous sample vector (consiting of only ONE single signal type) into the \hyperlink{class_data_packet}{DataPacket}. The vector is automatically correctly placed in the Packet, respective to its signal type. \begin{DoxyWarning}{Warning}
+Up to the \hyperlink{class_data_packet}{DataPacket} can only store one signal type from only one device. If two devices are delivering the same signal type, an exception is thrown. (Could be avoided, if the second device delivers a user-\/type signal.) 
+\end{DoxyWarning}
+\begin{Desc}
+\item[\hyperlink{todo__todo000005}{Todo}]If needed: Implementing the possibility to store the same signal type comming from different devices. \end{Desc}
+
+
+Here is the call graph for this function:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=165pt]{class_data_packet_ab83c192471bb4d70cd21653adcc7da7f_cgraph}
+\end{center}
+\end{figure}
+
+
+Here is the caller graph for this function:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=178pt]{class_data_packet_ab83c192471bb4d70cd21653adcc7da7f_icgraph}
+\end{center}
+\end{figure}
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+/home/breidi/Dropbox/signalserver/hardware/\hyperlink{data__packet_8h}{data\_\-packet.h}\item 
+/home/breidi/Dropbox/signalserver/hardware/data\_\-packet.cpp\end{DoxyCompactItemize}

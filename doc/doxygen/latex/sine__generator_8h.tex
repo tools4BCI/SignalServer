@@ -1,0 +1,40 @@
+\hypertarget{sine__generator_8h}{
+\subsection{/home/breidi/Dropbox/signalserver/hardware/sine\_\-generator.h File Reference}
+\label{sine__generator_8h}\index{/home/breidi/Dropbox/signalserver/hardware/sine\_\-generator.h@{/home/breidi/Dropbox/signalserver/hardware/sine\_\-generator.h}}
+}
+
+
+sine\_\-generator is a dummy hardware device for simulation purposes.  
+{\ttfamily \#include $<$vector$>$}\par
+{\ttfamily \#include $<$map$>$}\par
+{\ttfamily \#include $<$math.h$>$}\par
+{\ttfamily \#include $<$boost/asio.hpp$>$}\par
+{\ttfamily \#include $<$boost/bind.hpp$>$}\par
+{\ttfamily \#include $<$boost/lexical\_\-cast.hpp$>$}\par
+{\ttfamily \#include $<$boost/thread/condition.hpp$>$}\par
+{\ttfamily \#include $<$boost/thread/pthread/shared\_\-mutex.hpp$>$}\par
+{\ttfamily \#include $<$boost/date\_\-time/posix\_\-time/posix\_\-time.hpp$>$}\par
+{\ttfamily \#include \char`\"{}hw\_\-thread.h\char`\"{}}\par
+Include dependency graph for sine\_\-generator.h:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=420pt]{sine__generator_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=162pt]{sine__generator_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \hyperlink{class_sine_generator}{SineGenerator}
+\begin{DoxyCompactList}\small\item\em A dummy hardware device for simulation and testing purposes. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsubsection{Detailed Description}
+sine\_\-generator is a dummy hardware device for simulation purposes. sine\_\-generator can be used the same way like a normal data acquisition device with reduced configuration possibilities. It produces a sine with a frequency of 1Hz on a selectable amount of channels in a buffered or unbuffered way. Generating a sine on multiple channels, an incrementing, channel dependent phase value is added to the sine to facilitate distinction. The sine generator can be operated in synchronous an asynchronous manner. It uses boost::asio and boost::thread to ensure proper timing. 

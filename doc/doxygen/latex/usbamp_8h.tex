@@ -1,0 +1,36 @@
+\hypertarget{usbamp_8h}{
+\subsection{/home/breidi/Dropbox/signalserver/hardware/usbamp.h File Reference}
+\label{usbamp_8h}\index{/home/breidi/Dropbox/signalserver/hardware/usbamp.h@{/home/breidi/Dropbox/signalserver/hardware/usbamp.h}}
+}
+
+
+\hyperlink{usbamp_8h}{usbamp.h} is designed to gather access to the g.USBamp for the TOBI siganlserver.  
+{\ttfamily \#include $<$stdint.h$>$}\par
+{\ttfamily \#include $<$vector$>$}\par
+{\ttfamily \#include $<$math.h$>$}\par
+{\ttfamily \#include $<$boost/asio.hpp$>$}\par
+{\ttfamily \#include $<$boost/bind.hpp$>$}\par
+{\ttfamily \#include $<$boost/thread/condition.hpp$>$}\par
+{\ttfamily \#include $<$boost/thread/pthread/shared\_\-mutex.hpp$>$}\par
+{\ttfamily \#include $<$boost/date\_\-time/posix\_\-time/posix\_\-time.hpp$>$}\par
+{\ttfamily \#include $<$windows.h$>$}\par
+{\ttfamily \#include \char`\"{}gUSBamp.h\char`\"{}}\par
+{\ttfamily \#include \char`\"{}hw\_\-thread.h\char`\"{}}\par
+Include dependency graph for usbamp.h:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=420pt]{usbamp_8h__incl}
+\end{center}
+\end{figure}
+\subsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \hyperlink{class_u_s_bamp}{USBamp}
+\begin{DoxyCompactList}\small\item\em A class to wrap the API provided by g.tec for the g.USBamp and enable synchronous and asynchronous data access. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsubsection{Detailed Description}
+\hyperlink{usbamp_8h}{usbamp.h} is designed to gather access to the g.USBamp for the TOBI siganlserver. \begin{Desc}
+\item[\hyperlink{todo__todo000013}{Todo}]Check, if asynchronous access to the g.USBamp is possible without reading and writing the same memory at the same time.\end{Desc}
+This file only compiles under Microsoft Windows with the Visual Studio Compiler. 

@@ -1,0 +1,5 @@
+<map id="G" name="G">
+<area shape="rect" href="$class_data_packet.html#a4342e5412615ed2d09990b557bdb700a" title="Get a vector containing all samples for a specific signal type." alt="" coords="197,5,408,35"/>
+<area shape="rect" href="$class_data_packet.html#ab83c192471bb4d70cd21653adcc7da7f" title="Insert data (only one signal type) from a hardware device into the DataPacket (will..." alt="" coords="209,59,396,88"/>
+<area shape="rect" href="$class_h_w_access.html#a99d0f4c10e9def70d1189fc6c2100a20" title="Retreive a DataPacket containing data from attached hardware synchronous with the..." alt="" coords="456,59,635,88"/>
+</map>

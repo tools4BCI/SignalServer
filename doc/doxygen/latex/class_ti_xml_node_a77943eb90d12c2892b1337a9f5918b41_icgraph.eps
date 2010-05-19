@@ -1,0 +1,694 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%Creator: Graphviz version 2.20.2 (Wed Sep 16 11:12:11 UTC 2009)
+%%For: (breidi) Breitwieser Christian,,,
+%%Title: G
+%%Pages: (atend)
+%%BoundingBox: (atend)
+%%EndComments
+save
+%%BeginProlog
+/DotDict 200 dict def
+DotDict begin
+
+/setupLatin1 {
+mark
+/EncodingVector 256 array def
+ EncodingVector 0
+
+ISOLatin1Encoding 0 255 getinterval putinterval
+EncodingVector 45 /hyphen put
+
+% Set up ISO Latin 1 character encoding
+/starnetISO {
+        dup dup findfont dup length dict begin
+        { 1 index /FID ne { def }{ pop pop } ifelse
+        } forall
+        /Encoding EncodingVector def
+        currentdict end definefont
+} def
+/Times-Roman starnetISO def
+/Times-Italic starnetISO def
+/Times-Bold starnetISO def
+/Times-BoldItalic starnetISO def
+/Helvetica starnetISO def
+/Helvetica-Oblique starnetISO def
+/Helvetica-Bold starnetISO def
+/Helvetica-BoldOblique starnetISO def
+/Courier starnetISO def
+/Courier-Oblique starnetISO def
+/Courier-Bold starnetISO def
+/Courier-BoldOblique starnetISO def
+cleartomark
+} bind def
+
+%%BeginResource: procset graphviz 0 0
+/coord-font-family /Times-Roman def
+/default-font-family /Times-Roman def
+/coordfont coord-font-family findfont 8 scalefont def
+
+/InvScaleFactor 1.0 def
+/set_scale {
+       dup 1 exch div /InvScaleFactor exch def
+       scale
+} bind def
+
+% styles
+/solid { [] 0 setdash } bind def
+/dashed { [9 InvScaleFactor mul dup ] 0 setdash } bind def
+/dotted { [1 InvScaleFactor mul 6 InvScaleFactor mul] 0 setdash } bind def
+/invis {/fill {newpath} def /stroke {newpath} def /show {pop newpath} def} bind def
+/bold { 2 setlinewidth } bind def
+/filled { } bind def
+/unfilled { } bind def
+/rounded { } bind def
+/diagonals { } bind def
+
+% hooks for setting color 
+/nodecolor { sethsbcolor } bind def
+/edgecolor { sethsbcolor } bind def
+/graphcolor { sethsbcolor } bind def
+/nopcolor {pop pop pop} bind def
+
+/beginpage {	% i j npages
+	/npages exch def
+	/j exch def
+	/i exch def
+	/str 10 string def
+	npages 1 gt {
+		gsave
+			coordfont setfont
+			0 0 moveto
+			(\() show i str cvs show (,) show j str cvs show (\)) show
+		grestore
+	} if
+} bind def
+
+/set_font {
+	findfont exch
+	scalefont setfont
+} def
+
+% draw text fitted to its expected width
+/alignedtext {			% width text
+	/text exch def
+	/width exch def
+	gsave
+		width 0 gt {
+			[] 0 setdash
+			text stringwidth pop width exch sub text length div 0 text ashow
+		} if
+	grestore
+} def
+
+/boxprim {				% xcorner ycorner xsize ysize
+		4 2 roll
+		moveto
+		2 copy
+		exch 0 rlineto
+		0 exch rlineto
+		pop neg 0 rlineto
+		closepath
+} bind def
+
+/ellipse_path {
+	/ry exch def
+	/rx exch def
+	/y exch def
+	/x exch def
+	matrix currentmatrix
+	newpath
+	x y translate
+	rx ry scale
+	0 0 1 0 360 arc
+	setmatrix
+} bind def
+
+/endpage { showpage } bind def
+/showpage { } def
+
+/layercolorseq
+	[	% layer color sequence - darkest to lightest
+		[0 0 0]
+		[.2 .8 .8]
+		[.4 .8 .8]
+		[.6 .8 .8]
+		[.8 .8 .8]
+	]
+def
+
+/layerlen layercolorseq length def
+
+/setlayer {/maxlayer exch def /curlayer exch def
+	layercolorseq curlayer 1 sub layerlen mod get
+	aload pop sethsbcolor
+	/nodecolor {nopcolor} def
+	/edgecolor {nopcolor} def
+	/graphcolor {nopcolor} def
+} bind def
+
+/onlayer { curlayer ne {invis} if } def
+
+/onlayers {
+	/myupper exch def
+	/mylower exch def
+	curlayer mylower lt
+	curlayer myupper gt
+	or
+	{invis} if
+} def
+
+/curlayer 0 def
+
+%%EndResource
+%%EndProlog
+%%BeginSetup
+14 default-font-family set_font
+1 setmiterlimit
+% /arrowlength 10 def
+% /arrowwidth 5 def
+
+% make sure pdfmark is harmless for PS-interpreters other than Distiller
+/pdfmark where {pop} {userdict /pdfmark /cleartomark load put} ifelse
+% make '<<' and '>>' safe on PS Level 1 devices
+/languagelevel where {pop languagelevel}{1} ifelse
+2 lt {
+    userdict (<<) cvn ([) cvn load put
+    userdict (>>) cvn ([) cvn load put
+} if
+
+%%EndSetup
+setupLatin1
+%%Page: 1 1
+%%PageBoundingBox: 36 36 478 426
+%%PageOrientation: Portrait
+0 0 1 beginpage
+gsave
+36 36 442 390 boxprim clip newpath
+1 1 set_scale 0 rotate 40 40 translate
+% Node1
+gsave
+0.000 0.000 0.749 nodecolor
+newpath 1 180 moveto
+1 202 lineto
+94 202 lineto
+94 180 lineto
+closepath fill
+1 setlinewidth
+filled
+0.000 0.000 0.000 nodecolor
+newpath 1 180 moveto
+1 202 lineto
+94 202 lineto
+94 180 lineto
+closepath stroke
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+8.5 189 moveto 77 (TiXmlNode::Value) alignedtext
+grestore
+% Node2
+gsave
+[ /Rect [ 145 360 253 382 ]
+  /Border [ 0 0 0 ]
+  /Action << /Subtype /URI /URI ($class_ti_xml_element.html#a13f6df105ebb1e8dc636e75cc883be32) >>
+  /Subtype /Link
+/ANN pdfmark
+1 setlinewidth
+0.000 0.000 0.000 nodecolor
+newpath 145 360 moveto
+145 382 lineto
+253 382 lineto
+253 360 lineto
+closepath stroke
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+153 369 moveto 92 (TiXmlElement::Clone) alignedtext
+grestore
+% Node1->Node2
+gsave
+1 setlinewidth
+solid
+0.667 0.776 0.439 edgecolor
+newpath 53 212 moveto
+62 246 86 314 130 351 curveto
+134 355 140 358 145 360 curveto
+stroke
+0.667 0.776 0.439 edgecolor
+newpath 56.23 210.57 moveto
+50 202 lineto
+49.52 212.58 lineto
+closepath fill
+1 setlinewidth
+solid
+0.667 0.776 0.439 edgecolor
+newpath 56.23 210.57 moveto
+50 202 lineto
+49.52 212.58 lineto
+closepath stroke
+grestore
+% Node3
+gsave
+[ /Rect [ 144 320 254 342 ]
+  /Border [ 0 0 0 ]
+  /Action << /Subtype /URI /URI ($class_ti_xml_node.html#ab5f722624113c8203227de4f56576d31) >>
+  /Subtype /Link
+/ANN pdfmark
+1 setlinewidth
+0.000 0.000 0.000 nodecolor
+newpath 144 320 moveto
+144 342 lineto
+255 342 lineto
+255 320 lineto
+closepath stroke
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+151.5 329 moveto 95 (TiXmlNode::FirstChild) alignedtext
+grestore
+% Node1->Node3
+gsave
+1 setlinewidth
+solid
+0.667 0.776 0.439 edgecolor
+newpath 56 211 moveto
+68 238 95 285 130 311 curveto
+135 315 141 318 147 320 curveto
+stroke
+0.667 0.776 0.439 edgecolor
+newpath 59.26 209.72 moveto
+52 202 lineto
+52.86 212.56 lineto
+closepath fill
+1 setlinewidth
+solid
+0.667 0.776 0.439 edgecolor
+newpath 59.26 209.72 moveto
+52 202 lineto
+52.86 212.56 lineto
+closepath stroke
+grestore
+% Node4
+gsave
+[ /Rect [ 141 280 257 302 ]
+  /Border [ 0 0 0 ]
+  /Action << /Subtype /URI /URI ($class_ti_xml_element.html#aa6dedd8a146acf3b1bc0903deb2d411a) >>
+  /Subtype /Link
+/ANN pdfmark
+1 setlinewidth
+0.000 0.000 0.000 nodecolor
+newpath 141 280 moveto
+141 302 lineto
+258 302 lineto
+258 280 lineto
+closepath stroke
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+148.5 289 moveto 101 (TiXmlElement::GetText) alignedtext
+grestore
+% Node1->Node4
+gsave
+1 setlinewidth
+solid
+0.667 0.776 0.439 edgecolor
+newpath 62 210 moveto
+78 228 103 255 130 271 curveto
+137 275 144 277 151 280 curveto
+stroke
+0.667 0.776 0.439 edgecolor
+newpath 64.8 207.9 moveto
+56 202 lineto
+59.2 212.1 lineto
+closepath fill
+1 setlinewidth
+solid
+0.667 0.776 0.439 edgecolor
+newpath 64.8 207.9 moveto
+56 202 lineto
+59.2 212.1 lineto
+closepath stroke
+grestore
+% Node5
+gsave
+[ /Rect [ 135 240 263 262 ]
+  /Border [ 0 0 0 ]
+  /Action << /Subtype /URI /URI ($class_ti_xml_document.html#a4c852a889c02cf251117fd1d9fe1845f) >>
+  /Subtype /Link
+/ANN pdfmark
+1 setlinewidth
+0.000 0.000 0.000 nodecolor
+newpath 135 240 moveto
+135 262 lineto
+263 262 lineto
+263 240 lineto
+closepath stroke
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+143 249 moveto 112 (TiXmlDocument::LoadFile) alignedtext
+grestore
+% Node1->Node5
+gsave
+1 setlinewidth
+solid
+0.667 0.776 0.439 edgecolor
+newpath 77 207 moveto
+92 215 112 224 130 231 curveto
+139 234 148 237 157 240 curveto
+stroke
+0.667 0.776 0.439 edgecolor
+newpath 78.44 203.8 moveto
+68 202 lineto
+75.04 209.92 lineto
+closepath fill
+1 setlinewidth
+solid
+0.667 0.776 0.439 edgecolor
+newpath 78.44 203.8 moveto
+68 202 lineto
+75.04 209.92 lineto
+closepath stroke
+grestore
+% Node7
+gsave
+[ /Rect [ 140 200 258 222 ]
+  /Border [ 0 0 0 ]
+  /Action << /Subtype /URI /URI ($class_ti_xml_node.html#acaf9dc17531ac041f602f9ad579573ea) >>
+  /Subtype /Link
+/ANN pdfmark
+1 setlinewidth
+0.000 0.000 0.000 nodecolor
+newpath 140 200 moveto
+140 222 lineto
+259 222 lineto
+259 200 lineto
+closepath stroke
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+147.5 209 moveto 103 (TiXmlNode::NextSibling) alignedtext
+grestore
+% Node1->Node7
+gsave
+1 setlinewidth
+solid
+0.667 0.776 0.439 edgecolor
+newpath 104 198 moveto
+116 200 128 201 140 203 curveto
+stroke
+0.667 0.776 0.439 edgecolor
+newpath 104.3 194.51 moveto
+94 197 lineto
+103.6 201.48 lineto
+closepath fill
+1 setlinewidth
+solid
+0.667 0.776 0.439 edgecolor
+newpath 104.3 194.51 moveto
+94 197 lineto
+103.6 201.48 lineto
+closepath stroke
+grestore
+% Node8
+gsave
+[ /Rect [ 131 160 267 182 ]
+  /Border [ 0 0 0 ]
+  /Action << /Subtype /URI /URI ($class_ti_xml_node.html#abbb3b8c1f38fa7b9e52d584a4aeca795) >>
+  /Subtype /Link
+/ANN pdfmark
+1 setlinewidth
+0.000 0.000 0.000 nodecolor
+newpath 131 160 moveto
+131 182 lineto
+268 182 lineto
+268 160 lineto
+closepath stroke
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+138.5 169 moveto 121 (TiXmlNode::PreviousSibling) alignedtext
+grestore
+% Node1->Node8
+gsave
+1 setlinewidth
+solid
+0.667 0.776 0.439 edgecolor
+newpath 104 184 moveto
+113 182 122 181 131 180 curveto
+stroke
+0.667 0.776 0.439 edgecolor
+newpath 103.6 180.52 moveto
+94 185 lineto
+104.3 187.49 lineto
+closepath fill
+1 setlinewidth
+solid
+0.667 0.776 0.439 edgecolor
+newpath 103.6 180.52 moveto
+94 185 lineto
+104.3 187.49 lineto
+closepath stroke
+grestore
+% Node9
+gsave
+[ /Rect [ 135 120 263 142 ]
+  /Border [ 0 0 0 ]
+  /Action << /Subtype /URI /URI ($class_ti_xml_document.html#a21c0aeb0d0a720169ad4ac89523ebe93) >>
+  /Subtype /Link
+/ANN pdfmark
+1 setlinewidth
+0.000 0.000 0.000 nodecolor
+newpath 135 120 moveto
+135 142 lineto
+264 142 lineto
+264 120 lineto
+closepath stroke
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+142.5 129 moveto 113 (TiXmlDocument::SaveFile) alignedtext
+grestore
+% Node1->Node9
+gsave
+1 setlinewidth
+solid
+0.667 0.776 0.439 edgecolor
+newpath 76 175 moveto
+92 167 112 158 130 151 curveto
+138 148 147 145 156 142 curveto
+stroke
+0.667 0.776 0.439 edgecolor
+newpath 74.04 172.08 moveto
+67 180 lineto
+77.44 178.2 lineto
+closepath fill
+1 setlinewidth
+solid
+0.667 0.776 0.439 edgecolor
+newpath 74.04 172.08 moveto
+67 180 lineto
+77.44 178.2 lineto
+closepath stroke
+grestore
+% Node11
+gsave
+[ /Rect [ 152 80 246 102 ]
+  /Border [ 0 0 0 ]
+  /Action << /Subtype /URI /URI ($class_ti_xml_printer.html#a0857c5d32c59b9a257f9a49cb9411df5) >>
+  /Subtype /Link
+/ANN pdfmark
+1 setlinewidth
+0.000 0.000 0.000 nodecolor
+newpath 152 80 moveto
+152 102 lineto
+247 102 lineto
+247 80 lineto
+closepath stroke
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+159.5 89 moveto 79 (TiXmlPrinter::Visit) alignedtext
+grestore
+% Node1->Node11
+gsave
+1 setlinewidth
+solid
+0.667 0.776 0.439 edgecolor
+newpath 61 172 moveto
+77 153 102 127 130 111 curveto
+137 107 144 104 152 101 curveto
+stroke
+0.667 0.776 0.439 edgecolor
+newpath 58.2 169.9 moveto
+55 180 lineto
+63.8 174.1 lineto
+closepath fill
+1 setlinewidth
+solid
+0.667 0.776 0.439 edgecolor
+newpath 58.2 169.9 moveto
+55 180 lineto
+63.8 174.1 lineto
+closepath stroke
+grestore
+% Node12
+gsave
+[ /Rect [ 141 40 257 62 ]
+  /Border [ 0 0 0 ]
+  /Action << /Subtype /URI /URI ($class_ti_xml_printer.html#a6dccaf5ee4979f13877690afe28721e8) >>
+  /Subtype /Link
+/ANN pdfmark
+1 setlinewidth
+0.000 0.000 0.000 nodecolor
+newpath 141 40 moveto
+141 62 lineto
+258 62 lineto
+258 40 lineto
+closepath stroke
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+148.5 49 moveto 101 (TiXmlPrinter::VisitEnter) alignedtext
+grestore
+% Node1->Node12
+gsave
+1 setlinewidth
+solid
+0.667 0.776 0.439 edgecolor
+newpath 56 171 moveto
+68 144 95 97 130 71 curveto
+135 67 140 65 146 62 curveto
+stroke
+0.667 0.776 0.439 edgecolor
+newpath 52.86 169.44 moveto
+52 180 lineto
+59.26 172.28 lineto
+closepath fill
+1 setlinewidth
+solid
+0.667 0.776 0.439 edgecolor
+newpath 52.86 169.44 moveto
+52 180 lineto
+59.26 172.28 lineto
+closepath stroke
+grestore
+% Node13
+gsave
+[ /Rect [ 143 0 255 22 ]
+  /Border [ 0 0 0 ]
+  /Action << /Subtype /URI /URI ($class_ti_xml_printer.html#ae6a1df8271df4bf62d7873c38e34aa69) >>
+  /Subtype /Link
+/ANN pdfmark
+1 setlinewidth
+0.000 0.000 0.000 nodecolor
+newpath 143 0 moveto
+143 22 lineto
+255 22 lineto
+255 0 lineto
+closepath stroke
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+151 9 moveto 96 (TiXmlPrinter::VisitExit) alignedtext
+grestore
+% Node1->Node13
+gsave
+1 setlinewidth
+solid
+0.667 0.776 0.439 edgecolor
+newpath 53 170 moveto
+62 135 86 67 130 31 curveto
+134 27 140 24 145 22 curveto
+stroke
+0.667 0.776 0.439 edgecolor
+newpath 49.52 169.42 moveto
+50 180 lineto
+56.23 171.43 lineto
+closepath fill
+1 setlinewidth
+solid
+0.667 0.776 0.439 edgecolor
+newpath 49.52 169.42 moveto
+50 180 lineto
+56.23 171.43 lineto
+closepath stroke
+grestore
+% Node6
+gsave
+[ /Rect [ 305 240 433 262 ]
+  /Border [ 0 0 0 ]
+  /Action << /Subtype /URI /URI ($class_ti_xml_document.html#a879cdf5e981b8b2d2ef82f2546dd28fb) >>
+  /Subtype /Link
+/ANN pdfmark
+1 setlinewidth
+0.000 0.000 0.000 nodecolor
+newpath 305 240 moveto
+305 262 lineto
+433 262 lineto
+433 240 lineto
+closepath stroke
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+313 249 moveto 112 (TiXmlDocument::LoadFile) alignedtext
+grestore
+% Node5->Node6
+gsave
+1 setlinewidth
+solid
+0.667 0.776 0.439 edgecolor
+newpath 273 251 moveto
+284 251 294 251 305 251 curveto
+stroke
+0.667 0.776 0.439 edgecolor
+newpath 273 247.5 moveto
+263 251 lineto
+273 254.5 lineto
+closepath fill
+1 setlinewidth
+solid
+0.667 0.776 0.439 edgecolor
+newpath 273 247.5 moveto
+263 251 lineto
+273 254.5 lineto
+closepath stroke
+grestore
+% Node10
+gsave
+[ /Rect [ 305 120 433 142 ]
+  /Border [ 0 0 0 ]
+  /Action << /Subtype /URI /URI ($class_ti_xml_document.html#ae869f5ebf7fc54c4a1d737fb4689fd44) >>
+  /Subtype /Link
+/ANN pdfmark
+1 setlinewidth
+0.000 0.000 0.000 nodecolor
+newpath 305 120 moveto
+305 142 lineto
+434 142 lineto
+434 120 lineto
+closepath stroke
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+312.5 129 moveto 113 (TiXmlDocument::SaveFile) alignedtext
+grestore
+% Node9->Node10
+gsave
+1 setlinewidth
+solid
+0.667 0.776 0.439 edgecolor
+newpath 274 131 moveto
+284 131 295 131 305 131 curveto
+stroke
+0.667 0.776 0.439 edgecolor
+newpath 274 127.5 moveto
+264 131 lineto
+274 134.5 lineto
+closepath fill
+1 setlinewidth
+solid
+0.667 0.776 0.439 edgecolor
+newpath 274 127.5 moveto
+264 131 lineto
+274 134.5 lineto
+closepath stroke
+grestore
+endpage
+showpage
+grestore
+%%PageTrailer
+%%EndPage: 1
+%%Trailer
+%%Pages: 1
+%%BoundingBox: 36 36 478 426
+end
+restore
+%%EOF

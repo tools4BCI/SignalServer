@@ -1,0 +1,90 @@
+\label{todo__todo000001}
+\hypertarget{todo__todo000001}{}
+ 
+\begin{DoxyDescription}
+\item[Class \hyperlink{class_data_packet}{DataPacket} ]Implementing the possibility to built a raw \hyperlink{class_data_packet}{DataPacket} representation with freely selectable content. 
+\end{DoxyDescription}
+
+\label{todo__todo000002}
+\hypertarget{todo__todo000002}{}
+ 
+\begin{DoxyDescription}
+\item[Member \hyperlink{class_data_packet_abcb0afec0bf5e6c21175f25d7911b1d7}{DataPacket::DataPacket}(void $\ast$mem) ]Implementing safety checks, as far as possible.
+
+
+
+Check for memory leaks! (can occur, if raw\_\-mem objects are built) 
+\end{DoxyDescription}
+
+\label{todo__todo000006}
+\hypertarget{todo__todo000006}{}
+ 
+\begin{DoxyDescription}
+\item[Member \hyperlink{class_data_packet_a6d05054482f9844487d5253a1b903a1e}{DataPacket::getRaw}() ]Inserting data after building a raw representation, won't change the raw memory and will deliver a pointer pointing to \char`\"{}the old\char`\"{} \hyperlink{class_data_packet}{DataPacket}. 
+\end{DoxyDescription}
+
+\label{todo__todo000005}
+\hypertarget{todo__todo000005}{}
+ 
+\begin{DoxyDescription}
+\item[Member \hyperlink{class_data_packet_ab83c192471bb4d70cd21653adcc7da7f}{DataPacket::insertDataBlock}(vector$<$ double $>$ v, uint32\_\-t signal\_\-flag, uint16\_\-t blocks) ]If needed: Implementing the possibility to store the same signal type comming from different devices. 
+\end{DoxyDescription}
+
+\label{todo__todo000003}
+\hypertarget{todo__todo000003}{}
+ 
+\begin{DoxyDescription}
+\item[Member \hyperlink{class_data_packet_a6865aaea072c8af4caf7e4cb6baa0155}{DataPacket::$\sim$DataPacket}() ]Check for memory leaks! (can occur, if raw\_\-mem objects are built)
+
+
+\end{DoxyDescription}
+
+\label{todo__todo000009}
+\hypertarget{todo__todo000009}{}
+ 
+\begin{DoxyDescription}
+\item[Member \hyperlink{class_h_w_thread_aa709526a915411a495a947f6bc6e06f9}{HWThread::getAsyncData}()=0 ]Implement a compensation method, if clocks are drifting or similar (e.g. interpolation). 
+\end{DoxyDescription}
+
+\label{todo__todo000010}
+\hypertarget{todo__todo000010}{}
+ 
+\begin{DoxyDescription}
+\item[File \hyperlink{raw__mem_8h}{raw\_\-mem.h} ]Up to now only representation of float is possible. Should be enhanced to be a template also being able to deal with double.
+
+
+\end{DoxyDescription}
+
+\label{todo__todo000011}
+\hypertarget{todo__todo000011}{}
+ 
+\begin{DoxyDescription}
+\item[Member \hyperlink{class_sample_block_afad40888932bc8378a7598fd2546317c}{SampleBlock::appendBlock}(vector$<$ T $>$ v) ]If needed: Possibility to append already blocked data. 
+\end{DoxyDescription}
+
+\label{todo__todo000012}
+\hypertarget{todo__todo000012}{}
+ 
+\begin{DoxyDescription}
+\item[Member \hyperlink{class_sample_block_acb823540844a192e12069a065cc607e8}{SampleBlock::setSamples}(vector$<$ T $>$ v) ]Check, if setting already blocked data in an unordered manner performs correct sorting!! 
+\end{DoxyDescription}
+
+\label{todo__todo000014}
+\hypertarget{todo__todo000014}{}
+ 
+\begin{DoxyDescription}
+\item[File \hyperlink{ticpp_8h}{ticpp.h} ]add UNKNOWN support. See ticpp::NodeFactory. 
+
+add TYPECOUNT support. See ticpp::NodeFactory. 
+
+Add a quick reference 
+\end{DoxyDescription}
+
+\label{todo__todo000013}
+\hypertarget{todo__todo000013}{}
+ 
+\begin{DoxyDescription}
+\item[File \hyperlink{usbamp_8h}{usbamp.h} ]Check, if asynchronous access to the g.USBamp is possible without reading and writing the same memory at the same time.
+
+
+\end{DoxyDescription}
