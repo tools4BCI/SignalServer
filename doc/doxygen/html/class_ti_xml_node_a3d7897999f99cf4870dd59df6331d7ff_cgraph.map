@@ -1,0 +1,4 @@
+<map id="G" name="G">
+<area shape="rect" href="$class_ti_xml_node.html#af854baeba384f5fe9859f5aee03b548e" title="Navigate to a sibling node." alt="" coords="263,5,420,35"/>
+<area shape="rect" href="$class_ti_xml_node.html#a72abed96dc9667ab9e0a2a275301bb1c" title="Cast to a more defined type. Will return null if not of the requested type." alt="" coords="264,59,419,88"/>
+</map>

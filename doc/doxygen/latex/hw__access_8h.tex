@@ -1,0 +1,36 @@
+\hypertarget{hw__access_8h}{
+\subsection{/home/breidi/Dropbox/signalserver/hardware/hw\_\-access.h File Reference}
+\label{hw__access_8h}\index{/home/breidi/Dropbox/signalserver/hardware/hw\_\-access.h@{/home/breidi/Dropbox/signalserver/hardware/hw\_\-access.h}}
+}
+
+
+hw\_\-access manages all objects representing different data acquisition devices.  
+{\ttfamily \#include \char`\"{}../xml\_\-parser.h\char`\"{}}\par
+{\ttfamily \#include \char`\"{}data\_\-packet.h\char`\"{}}\par
+{\ttfamily \#include \char`\"{}hw\_\-thread.h\char`\"{}}\par
+{\ttfamily \#include \char`\"{}sine\_\-generator.h\char`\"{}}\par
+{\ttfamily \#include $<$iostream$>$}\par
+{\ttfamily \#include $<$fstream$>$}\par
+Include dependency graph for hw\_\-access.h:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=420pt]{hw__access_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=155pt]{hw__access_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \hyperlink{class_h_w_access}{HWAccess}
+\begin{DoxyCompactList}\small\item\em Class gathering access to connected hardware. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsubsection{Detailed Description}
+hw\_\-access manages all objects representing different data acquisition devices. Devices are seperated into master and slave devices, whereby only one master is allowed at once, all other devices have to be slaves. The master device sets the pace DataPackets can be acquired as it is driven in a blocking way. Data from all slaves is gathered with the masters speed, whereby data stored in the slaves buffer is returned immediately. Slaves are NOT operated in a synchronous way (method to get data from slaves is non-\/blocking). 

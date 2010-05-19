@@ -1,0 +1,865 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%Creator: Graphviz version 2.20.2 (Wed Sep 16 11:12:11 UTC 2009)
+%%For: (breidi) Breitwieser Christian,,,
+%%Title: G
+%%Pages: (atend)
+%%BoundingBox: (atend)
+%%EndComments
+save
+%%BeginProlog
+/DotDict 200 dict def
+DotDict begin
+
+/setupLatin1 {
+mark
+/EncodingVector 256 array def
+ EncodingVector 0
+
+ISOLatin1Encoding 0 255 getinterval putinterval
+EncodingVector 45 /hyphen put
+
+% Set up ISO Latin 1 character encoding
+/starnetISO {
+        dup dup findfont dup length dict begin
+        { 1 index /FID ne { def }{ pop pop } ifelse
+        } forall
+        /Encoding EncodingVector def
+        currentdict end definefont
+} def
+/Times-Roman starnetISO def
+/Times-Italic starnetISO def
+/Times-Bold starnetISO def
+/Times-BoldItalic starnetISO def
+/Helvetica starnetISO def
+/Helvetica-Oblique starnetISO def
+/Helvetica-Bold starnetISO def
+/Helvetica-BoldOblique starnetISO def
+/Courier starnetISO def
+/Courier-Oblique starnetISO def
+/Courier-Bold starnetISO def
+/Courier-BoldOblique starnetISO def
+cleartomark
+} bind def
+
+%%BeginResource: procset graphviz 0 0
+/coord-font-family /Times-Roman def
+/default-font-family /Times-Roman def
+/coordfont coord-font-family findfont 8 scalefont def
+
+/InvScaleFactor 1.0 def
+/set_scale {
+       dup 1 exch div /InvScaleFactor exch def
+       scale
+} bind def
+
+% styles
+/solid { [] 0 setdash } bind def
+/dashed { [9 InvScaleFactor mul dup ] 0 setdash } bind def
+/dotted { [1 InvScaleFactor mul 6 InvScaleFactor mul] 0 setdash } bind def
+/invis {/fill {newpath} def /stroke {newpath} def /show {pop newpath} def} bind def
+/bold { 2 setlinewidth } bind def
+/filled { } bind def
+/unfilled { } bind def
+/rounded { } bind def
+/diagonals { } bind def
+
+% hooks for setting color 
+/nodecolor { sethsbcolor } bind def
+/edgecolor { sethsbcolor } bind def
+/graphcolor { sethsbcolor } bind def
+/nopcolor {pop pop pop} bind def
+
+/beginpage {	% i j npages
+	/npages exch def
+	/j exch def
+	/i exch def
+	/str 10 string def
+	npages 1 gt {
+		gsave
+			coordfont setfont
+			0 0 moveto
+			(\() show i str cvs show (,) show j str cvs show (\)) show
+		grestore
+	} if
+} bind def
+
+/set_font {
+	findfont exch
+	scalefont setfont
+} def
+
+% draw text fitted to its expected width
+/alignedtext {			% width text
+	/text exch def
+	/width exch def
+	gsave
+		width 0 gt {
+			[] 0 setdash
+			text stringwidth pop width exch sub text length div 0 text ashow
+		} if
+	grestore
+} def
+
+/boxprim {				% xcorner ycorner xsize ysize
+		4 2 roll
+		moveto
+		2 copy
+		exch 0 rlineto
+		0 exch rlineto
+		pop neg 0 rlineto
+		closepath
+} bind def
+
+/ellipse_path {
+	/ry exch def
+	/rx exch def
+	/y exch def
+	/x exch def
+	matrix currentmatrix
+	newpath
+	x y translate
+	rx ry scale
+	0 0 1 0 360 arc
+	setmatrix
+} bind def
+
+/endpage { showpage } bind def
+/showpage { } def
+
+/layercolorseq
+	[	% layer color sequence - darkest to lightest
+		[0 0 0]
+		[.2 .8 .8]
+		[.4 .8 .8]
+		[.6 .8 .8]
+		[.8 .8 .8]
+	]
+def
+
+/layerlen layercolorseq length def
+
+/setlayer {/maxlayer exch def /curlayer exch def
+	layercolorseq curlayer 1 sub layerlen mod get
+	aload pop sethsbcolor
+	/nodecolor {nopcolor} def
+	/edgecolor {nopcolor} def
+	/graphcolor {nopcolor} def
+} bind def
+
+/onlayer { curlayer ne {invis} if } def
+
+/onlayers {
+	/myupper exch def
+	/mylower exch def
+	curlayer mylower lt
+	curlayer myupper gt
+	or
+	{invis} if
+} def
+
+/curlayer 0 def
+
+%%EndResource
+%%EndProlog
+%%BeginSetup
+14 default-font-family set_font
+1 setmiterlimit
+% /arrowlength 10 def
+% /arrowwidth 5 def
+
+% make sure pdfmark is harmless for PS-interpreters other than Distiller
+/pdfmark where {pop} {userdict /pdfmark /cleartomark load put} ifelse
+% make '<<' and '>>' safe on PS Level 1 devices
+/languagelevel where {pop languagelevel}{1} ifelse
+2 lt {
+    userdict (<<) cvn ([) cvn load put
+    userdict (>>) cvn ([) cvn load put
+} if
+
+%%EndSetup
+setupLatin1
+%%Page: 1 1
+%%PageBoundingBox: 36 36 261 2016
+%%PageOrientation: Portrait
+0 0 1 beginpage
+gsave
+36 36 225 1980 boxprim clip newpath
+1 1 set_scale 0 rotate 40 40 translate
+% Node1
+gsave
+0.000 0.000 0.749 nodecolor
+newpath 45 0 moveto
+45 206 lineto
+146 206 lineto
+146 0 lineto
+closepath fill
+1 setlinewidth
+filled
+0.000 0.000 0.000 nodecolor
+newpath 45 0 moveto
+45 206 lineto
+146 206 lineto
+146 0 lineto
+closepath stroke
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+63 193 moveto 64 (TiXmlUnknown) alignedtext
+1 setlinewidth
+filled
+0.000 0.000 0.000 nodecolor
+newpath 45 184 moveto
+146 184 lineto
+stroke
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+93.5 171 moveto 3 ( ) alignedtext
+1 setlinewidth
+filled
+0.000 0.000 0.000 nodecolor
+newpath 45 162 moveto
+146 162 lineto
+stroke
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+52.5 149 moveto 79 (+ TiXmlUnknown\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+52.5 135 moveto 85 (+ ~TiXmlUnknown\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+52.5 121 moveto 79 (+ TiXmlUnknown\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+52.5 107 moveto 56 (+ operator=\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+52.5 93 moveto 40 (+ Clone\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+52.5 79 moveto 35 (+ Print\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+52.5 65 moveto 40 (+ Parse\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+52.5 51 moveto 65 (+ ToUnknown\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+52.5 37 moveto 65 (+ ToUnknown\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+52.5 23 moveto 46 (+ Accept\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+52.5 9 moveto 47 (# CopyTo\(\)) alignedtext
+grestore
+% Node2
+gsave
+[ /Rect [ 29 244 161 1304 ]
+  /Border [ 0 0 0 ]
+  /Action << /Subtype /URI /URI ($class_ti_xml_node.html) >>
+  /Subtype /Link
+/ANN pdfmark
+1 setlinewidth
+0.000 0.000 0.000 nodecolor
+newpath 29 244 moveto
+29 1304 lineto
+161 1304 lineto
+161 244 lineto
+closepath stroke
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+71.5 1291 moveto 47 (TiXmlNode) alignedtext
+1 setlinewidth
+0.000 0.000 0.000 nodecolor
+newpath 29 1282 moveto
+161 1282 lineto
+stroke
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 1269 moveto 35 (# parent) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 1255 moveto 27 (# type) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 1241 moveto 47 (# firstChild) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 1227 moveto 46 (# lastChild) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 1213 moveto 32 (# value) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 1199 moveto 27 (# prev) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 1185 moveto 27 (# next) alignedtext
+1 setlinewidth
+0.000 0.000 0.000 nodecolor
+newpath 29 1176 moveto
+161 1176 lineto
+stroke
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 1163 moveto 68 (+ ~TiXmlNode\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 1149 moveto 39 (+ Value\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 1135 moveto 57 (+ ValueTStr\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 1121 moveto 54 (+ SetValue\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 1107 moveto 38 (+ Clear\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 1093 moveto 43 (+ Parent\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 1079 moveto 43 (+ Parent\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 1065 moveto 56 (+ FirstChild\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 1051 moveto 56 (+ FirstChild\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 1037 moveto 56 (+ FirstChild\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 1023 moveto 56 (+ FirstChild\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 1009 moveto 56 (+ LastChild\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 995 moveto 56 (+ LastChild\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 981 moveto 56 (+ LastChild\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 967 moveto 56 (+ LastChild\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 953 moveto 78 (+ IterateChildren\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 939 moveto 78 (+ IterateChildren\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 925 moveto 78 (+ IterateChildren\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 911 moveto 78 (+ IterateChildren\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 897 moveto 78 (+ InsertEndChild\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 883 moveto 71 (+ LinkEndChild\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 869 moveto 90 (+ InsertBeforeChild\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 855 moveto 83 (+ InsertAfterChild\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 841 moveto 72 (+ ReplaceChild\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 827 moveto 73 (+ RemoveChild\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 813 moveto 83 (+ PreviousSibling\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 799 moveto 83 (+ PreviousSibling\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 785 moveto 83 (+ PreviousSibling\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 771 moveto 83 (+ PreviousSibling\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 757 moveto 65 (+ NextSibling\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 743 moveto 65 (+ NextSibling\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 729 moveto 65 (+ NextSibling\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 715 moveto 65 (+ NextSibling\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 701 moveto 101 (+ NextSiblingElement\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 687 moveto 101 (+ NextSiblingElement\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 673 moveto 101 (+ NextSiblingElement\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 659 moveto 101 (+ NextSiblingElement\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 645 moveto 92 (+ FirstChildElement\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 631 moveto 92 (+ FirstChildElement\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 617 moveto 92 (+ FirstChildElement\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 603 moveto 92 (+ FirstChildElement\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 589 moveto 37 (+ Type\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 575 moveto 75 (+ GetDocument\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 561 moveto 75 (+ GetDocument\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 547 moveto 62 (+ NoChildren\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 533 moveto 70 (+ ToDocument\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 519 moveto 62 (+ ToElement\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 505 moveto 68 (+ ToComment\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 491 moveto 65 (+ ToUnknown\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 477 moveto 44 (+ ToText\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 463 moveto 74 (+ ToDeclaration\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 449 moveto 116 (+ ToStylesheetReference\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 435 moveto 70 (+ ToDocument\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 421 moveto 62 (+ ToElement\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 407 moveto 68 (+ ToComment\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 393 moveto 65 (+ ToUnknown\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 379 moveto 44 (+ ToText\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 365 moveto 74 (+ ToDeclaration\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 351 moveto 116 (+ ToStylesheetReference\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 337 moveto 40 (+ Clone\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 323 moveto 46 (+ Accept\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 309 moveto 62 (# TiXmlNode\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 295 moveto 47 (# CopyTo\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 281 moveto 47 (# Identify\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 267 moveto 59 (- TiXmlNode\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+37 253 moveto 53 (- operator=\(\)) alignedtext
+grestore
+% Node2->Node1
+gsave
+1 setlinewidth
+solid
+0.667 0.776 0.439 edgecolor
+newpath 95 234 moveto
+95 224 95 215 95 206 curveto
+stroke
+1 setlinewidth
+solid
+0.667 0.776 0.439 edgecolor
+newpath 91.5 234 moveto
+95 244 lineto
+98.5 234 lineto
+closepath stroke
+grestore
+% Node2->Node2
+gsave
+1 setlinewidth
+dashed
+0.776 0.753 0.804 edgecolor
+newpath 166 860 moveto
+174 843 179 815 179 774 curveto
+179 725 172 693 161 679 curveto
+stroke
+0.776 0.753 0.804 edgecolor
+newpath 161 869 moveto
+161.92 858.07 lineto
+163.43 864.63 lineto
+165.86 860.26 lineto
+165.86 860.26 lineto
+165.86 860.26 lineto
+163.43 864.63 lineto
+169.79 862.44 lineto
+161 869 lineto
+closepath fill
+1 setlinewidth
+solid
+0.776 0.753 0.804 edgecolor
+newpath 161 869 moveto
+161.92 858.07 lineto
+163.43 864.63 lineto
+165.86 860.26 lineto
+165.86 860.26 lineto
+165.86 860.26 lineto
+163.43 864.63 lineto
+169.79 862.44 lineto
+161 869 lineto
+closepath stroke
+0.000 0.000 0.000 edgecolor
+10 /FreeSans set_font
+188.5 800 moveto 19 (prev) alignedtext
+0.000 0.000 0.000 edgecolor
+10 /FreeSans set_font
+188.5 786 moveto 19 (next) alignedtext
+0.000 0.000 0.000 edgecolor
+10 /FreeSans set_font
+179 772 moveto 38 (firstChild) alignedtext
+0.000 0.000 0.000 edgecolor
+10 /FreeSans set_font
+179 758 moveto 38 (lastChild) alignedtext
+0.000 0.000 0.000 edgecolor
+10 /FreeSans set_font
+184.5 744 moveto 27 (parent) alignedtext
+grestore
+% Node3
+gsave
+[ /Rect [ 24 1342 166 1828 ]
+  /Border [ 0 0 0 ]
+  /Action << /Subtype /URI /URI ($class_ti_xml_base.html) >>
+  /Subtype /Link
+/ANN pdfmark
+1 setlinewidth
+0.000 0.000 0.000 nodecolor
+newpath 24 1342 moveto
+24 1828 lineto
+166 1828 lineto
+166 1342 lineto
+closepath stroke
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+71.5 1815 moveto 47 (TiXmlBase) alignedtext
+1 setlinewidth
+0.000 0.000 0.000 nodecolor
+newpath 24 1806 moveto
+166 1806 lineto
+stroke
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+32 1793 moveto 69 (+ utf8ByteTable) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+32 1779 moveto 42 (# location) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+32 1765 moveto 47 (# userData) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+32 1751 moveto 53 (# errorString) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+32 1737 moveto 30 (- entity) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+32 1723 moveto 101 (- condenseWhiteSpace) alignedtext
+1 setlinewidth
+0.000 0.000 0.000 nodecolor
+newpath 24 1714 moveto
+166 1714 lineto
+stroke
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+32 1701 moveto 62 (+ TiXmlBase\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+32 1687 moveto 68 (+ ~TiXmlBase\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+32 1673 moveto 35 (+ Print\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+32 1659 moveto 34 (+ Row\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+32 1645 moveto 48 (+ Column\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+32 1631 moveto 71 (+ SetUserData\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+32 1617 moveto 71 (+ GetUserData\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+32 1603 moveto 71 (+ GetUserData\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+32 1589 moveto 40 (+ Parse\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+32 1575 moveto 126 (+ SetCondenseWhiteSpace\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+32 1561 moveto 125 (+ IsWhiteSpaceCondensed\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+32 1547 moveto 73 (+ EncodeString\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+32 1533 moveto 86 (# SkipWhiteSpace\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+32 1519 moveto 75 (# IsWhiteSpace\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+32 1505 moveto 75 (# IsWhiteSpace\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+32 1491 moveto 62 (# ReadName\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+32 1477 moveto 56 (# ReadText\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+32 1463 moveto 55 (# GetEntity\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+32 1449 moveto 50 (# GetChar\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+32 1435 moveto 65 (# StringEqual\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+32 1421 moveto 47 (# IsAlpha\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+32 1407 moveto 68 (# IsAlphaNum\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+32 1393 moveto 50 (# ToLower\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+32 1379 moveto 112 (# ConvertUTF32ToUTF8\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+32 1365 moveto 59 (- TiXmlBase\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+32 1351 moveto 53 (- operator=\(\)) alignedtext
+grestore
+% Node3->Node2
+gsave
+1 setlinewidth
+solid
+0.667 0.776 0.439 edgecolor
+newpath 95 1332 moveto
+95 1323 95 1313 95 1304 curveto
+stroke
+1 setlinewidth
+solid
+0.667 0.776 0.439 edgecolor
+newpath 91.5 1332 moveto
+95 1342 lineto
+98.5 1332 lineto
+closepath stroke
+grestore
+% Node4
+gsave
+[ /Rect [ 0 1878 84 1972 ]
+  /Border [ 0 0 0 ]
+  /Action << /Subtype /URI /URI ($struct_ti_xml_cursor.html) >>
+  /Subtype /Link
+/ANN pdfmark
+1 setlinewidth
+0.000 0.000 0.000 nodecolor
+newpath 0 1878 moveto
+0 1972 lineto
+84 1972 lineto
+84 1878 lineto
+closepath stroke
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+15.5 1959 moveto 53 (TiXmlCursor) alignedtext
+1 setlinewidth
+0.000 0.000 0.000 nodecolor
+newpath 0 1950 moveto
+84 1950 lineto
+stroke
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+8 1937 moveto 24 (+ row) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+8 1923 moveto 22 (+ col) alignedtext
+1 setlinewidth
+0.000 0.000 0.000 nodecolor
+newpath 0 1914 moveto
+84 1914 lineto
+stroke
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+8 1901 moveto 68 (+ TiXmlCursor\(\)) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+8 1887 moveto 38 (+ Clear\(\)) alignedtext
+grestore
+% Node4->Node3
+gsave
+1 setlinewidth
+dashed
+0.776 0.753 0.804 edgecolor
+newpath 50 1868 moveto
+52 1856 55 1842 57 1828 curveto
+stroke
+0.776 0.753 0.804 edgecolor
+newpath 49 1878 moveto
+45.52 1867.6 lineto
+49.5 1873.02 lineto
+50 1868.05 lineto
+50 1868.05 lineto
+50 1868.05 lineto
+49.5 1873.02 lineto
+54.47 1868.5 lineto
+49 1878 lineto
+closepath fill
+1 setlinewidth
+solid
+0.776 0.753 0.804 edgecolor
+newpath 49 1878 moveto
+45.52 1867.6 lineto
+49.5 1873.02 lineto
+50 1868.05 lineto
+50 1868.05 lineto
+50 1868.05 lineto
+49.5 1873.02 lineto
+54.47 1868.5 lineto
+49 1878 lineto
+closepath stroke
+0.000 0.000 0.000 edgecolor
+10 /FreeSans set_font
+54 1851 moveto 34 (location) alignedtext
+grestore
+% Node5
+gsave
+1 setlinewidth
+0.000 0.000 0.749 nodecolor
+newpath 102 1878 moveto
+102 1972 lineto
+196 1972 lineto
+196 1878 lineto
+closepath stroke
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+110 1959 moveto 78 (TiXmlBase::Entity) alignedtext
+1 setlinewidth
+0.000 0.000 0.749 nodecolor
+newpath 102 1950 moveto
+196 1950 lineto
+stroke
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+110 1937 moveto 20 (+ str) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+110 1923 moveto 50 (+ strLength) alignedtext
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+110 1909 moveto 23 (+ chr) alignedtext
+1 setlinewidth
+0.000 0.000 0.749 nodecolor
+newpath 102 1900 moveto
+196 1900 lineto
+stroke
+0.000 0.000 0.000 nodecolor
+10 /FreeSans set_font
+147.5 1887 moveto 3 ( ) alignedtext
+grestore
+% Node5->Node3
+gsave
+1 setlinewidth
+dashed
+0.776 0.753 0.804 edgecolor
+newpath 140 1868 moveto
+138 1856 135 1842 133 1828 curveto
+stroke
+0.776 0.753 0.804 edgecolor
+newpath 141 1878 moveto
+135.53 1868.5 lineto
+140.5 1873.02 lineto
+140 1868.05 lineto
+140 1868.05 lineto
+140 1868.05 lineto
+140.5 1873.02 lineto
+144.48 1867.6 lineto
+141 1878 lineto
+closepath fill
+1 setlinewidth
+solid
+0.776 0.753 0.804 edgecolor
+newpath 141 1878 moveto
+135.53 1868.5 lineto
+140.5 1873.02 lineto
+140 1868.05 lineto
+140 1868.05 lineto
+140 1868.05 lineto
+140.5 1873.02 lineto
+144.48 1867.6 lineto
+141 1878 lineto
+closepath stroke
+0.000 0.000 0.000 edgecolor
+10 /FreeSans set_font
+137 1851 moveto 24 (entity) alignedtext
+grestore
+endpage
+showpage
+grestore
+%%PageTrailer
+%%EndPage: 1
+%%Trailer
+%%Pages: 1
+%%BoundingBox: 36 36 261 2016
+end
+restore
+%%EOF

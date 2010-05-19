@@ -1,0 +1,5 @@
+<map id="G" name="G">
+<area shape="rect" href="$class_ti_xml_node.html#af287a913ce46d8dbf7ef24fec69bbaf0" title="TiXmlNode::InsertEndChild" alt="" coords="221,5,397,35"/>
+<area shape="rect" href="$class_ti_xml_document.html#a789ad2f06f93d52bdb5570b2f3670289" title="TiXmlDocument::Parse" alt="" coords="232,59,387,88"/>
+<area shape="rect" href="$class_ti_xml_document.html#a41f6fe7200864d1dca663d230caf8db6" title="TiXmlDocument::LoadFile" alt="" coords="445,59,616,88"/>
+</map>

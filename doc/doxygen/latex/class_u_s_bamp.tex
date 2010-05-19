@@ -1,0 +1,81 @@
+\hypertarget{class_u_s_bamp}{
+\subsection{USBamp Class Reference}
+\label{class_u_s_bamp}\index{USBamp@{USBamp}}
+}
+
+
+A class to wrap the API provided by g.tec for the g.USBamp and enable synchronous and asynchronous data access.  
+
+
+{\ttfamily \#include $<$usbamp.h$>$}Inheritance diagram for USBamp:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=400pt]{class_u_s_bamp__inherit__graph}
+\end{center}
+\end{figure}
+Collaboration diagram for USBamp:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=400pt]{class_u_s_bamp__coll__graph}
+\end{center}
+\end{figure}
+\subsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_u_s_bamp_a976921f7f93a4f9df83a451ba657063b}{
+{\bfseries USBamp} (boost::asio::io\_\-service \&io, const HWConfig \&config)}
+\label{class_u_s_bamp_a976921f7f93a4f9df83a451ba657063b}
+
+\item 
+virtual vector$<$ float $>$ \hyperlink{class_u_s_bamp_ae5aa6002d425924a95d102f1d890c84c}{getSyncData} ()
+\begin{DoxyCompactList}\small\item\em Abstract method to achieve synchronous data acquisition (method is blocking). \item\end{DoxyCompactList}\item 
+virtual vector$<$ float $>$ \hyperlink{class_u_s_bamp_a645a210ffbc5931560f91c8ee6896300}{getAsyncData} ()
+\begin{DoxyCompactList}\small\item\em Abstract method to achieve asynchronous data acquisition (method is non-\/blocking). \item\end{DoxyCompactList}\item 
+\hypertarget{class_u_s_bamp_a7ef290d2b3a7dd3a7932beba701257f0}{
+virtual \hyperlink{class_u_s_bamp_a7ef290d2b3a7dd3a7932beba701257f0}{run} ()}
+\label{class_u_s_bamp_a7ef290d2b3a7dd3a7932beba701257f0}
+
+\begin{DoxyCompactList}\small\item\em Abstract method to start data acquisition. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsubsection{Detailed Description}
+A class to wrap the API provided by g.tec for the g.USBamp and enable synchronous and asynchronous data access. This class is built to gather access to the g.tec g.USBamp (usbamp). It wraps the C API provided by g.tec to be used in the TOBI signalserver. It is able to acquire data from different usbamps in a synchronous and asynchronous manner and letting them appear as one single device. Configuration has to be done by an tinyXML object, satisfying the configuration file specifications for the signalserver project. 
+
+\subsubsection{Member Function Documentation}
+\hypertarget{class_u_s_bamp_a645a210ffbc5931560f91c8ee6896300}{
+\index{USBamp@{USBamp}!getAsyncData@{getAsyncData}}
+\index{getAsyncData@{getAsyncData}!USBamp@{USBamp}}
+\paragraph[{getAsyncData}]{\setlength{\rightskip}{0pt plus 5cm}vector$<$ float $>$ USBamp::getAsyncData ()\hspace{0.3cm}{\ttfamily  \mbox{[}virtual\mbox{]}}}\hfill}
+\label{class_u_s_bamp_a645a210ffbc5931560f91c8ee6896300}
+
+
+Abstract method to achieve asynchronous data acquisition (method is non-\/blocking). \begin{DoxyReturn}{Returns}
+\hyperlink{class_sample_block}{SampleBlock$<$double$>$}
+\end{DoxyReturn}
+This method return immediately after calling with a copy of the data stored in the device's buffer. It is called from all slave devices. \begin{DoxyWarning}{Warning}
+If hardware clocks are not running with the same sampling rate or drifting (e.g. master -\/ 128Hz, slave 129Hz), this method could be called although no new data is available (master faster than slave) or one sample has been lost (master slower than slave). Up to now no compensation method (e.g. interpolation) has been implemented! 
+\end{DoxyWarning}
+\begin{Desc}
+\item[\hyperlink{todo__todo000009}{Todo}]Implement a compensation method, if clocks are drifting or similar (e.g. interpolation). \end{Desc}
+
+
+Implements \hyperlink{class_h_w_thread_aa709526a915411a495a947f6bc6e06f9}{HWThread}.\hypertarget{class_u_s_bamp_ae5aa6002d425924a95d102f1d890c84c}{
+\index{USBamp@{USBamp}!getSyncData@{getSyncData}}
+\index{getSyncData@{getSyncData}!USBamp@{USBamp}}
+\paragraph[{getSyncData}]{\setlength{\rightskip}{0pt plus 5cm}vector$<$ float $>$ USBamp::getSyncData ()\hspace{0.3cm}{\ttfamily  \mbox{[}virtual\mbox{]}}}\hfill}
+\label{class_u_s_bamp_ae5aa6002d425924a95d102f1d890c84c}
+
+
+Abstract method to achieve synchronous data acquisition (method is blocking). \begin{DoxyReturn}{Returns}
+\hyperlink{class_sample_block}{SampleBlock$<$double$>$}
+\end{DoxyReturn}
+This method returns after new data has been acquired, it is operating in blocking mode. It is called only from the master device. 
+
+Implements \hyperlink{class_h_w_thread_add1215b3e0f06a856330f2debd7ea2fe}{HWThread}.
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+/home/breidi/Dropbox/signalserver/hardware/\hyperlink{usbamp_8h}{usbamp.h}\item 
+/home/breidi/Dropbox/signalserver/hardware/usbamp.cpp\end{DoxyCompactItemize}

@@ -1,0 +1,6 @@
+<map id="G" name="G">
+<area shape="rect" href="$class_h_w_thread.html" title="Base class for all hardware objects." alt="" coords="143,1995,361,2755"/>
+<area shape="rect" href="$class_sample_block.html" title="{SampleBlock\&lt; double \&gt;\n|&#45; blocks\l&#45; channels\l&#45; homogenous\l&#45; curr_block\l&#45; types_ordered\l&#45; types_input\l&#45; block_info\l&#45; samples\l|+ SampleBlock()\l+ ~SampleBlock()\l+ getNrOfBlocks()\l+ getNrOfChannels()\l+ getNrOfSamples()\l+ getNrOfSignalTypes()\l+ deleteSamples()\l+ reset()\l+ at()\l+ operator[]()\l+ init()\l+ getTypes()\l+ getSamples()\l+ getFlagByNr()\l+ getSignalByFlag()\l+ getSignalByNr()\l+ appendBlock()\l+ setSamples()\l&#45; sort()\l&#45; checkBlockIntegrity()\l}" alt="" coords="5,1000,165,1573"/>
+<area shape="rect" href="$class_sample_block.html" title="A container storing and sorting samples directly acquired from a data acquisition..." alt="" coords="7,5,164,579"/>
+<area shape="rect" href="$class_constants.html" title="Class constants manages all constants needed for the signalserver (especially xml..." alt="" coords="189,645,352,1928"/>
+</map>

@@ -1,0 +1,557 @@
+\hypertarget{class_constants}{
+\subsection{Constants Class Reference}
+\label{class_constants}\index{Constants@{Constants}}
+}
+
+
+Class constants manages all constants needed for the signalserver (especially xml tags).  
+
+
+{\ttfamily \#include $<$constants.h$>$}\subsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_constants_af395b3c1d6f0577f4880a21a257aa1db}{Constants} ()
+\begin{DoxyCompactList}\small\item\em Constructor. \item\end{DoxyCompactList}\item 
+\hypertarget{class_constants_a2b04b5b24eacf1edb21b003109f88d8b}{
+virtual \hyperlink{class_constants_a2b04b5b24eacf1edb21b003109f88d8b}{$\sim$Constants} ()}
+\label{class_constants_a2b04b5b24eacf1edb21b003109f88d8b}
+
+\begin{DoxyCompactList}\small\item\em Default destructor. \item\end{DoxyCompactList}\item 
+int \hyperlink{class_constants_a4b37b62ba4036999ec78ee665e0fc99f}{isSupportedHardware} (const string \&s)
+\begin{DoxyCompactList}\small\item\em Checks, if the given string represents supported hardware. \item\end{DoxyCompactList}\item 
+bool \hyperlink{class_constants_a2a0486841708b429d3a9ba6292702dd2}{isSineGen} (const string \&s)
+\begin{DoxyCompactList}\small\item\em Checks, if the given string represents the Sine Generator. \item\end{DoxyCompactList}\item 
+bool \hyperlink{class_constants_a9783854161bd324f9aa14f66d460b7a5}{isUSBamp} (const string \&s)
+\begin{DoxyCompactList}\small\item\em Checks, if the given string represents the g.tec g.USBamp. \item\end{DoxyCompactList}\item 
+bool \hyperlink{class_constants_ac68da3efa9f4431daedf508f0577049e}{isMobilab} (const string \&s)
+\begin{DoxyCompactList}\small\item\em Checks, if the given string represents the g.tec g.Mobilab+. \item\end{DoxyCompactList}\item 
+bool \hyperlink{class_constants_aacd7600c3d6c2dcdd3b6d2740de1c7bd}{equalsOnOrOff} (const string \&s)
+\begin{DoxyCompactList}\small\item\em Maps given strings \char`\"{}on\char`\"{} or \char`\"{}off\char`\"{} to boolean values 0 or 1. \item\end{DoxyCompactList}\item 
+bool \hyperlink{class_constants_a9a808751c766b2f77cc13362b2064d76}{equalsMaster} (const string \&s)
+\begin{DoxyCompactList}\small\item\em Checks, if the given string equals \char`\"{}master\char`\"{}. \item\end{DoxyCompactList}\item 
+bool \hyperlink{class_constants_a55fe8c5ab386f56f6860f9c153800219}{equalsSlave} (const string \&s)
+\begin{DoxyCompactList}\small\item\em Checks, if the given string equals \char`\"{}slave\char`\"{}. \item\end{DoxyCompactList}\item 
+int \hyperlink{class_constants_a7f9f72585321601ca88ed86ccebdac9f}{getUSBampFilter} (const string \&s)
+\begin{DoxyCompactList}\small\item\em Maps a given string to the specific code of this filter at the the g.USBamp. \item\end{DoxyCompactList}\item 
+string \hyperlink{class_constants_a33789e205b2169ce7787859db523b0d2}{getUSBampOpMode} (const string \&s)
+\begin{DoxyCompactList}\small\item\em Maps a given string to the specific OP\_\-MODE of the g.USBamp. \item\end{DoxyCompactList}\item 
+int \hyperlink{class_constants_a1ee954b32810ee811d0f43994c5ca35e}{getUSBampBlockNr} (const string \&s)
+\begin{DoxyCompactList}\small\item\em Maps a given string to the specific g.USBamp channels group (naming on the front of the g.USBamp). \item\end{DoxyCompactList}\item 
+uint32\_\-t \hyperlink{class_constants_a381d9729953ee019bca64e42d89005e7}{getSignalFlag} (const string \&s)
+\begin{DoxyCompactList}\small\item\em Maps a given string to the respective SignalType flag. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_constants_a0b6ab089929104500f677854a89fbab5}{
+static const string {\bfseries tobi}}
+\label{class_constants_a0b6ab089929104500f677854a89fbab5}
+
+\item 
+\hypertarget{class_constants_a920d498dff736af8e68194635fb947a8}{
+static const string {\bfseries subject}}
+\label{class_constants_a920d498dff736af8e68194635fb947a8}
+
+\item 
+\hypertarget{class_constants_a76953ee5a0fab8f3994e6b55d7004e5b}{
+static const string {\bfseries s\_\-id}}
+\label{class_constants_a76953ee5a0fab8f3994e6b55d7004e5b}
+
+\item 
+\hypertarget{class_constants_a608de9ed89ef1405ebf89b9be06c6b89}{
+static const string {\bfseries s\_\-name}}
+\label{class_constants_a608de9ed89ef1405ebf89b9be06c6b89}
+
+\item 
+\hypertarget{class_constants_a2286611139e4d6e9d9612933907a1acf}{
+static const string {\bfseries s\_\-sex}}
+\label{class_constants_a2286611139e4d6e9d9612933907a1acf}
+
+\item 
+\hypertarget{class_constants_a2d0fae67f8390e10da537e20a0b43bd7}{
+static const string {\bfseries s\_\-birthday}}
+\label{class_constants_a2d0fae67f8390e10da537e20a0b43bd7}
+
+\item 
+\hypertarget{class_constants_ad0d8831b6b2373e5ad38e00bac857ea9}{
+static const string \hyperlink{class_constants_ad0d8831b6b2373e5ad38e00bac857ea9}{ss}}
+\label{class_constants_ad0d8831b6b2373e5ad38e00bac857ea9}
+
+\begin{DoxyCompactList}\small\item\em xml-\/tag serversettings \item\end{DoxyCompactList}\item 
+\hypertarget{class_constants_ad2f834d0ad62b968b24bbec6c22684b7}{
+static const string {\bfseries ss\_\-tcp}}
+\label{class_constants_ad2f834d0ad62b968b24bbec6c22684b7}
+
+\item 
+\hypertarget{class_constants_aa96ec7bef3440c3ae53395dd1ed5d210}{
+static const string {\bfseries ss\_\-udp}}
+\label{class_constants_aa96ec7bef3440c3ae53395dd1ed5d210}
+
+\item 
+\hypertarget{class_constants_a5a416c39789ad122d82728943da19842}{
+static const string {\bfseries hardware}}
+\label{class_constants_a5a416c39789ad122d82728943da19842}
+
+\item 
+\hypertarget{class_constants_a0cacbfb5659d634c45340f1b6ce78507}{
+static const string {\bfseries hardware\_\-name}}
+\label{class_constants_a0cacbfb5659d634c45340f1b6ce78507}
+
+\item 
+\hypertarget{class_constants_a192971b30bd0bd2ba45f205981538841}{
+static const string {\bfseries hardware\_\-version}}
+\label{class_constants_a192971b30bd0bd2ba45f205981538841}
+
+\item 
+\hypertarget{class_constants_a2c3e4846e48c9fd5e08518fa80f7167a}{
+static const string {\bfseries hardware\_\-serial}}
+\label{class_constants_a2c3e4846e48c9fd5e08518fa80f7167a}
+
+\item 
+\hypertarget{class_constants_aa12b6f4c5e5570873962588d9e3cef39}{
+static const string {\bfseries hw\_\-mode}}
+\label{class_constants_aa12b6f4c5e5570873962588d9e3cef39}
+
+\item 
+\hypertarget{class_constants_ad73a4dbd7fb804760bad27d9bb8ea827}{
+static const string \hyperlink{class_constants_ad73a4dbd7fb804760bad27d9bb8ea827}{hw\_\-ds}}
+\label{class_constants_ad73a4dbd7fb804760bad27d9bb8ea827}
+
+\begin{DoxyCompactList}\small\item\em xml-\/tag hardware: device\_\-settings \item\end{DoxyCompactList}\item 
+\hypertarget{class_constants_a6920bf9a50a1dfa1082ae6e6ed68dbb7}{
+static const string \hyperlink{class_constants_a6920bf9a50a1dfa1082ae6e6ed68dbb7}{hw\_\-fs}}
+\label{class_constants_a6920bf9a50a1dfa1082ae6e6ed68dbb7}
+
+\begin{DoxyCompactList}\small\item\em xml-\/tag hardware: sampling\_\-rate \item\end{DoxyCompactList}\item 
+\hypertarget{class_constants_a23e18b19e1faf0a6ece4d3db5e8d8126}{
+static const string \hyperlink{class_constants_a23e18b19e1faf0a6ece4d3db5e8d8126}{hw\_\-channels}}
+\label{class_constants_a23e18b19e1faf0a6ece4d3db5e8d8126}
+
+\begin{DoxyCompactList}\small\item\em xml-\/tag hardware: measurement\_\-channels \item\end{DoxyCompactList}\item 
+\hypertarget{class_constants_ae2719649ef8808a7b5d59e349a01b872}{
+static const string \hyperlink{class_constants_ae2719649ef8808a7b5d59e349a01b872}{hw\_\-ch\_\-nr}}
+\label{class_constants_ae2719649ef8808a7b5d59e349a01b872}
+
+\begin{DoxyCompactList}\small\item\em xml-\/tag hardware: nr \item\end{DoxyCompactList}\item 
+\hypertarget{class_constants_a66238c62d9958c8dae779164449d6452}{
+static const string \hyperlink{class_constants_a66238c62d9958c8dae779164449d6452}{hw\_\-ch\_\-names}}
+\label{class_constants_a66238c62d9958c8dae779164449d6452}
+
+\begin{DoxyCompactList}\small\item\em xml-\/tag hardware: names \item\end{DoxyCompactList}\item 
+\hypertarget{class_constants_ae972450bb36940f9f7618308c05575a5}{
+static const string \hyperlink{class_constants_ae972450bb36940f9f7618308c05575a5}{hw\_\-ch\_\-type}}
+\label{class_constants_ae972450bb36940f9f7618308c05575a5}
+
+\begin{DoxyCompactList}\small\item\em xml-\/tag hardware: channel type \item\end{DoxyCompactList}\item 
+\hypertarget{class_constants_a3219051bf73ed186b3e58249c6eb6727}{
+static const string \hyperlink{class_constants_a3219051bf73ed186b3e58249c6eb6727}{hw\_\-buffer}}
+\label{class_constants_a3219051bf73ed186b3e58249c6eb6727}
+
+\begin{DoxyCompactList}\small\item\em xml-\/tag hardware: blocksize \item\end{DoxyCompactList}\item 
+\hypertarget{class_constants_a076f87393177a84abd299729d22fadc7}{
+static const string \hyperlink{class_constants_a076f87393177a84abd299729d22fadc7}{hw\_\-fil}}
+\label{class_constants_a076f87393177a84abd299729d22fadc7}
+
+\begin{DoxyCompactList}\small\item\em xml-\/tag hardware: filter \item\end{DoxyCompactList}\item 
+\hypertarget{class_constants_ab874cba7cbc1cd80986e5e2048d623c2}{
+static const string \hyperlink{class_constants_ab874cba7cbc1cd80986e5e2048d623c2}{hw\_\-fil\_\-type}}
+\label{class_constants_ab874cba7cbc1cd80986e5e2048d623c2}
+
+\begin{DoxyCompactList}\small\item\em xml-\/tag hardware: filter type \item\end{DoxyCompactList}\item 
+\hypertarget{class_constants_aa207ddb2d41abcd54769cb7c798b82ab}{
+static const string \hyperlink{class_constants_aa207ddb2d41abcd54769cb7c798b82ab}{hw\_\-fil\_\-order}}
+\label{class_constants_aa207ddb2d41abcd54769cb7c798b82ab}
+
+\begin{DoxyCompactList}\small\item\em xml-\/tag hardware: filter order \item\end{DoxyCompactList}\item 
+\hypertarget{class_constants_ac20f05225d82755ee205288ad8f8ea94}{
+static const string \hyperlink{class_constants_ac20f05225d82755ee205288ad8f8ea94}{hw\_\-fil\_\-low}}
+\label{class_constants_ac20f05225d82755ee205288ad8f8ea94}
+
+\begin{DoxyCompactList}\small\item\em xml-\/tag hardware: filter lower cutoff freq. \item\end{DoxyCompactList}\item 
+\hypertarget{class_constants_a3a6cc8e92eac248fa93ff9f932303216}{
+static const string \hyperlink{class_constants_a3a6cc8e92eac248fa93ff9f932303216}{hw\_\-fil\_\-high}}
+\label{class_constants_a3a6cc8e92eac248fa93ff9f932303216}
+
+\begin{DoxyCompactList}\small\item\em xml-\/tag hardware: filter upper cutoff freq. \item\end{DoxyCompactList}\item 
+\hypertarget{class_constants_a4a41d175f238dbd2b845a8f982f770eb}{
+static const string \hyperlink{class_constants_a4a41d175f238dbd2b845a8f982f770eb}{hw\_\-not}}
+\label{class_constants_a4a41d175f238dbd2b845a8f982f770eb}
+
+\begin{DoxyCompactList}\small\item\em xml-\/tag hardware: notch\_\-filter \item\end{DoxyCompactList}\item 
+\hypertarget{class_constants_a3eccc05b6f16b685e0d61f1e5bc5a3a5}{
+static const string \hyperlink{class_constants_a3eccc05b6f16b685e0d61f1e5bc5a3a5}{hw\_\-not\_\-center}}
+\label{class_constants_a3eccc05b6f16b685e0d61f1e5bc5a3a5}
+
+\begin{DoxyCompactList}\small\item\em xml-\/tag hardware: notch center freq. \item\end{DoxyCompactList}\item 
+\hypertarget{class_constants_ae66841cf0b9857cd86d2fdbd9fc83d75}{
+static const string \hyperlink{class_constants_ae66841cf0b9857cd86d2fdbd9fc83d75}{hw\_\-opmode}}
+\label{class_constants_ae66841cf0b9857cd86d2fdbd9fc83d75}
+
+\begin{DoxyCompactList}\small\item\em \hyperlink{class_u_s_bamp}{USBamp} specific. \item\end{DoxyCompactList}\item 
+\hypertarget{class_constants_a61c8124ab4ebe64beb5a387bf1190ddb}{
+static const string \hyperlink{class_constants_a61c8124ab4ebe64beb5a387bf1190ddb}{hw\_\-sc}}
+\label{class_constants_a61c8124ab4ebe64beb5a387bf1190ddb}
+
+\begin{DoxyCompactList}\small\item\em \hyperlink{class_u_s_bamp}{USBamp} specific. \item\end{DoxyCompactList}\item 
+\hypertarget{class_constants_aeb681d3d9b4157ef96408f87dbdd0359}{
+static const string \hyperlink{class_constants_aeb681d3d9b4157ef96408f87dbdd0359}{hw\_\-usbampmaster}}
+\label{class_constants_aeb681d3d9b4157ef96408f87dbdd0359}
+
+\begin{DoxyCompactList}\small\item\em \hyperlink{class_u_s_bamp}{USBamp} specific. \item\end{DoxyCompactList}\item 
+\hypertarget{class_constants_a76b99b28a0eee088bc1f51e0eca031e1}{
+static const string \hyperlink{class_constants_a76b99b28a0eee088bc1f51e0eca031e1}{hw\_\-comgnd}}
+\label{class_constants_a76b99b28a0eee088bc1f51e0eca031e1}
+
+\begin{DoxyCompactList}\small\item\em \hyperlink{class_u_s_bamp}{USBamp} specific. \item\end{DoxyCompactList}\item 
+\hypertarget{class_constants_a02f39b058870cdc4864a911d89aef4e6}{
+static const string \hyperlink{class_constants_a02f39b058870cdc4864a911d89aef4e6}{hw\_\-gnd}}
+\label{class_constants_a02f39b058870cdc4864a911d89aef4e6}
+
+\begin{DoxyCompactList}\small\item\em \hyperlink{class_u_s_bamp}{USBamp} specific. \item\end{DoxyCompactList}\item 
+\hypertarget{class_constants_ab28567b0cac5b32c208e90e44a26b83e}{
+static const string \hyperlink{class_constants_ab28567b0cac5b32c208e90e44a26b83e}{hw\_\-gnd\_\-block}}
+\label{class_constants_ab28567b0cac5b32c208e90e44a26b83e}
+
+\begin{DoxyCompactList}\small\item\em \hyperlink{class_u_s_bamp}{USBamp} specific. \item\end{DoxyCompactList}\item 
+\hypertarget{class_constants_a724834409c254ea04f0ca0bdf2985eae}{
+static const string \hyperlink{class_constants_a724834409c254ea04f0ca0bdf2985eae}{hw\_\-gnd\_\-value}}
+\label{class_constants_a724834409c254ea04f0ca0bdf2985eae}
+
+\begin{DoxyCompactList}\small\item\em \hyperlink{class_u_s_bamp}{USBamp} specific. \item\end{DoxyCompactList}\item 
+\hypertarget{class_constants_a358df25bb90a9b5155b53ccfca6c5ba3}{
+static const string \hyperlink{class_constants_a358df25bb90a9b5155b53ccfca6c5ba3}{hw\_\-comref}}
+\label{class_constants_a358df25bb90a9b5155b53ccfca6c5ba3}
+
+\begin{DoxyCompactList}\small\item\em \hyperlink{class_u_s_bamp}{USBamp} specific. \item\end{DoxyCompactList}\item 
+\hypertarget{class_constants_acd021abb7cb750e437b377164b7335b2}{
+static const string \hyperlink{class_constants_acd021abb7cb750e437b377164b7335b2}{hw\_\-cr}}
+\label{class_constants_acd021abb7cb750e437b377164b7335b2}
+
+\begin{DoxyCompactList}\small\item\em \hyperlink{class_u_s_bamp}{USBamp} specific. \item\end{DoxyCompactList}\item 
+\hypertarget{class_constants_a47cad4439f7b4eaa8c0cba3570cad206}{
+static const string \hyperlink{class_constants_a47cad4439f7b4eaa8c0cba3570cad206}{hw\_\-cr\_\-block}}
+\label{class_constants_a47cad4439f7b4eaa8c0cba3570cad206}
+
+\begin{DoxyCompactList}\small\item\em \hyperlink{class_u_s_bamp}{USBamp} specific. \item\end{DoxyCompactList}\item 
+\hypertarget{class_constants_ae8d8bcd54771ba47032a89dab952cef8}{
+static const string \hyperlink{class_constants_ae8d8bcd54771ba47032a89dab952cef8}{hw\_\-cr\_\-value}}
+\label{class_constants_ae8d8bcd54771ba47032a89dab952cef8}
+
+\begin{DoxyCompactList}\small\item\em \hyperlink{class_u_s_bamp}{USBamp} specific. \item\end{DoxyCompactList}\item 
+\hypertarget{class_constants_a63bbd6df5195bd089e2728062c52242e}{
+static const string \hyperlink{class_constants_a63bbd6df5195bd089e2728062c52242e}{hw\_\-cs}}
+\label{class_constants_a63bbd6df5195bd089e2728062c52242e}
+
+\begin{DoxyCompactList}\small\item\em xml-\/tag hardware -\/-\/ channel\_\-settings \item\end{DoxyCompactList}\item 
+\hypertarget{class_constants_a4bf4828ac9bfb4d2e8b7af2aa0f8e5de}{
+static const string \hyperlink{class_constants_a4bf4828ac9bfb4d2e8b7af2aa0f8e5de}{hw\_\-sel}}
+\label{class_constants_a4bf4828ac9bfb4d2e8b7af2aa0f8e5de}
+
+\begin{DoxyCompactList}\small\item\em xml-\/tag hardware: selection \item\end{DoxyCompactList}\item 
+\hypertarget{class_constants_ab75ae669015705d1b29f8c4884f4d88d}{
+static const string \hyperlink{class_constants_ab75ae669015705d1b29f8c4884f4d88d}{hw\_\-cs\_\-ch}}
+\label{class_constants_ab75ae669015705d1b29f8c4884f4d88d}
+
+\begin{DoxyCompactList}\small\item\em xml-\/tag hardware: ch \item\end{DoxyCompactList}\item 
+\hypertarget{class_constants_a2359263b2ae0c082f086016f1fd422a3}{
+static const string \hyperlink{class_constants_a2359263b2ae0c082f086016f1fd422a3}{hw\_\-cs\_\-nr}}
+\label{class_constants_a2359263b2ae0c082f086016f1fd422a3}
+
+\begin{DoxyCompactList}\small\item\em xml-\/tag hardware: nr \item\end{DoxyCompactList}\item 
+\hypertarget{class_constants_aff1b12806f06dd5afddc4fe2019d0c7f}{
+static const string \hyperlink{class_constants_aff1b12806f06dd5afddc4fe2019d0c7f}{hw\_\-cs\_\-name}}
+\label{class_constants_aff1b12806f06dd5afddc4fe2019d0c7f}
+
+\begin{DoxyCompactList}\small\item\em xml-\/tag hardware: name \item\end{DoxyCompactList}\item 
+\hypertarget{class_constants_a49bfba487b208469cb3749bf031eebe0}{
+static const string \hyperlink{class_constants_a49bfba487b208469cb3749bf031eebe0}{hw\_\-bip}}
+\label{class_constants_a49bfba487b208469cb3749bf031eebe0}
+
+\begin{DoxyCompactList}\small\item\em \hyperlink{class_u_s_bamp}{USBamp} specific. \item\end{DoxyCompactList}\item 
+\hypertarget{class_constants_a8223f53ce1ae658ebcc0851149c384d2}{
+static const string \hyperlink{class_constants_a8223f53ce1ae658ebcc0851149c384d2}{hw\_\-bip\_\-with}}
+\label{class_constants_a8223f53ce1ae658ebcc0851149c384d2}
+
+\begin{DoxyCompactList}\small\item\em \hyperlink{class_u_s_bamp}{USBamp} specific. \item\end{DoxyCompactList}\item 
+\hypertarget{class_constants_aa43fcfcb213537724917c3fce27b8daf}{
+static const string \hyperlink{class_constants_aa43fcfcb213537724917c3fce27b8daf}{hw\_\-drl}}
+\label{class_constants_aa43fcfcb213537724917c3fce27b8daf}
+
+\begin{DoxyCompactList}\small\item\em \hyperlink{class_u_s_bamp}{USBamp} specific. \item\end{DoxyCompactList}\item 
+\hypertarget{class_constants_ad51c0dee8250fa2871cbe41fd4a35f0a}{
+static const string \hyperlink{class_constants_ad51c0dee8250fa2871cbe41fd4a35f0a}{hw\_\-drl\_\-value}}
+\label{class_constants_ad51c0dee8250fa2871cbe41fd4a35f0a}
+
+\begin{DoxyCompactList}\small\item\em \hyperlink{class_u_s_bamp}{USBamp} specific. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsubsection{Detailed Description}
+Class constants manages all constants needed for the signalserver (especially xml tags). This class is built to avoid hardcoded values or strings directly in the code, especially needed for parsing xml strings. All members are defined as public static const. This class also manages hardware naming and checks predefined strings on correctnes (e.g. master, slave, ...) It also links defined SignalType values to their respective name (e.g. 0x01 -\/$>$ eeg) -\/-\/$>$ see also \hyperlink{defines_8h}{defines.h} 
+
+\subsubsection{Constructor \& Destructor Documentation}
+\hypertarget{class_constants_af395b3c1d6f0577f4880a21a257aa1db}{
+\index{Constants@{Constants}!Constants@{Constants}}
+\index{Constants@{Constants}!Constants@{Constants}}
+\paragraph[{Constants}]{\setlength{\rightskip}{0pt plus 5cm}Constants::Constants ()}\hfill}
+\label{class_constants_af395b3c1d6f0577f4880a21a257aa1db}
+
+
+Constructor. Initialization of all private members. Definition of new hardware naming or similar has to be done here! Inserting data into private member variables (e.g. mapping string \char`\"{}eeg\char`\"{} and SignalType definition for EEG together). 
+
+\subsubsection{Member Function Documentation}
+\hypertarget{class_constants_a9a808751c766b2f77cc13362b2064d76}{
+\index{Constants@{Constants}!equalsMaster@{equalsMaster}}
+\index{equalsMaster@{equalsMaster}!Constants@{Constants}}
+\paragraph[{equalsMaster}]{\setlength{\rightskip}{0pt plus 5cm}bool Constants::equalsMaster (const string \& {\em s})}\hfill}
+\label{class_constants_a9a808751c766b2f77cc13362b2064d76}
+
+
+Checks, if the given string equals \char`\"{}master\char`\"{}. 
+\begin{DoxyParams}{Parameters}
+\item[\mbox{$\leftarrow$} {\em s}]String to be checked. \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Bool 
+\end{DoxyReturn}
+
+
+Here is the caller graph for this function:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=204pt]{class_constants_a9a808751c766b2f77cc13362b2064d76_icgraph}
+\end{center}
+\end{figure}
+\hypertarget{class_constants_aacd7600c3d6c2dcdd3b6d2740de1c7bd}{
+\index{Constants@{Constants}!equalsOnOrOff@{equalsOnOrOff}}
+\index{equalsOnOrOff@{equalsOnOrOff}!Constants@{Constants}}
+\paragraph[{equalsOnOrOff}]{\setlength{\rightskip}{0pt plus 5cm}bool Constants::equalsOnOrOff (const string \& {\em s})}\hfill}
+\label{class_constants_aacd7600c3d6c2dcdd3b6d2740de1c7bd}
+
+
+Maps given strings \char`\"{}on\char`\"{} or \char`\"{}off\char`\"{} to boolean values 0 or 1. 
+\begin{DoxyParams}{Parameters}
+\item[\mbox{$\leftarrow$} {\em s}]String to be checked. \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Bool 
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+\item[{\em ticpp::Exception}]thrown if string neither on or off! \end{DoxyExceptions}
+\hypertarget{class_constants_a55fe8c5ab386f56f6860f9c153800219}{
+\index{Constants@{Constants}!equalsSlave@{equalsSlave}}
+\index{equalsSlave@{equalsSlave}!Constants@{Constants}}
+\paragraph[{equalsSlave}]{\setlength{\rightskip}{0pt plus 5cm}bool Constants::equalsSlave (const string \& {\em s})}\hfill}
+\label{class_constants_a55fe8c5ab386f56f6860f9c153800219}
+
+
+Checks, if the given string equals \char`\"{}slave\char`\"{}. 
+\begin{DoxyParams}{Parameters}
+\item[\mbox{$\leftarrow$} {\em s}]String to be checked. \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Bool 
+\end{DoxyReturn}
+
+
+Here is the caller graph for this function:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=201pt]{class_constants_a55fe8c5ab386f56f6860f9c153800219_icgraph}
+\end{center}
+\end{figure}
+\hypertarget{class_constants_a381d9729953ee019bca64e42d89005e7}{
+\index{Constants@{Constants}!getSignalFlag@{getSignalFlag}}
+\index{getSignalFlag@{getSignalFlag}!Constants@{Constants}}
+\paragraph[{getSignalFlag}]{\setlength{\rightskip}{0pt plus 5cm}uint32\_\-t Constants::getSignalFlag (const string \& {\em s})}\hfill}
+\label{class_constants_a381d9729953ee019bca64e42d89005e7}
+
+
+Maps a given string to the respective SignalType flag. 
+\begin{DoxyParams}{Parameters}
+\item[\mbox{$\leftarrow$} {\em s}]String to be checked. \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+flag 
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+\item[{\em ticpp::Exception}]thrown if string not representing any valid signaltype! \end{DoxyExceptions}
+
+
+Here is the caller graph for this function:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=182pt]{class_constants_a381d9729953ee019bca64e42d89005e7_icgraph}
+\end{center}
+\end{figure}
+\hypertarget{class_constants_a1ee954b32810ee811d0f43994c5ca35e}{
+\index{Constants@{Constants}!getUSBampBlockNr@{getUSBampBlockNr}}
+\index{getUSBampBlockNr@{getUSBampBlockNr}!Constants@{Constants}}
+\paragraph[{getUSBampBlockNr}]{\setlength{\rightskip}{0pt plus 5cm}int Constants::getUSBampBlockNr (const string \& {\em s})}\hfill}
+\label{class_constants_a1ee954b32810ee811d0f43994c5ca35e}
+
+
+Maps a given string to the specific g.USBamp channels group (naming on the front of the g.USBamp). 
+\begin{DoxyParams}{Parameters}
+\item[\mbox{$\leftarrow$} {\em s}]String to be checked. \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+block\_\-id 
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+\item[{\em ticpp::Exception}]thrown if channel group naming not found! \end{DoxyExceptions}
+\hypertarget{class_constants_a7f9f72585321601ca88ed86ccebdac9f}{
+\index{Constants@{Constants}!getUSBampFilter@{getUSBampFilter}}
+\index{getUSBampFilter@{getUSBampFilter}!Constants@{Constants}}
+\paragraph[{getUSBampFilter}]{\setlength{\rightskip}{0pt plus 5cm}int Constants::getUSBampFilter (const string \& {\em s})}\hfill}
+\label{class_constants_a7f9f72585321601ca88ed86ccebdac9f}
+
+
+Maps a given string to the specific code of this filter at the the g.USBamp. 
+\begin{DoxyParams}{Parameters}
+\item[\mbox{$\leftarrow$} {\em s}]String to be checked. \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+FilterID 
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+\item[{\em ticpp::Exception}]thrown if filter name not found! \end{DoxyExceptions}
+\hypertarget{class_constants_a33789e205b2169ce7787859db523b0d2}{
+\index{Constants@{Constants}!getUSBampOpMode@{getUSBampOpMode}}
+\index{getUSBampOpMode@{getUSBampOpMode}!Constants@{Constants}}
+\paragraph[{getUSBampOpMode}]{\setlength{\rightskip}{0pt plus 5cm}string Constants::getUSBampOpMode (const string \& {\em s})}\hfill}
+\label{class_constants_a33789e205b2169ce7787859db523b0d2}
+
+
+Maps a given string to the specific OP\_\-MODE of the g.USBamp. 
+\begin{DoxyParams}{Parameters}
+\item[\mbox{$\leftarrow$} {\em s}]String to be checked. \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+OP\_\-MODE string 
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+\item[{\em ticpp::Exception}]thrown if OP\_\-MODE name not found! \end{DoxyExceptions}
+\hypertarget{class_constants_ac68da3efa9f4431daedf508f0577049e}{
+\index{Constants@{Constants}!isMobilab@{isMobilab}}
+\index{isMobilab@{isMobilab}!Constants@{Constants}}
+\paragraph[{isMobilab}]{\setlength{\rightskip}{0pt plus 5cm}bool Constants::isMobilab (const string \& {\em s})}\hfill}
+\label{class_constants_ac68da3efa9f4431daedf508f0577049e}
+
+
+Checks, if the given string represents the g.tec g.Mobilab+. 
+\begin{DoxyParams}{Parameters}
+\item[\mbox{$\leftarrow$} {\em s}]String to be checked. \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Bool 
+\end{DoxyReturn}
+
+
+Here is the call graph for this function:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=174pt]{class_constants_ac68da3efa9f4431daedf508f0577049e_cgraph}
+\end{center}
+\end{figure}
+
+
+Here is the caller graph for this function:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=153pt]{class_constants_ac68da3efa9f4431daedf508f0577049e_icgraph}
+\end{center}
+\end{figure}
+\hypertarget{class_constants_a2a0486841708b429d3a9ba6292702dd2}{
+\index{Constants@{Constants}!isSineGen@{isSineGen}}
+\index{isSineGen@{isSineGen}!Constants@{Constants}}
+\paragraph[{isSineGen}]{\setlength{\rightskip}{0pt plus 5cm}bool Constants::isSineGen (const string \& {\em s})}\hfill}
+\label{class_constants_a2a0486841708b429d3a9ba6292702dd2}
+
+
+Checks, if the given string represents the Sine Generator. 
+\begin{DoxyParams}{Parameters}
+\item[\mbox{$\leftarrow$} {\em s}]String to be checked. \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Bool 
+\end{DoxyReturn}
+
+
+Here is the call graph for this function:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=176pt]{class_constants_a2a0486841708b429d3a9ba6292702dd2_cgraph}
+\end{center}
+\end{figure}
+
+
+Here is the caller graph for this function:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=155pt]{class_constants_a2a0486841708b429d3a9ba6292702dd2_icgraph}
+\end{center}
+\end{figure}
+\hypertarget{class_constants_a4b37b62ba4036999ec78ee665e0fc99f}{
+\index{Constants@{Constants}!isSupportedHardware@{isSupportedHardware}}
+\index{isSupportedHardware@{isSupportedHardware}!Constants@{Constants}}
+\paragraph[{isSupportedHardware}]{\setlength{\rightskip}{0pt plus 5cm}int Constants::isSupportedHardware (const string \& {\em s})}\hfill}
+\label{class_constants_a4b37b62ba4036999ec78ee665e0fc99f}
+
+
+Checks, if the given string represents supported hardware. 
+\begin{DoxyParams}{Parameters}
+\item[\mbox{$\leftarrow$} {\em s}]String to be checked. \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Unique identifier representing the given string. 
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+\item[{\em ticpp::Exception}]thrown if string representing hardware not found! \end{DoxyExceptions}
+
+
+Here is the caller graph for this function:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=254pt]{class_constants_a4b37b62ba4036999ec78ee665e0fc99f_icgraph}
+\end{center}
+\end{figure}
+\hypertarget{class_constants_a9783854161bd324f9aa14f66d460b7a5}{
+\index{Constants@{Constants}!isUSBamp@{isUSBamp}}
+\index{isUSBamp@{isUSBamp}!Constants@{Constants}}
+\paragraph[{isUSBamp}]{\setlength{\rightskip}{0pt plus 5cm}bool Constants::isUSBamp (const string \& {\em s})}\hfill}
+\label{class_constants_a9783854161bd324f9aa14f66d460b7a5}
+
+
+Checks, if the given string represents the g.tec g.USBamp. 
+\begin{DoxyParams}{Parameters}
+\item[\mbox{$\leftarrow$} {\em s}]String to be checked. \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Bool 
+\end{DoxyReturn}
+
+
+Here is the call graph for this function:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=177pt]{class_constants_a9783854161bd324f9aa14f66d460b7a5_cgraph}
+\end{center}
+\end{figure}
+
+
+Here is the caller graph for this function:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=156pt]{class_constants_a9783854161bd324f9aa14f66d460b7a5_icgraph}
+\end{center}
+\end{figure}
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+/home/breidi/Dropbox/signalserver/\hyperlink{constants_8h}{constants.h}\item 
+/home/breidi/Dropbox/signalserver/constants.cpp\end{DoxyCompactItemize}

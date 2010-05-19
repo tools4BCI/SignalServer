@@ -1,0 +1,215 @@
+\hypertarget{class_sample_block}{
+\subsection{SampleBlock$<$ T $>$ Class Template Reference}
+\label{class_sample_block}\index{SampleBlock@{SampleBlock}}
+}
+
+
+A container storing and sorting samples directly acquired from a data acquisition device.  
+
+
+{\ttfamily \#include $<$sample\_\-block.h$>$}Inheritance diagram for SampleBlock$<$ T $>$:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=400pt]{class_sample_block__inherit__graph}
+\end{center}
+\end{figure}
+\subsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_sample_block_a293d0fc6db0b4c2489bb1d466bd5aa1d}{
+\hyperlink{class_sample_block_a293d0fc6db0b4c2489bb1d466bd5aa1d}{SampleBlock} ()}
+\label{class_sample_block_a293d0fc6db0b4c2489bb1d466bd5aa1d}
+
+\begin{DoxyCompactList}\small\item\em Default constructor -\/-\/ building an empty \hyperlink{class_sample_block}{SampleBlock} (unusable before \hyperlink{class_sample_block_aaa6f432732f41a4442aa5c686a47d1ff}{init()}). \item\end{DoxyCompactList}\item 
+\hypertarget{class_sample_block_a1041da708c6f36acb8773a02960b930d}{
+virtual \hyperlink{class_sample_block_a1041da708c6f36acb8773a02960b930d}{$\sim$SampleBlock} ()}
+\label{class_sample_block_a1041da708c6f36acb8773a02960b930d}
+
+\begin{DoxyCompactList}\small\item\em Default Destructor. \item\end{DoxyCompactList}\item 
+\hypertarget{class_sample_block_a5084a147b1413e610a1074300decdc1a}{
+uint16\_\-t \hyperlink{class_sample_block_a5084a147b1413e610a1074300decdc1a}{getNrOfBlocks} ()}
+\label{class_sample_block_a5084a147b1413e610a1074300decdc1a}
+
+\begin{DoxyCompactList}\small\item\em Return the blocksize, the data can be stored with. \item\end{DoxyCompactList}\item 
+\hypertarget{class_sample_block_a42988573b881e24c441ac0a316ddc437}{
+uint16\_\-t \hyperlink{class_sample_block_a42988573b881e24c441ac0a316ddc437}{getNrOfChannels} ()}
+\label{class_sample_block_a42988573b881e24c441ac0a316ddc437}
+
+\begin{DoxyCompactList}\small\item\em Return the number of channels that can be stored in the \hyperlink{class_sample_block}{SampleBlock}. \item\end{DoxyCompactList}\item 
+\hypertarget{class_sample_block_a1377bb6219170cb500014c7a4798d85f}{
+uint16\_\-t \hyperlink{class_sample_block_a1377bb6219170cb500014c7a4798d85f}{getNrOfSamples} ()}
+\label{class_sample_block_a1377bb6219170cb500014c7a4798d85f}
+
+\begin{DoxyCompactList}\small\item\em Return the amount of samples stored in the \hyperlink{class_sample_block}{SampleBlock}. \item\end{DoxyCompactList}\item 
+\hypertarget{class_sample_block_a51555d1917386e8967244601e4e0fae1}{
+uint16\_\-t \hyperlink{class_sample_block_a51555d1917386e8967244601e4e0fae1}{getNrOfSignalTypes} ()}
+\label{class_sample_block_a51555d1917386e8967244601e4e0fae1}
+
+\begin{DoxyCompactList}\small\item\em Return the number of different signal types that can be stored in the \hyperlink{class_sample_block}{SampleBlock}. \item\end{DoxyCompactList}\item 
+\hypertarget{class_sample_block_a034809085d86ec523df7007e5246c9a6}{
+void \hyperlink{class_sample_block_a034809085d86ec523df7007e5246c9a6}{deleteSamples} ()}
+\label{class_sample_block_a034809085d86ec523df7007e5246c9a6}
+
+\begin{DoxyCompactList}\small\item\em Delete all samples stored in the \hyperlink{class_sample_block}{SampleBlock}. \item\end{DoxyCompactList}\item 
+\hypertarget{class_sample_block_a5e5ff6e8c7af6bcffa666295b944cd9a}{
+void \hyperlink{class_sample_block_a5e5ff6e8c7af6bcffa666295b944cd9a}{reset} ()}
+\label{class_sample_block_a5e5ff6e8c7af6bcffa666295b944cd9a}
+
+\begin{DoxyCompactList}\small\item\em Sets the block counter for blocks to be appended bach to zero. \item\end{DoxyCompactList}\item 
+T \hyperlink{class_sample_block_a7f15495c776af47b315a6b343c664fa5}{at} (uint32\_\-t n)
+\begin{DoxyCompactList}\small\item\em Access the n-\/th sample. \item\end{DoxyCompactList}\item 
+\hypertarget{class_sample_block_a433971bd89a7ad2426790f3262d0d75b}{
+T \hyperlink{class_sample_block_a433971bd89a7ad2426790f3262d0d75b}{operator\mbox{[}$\,$\mbox{]}} (uint32\_\-t n)}
+\label{class_sample_block_a433971bd89a7ad2426790f3262d0d75b}
+
+\begin{DoxyCompactList}\small\item\em Access the n-\/th sample. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_sample_block_aaa6f432732f41a4442aa5c686a47d1ff}{init} (uint16\_\-t blocksize, uint16\_\-t nr\_\-ch, vector$<$ uint32\_\-t $>$ sig\_\-types)
+\begin{DoxyCompactList}\small\item\em Sets the block counter for blocks to be appended bach to zero. \item\end{DoxyCompactList}\item 
+vector$<$ uint32\_\-t $>$ \hyperlink{class_sample_block_a88392883021407912963d869b7327c64}{getTypes} ()
+\begin{DoxyCompactList}\small\item\em Get a vector with the signal types to be stored in the \hyperlink{class_sample_block}{SampleBlock}. \item\end{DoxyCompactList}\item 
+vector$<$ T $>$ \hyperlink{class_sample_block_ab1764078cb18780d0d134494ee8aeb9e}{getSamples} ()
+\begin{DoxyCompactList}\small\item\em Get a vector with all samples stored. \item\end{DoxyCompactList}\item 
+uint32\_\-t \hyperlink{class_sample_block_ac07d28e24acdb26340ad96f7810be414}{getFlagByNr} (uint32\_\-t nr)
+\begin{DoxyCompactList}\small\item\em Get the flag of the n-\/th signal type. \item\end{DoxyCompactList}\item 
+vector$<$ T $>$ \hyperlink{class_sample_block_a2a2d427f69288002f5c5512f9e9a3d83}{getSignalByFlag} (uint32\_\-t flag)
+\begin{DoxyCompactList}\small\item\em Get a vector containing samples defined by a flag. \item\end{DoxyCompactList}\item 
+vector$<$ T $>$ \hyperlink{class_sample_block_a1a6a7cf636807d2c3595031ca4d5cbed}{getSignalByNr} (uint32\_\-t nr)
+\begin{DoxyCompactList}\small\item\em Get samples of the n-\/th signal type stored. \item\end{DoxyCompactList}\item 
+void \hyperlink{class_sample_block_afad40888932bc8378a7598fd2546317c}{appendBlock} (vector$<$ T $>$ v)
+\begin{DoxyCompactList}\small\item\em Append samples to the \hyperlink{class_sample_block}{SampleBlock}. (used to build blocked data). \item\end{DoxyCompactList}\item 
+void \hyperlink{class_sample_block_acb823540844a192e12069a065cc607e8}{setSamples} (vector$<$ T $>$ v)
+\begin{DoxyCompactList}\small\item\em Directly set samples into the \hyperlink{class_sample_block}{SampleBlock}. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsubsection{Detailed Description}
+\subsubsection*{template$<$class T$>$ class SampleBlock$<$ T $>$}
+
+A container storing and sorting samples directly acquired from a data acquisition device. 
+\begin{DoxyTemplParams}{Template Parameters}
+\item[{\em T}]Datatype to be used to store samples in this class.\end{DoxyTemplParams}
+A \hyperlink{class_sample_block}{SampleBlock} stores samples directly acquired from a data acquisition device and sorts them internally in the correct ascending order (by their signal type -\/-\/ EEG first, then EMG, ... see \hyperlink{defines_8h}{defines.h} for signal types and their order). The sorting is done by a simple bubble-\/sort algorithm. A \hyperlink{class_sample_block}{SampleBlock} can handle blocked and non-\/blocked data. Non-\/blocked data is stored as one channel in an element of a vector with first the channels of one signal type ascending order and afterwards the signal types also in ascending order. -\/-\/$>$ e.g. EEG\_\-ch1 EEG\_\-ch2 EEG\_\-ch4 EMG\_\-ch3 EMG\_\-ch6 .... (if signal types are not conected ascending to the hardware device, the sample block will reorder the channels like demostrated above -\/-\/ an EMG channel was placed \char`\"{}between\char`\"{} EEG channels and channel 5 was left blank) Using a blocked data acquisition samples are stored that way: -\/-\/$>$ e.g. EEG\_\-ch1\_\-bl1 EEG\_\-ch1\_\-bl2 EEG\_\-ch2\_\-bl1 EEG\_\-ch2\_\-bl2 EEG\_\-ch4\_\-bl1 EEG\_\-ch4\_\-bl2 EMG\_\-ch3\_\-bl1 EMG\_\-ch3\_\-bl2 EMG\_\-ch6\_\-bl1 EMG\_\-ch6\_\-bl2 Blocked data storage can be achieved by sampling without blocks and appending samples to the \hyperlink{class_sample_block}{SampleBlock} (\hyperlink{class_sample_block_afad40888932bc8378a7598fd2546317c}{appendBlock()}) or by inserting a samples vector containing already blocked data.
+
+The number of channels and the blocksize have to be defined by initializing the \hyperlink{class_sample_block}{SampleBlock}. \begin{DoxyWarning}{Warning}
+Inserting more or less samples than defined through channels and blocks is not possible! 
+\end{DoxyWarning}
+
+
+\subsubsection{Member Function Documentation}
+\hypertarget{class_sample_block_afad40888932bc8378a7598fd2546317c}{
+\index{SampleBlock@{SampleBlock}!appendBlock@{appendBlock}}
+\index{appendBlock@{appendBlock}!SampleBlock@{SampleBlock}}
+\paragraph[{appendBlock}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T$>$ void {\bf SampleBlock}$<$ T $>$::appendBlock (vector$<$ T $>$ {\em v})\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}\hfill}
+\label{class_sample_block_afad40888932bc8378a7598fd2546317c}
+
+
+Append samples to the \hyperlink{class_sample_block}{SampleBlock}. (used to build blocked data). 
+\begin{DoxyParams}{Parameters}
+\item[\mbox{$\leftarrow$} {\em v}]A vector containing the samples to be appended. (vector must not contain already blocked data!) \end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+\item[{\em std::length\_\-error}]if v.size does not equal channels or trying to append more blocks than defined. \end{DoxyExceptions}
+\begin{Desc}
+\item[\hyperlink{todo__todo000011}{Todo}]If needed: Possibility to append already blocked data. \end{Desc}
+\hypertarget{class_sample_block_a7f15495c776af47b315a6b343c664fa5}{
+\index{SampleBlock@{SampleBlock}!at@{at}}
+\index{at@{at}!SampleBlock@{SampleBlock}}
+\paragraph[{at}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T$>$ T {\bf SampleBlock}$<$ T $>$::at (uint32\_\-t {\em n})\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}\hfill}
+\label{class_sample_block_a7f15495c776af47b315a6b343c664fa5}
+
+
+Access the n-\/th sample. 
+\begin{DoxyExceptions}{Exceptions}
+\item[{\em std::out\_\-of\_\-range}]\end{DoxyExceptions}
+\hypertarget{class_sample_block_ac07d28e24acdb26340ad96f7810be414}{
+\index{SampleBlock@{SampleBlock}!getFlagByNr@{getFlagByNr}}
+\index{getFlagByNr@{getFlagByNr}!SampleBlock@{SampleBlock}}
+\paragraph[{getFlagByNr}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T$>$ uint32\_\-t {\bf SampleBlock}$<$ T $>$::getFlagByNr (uint32\_\-t {\em nr})\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}\hfill}
+\label{class_sample_block_ac07d28e24acdb26340ad96f7810be414}
+
+
+Get the flag of the n-\/th signal type. \begin{DoxyReturn}{Returns}
+The flag. 
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+\item[{\em std::invalid\_\-argument}]if n bigger than the number of signal types stored. \end{DoxyExceptions}
+\hypertarget{class_sample_block_ab1764078cb18780d0d134494ee8aeb9e}{
+\index{SampleBlock@{SampleBlock}!getSamples@{getSamples}}
+\index{getSamples@{getSamples}!SampleBlock@{SampleBlock}}
+\paragraph[{getSamples}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T$>$ vector$<$T$>$ {\bf SampleBlock}$<$ T $>$::getSamples ()\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}\hfill}
+\label{class_sample_block_ab1764078cb18780d0d134494ee8aeb9e}
+
+
+Get a vector with all samples stored. \begin{DoxyReturn}{Returns}
+A vector containing all samples. 
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+\item[{\em std::length\_\-error}]if the samples vector size does not equal blocks$\ast$channels \end{DoxyExceptions}
+\hypertarget{class_sample_block_a2a2d427f69288002f5c5512f9e9a3d83}{
+\index{SampleBlock@{SampleBlock}!getSignalByFlag@{getSignalByFlag}}
+\index{getSignalByFlag@{getSignalByFlag}!SampleBlock@{SampleBlock}}
+\paragraph[{getSignalByFlag}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T$>$ vector$<$T$>$ {\bf SampleBlock}$<$ T $>$::getSignalByFlag (uint32\_\-t {\em flag})\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}\hfill}
+\label{class_sample_block_a2a2d427f69288002f5c5512f9e9a3d83}
+
+
+Get a vector containing samples defined by a flag. \begin{DoxyReturn}{Returns}
+A vector containing wanted samples. 
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+\item[{\em std::invalid\_\-argument}]if flag is not defined set in the \hyperlink{class_sample_block}{SampleBlock}. \end{DoxyExceptions}
+\hypertarget{class_sample_block_a1a6a7cf636807d2c3595031ca4d5cbed}{
+\index{SampleBlock@{SampleBlock}!getSignalByNr@{getSignalByNr}}
+\index{getSignalByNr@{getSignalByNr}!SampleBlock@{SampleBlock}}
+\paragraph[{getSignalByNr}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T$>$ vector$<$T$>$ {\bf SampleBlock}$<$ T $>$::getSignalByNr (uint32\_\-t {\em nr})\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}\hfill}
+\label{class_sample_block_a1a6a7cf636807d2c3595031ca4d5cbed}
+
+
+Get samples of the n-\/th signal type stored. \begin{DoxyReturn}{Returns}
+A vector containing desired samples. 
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+\item[{\em std::invalid\_\-argument}]if nr is higher than signals stord. \end{DoxyExceptions}
+\hypertarget{class_sample_block_a88392883021407912963d869b7327c64}{
+\index{SampleBlock@{SampleBlock}!getTypes@{getTypes}}
+\index{getTypes@{getTypes}!SampleBlock@{SampleBlock}}
+\paragraph[{getTypes}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T$>$ vector$<$uint32\_\-t$>$ {\bf SampleBlock}$<$ T $>$::getTypes ()\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}\hfill}
+\label{class_sample_block_a88392883021407912963d869b7327c64}
+
+
+Get a vector with the signal types to be stored in the \hyperlink{class_sample_block}{SampleBlock}. \begin{DoxyReturn}{Returns}
+A vector with the signal types (order like stored in the \hyperlink{class_sample_block}{SampleBlock}). 
+\end{DoxyReturn}
+\hypertarget{class_sample_block_aaa6f432732f41a4442aa5c686a47d1ff}{
+\index{SampleBlock@{SampleBlock}!init@{init}}
+\index{init@{init}!SampleBlock@{SampleBlock}}
+\paragraph[{init}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T$>$ void {\bf SampleBlock}$<$ T $>$::init (uint16\_\-t {\em blocksize}, \/  uint16\_\-t {\em nr\_\-ch}, \/  vector$<$ uint32\_\-t $>$ {\em sig\_\-types})\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}\hfill}
+\label{class_sample_block_aaa6f432732f41a4442aa5c686a47d1ff}
+
+
+Sets the block counter for blocks to be appended bach to zero. 
+\begin{DoxyParams}{Parameters}
+\item[\mbox{$\leftarrow$} {\em blocksize}]The blocksize, the data will be stored. \item[\mbox{$\leftarrow$} {\em nr\_\-ch}]The number of channels to store. \item[\mbox{$\leftarrow$} {\em sig\_\-types}]A vector specifying the signal type of every sampled channel.\end{DoxyParams}
+init is used to initialize a \hyperlink{class_sample_block}{SampleBlock}. After re-\/initialization, inserting more or less channels or blocks into a \hyperlink{class_sample_block}{SampleBlock} is not possible and will cause an exception if data is read to early (using appending blocks) or if a too short or long vector is inserted. \hypertarget{class_sample_block_acb823540844a192e12069a065cc607e8}{
+\index{SampleBlock@{SampleBlock}!setSamples@{setSamples}}
+\index{setSamples@{setSamples}!SampleBlock@{SampleBlock}}
+\paragraph[{setSamples}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T$>$ void {\bf SampleBlock}$<$ T $>$::setSamples (vector$<$ T $>$ {\em v})\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}\hfill}
+\label{class_sample_block_acb823540844a192e12069a065cc607e8}
+
+
+Directly set samples into the \hyperlink{class_sample_block}{SampleBlock}. 
+\begin{DoxyParams}{Parameters}
+\item[\mbox{$\leftarrow$} {\em v}]The vector containing the samples to be set. \end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+\item[{\em std::length\_\-error}]if the samples vector size does not equal blocks$\ast$channels \end{DoxyExceptions}
+\begin{Desc}
+\item[\hyperlink{todo__todo000012}{Todo}]Check, if setting already blocked data in an unordered manner performs correct sorting!! \end{Desc}
+
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+/home/breidi/Dropbox/signalserver/hardware/\hyperlink{sample__block_8h}{sample\_\-block.h}\end{DoxyCompactItemize}

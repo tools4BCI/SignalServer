@@ -1,0 +1,7 @@
+<map id="G" name="G">
+<area shape="rect" href="$class_h_w_thread.html#add1215b3e0f06a856330f2debd7ea2fe" title="Abstract method to achieve synchronous data acquisition (method is blocking)." alt="" coords="245,5,408,35"/>
+<area shape="rect" href="$class_data_packet.html#ada10e1ebb83a49faeca732765793cfa2" title="Increase the static sample number by one." alt="" coords="241,59,412,88"/>
+<area shape="rect" href="$class_data_packet.html#ab83c192471bb4d70cd21653adcc7da7f" title="Insert data (only one signal type) from a hardware device into the DataPacket (will..." alt="" coords="233,112,420,141"/>
+<area shape="rect" href="$class_data_packet.html#a36f3ab573fdeff022c6a5742795fc552" title="Resets the whole DataPacket (samples are deleted)." alt="" coords="264,165,389,195"/>
+<area shape="rect" href="$class_data_packet.html#a8fed63bfc2f0903b49d88805368d2161" title="Check, if a flag is already set." alt="" coords="471,112,612,141"/>
+</map>

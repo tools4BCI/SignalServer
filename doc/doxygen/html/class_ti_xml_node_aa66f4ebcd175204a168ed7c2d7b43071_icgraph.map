@@ -1,0 +1,11 @@
+<map id="G" name="G">
+<area shape="rect" href="$class_ti_xml_node.html#a274db3292218202805c093f66a964cb5" title="TiXmlNode::InsertAfterChild" alt="" coords="232,5,413,35"/>
+<area shape="rect" href="$class_ti_xml_node.html#a71e54e393336382bc9875f64aab5cb15" title="TiXmlNode::InsertBeforeChild" alt="" coords="227,59,419,88"/>
+<area shape="rect" href="$class_ti_xml_node.html#af287a913ce46d8dbf7ef24fec69bbaf0" title="TiXmlNode::InsertEndChild" alt="" coords="489,109,665,139"/>
+<area shape="rect" href="$class_ti_xml_node.html#a1a881212554b759865f6cac79a851d38" title="TiXmlNode::LinkEndChild" alt="" coords="239,163,407,192"/>
+<area shape="rect" href="$class_ti_xml_element.html#abf0b3bd7f0e4c746a89ec6e7f101fc32" title="TiXmlElement::SetAttribute" alt="" coords="233,216,412,245"/>
+<area shape="rect" href="$class_ti_xml_document.html#a789ad2f06f93d52bdb5570b2f3670289" title="TiXmlDocument::Parse" alt="" coords="500,163,655,192"/>
+<area shape="rect" href="$class_ti_xml_document.html#a41f6fe7200864d1dca663d230caf8db6" title="TiXmlDocument::LoadFile" alt="" coords="736,163,907,192"/>
+<area shape="rect" href="$class_ti_xml_element.html#ace6f4be75e373726d4774073d666d1a7" title="TiXmlElement::SetAttribute" alt="" coords="488,216,667,245"/>
+<area shape="rect" href="$class_ti_xml_element.html#a0d1dd975d75496778177e35abfe0ec0b" title="TiXmlElement::SetDoubleAttribute" alt="" coords="468,269,687,299"/>
+</map>

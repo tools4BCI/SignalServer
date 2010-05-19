@@ -1,0 +1,5 @@
+<map id="G" name="G">
+<area shape="rect" href="$class_h_w_thread.html" title="Base class for all hardware objects." alt="" coords="5,32,88,61"/>
+<area shape="rect" href="$class_sine_generator.html" title="A dummy hardware device for simulation and testing purposes." alt="" coords="136,5,240,35"/>
+<area shape="rect" href="$class_u_s_bamp.html" title="A class to wrap the API provided by g.tec for the g.USBamp and enable synchronous..." alt="" coords="152,59,224,88"/>
+</map>
