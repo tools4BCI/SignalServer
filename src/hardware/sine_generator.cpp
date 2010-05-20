@@ -109,13 +109,8 @@ void SineGenerator::genSine()
     cout << "SineGenerator: genSine" << endl;
   #endif
 
-//   for(uint8_t n = 0; n < nr_ch_ ; n++)
-//     samples_[n] = sin(step_ * 2 * PI + n);
-
   for(uint8_t n = 0; n < nr_ch_ ; n++)
-    samples_[n] = 1;
-
-  samples_[0] = 2;
+    samples_[n] = sin(step_ * 2 * PI + n);
 
   (step_ < 1-cycle_dur_ ? step_ += cycle_dur_ : step_ = 0);
   t_->expires_at(t_->expires_at() + td_);

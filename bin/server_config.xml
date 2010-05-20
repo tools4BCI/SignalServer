@@ -30,8 +30,8 @@
   <hardware name="sinegenerator" version="1.0" serial="">
     <mode> master </mode>
     <device_settings>
-      <sampling_rate> 512 </sampling_rate>
-      <measurement_channels nr="16" names="eeg" type="eeg" />
+      <sampling_rate> 2400 </sampling_rate>
+      <measurement_channels nr="32" names="eeg" type="eeg" />
       <blocksize> 1 </blocksize>
     </device_settings>
 
@@ -222,11 +222,11 @@
     </device_settings>
   </hardware> -->
 
-  <hardware name="joystick" version="1.0" serial="">
+<!--  <hardware name="joystick" version="1.0" serial="">
     <mode> aperiodic </mode>
     <device_settings>
 
     </device_settings>
-  </hardware>
+  </hardware> -->
 
 </tobi-config>
