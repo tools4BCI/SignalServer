@@ -38,9 +38,10 @@ using boost::numeric::bad_numeric_cast;
 using boost::numeric::positive_overflow;
 using boost::numeric::negative_overflow;
 
-#define NUM_WORK_POINTERS               2
+#define NUM_WORK_POINTERS               3
 #define SIGNAL_TYPES_MAP_POSITION       0
 #define SSClient_POSITION               1
+#define START_TIME_POSITION               2
 
 #define NUM_PARAMS 4
 #define FS_BS_POS       0   //master sampling rate and blocksize
@@ -146,7 +147,7 @@ static void mdlInitializeSizes(SimStruct *S)
   for(uint32_t n = 0; n < nr_sig_types; n++)
     fs[n] = mxGetScalar(mxGetCell(sig_types, 4*nr_sig_types +n));
 
-  if (!ssSetNumOutputPorts(S, width.size() +3))    // events, samplenr and timestamp ... last 3 ports
+  if (!ssSetNumOutputPorts(S, width.size() +4))    // events, samplenr, timestamp and system/model time difference ... last 4 ports
     return;
 
   for(unsigned int n = 0; n < width.size(); n++)
@@ -232,6 +233,20 @@ static void mdlInitializeSizes(SimStruct *S)
     return;
   ssSetOutputPortSampleTime(S, width.size() +2, bs_master/fs_master);
   ssSetOutputPortOffsetTime(S, width.size() +2, 0);
+
+  // set timestamp port
+  ssSetOutputPortFrameData(S, width.size() +3, FRAME_NO);
+  ssSetOutputPortMatrixDimensions(S, width.size() +3, DYNAMICALLY_SIZED, DYNAMICALLY_SIZED);
+//   DECL_AND_INIT_DIMSINFO(di);
+  di.width   = 1;
+  di.numDims = 2;
+  dimensions[0] = 1;    //  rows
+  dimensions[1] = 1;     //  columns
+  di.dims    = dimensions;
+  if(!ssSetOutputPortDimensionInfo(S, width.size() +3, &di))
+    return;
+  ssSetOutputPortSampleTime(S, width.size() +3, bs_master/fs_master);
+  ssSetOutputPortOffsetTime(S, width.size() +3, 0);
 }
 
 //---------------------------------------------------------------------------------------
@@ -296,6 +311,10 @@ static void mdlStart(SimStruct *S)
     SSClient* client = new SSClient;
     ssGetPWork(S)[SSClient_POSITION] = client;
     client->connect(ip, ctrl_port);
+
+    boost::posix_time::ptime* start_time =
+          new boost::posix_time::ptime( boost::posix_time::microsec_clock::local_time() );
+    ssGetPWork(S)[START_TIME_POSITION] = start_time;
 
     if((protocol == "udp") || (protocol == "tcp") )
     {
@@ -385,7 +404,8 @@ static void mdlOutputs(SimStruct *S, int_T tid)
   static_cast<map<uint32_t, pair<uint16_t, uint16_t> >* >(ssGetPWork(S)[SIGNAL_TYPES_MAP_POSITION]);
     // (flag, (channels,blocks) )
 
-//   mexPrintf( "Outputs ... \n");
+  boost::posix_time::ptime* start_time =
+      static_cast<boost::posix_time::ptime*>(ssGetPWork(S)[START_TIME_POSITION]);
 
   try
   {
@@ -446,16 +466,29 @@ static void mdlOutputs(SimStruct *S, int_T tid)
     y = ssGetOutputPortRealSignal(S, ++port);
     boost::posix_time::ptime timestamp = packet.getTimestamp();
 
-    string str = to_iso_string(timestamp);
-    int pos = str.find("T");
-    string str2 = str.substr (pos+1);
+    // calculate a timeformat readable for matlab
 
-    double hour = lexical_cast<double>(str2.substr (0,2));
-    double min  = lexical_cast<double>(str2.substr (2,2));
-    double sec  = lexical_cast<double>(str2.substr (4));
+    // string str = to_iso_string(timestamp);
+    // int pos = str.find("T");
+    // string str2 = str.substr (pos+1);
+    //
+    // double hour = lexical_cast<double>(str2.substr (0,2));
+    // double min  = lexical_cast<double>(str2.substr (2,2));
+    // double sec  = lexical_cast<double>(str2.substr (4));
+    //
+    // y[0] = (3600*hour) + (60*min) + sec;
+    
+    y[0] = *(reinterpret_cast<real_T*>(&timestamp));
 
-    //  y[0] = *(reinterpret_cast<real_T*>(&timestamp));
-    y[0] = (3600*hour) + (60*min) + sec;
+    //     calc difference of system time and the master-port simulation time
+    y = ssGetOutputPortRealSignal(S, ++port);
+    boost::posix_time::time_duration sys_time =
+      boost::posix_time::microsec_clock::local_time() - *start_time;
+
+    boost::posix_time::time_duration diff =
+      sys_time - boost::posix_time::time_duration(0, 0, ssGetT(S), (ssGetT(S)-floor(ssGetT(S)))*1000000 );
+
+    y[0] = lexical_cast<double>( to_iso_string(diff) );
 
   }
   catch(bad_numeric_cast& e)
@@ -534,12 +567,16 @@ static void mdlTerminate(SimStruct *S)
   try
   {
   map<uint32_t, pair<uint16_t, uint16_t> >* sig_info =
-  static_cast<map<uint32_t, pair<uint16_t, uint16_t> >* >(ssGetPWork(S)[SIGNAL_TYPES_MAP_POSITION]);
+    static_cast<map<uint32_t, pair<uint16_t, uint16_t> >* >(ssGetPWork(S)[SIGNAL_TYPES_MAP_POSITION]);
   if(sig_info)
     delete(sig_info);
 
-  SSClient* client = static_cast<SSClient* >(ssGetPWork(S)[SSClient_POSITION]);
+  boost::posix_time::ptime* start_time =
+    static_cast<boost::posix_time::ptime*>(ssGetPWork(S)[START_TIME_POSITION]);
+  if(start_time)
+    delete(start_time);
 
+  SSClient* client = static_cast<SSClient* >(ssGetPWork(S)[SSClient_POSITION]);
   client->stopReceiving();
 
   if (client->receiving())

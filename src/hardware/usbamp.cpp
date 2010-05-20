@@ -23,14 +23,12 @@ USBamp::USBamp(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
     cout << "USBamp: Constructor" << endl;
   #endif
 
-    #pragma comment(lib,"gUSBamp.lib")
+  #pragma comment(lib,"gUSBamp.lib")
 
   checkMandatoryHardwareTags(hw);
   getHandles();
   initFilterPtrs();
   setHardware(hw);
-
-  cout << " * HW" << endl;
 
   driver_buffer_size_ = nr_ch_ * blocks_ * sizeof(float) + HEADER_SIZE;
   driver_buffer_ = new BYTE[driver_buffer_size_];
@@ -38,12 +36,7 @@ USBamp::USBamp(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
   error_msg_ = new CHAR[USBMAP_ERROR_MSG_SIZE];
 
   data_.init(blocks_, nr_ch_, channel_types_);
-
-  cout << " * Data" << endl;
-
   samples_.resize(nr_ch_ * blocks_, 0);
-
-  cout << " * SampleBlock" << endl;
 
   initUSBamp();
 
