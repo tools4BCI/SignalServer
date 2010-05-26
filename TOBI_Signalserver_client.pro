@@ -13,12 +13,16 @@ TARGET = signalserver-sclient
 DESTDIR = bin
 OBJECTS_DIR = tmp
 
-DEPENDPATH  +=  extern/lib/ticpp/linux  extern/lib/ticpp/win
+
 
 INCLUDEPATH +=  . include
 INCLUDEPATH +=  extern/include
 #INCLUDEPATH +=  src/config src/datapacket src/definitions
 #INCLUDEPATH +=  src/sampleblock src/signalserver-client
+
+DEPENDPATH  =   $$INCLUDEPATH
+DEPENDPATH  +=  extern/lib/ticpp/linux  extern/lib/ticpp/win
+
 
 #unix: QMAKE_CXXFLAGS += -O3
 

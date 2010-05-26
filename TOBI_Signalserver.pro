@@ -2,7 +2,7 @@
 
 TEMPLATE = app
 
-CONFIG   = release thread warn_on static
+CONFIG   = console release thread warn_on static
 
 DEFINES  += TIXML_USE_TICPP
 #TIMING_TEST
@@ -12,14 +12,16 @@ TARGET = signalserver
 DESTDIR = bin
 OBJECTS_DIR = tmp
 
-DEPENDPATH  +=  extern/lib/ticpp/linux extern/lib/ticpp/win lib/g.usbamp
-
-INCLUDEPATH +=  . include
+INCLUDEPATH +=  . include src
 INCLUDEPATH +=  extern/include
+INCLUDEPATH +=  /home/breidi/svn/BCI/HEAD/Common/gdf
 #INCLUDEPATH +=  src/config src/datapacket src/definitions src/hardware
 #INCLUDEPATH +=  src/network src/sampleblock src/signalserver
 
 windows: INCLUDEPATH  +=   include/SDL-1.2.14-VC8/include
+
+DEPENDPATH  =   $$INCLUDEPATH
+DEPENDPATH  +=  extern/lib/ticpp/linux extern/lib/ticpp/win lib/g.usbamp
 
 #unix: QMAKE_CXXFLAGS += -O3
 
@@ -45,7 +47,7 @@ HEADERS +=  include/signalserver/signal_server.h \
             include/network/tcp_data_server.h \
             include/network/tcp_server.h \
             include/network/udp_data_server.h \
-            extern/include/LptTools\LptTools.h
+            extern/include/LptTools/LptTools.h
 
 SOURCES +=  src/signalserver/main.cpp \
             src/signalserver/signal_server.cpp \
@@ -76,20 +78,22 @@ windows:  SOURCES += extern/include/LptTools/LptTools.cpp
 #-----------------------------------------------------------------------
 
 debug {
-  unix:LIBS  += -L extern/lib/ticpp/linux \
+  unix:LIBS  += -L extern/lib/ticpp/linux -L /home/breidi/svn/BCI/HEAD/Common/gdf/libgdf \
 			  -lticppd \
 			  -lboost_thread \
 			  -lboost_system \
-			  -lSDL
+			  -lSDL \
+        -llibgdf
   #unix:TARGETDEPS   = extern/lib/ticpp/linux/libticppd.a
 }
 
 release {
-  unix:LIBS  += -L extern/lib/ticpp/linux \
+  unix:LIBS  += -L extern/lib/ticpp/linux -L /home/breidi/svn/BCI/HEAD/Common/gdf/libgdf \
         -lticpp\
         -lboost_thread \
         -lboost_system \
-        -lSDL
+        -lSDL \
+        -llibgdf
   #unix:TARGETDEPS   = extern/lib/ticpp/linux/libticpp.a
 }
 
