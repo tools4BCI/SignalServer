@@ -3,7 +3,7 @@
 
 TEMPLATE = app
 
-CONFIG   = release thread warn_on static
+CONFIG   = release thread warn_on static exceptions stl
 
 DEFINES  += TIXML_USE_TICPP
 #TIMING_TEST
@@ -66,6 +66,11 @@ debug {
         -lboost_system \
         -lSDL
   #unix:TARGETDEPS   = lib/ticpp/linux/libticppd.a
+
+  win32:LIBS += extern\lib\sdl\win\SDL.lib \
+                extern\lib\sdl\win\SDLmain.lib \
+                extern\lib\ticpp\win\ticppd.lib \
+                extern\lib\g.usbamp\win\gUSBamp.lib
 }
 
 release {
@@ -75,6 +80,12 @@ release {
         -lboost_system \
         -lSDL
   #unix:TARGETDEPS   = extern/lib/ticpp/linux/libticpp.a
+
+
+  win32:LIBS += extern\lib\sdl\win\SDL.lib \
+                extern\lib\sdl\win\SDLmain.lib \
+                extern\lib\ticpp\win\ticpp.lib \
+                extern\lib\g.usbamp\win\gUSBamp.lib
 }
 
 #-----------------------------------------------------------------------

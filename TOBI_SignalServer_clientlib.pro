@@ -1,6 +1,6 @@
 TEMPLATE = lib
 
-CONFIG   = release staticlib thread warn_on
+CONFIG   = release staticlib thread warn_on exceptions stl
 
 DEFINES  += TIXML_USE_TICPP
 
@@ -45,6 +45,12 @@ debug {
                -lboost_thread-d \
                -lboost_system-d
 #unix:TARGETDEPS   = ../lib_ticpp/libticppd.a
+
+
+  win32:LIBS += extern\lib\sdl\win\SDL.lib \
+                extern\lib\sdl\win\SDLmain.lib \
+                extern\lib\ticpp\win\ticppd.lib \
+                extern\lib\g.usbamp\win\gUSBamp.lib
 }
 
 release {
@@ -53,6 +59,11 @@ release {
         -lboost_thread \
         -lboost_system
 #unix:TARGETDEPS   = extern/lib/libticpp.a
+
+  win32:LIBS += extern\lib\sdl\win\SDL.lib \
+                extern\lib\sdl\win\SDLmain.lib \
+                extern\lib\ticpp\win\ticpp.lib \
+                extern\lib\g.usbamp\win\gUSBamp.lib
 }
 
 #unix:TARGETDEPS   = ../lib_ticpp/libticppd.a
