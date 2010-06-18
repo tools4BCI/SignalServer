@@ -2,7 +2,7 @@
 
 TEMPLATE = app
 
-CONFIG   = console release thread warn_on static
+CONFIG   = console release thread warn_on static exceptions stl
 
 DEFINES  += TIXML_USE_TICPP
 #TIMING_TEST
@@ -18,7 +18,7 @@ INCLUDEPATH +=  /home/breidi/svn/BCI/HEAD/Common/gdf
 #INCLUDEPATH +=  src/config src/datapacket src/definitions src/hardware
 #INCLUDEPATH +=  src/network src/sampleblock src/signalserver
 
-windows: INCLUDEPATH  +=   include/SDL-1.2.14-VC8/include
+INCLUDEPATH += extern/include/SDL-1.2.14-VC8/include
 
 DEPENDPATH  =   $$INCLUDEPATH
 DEPENDPATH  +=  extern/lib/ticpp/linux extern/lib/ticpp/win lib/g.usbamp
@@ -83,9 +83,13 @@ debug {
 			  -lboost_thread \
 			  -lboost_system \
 			  -lSDL \
-
-#                         -lgdf
+                    -llibgdf
   #unix:TARGETDEPS   = extern/lib/ticpp/linux/libticppd.a
+
+  win32:LIBS += extern\lib\sdl\win\SDL.lib \
+                extern\lib\sdl\win\SDLmain.lib \
+                extern\lib\ticpp\win\ticppd.lib \
+                extern\lib\g.usbamp\win\gUSBamp.lib
 }
 
 release {
@@ -94,7 +98,13 @@ release {
         -lboost_thread \
         -lboost_system \
         -lSDL \
+        -llibgdf
+  #unix:TARGETDEPS   = extern/lib/ticpp/linux/libticpp.a
 
-#        -lgdf
+  win32:LIBS += extern\lib\sdl\win\SDL.lib \
+                extern\lib\sdl\win\SDLmain.lib \
+                extern\lib\ticpp\win\ticpp.lib \
+                extern\lib\g.usbamp\win\gUSBamp.lib
 }
-#---------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
