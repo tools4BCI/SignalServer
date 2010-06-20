@@ -1,8 +1,8 @@
 #-----------------------------------------------------------------------
 
-TEMPLATE = app
+TEMPLATE += app
 
-CONFIG   = console release thread warn_on static exceptions stl
+CONFIG   += console release thread warn_on static exceptions stl
 
 DEFINES  += TIXML_USE_TICPP
 #TIMING_TEST
@@ -12,16 +12,13 @@ TARGET = signalserver
 DESTDIR = bin
 OBJECTS_DIR = tmp
 
-INCLUDEPATH +=  . include src
-INCLUDEPATH +=  extern/include
-INCLUDEPATH +=  /home/breidi/svn/BCI/HEAD/Common/gdf
-#INCLUDEPATH +=  src/config src/datapacket src/definitions src/hardware
-#INCLUDEPATH +=  src/network src/sampleblock src/signalserver
+INCLUDEPATH += . include extern/include/LptTools
+ 
+DEPENDPATH  +=  $$INCLUDEPATH
 
-INCLUDEPATH += extern/include/SDL-1.2.14-VC8/include
+INCLUDEPATH += extern/include
 
-DEPENDPATH  =   $$INCLUDEPATH
-DEPENDPATH  +=  extern/lib/ticpp/linux extern/lib/ticpp/win lib/g.usbamp
+win32:INCLUDEPATH += extern/include/SDL-1.2.14-VC8
 
 #unix: QMAKE_CXXFLAGS += -O3
 
@@ -71,40 +68,52 @@ SOURCES +=  src/signalserver/main.cpp \
             src/network/tcp_server.cpp \
             src/network/udp_data_server.cpp
 
-
-unix:     SOURCES += extern/include/LptTools/LptToolsLinux.cpp
-windows:  SOURCES += extern/include/LptTools/LptTools.cpp
-
-#-----------------------------------------------------------------------
-
-debug {
-  unix:LIBS  += -L extern/lib/ticpp/linux -L /home/breidi/svn/BCI/HEAD/Common/gdf/libgdf \
-			  -lticppd \
-			  -lboost_thread \
-			  -lboost_system \
-			  -lSDL \
-                    -llibgdf
-  #unix:TARGETDEPS   = extern/lib/ticpp/linux/libticppd.a
-
-  win32:LIBS += extern\lib\sdl\win\SDL.lib \
-                extern\lib\sdl\win\SDLmain.lib \
-                extern\lib\ticpp\win\ticppd.lib \
-                extern\lib\g.usbamp\win\gUSBamp.lib
-}
-
-release {
-  unix:LIBS  += -L extern/lib/ticpp/linux -L /home/breidi/svn/BCI/HEAD/Common/gdf/libgdf \
-        -lticpp\
-        -lboost_thread \
-        -lboost_system \
-        -lSDL \
-        -llibgdf
-  #unix:TARGETDEPS   = extern/lib/ticpp/linux/libticpp.a
-
-  win32:LIBS += extern\lib\sdl\win\SDL.lib \
-                extern\lib\sdl\win\SDLmain.lib \
-                extern\lib\ticpp\win\ticpp.lib \
-                extern\lib\g.usbamp\win\gUSBamp.lib
-}
+unix:SOURCES  += extern/include/LptTools/LptToolsLinux.cpp
+win32:SOURCES += extern/include/LptTools/LptTools.cpp
 
 #-----------------------------------------------------------------------
+
+unix {
+    LIBS  += -lboost_thread \
+             -lboost_system \
+             -lSDL
+
+    HARDWARE_PLATFORM = $$system(uname -i)
+        
+    contains( HARDWARE_PLATFORM, x86_64 ) {
+        # 64-bit Linux
+        LIBS  += -L extern/lib/ticpp/linux \
+                 -lticpp_64
+    }  
+    else {
+        # 32-bit Linux
+        LIBS  += -L extern/lib/ticpp/linux \
+                 -lticpp  
+    }
+}
+
+win32 {
+    LIBS += extern\lib\sdl\win\SDL.lib \
+            extern\lib\sdl\win\SDLmain.lib \
+            extern\lib\ticpp\win\ticpp.lib \
+            extern\lib\g.usbamp\win\gUSBamp.lib \
+            kernel32.lib advapi32.lib
+            
+    # Note: It is assumed that the boost libraries can be automatically detected by the linker 
+    # through #pragma comment(lib, xxx) declarations in boost.
+}
+
+unix {
+    # TODO: 
+    exists( /home/breidi/svn/BCI/HEAD/Common/gdf ) {
+        INCLUDEPATH +=  /home/breidi/svn/BCI/HEAD/Common/gdf
+    
+        LIBS += -L /home/breidi/svn/BCI/HEAD/Common/gdf/libgdf \
+                -lgdf
+    }
+}
+
+include ( TOBI_SignalServer_server_customize.pro )
+
+#-----------------------------------------------------------------------
+#! end of file

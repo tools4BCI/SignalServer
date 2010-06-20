@@ -1,17 +1,23 @@
+#-----------------------------------------------------------------------
+
 TEMPLATE = lib
 
-CONFIG   = release staticlib thread warn_on exceptions stl
+CONFIG   = release thread warn_on exceptions stl
 
 DEFINES  += TIXML_USE_TICPP
 
 DESTDIR = lib
 TARGET = ssclient
 
-INCLUDEPATH += . include src
+OBJECTS_DIR = tmp
+
+INCLUDEPATH += . include extern/include/LptTools
+ 
+DEPENDPATH  +=  $$INCLUDEPATH
+
 INCLUDEPATH += extern/include
 
-DEPENDPATH  =   $$INCLUDEPATH
-DEPENDPATH  +=  extern/lib/ticpp/linux  extern/lib/ticpp/win
+win32:INCLUDEPATH += extern/include/SDL-1.2.14-VC8
 
 #unix: QMAKE_CXXFLAGS += -O3
 
@@ -23,13 +29,12 @@ HEADERS +=  include/config/control_message_decoder.h \
             include/config/xml_parser.h \
             include/datapacket/data_packet.h \
             include/datapacket/raw_mem.h \
-            include/definitions/constants.cpp \
+            include/definitions/constants.h \
             include/signalserver-client/ssclient.h \
             include/signalserver-client/ssclientimpl.h \
             include/signalserver-client/ssclientimpl_base.h
 
-SOURCES +=  src/signalserver-client/ssclient_main.cpp \
-            src/signalserver-client/ssclientimpl.cpp \
+SOURCES +=  src/signalserver-client/ssclientimpl.cpp \
             src/signalserver-client/ssclient.cpp \
             src/config/xml_parser.cpp \
             src/config/control_messages.cpp \
@@ -39,31 +44,50 @@ SOURCES +=  src/signalserver-client/ssclient_main.cpp \
             src/datapacket/data_packet.cpp \
             src/datapacket/raw_mem.cpp \
             src/definitions/constants.cpp
-debug {
-  unix:LIBS  += -L ../lib_ticpp \
-               -lticppd \
-               -lboost_thread-d \
-               -lboost_system-d
-#unix:TARGETDEPS   = ../lib_ticpp/libticppd.a
 
+unix:     SOURCES += extern/include/LptTools/LptToolsLinux.cpp
+windows:  SOURCES += extern/include/LptTools/LptTools.cpp
 
-  win32:LIBS += extern\lib\sdl\win\SDL.lib \
-                extern\lib\sdl\win\SDLmain.lib \
-                extern\lib\ticpp\win\ticppd.lib \
-                extern\lib\g.usbamp\win\gUSBamp.lib
+unix {
+    LIBS  += -lboost_thread \
+             -lboost_system \
+             -lSDL
+
+    HARDWARE_PLATFORM = $$system(uname -i)
+        
+    contains( HARDWARE_PLATFORM, x86_64 ) {
+        # 64-bit Linux
+        LIBS  += -L extern/lib/ticpp/linux \
+                 -lticpp_64
+    }  
+    else {
+        # 32-bit Linux
+        LIBS  += -L extern/lib/ticpp/linux \
+                 -lticpp  
+    }
 }
 
-release {
-  unix:LIBS  += -L ../lib_ticpp \
-        -lticpp \
-        -lboost_thread \
-        -lboost_system
-#unix:TARGETDEPS   = extern/lib/libticpp.a
-
-  win32:LIBS += extern\lib\sdl\win\SDL.lib \
-                extern\lib\sdl\win\SDLmain.lib \
-                extern\lib\ticpp\win\ticpp.lib \
-                extern\lib\g.usbamp\win\gUSBamp.lib
+win32 {
+    LIBS += extern\lib\sdl\win\SDL.lib \
+            extern\lib\sdl\win\SDLmain.lib \
+            extern\lib\ticpp\win\ticpp.lib \
+            extern\lib\g.usbamp\win\gUSBamp.lib \
+            kernel32.lib advapi32.lib
+            
+    # Note: It is assumed that the boost libraries can be automatically detected by the linker 
+    # through #pragma comment(lib, xxx) declarations in boost.
 }
 
-#unix:TARGETDEPS   = ../lib_ticpp/libticppd.a
+unix {
+    # TODO: 
+    exists( /home/breidi/svn/BCI/HEAD/Common/gdf ) {
+        INCLUDEPATH +=  /home/breidi/svn/BCI/HEAD/Common/gdf
+    
+        LIBS += -L /home/breidi/svn/BCI/HEAD/Common/gdf/libgdf \
+                -lgdf
+    }
+}
+
+#-----------------------------------------------------------------------
+#! end of file
+
