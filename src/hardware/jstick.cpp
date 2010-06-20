@@ -1,7 +1,7 @@
 
 #include "hardware/jstick.h"
 
-#include <SDL.h>
+#include "SDL/SDL.h"
 
  set<boost::uint16_t> JStick::used_ids_;
 
