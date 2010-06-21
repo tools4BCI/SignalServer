@@ -15,6 +15,10 @@
 // local
 #include "ssclientimpl_base.h"
 
+#ifndef DECL_EXPORT
+  #define DECL_EXPORT
+#endif
+
 //-----------------------------------------------------------------------------
 
 class DECL_EXPORT SSClient
