@@ -17,7 +17,7 @@
 
 //-----------------------------------------------------------------------------
 
-class SSClient
+class DECL_EXPORT SSClient
 {
 public:
   SSClient();

@@ -2,9 +2,12 @@
 
 TEMPLATE = lib
 
-CONFIG   = release thread warn_on exceptions stl
+CONFIG   = release dll thread warn_on exceptions stl
 
-DEFINES  += TIXML_USE_TICPP
+DEFINES  += TIXML_USE_TICPP 
+
+win32:DEFINES += DECL_EXPORT=__declspec(dllexport)
+unix:DEFINES  += DECL_EXPORT
 
 DESTDIR = lib
 TARGET = ssclient
@@ -73,7 +76,7 @@ win32 {
             extern\lib\ticpp\win\ticpp.lib \
             extern\lib\g.usbamp\win\gUSBamp.lib \
             kernel32.lib advapi32.lib
-            
+
     # Note: It is assumed that the boost libraries can be automatically detected by the linker 
     # through #pragma comment(lib, xxx) declarations in boost.
 }
@@ -90,4 +93,3 @@ unix {
 
 #-----------------------------------------------------------------------
 #! end of file
-
