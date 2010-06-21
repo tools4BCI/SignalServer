@@ -2,7 +2,7 @@
 
 TEMPLATE = app
 
-CONFIG   += release console thread warn_on static exceptions stl
+CONFIG   += release console thread warn_on exceptions stl
 
 DEFINES  += TIXML_USE_TICPP
 #TIMING_TEST
@@ -34,8 +34,7 @@ unix {
 }
 
 win32 {
-    LIBS += -L lib ssclient.dll
-                
+    LIBS += lib/ssclient.lib                
     # Note: It is assumed that the boost libraries can be automatically detected by the linker 
     # through #pragma comment(lib, xxx) declarations in boost.
 }
