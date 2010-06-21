@@ -49,7 +49,7 @@ SOURCES +=  src/signalserver-client/ssclientimpl.cpp \
             src/definitions/constants.cpp
 
 unix:     SOURCES += extern/include/LptTools/LptToolsLinux.cpp
-windows:  SOURCES += extern/include/LptTools/LptTools.cpp
+windows:  SOURCES += extern/include/LptTools/LptTools_.cpp
 
 unix {
     LIBS  += -lboost_thread \

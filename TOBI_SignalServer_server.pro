@@ -69,7 +69,7 @@ SOURCES +=  src/signalserver/main.cpp \
             src/network/udp_data_server.cpp
 
 unix:SOURCES  += extern/include/LptTools/LptToolsLinux.cpp
-win32:SOURCES += extern/include/LptTools/LptTools.cpp
+win32:SOURCES += extern/include/LptTools/LptTools_.cpp
 
 #-----------------------------------------------------------------------
 
