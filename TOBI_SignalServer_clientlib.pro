@@ -2,12 +2,11 @@
 
 TEMPLATE = lib
 
-CONFIG   = release dll thread warn_on exceptions stl
+CONFIG   = release shared thread warn_on exceptions stl
 
 DEFINES  += TIXML_USE_TICPP 
 
 win32:DEFINES += DECL_EXPORT=__declspec(dllexport)
-unix:DEFINES  += DECL_EXPORT
 
 DESTDIR = lib
 TARGET = ssclient
