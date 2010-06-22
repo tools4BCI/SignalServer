@@ -23,6 +23,8 @@
 #include "network/tcp_data_server.h"
 #include "network/udp_data_server.h"
 
+namespace tobiss
+{
 using std::cout;
 using std::cerr;
 using std::endl;
@@ -438,7 +440,8 @@ void ControlConnectionServer::handleAccept(const TCPConnection::pointer& new_con
   startAccept();
 }
 
-
 //-----------------------------------------------------------------------------
+
+} // Namespace tobiss
 
 // End Of File

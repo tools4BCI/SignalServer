@@ -38,6 +38,7 @@ using boost::uint16_t;
 using boost::uint32_t;
 
 using namespace std;
+using namespace tobiss;
 
 const string DEFAULT_XML_CONFIG = "server_config.xml";
 

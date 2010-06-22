@@ -41,6 +41,8 @@
 
 using namespace std;
 
+using namespace tobiss;
+
 const string DEFAULT_XML_CONFIG = "server_config.xml";
 const string XML_FILE_ARGUMENT = "-f";
 

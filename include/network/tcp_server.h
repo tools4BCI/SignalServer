@@ -20,6 +20,8 @@
 //local
 #include "definitions/defines.h"
 
+namespace tobiss
+{
 //-----------------------------------------------------------------------------
 
 class TCPConnection : public boost::enable_shared_from_this<TCPConnection>
@@ -74,6 +76,8 @@ protected:
   boost::asio::io_service&       io_service_;
   boost::asio::ip::tcp::acceptor acceptor_;
 };
+
+} // Namespace tobiss
 
 #endif //TCPSERVER_H
 

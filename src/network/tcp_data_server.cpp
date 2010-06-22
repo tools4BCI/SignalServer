@@ -16,6 +16,8 @@
 #include "network/tcp_data_server.h"
 #include "datapacket/data_packet.h"
 
+namespace tobiss
+{
 using std::cout;
 using std::cerr;
 using std::endl;
@@ -175,3 +177,5 @@ void TCPDataServer::sendDataPacket(DataPacket& packet)
 }
 
 //-----------------------------------------------------------------------------
+
+} // Namespace tobiss

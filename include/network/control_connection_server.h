@@ -21,6 +21,8 @@
 #include "tcp_server.h"
 #include "definitions/constants.h"
 
+namespace tobiss
+{
 // forward declarations
 class ControlMsgEncoder;
 class ControlMsgDecoder;
@@ -28,8 +30,6 @@ class ControlConnectionServer;
 class SignalServer;
 class TCPDataServer;
 class UDPDataServer;
-
-using namespace tobiss;
 
 //-----------------------------------------------------------------------------
 
@@ -144,6 +144,8 @@ private:
 
   Constants                               cst_;
 };
+
+} // Namespace tobiss
 
 #endif //CONTROLCONNECTIONSERVER_H
 

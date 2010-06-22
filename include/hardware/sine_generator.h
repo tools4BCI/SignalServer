@@ -30,7 +30,8 @@
 
 using namespace std;
 
-
+namespace tobiss
+{
 //-----------------------------------------------------------------------------
 /**
 * @class SineGenerator
@@ -163,6 +164,8 @@ class SineGenerator : public HWThread
     SampleBlock<double> buffer_;
 
 };
+
+} // Namespace tobiss
 
 #endif // SINEGENERATOR_H
 

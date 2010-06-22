@@ -5,6 +5,8 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/bind.hpp>
 
+namespace tobiss
+{
 using boost::uint8_t;
 using boost::uint16_t;
 using boost::uint32_t;
@@ -223,3 +225,5 @@ void SineGenerator::setChannelSettings(ticpp::Iterator<ticpp::Element>const &fat
 }
 
 //---------------------------------------------------------------------------------------
+
+} // Namespace tobiss

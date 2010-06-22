@@ -30,6 +30,8 @@ using std::string;
 using std::map;
 using std::pair;
 
+namespace tobiss
+{
 //---------------------------------------------------------------------------------------
 
 /**
@@ -197,6 +199,8 @@ class XMLParser
 
     Constants cst_;  ///< A static object containing constants.
 };
+
+} // Namespace tobiss
 
 //---------------------------------------------------------------------------------------
 #endif // XMLPARSER_H

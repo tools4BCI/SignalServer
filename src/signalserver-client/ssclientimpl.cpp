@@ -25,7 +25,9 @@
   #define LPT1  0
   #define LPT2  1
 #endif
-  
+
+namespace tobiss
+{
 using boost::numeric_cast;
 using boost::numeric::bad_numeric_cast;
 using boost::numeric::positive_overflow;
@@ -573,4 +575,4 @@ void SSClientImpl::getDataPacket(DataPacket& packet)
 
 //-----------------------------------------------------------------------------
 
-
+} // Namespace tobiss

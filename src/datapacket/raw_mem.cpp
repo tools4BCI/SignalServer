@@ -2,6 +2,9 @@
 
 #include <boost/numeric/conversion/cast.hpp>
 
+namespace tobiss
+{
+
 using namespace std;
 using boost::numeric_cast;
 using boost::numeric::bad_numeric_cast;
@@ -62,7 +65,8 @@ RawMem::RawMem(uint32_t flags, uint64_t sample_nr, uint64_t packet_nr, \
   {
     cout << "RawMem -- Constructor: " <<  e.what();
   }
-
 }
+
+} // Namespace tobiss
 
 //-----------------------------------------------------------------------------

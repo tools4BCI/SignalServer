@@ -18,6 +18,7 @@
 #include "signalserver-client/ssclient.h"
 
 using namespace std;
+using namespace tobiss;
 
 //-----------------------------------------------------------------------------
 

@@ -7,6 +7,8 @@
 
 using boost::asio::ip::udp;
 
+namespace tobiss
+{
 //---------------------------------------------------------------------------------------
 
 class UDPServer
@@ -32,6 +34,8 @@ protected:
     udp::socket                socket_;
     udp::endpoint              target_;
 };
+
+} // Namespace tobiss
 
 //---------------------------------------------------------------------------------------
 
