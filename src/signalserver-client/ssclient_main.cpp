@@ -52,12 +52,19 @@ class SSClientDataReader
           if (!client_.receiving())
           {
             cond_.wait(lock);
-
           }
 
           if(running_ && client_.receiving())
           {
-            client_.getDataPacket(packet);
+            try {
+              client_.getDataPacket(packet);
+            }
+            catch (std::exception& e)
+            {
+              cerr << e.what() << endl;
+              continue;
+            }
+
             #ifdef TIMING_TEST
               timestamp_ = boost::posix_time::microsec_clock::local_time();
               diff_ = timestamp_ - packet.getTimestamp();
