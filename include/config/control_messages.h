@@ -18,7 +18,8 @@
 // local
 #include "config/ss_meta_info.h"
 
-using namespace tobiss;
+namespace tobiss
+{
 
 // forward declarations
 class ControlMsgEncoder;
@@ -228,6 +229,8 @@ class ReplyMsg : public ControlMsg
     ReplyMsg(MsgType type) : ControlMsg(type)
     {}
 };
+
+} // Namespace tobiss
 
 #endif //CONTROLMESSAGES_H
 

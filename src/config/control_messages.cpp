@@ -10,6 +10,9 @@
 #include "config/control_message_encoder.h"
 #include "config/control_messages.h"
 
+namespace tobiss
+{
+
 //-----------------------------------------------------------------------------
 
 void KeepAliveMsg::writeMsg(ControlMsgEncoder& encoder, std::ostream& stream) const
@@ -135,5 +138,7 @@ void ConfigMsg::readMsg(ControlMsgDecoder& decoder)
 }
 
 //-----------------------------------------------------------------------------
+
+} // Namespace tobiss
 
 // End Of File

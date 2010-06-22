@@ -23,6 +23,8 @@
 
 using namespace std;
 
+namespace tobiss
+{
 //using boost::uint16_t;
 //using boost::uint32_t;
 //using boost::uint64_t;
@@ -122,7 +124,7 @@ template<class T> class SampleBlock
         cout << "SampleBlock: init" << endl;
       #endif
 
-	    using boost::uint16_t;
+      using boost::uint16_t;
       using boost::uint32_t;
 
       if(nr_ch != sig_types.size())
@@ -169,13 +171,13 @@ template<class T> class SampleBlock
     * @brief Get a vector with the signal types to be stored in the SampleBlock.
     * @return A vector with the signal types (order like stored in the SampleBlock).
     */
-	vector<boost::uint32_t> getTypes()
+  vector<boost::uint32_t> getTypes()
     {
       #ifdef DEBUG
         cout << "SampleBlock: getTypes" << endl;
       #endif
 
-	    using boost::uint16_t;
+      using boost::uint16_t;
       using boost::uint32_t;
 
       vector<uint32_t> v;
@@ -211,7 +213,7 @@ template<class T> class SampleBlock
         cout << "SampleBlock: getFlagByNr" << endl;
       #endif
 
-	    using boost::uint16_t;
+      using boost::uint16_t;
       using boost::uint32_t;
 
       if(nr > block_info_.size())
@@ -230,13 +232,13 @@ template<class T> class SampleBlock
     * @return A vector containing wanted samples.
     * @throw  std::invalid_argument if flag is not defined set in the SampleBlock.
     */
-	vector<T> getSignalByFlag(boost::uint32_t flag)
+  vector<T> getSignalByFlag(boost::uint32_t flag)
     {
       #ifdef DEBUG
         cout << "SampleBlock: getSignalByFlag" << endl;
       #endif
-	  
-	    using boost::uint16_t;
+
+      using boost::uint16_t;
       using boost::uint32_t;
 
       map<uint32_t, pair<uint16_t, uint16_t> >::iterator m_it(block_info_.find(flag));
@@ -263,7 +265,7 @@ template<class T> class SampleBlock
         cout << "SampleBlock: getSignalByFlag" << endl;
       #endif
 
-	    using boost::uint16_t;
+      using boost::uint16_t;
       using boost::uint32_t;
 
       map<uint32_t, pair<uint16_t, uint16_t> >::iterator m_it(block_info_.find(flag));
@@ -284,13 +286,13 @@ template<class T> class SampleBlock
     * @return A vector containing desired samples.
     * @throw  std::invalid_argument if nr is higher than signals stord.
     */
-	vector<T> getSignalByNr(boost::uint32_t nr)
+  vector<T> getSignalByNr(boost::uint32_t nr)
     {
       #ifdef DEBUG
         cout << "SampleBlock: getSignalByNr" << endl;
       #endif
 
-	    using boost::uint16_t;
+      using boost::uint16_t;
       using boost::uint32_t;
 
       if(nr > block_info_.size())
@@ -312,13 +314,13 @@ template<class T> class SampleBlock
     * @param[out] v A vector to insert desired samples.
     * @throw  std::invalid_argument if nr is higher than signals stord.
     */
-	void getSignalByNr(boost::uint32_t nr, vector<T>& v)
+  void getSignalByNr(boost::uint32_t nr, vector<T>& v)
     {
       #ifdef DEBUG
         cout << "SampleBlock: getSignalByNr" << endl;
       #endif
 
-	    using boost::uint16_t;
+      using boost::uint16_t;
       using boost::uint32_t;
 
       if(nr > block_info_.size())
@@ -401,14 +403,14 @@ template<class T> class SampleBlock
     * are used to order both v and order.
     * Bubble-sort is used as a sorting algorithm.
     */
-	void sort(vector<T>& v, vector<boost::uint32_t> order)
+  void sort(vector<T>& v, vector<boost::uint32_t> order)
     {
       #ifdef DEBUG
         cout << "SampleBlock: sort" << endl;
       #endif
 
       double v_tmp;
-	  boost::uint32_t o_tmp;
+    boost::uint32_t o_tmp;
 
       for(unsigned int i=0; i < order.size(); i++)
         for(unsigned int x=0; x < order.size()-1-i; x++)
@@ -468,5 +470,6 @@ template<class T> class SampleBlock
 
 //-----------------------------------------------------------------------------
 
+} // Namespace tobiss
 
 #endif // SAMPLEBLOCK_H

@@ -19,6 +19,8 @@
   #define DECL_EXPORT
 #endif
 
+namespace tobiss
+{
 //-----------------------------------------------------------------------------
 
 class DECL_EXPORT SSClient
@@ -49,6 +51,8 @@ public:
 protected:
   SSClientImplBase* impl_;
 };
+
+} // Namespace tobiss
 
 //-----------------------------------------------------------------------------
 

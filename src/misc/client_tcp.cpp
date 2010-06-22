@@ -12,6 +12,7 @@
 
 using boost::asio::ip::tcp;
 using namespace std;
+using namespace tobiss;
 
 int main()
 {

@@ -19,6 +19,9 @@
 #include "network/udp_data_server.h"
 #include "datapacket/data_packet.h"
 
+namespace tobiss
+{
+
 using std::cout;
 using std::cerr;
 using std::endl;
@@ -92,3 +95,5 @@ void UDPDataServer::handleWrite(const boost::system::error_code& error,
 }
 
 //-----------------------------------------------------------------------------
+
+} // Namespace tobiss

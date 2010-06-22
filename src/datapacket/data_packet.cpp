@@ -1,6 +1,9 @@
 
 #include "datapacket/data_packet.h"
 
+namespace tobiss
+{
+
 using namespace std;
 using boost::uint16_t;
 using boost::uint32_t;
@@ -429,5 +432,7 @@ uint32_t DataPacket::getRequiredRawMemorySize(void* mem, int32_t ba)
 
     return(size);
 }
+
+} // Namespace tobiss
 
 //-----------------------------------------------------------------------------

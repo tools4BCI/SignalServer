@@ -18,6 +18,8 @@
 // local
 #include "config/control_messages.h"
 
+namespace tobiss
+{
 //-----------------------------------------------------------------------------
 
 class ControlMsgEncoder
@@ -72,6 +74,8 @@ protected:
 
   void writeXMLMsg(ticpp::Document& doc, std::ostream& stream);
 };
+
+} // namespace tobiss
 
 #endif //CONTROLMESSAGEENCODER_H
 

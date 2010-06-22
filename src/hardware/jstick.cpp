@@ -3,7 +3,10 @@
 
 #include "SDL/SDL.h"
 
- set<boost::uint16_t> JStick::used_ids_;
+namespace tobiss
+{
+
+set<boost::uint16_t> JStick::used_ids_;
 
 //-----------------------------------------------------------------------------
 
@@ -249,3 +252,4 @@ void JStick::initJoystick()
 
 //-----------------------------------------------------------------------------
 
+} // Namespace tobiss

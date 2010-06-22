@@ -20,7 +20,8 @@
 #include <boost/asio.hpp>
 #include <boost/cstdint.hpp>
 
-
+namespace tobiss
+{
 // forward declarations
 class ControlConnectionServer;
 class TCPDataServer;
@@ -58,9 +59,9 @@ class SignalServer
       { sig_types_ = sig_types; }
     void setBlockSizesPerSignalType(const std::vector<boost::uint16_t>& blocksizes)
       { blocksizes_ = blocksizes; }
-	void setSamplingRatePerSignalType(const std::vector<boost::uint32_t>& fs_per_sig_type)
+  void setSamplingRatePerSignalType(const std::vector<boost::uint32_t>& fs_per_sig_type)
       { fs_per_sig_type_ = fs_per_sig_type; }
-	void setChannelNames(const std::map<boost::uint32_t, std::vector<std::string> >& channels_per_sig_type)
+  void setChannelNames(const std::map<boost::uint32_t, std::vector<std::string> >& channels_per_sig_type)
       { channels_per_sig_type_ = channels_per_sig_type; }
 
   private:
@@ -89,6 +90,8 @@ class SignalServer
 
 #endif
 };
+
+} // Namespace tobiss
 
 //-----------------------------------------------------------------------------
 

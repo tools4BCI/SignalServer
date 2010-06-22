@@ -23,13 +23,14 @@
 
 #include <boost/cstdint.hpp>
 
-
 #include "definitions/defines.h"
 #include "raw_mem.h"
 
 using std::vector;
 using std::map;
 
+namespace tobiss
+{
 /**
 * @class DataPacket
 *
@@ -210,7 +211,8 @@ class DataPacket
     */
     void* getRaw();
 
-    /**
+    /**}
+     *
     * @brief Get the size (in bytes) of the raw memory region holding the raw DataPacket.
     * @return The size of the raw memory region.
     */
@@ -286,5 +288,7 @@ class DataPacket
 
     map<boost::uint32_t, RawMem*> raw_map_; ///< A map holding pointers to raw_mem objects, identified by their flags.
 };
+
+} // Namespace tobiss
 
 #endif // DATAPACKET_H

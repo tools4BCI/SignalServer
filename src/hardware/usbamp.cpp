@@ -5,6 +5,9 @@
 
 #include <boost/bind.hpp>
 
+
+namespace tobiss
+{
 set<string> USBamp::serials_;
 
 using boost::uint8_t;
@@ -1300,5 +1303,7 @@ void USBamp::initUSBamp()
 }
 
 //-----------------------------------------------------------------------------
+
+} // Namespace tobiss
 
 #endif // WIN32

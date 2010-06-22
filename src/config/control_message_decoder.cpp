@@ -18,7 +18,9 @@
 #include "config/control_message_decoder.h"
 #include "config/ss_meta_info.h"
 
-using namespace tobiss;
+namespace tobiss
+{
+
 using boost::lexical_cast;
 using boost::uint16_t;
 using boost::uint32_t;
@@ -622,5 +624,7 @@ void ControlMsgDecoderXML::decodeMsg(ReplyMsg& msg)
     }
   }
 }
+
+} // Namespace tobiss
 
 // End Of File

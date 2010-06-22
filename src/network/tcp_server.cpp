@@ -14,6 +14,8 @@
 // local
 #include "network/tcp_server.h"
 
+namespace tobiss
+{
 using boost::uint16_t;
 using boost::uint32_t;
 
@@ -69,5 +71,7 @@ void TCPServer::startAccept()
 }
 
 //-----------------------------------------------------------------------------
+
+} //Namespace tobiss
 
 // End Of File
