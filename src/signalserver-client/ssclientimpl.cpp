@@ -25,7 +25,9 @@
   #define LPT1  0
   #define LPT2  1
 #endif
-  
+
+namespace tobiss
+{
 using boost::numeric_cast;
 using boost::numeric::bad_numeric_cast;
 using boost::numeric::positive_overflow;
@@ -425,35 +427,47 @@ void SSClientImpl::getDataPacket(DataPacket& packet)
   uint32_t packet_size = 0;
   DataPacket p;
 
-  if (!(packet_offset_))
+  if (packet_offset_ == 0)
   {
     if(use_udp_bc_)
     {
-      // TODO: What to do if server crashed?
-      if(data_socket_udp_.is_open())
-        bytes_transferred = data_socket_udp_.receive(boost::asio::buffer(recv_buf_));
+        bytes_transferred = data_socket_udp_.receive(boost::asio::buffer(recv_buf_), 0, error);
+
+        if (error)
+        {
+          // TODO: try to sent stop cmd to server?
+          closeDataConnection();
+          std::string ex_str("SSClient: Data connection broken\n -->");
+          ex_str += error.message();
+
+          throw std::ios_base::failure(ex_str);
+        }
     }
     else
     {
-      // TODO: What to do if server crashed?
-      if(data_socket_tcp_.is_open())
         bytes_transferred = data_socket_tcp_.read_some(boost::asio::buffer(recv_buf_), error);
+
+        if (error && error != boost::asio::error::message_size)
+        {
+          // TODO: try to sent stop cmd to server?
+          closeDataConnection();
+          std::string ex_str("SSClient: Data connection broken\n -->");
+          ex_str += error.message();
+
+          throw std::ios_base::failure(ex_str);
+        }
+
     }
+
     data_buf_.resize(buffer_offset_);
     data_buf_.insert(data_buf_.end(), recv_buf_.begin(), recv_buf_.begin() + bytes_transferred );
-
-    if (error && error != boost::asio::error::message_size)
-      throw boost::system::system_error(error);
 
     buffer_offset_ = 0;
     packet_size = p.getRequiredRawMemorySize(&(data_buf_[packet_offset_]),
                                            numeric_cast<int32_t>(bytes_transferred));
   }
 
-  if (error == boost::asio::error::eof)
-    return;
-
-  while(!(packet_offset_) && ( (bytes_transferred < packet_size) || (packet_size == 0) ) )
+  while(packet_offset_ == 0 && ( (bytes_transferred < packet_size) || (packet_size == 0) ) )
   {
     uint32_t bytes_to_receive = 0;
     if(packet_size == 0)
@@ -466,16 +480,23 @@ void SSClientImpl::getDataPacket(DataPacket& packet)
     if(use_udp_bc_)
     {
       cerr << "SSClient: ERROR -- Packet fragmentation not possible in UDP!"<< endl;
-      return;
+      throw (std::ios_base::failure("SSClientImpl::getDataPacket() --  Can not decode packet"));
     }
     else
     {
-    boost::asio::read(data_socket_tcp_, boost::asio::buffer(v),
+      boost::asio::read(data_socket_tcp_, boost::asio::buffer(v),
       boost::asio::transfer_at_least(bytes_to_receive), error);
     }
 
     if (error && error != boost::asio::error::message_size)
-      throw boost::system::system_error(error);
+    {
+      // TODO: try to sent stop cmd to server?
+      closeDataConnection();
+      std::string ex_str("SSClient: Data connection broken\n -->");
+      ex_str += error.message();
+
+      throw std::ios_base::failure(ex_str);
+    }
 
     data_buf_.insert(data_buf_.end(), v.begin(), v.end());
     bytes_transferred += v.size();
@@ -496,7 +517,8 @@ void SSClientImpl::getDataPacket(DataPacket& packet)
     packet_offset_ = 0;
     data_buf_.clear();
     buffer_offset_ = 0;
-    return;
+
+    throw (std::ios_base::failure("SSClientImpl::getDataPacket() --  Can not decode packet"));
   }
 
   packet_size = p.getRequiredRawMemorySize();
@@ -549,7 +571,8 @@ void SSClientImpl::getDataPacket(DataPacket& packet)
 
     cerr << "SSClient: *** New packet nr: " << (uint32_t)(p.getSampleNr());
     cerr << " -- previous packet nr: " << (uint32_t)(last_packet_nr_) << "!" << endl;
-    return;
+
+    throw(std::overflow_error(ex_str));
   }
 
   last_packet_nr_ =  p.getSampleNr();
@@ -568,9 +591,8 @@ void SSClientImpl::getDataPacket(DataPacket& packet)
       LptPortOut(LPT1, 0, port_state & ~0x04);
     }
   #endif
-
 }
 
 //-----------------------------------------------------------------------------
 
-
+} // Namespace tobiss

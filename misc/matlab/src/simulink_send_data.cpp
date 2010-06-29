@@ -29,6 +29,8 @@
 #endif
 
 using namespace std;
+using namespace tobiss;
+
 // using boost::numeric_cast;
 // using boost::numeric::bad_numeric_cast;
 // using boost::numeric::positive_overflow;

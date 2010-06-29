@@ -29,6 +29,8 @@
 
 using std::vector;
 
+namespace tobiss
+{
 //-----------------------------------------------------------------------------
 
 /**
@@ -84,6 +86,8 @@ class RawMem
     void* mem_;   ///<  Pointer to the memory region.
     boost::uint32_t size_;   ///<  Size of the memory region in bytes.
 };
+
+} // Namespace tobiss
 
 //-----------------------------------------------------------------------------
 

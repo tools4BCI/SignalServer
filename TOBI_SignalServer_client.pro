@@ -4,6 +4,8 @@ TEMPLATE = app
 
 CONFIG   += release console thread warn_on exceptions stl
 
+QT -= core gui
+
 DEFINES  += TIXML_USE_TICPP
 #TIMING_TEST
 
@@ -42,14 +44,14 @@ win32 {
 unix {
     # TODO: 
     exists( /home/breidi/svn/BCI/HEAD/Common/gdf ) {
-        INCLUDEPATH +=  /home/breidi/svn/BCI/HEAD/Common/gdf
+#        INCLUDEPATH +=  /home/breidi/svn/BCI/HEAD/Common/gdf
     
-        LIBS += -L /home/breidi/svn/BCI/HEAD/Common/gdf/libgdf \
-                -lgdf
+#        LIBS += -L /home/breidi/svn/BCI/HEAD/Common/gdf/libgdf \
+#                -lgdf
     }
 }
 
-include ( TOBI_SignalServer_client_customize.pro )
+#include ( TOBI_SignalServer_client_customize.pro )
 
 #-----------------------------------------------------------------------
 #! end of file

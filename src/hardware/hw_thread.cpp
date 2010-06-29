@@ -4,6 +4,9 @@
 
 #include "definitions/constants.h"
 
+namespace tobiss
+{
+
 using boost::lexical_cast;
 using boost::bad_lexical_cast;
 
@@ -221,3 +224,5 @@ void HWThread::setChannelTypes()
 }
 
 //-----------------------------------------------------------------------------
+
+} // Namespace tobiss

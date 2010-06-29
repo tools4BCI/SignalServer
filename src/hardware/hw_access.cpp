@@ -17,6 +17,9 @@
   #define LPT2  1
 #endif
 
+
+namespace tobiss
+{
 using boost::uint16_t;
 using boost::uint32_t;
 
@@ -441,3 +444,5 @@ vector<uint32_t> HWAccess::getSamplingRatePerSignalType()
 }
 
 //-----------------------------------------------------------------------------
+
+} // Namespace tobiss

@@ -21,12 +21,13 @@
 
 using namespace std;
 
-
+namespace tobiss
+{
 //-----------------------------------------------------------------------------
 class EventListener : public HWThread
 {
   public:
-	/**
+  /**
     * @brief Constructor
     */
     EventListener(boost::asio::io_service& io, XMLParser& parser);
@@ -74,6 +75,8 @@ class EventListener : public HWThread
     vector<char> buffer_;
     vector<double> events_; ///< temporary vector holding recent samples of the sine (1 element per channel)
 };
+
+} // Namespace tobiss
 
 #endif // EVENTLISTENER_H
 

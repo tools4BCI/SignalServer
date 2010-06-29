@@ -32,10 +32,10 @@
 #include "definitions/defines.h"
 #include "sampleblock/sample_block.h"
 
-
 using namespace std;
 
-
+namespace tobiss
+{
 //-----------------------------------------------------------------------------
 
 /**
@@ -271,6 +271,8 @@ class HWThread
     */
     SampleBlock<double> data_;
 };
+
+} // Namespace tobiss
 
 #endif // HWThread_H
 

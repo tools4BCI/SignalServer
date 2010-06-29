@@ -12,13 +12,15 @@
 #include "config/ss_meta_info.h"
 #include "datapacket/data_packet.h"
 
+namespace tobiss
+{
 //-----------------------------------------------------------------------------
 
 class SSConfig
 {
   public:
-    tobiss::SubjectInfo subject_info;
-    tobiss::SignalInfo  signal_info;
+    SubjectInfo subject_info;
+    SignalInfo  signal_info;
 };
 
 //-----------------------------------------------------------------------------
@@ -48,6 +50,8 @@ class SSClientImplBase
 
     virtual void getDataPacket(DataPacket& packet) = 0;
 };
+
+} // Namespace tobiss
 
 //-----------------------------------------------------------------------------
 

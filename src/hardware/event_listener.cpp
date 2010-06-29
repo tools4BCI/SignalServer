@@ -3,6 +3,8 @@
 #include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
 
+namespace tobiss
+{
 using boost::lexical_cast;
 using boost::bad_lexical_cast;
 
@@ -123,4 +125,4 @@ void EventListener::listen4Events(const boost::system::error_code& error,
 
 //-----------------------------------------------------------------------------
 
-
+} //Namespace tobiss

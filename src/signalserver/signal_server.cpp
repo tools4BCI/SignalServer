@@ -35,6 +35,8 @@
   #define LPT2  1
 #endif
 
+namespace tobiss
+{
 using boost::uint64_t;
 using boost::uint32_t;
 using boost::uint16_t;
@@ -217,6 +219,7 @@ void SignalServer::sendDataPacket(DataPacket& packet)
     }
 
   #endif
+
 }
 
 //-----------------------------------------------------------------------------
@@ -264,4 +267,7 @@ void SignalServer::initGdf()
 }
 
 //-----------------------------------------------------------------------------
+
+
+} // Namespace tobiss
 

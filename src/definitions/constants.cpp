@@ -5,6 +5,8 @@
 #include "definitions/defines.h"
 #include "ticpp/ticpp.h"
 
+namespace tobiss
+{
 
 using namespace std;
 using boost::uint32_t;
@@ -333,3 +335,5 @@ string Constants::getSignalName(const uint32_t& flag)
 }
 
 //-----------------------------------------------------------------------------
+
+} // Namespace tobiss

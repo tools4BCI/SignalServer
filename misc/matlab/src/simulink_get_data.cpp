@@ -30,6 +30,8 @@
 #include <boost/cstdint.hpp>
 
 using namespace std;
+using namespace tobiss;
+
 using boost::uint16_t;
 using boost::uint32_t;
 using boost::numeric_cast;

@@ -21,6 +21,8 @@
 // local
 #include "config/control_messages.h"
 
+namespace tobiss
+{
 //-----------------------------------------------------------------------------
 
 class ControlMsgDecoder
@@ -95,6 +97,8 @@ private:
   typedef boost::shared_ptr<ControlMsg> ControlMsgHandle;
   std::map<std::string, ControlMsgHandle> prototypes_;
 };
+
+} // Namespace tobiss
 
 #endif //CONTROLMESSAGEDECODER_H
 

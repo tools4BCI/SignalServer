@@ -4,6 +4,8 @@ TEMPLATE += app
 
 CONFIG   += console release thread warn_on static exceptions stl
 
+QT -= core gui
+
 DEFINES  += TIXML_USE_TICPP
 #TIMING_TEST
 
@@ -69,7 +71,7 @@ SOURCES +=  src/signalserver/main.cpp \
             src/network/udp_data_server.cpp
 
 unix:SOURCES  += extern/include/LptTools/LptToolsLinux.cpp
-win32:SOURCES += extern/include/LptTools/LptTools.cpp
+win32:SOURCES += extern/include/LptTools/LptTools_.cpp
 
 #-----------------------------------------------------------------------
 
@@ -108,12 +110,14 @@ unix {
     exists( /home/breidi/svn/BCI/HEAD/Common/gdf ) {
         INCLUDEPATH +=  /home/breidi/svn/BCI/HEAD/Common/gdf
     
-        LIBS += -L /home/breidi/svn/BCI/HEAD/Common/gdf/libgdf \
-                -lgdf
+        LIBS += -L/home/breidi/svn/BCI/HEAD/Common/gdf/libgdf \
+                -llibgdf
+#        LIBS += -llibgdf
+
     }
 }
 
-include ( TOBI_SignalServer_server_customize.pro )
+#include ( TOBI_SignalServer_server_customize.pro )
 
 #-----------------------------------------------------------------------
 #! end of file

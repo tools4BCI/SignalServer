@@ -22,6 +22,8 @@
 
 using namespace std;
 
+namespace tobiss
+{
 //-----------------------------------------------------------------------------
 
 class JStick : public HWThread
@@ -71,7 +73,7 @@ class JStick : public HWThread
     //-----------------------------------------------
 
   private:
-	static set<boost::uint16_t> used_ids_;
+  static set<boost::uint16_t> used_ids_;
 
     void* joy_;   //FIXME: should be of type SDL_Joystick  ... problems with includes
     boost::uint16_t id_;
@@ -90,6 +92,8 @@ class JStick : public HWThread
     SampleBlock<double> empty_block_;
 
 };
+
+} // Namespace tobiss
 
 #endif // JSTICK_H
 

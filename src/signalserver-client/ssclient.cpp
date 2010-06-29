@@ -9,6 +9,9 @@
 #include "signalserver-client/ssclient.h"
 #include "signalserver-client/ssclientimpl.h"
 
+
+namespace tobiss
+{
 //-----------------------------------------------------------------------------
 
 SSClient::SSClient() :
@@ -86,3 +89,5 @@ void SSClient::getDataPacket(DataPacket& packet)
 }
 
 //-----------------------------------------------------------------------------
+
+} // Namespace tobiss

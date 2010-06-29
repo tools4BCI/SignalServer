@@ -16,6 +16,8 @@
 #include <boost/asio.hpp>
 #include <boost/cstdint.hpp>
 
+namespace tobiss
+{
 // forward declarations
 class DataPacket;
 
@@ -59,5 +61,7 @@ private:
   boost::asio::ip::udp::endpoint            target_;
   boost::uint32_t                           num_clients_;
 };
+
+} // Namespace tobiss
 
 #endif //UDPDATASERVER_H
