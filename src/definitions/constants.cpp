@@ -26,6 +26,14 @@ const string Constants::ss_ctl_port("ctl_port");
 const string Constants::ss_udp_bc_addr("udp_bc_addr");
 const string Constants::ss_udp_port("udp_port");
 
+const string Constants::ss_store_data("store-data");
+const string Constants::ss_filename("filename");
+const string Constants::ss_filetype("filetype");
+const string Constants::ss_filepath("filepath");
+const string Constants::ss_filepath_default("rec");
+const string Constants::ss_file_overwrite("overwrite");
+const string Constants::ss_file_overwrite_default("ask");
+
 const string Constants::hardware("hardware");
 const string Constants::hardware_name("name");
 const string Constants::hardware_version("version");

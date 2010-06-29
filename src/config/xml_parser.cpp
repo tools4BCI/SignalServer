@@ -1,10 +1,13 @@
 #include "config/xml_parser.h"
 
+#include <boost/algorithm/string.hpp>
+
 using namespace std;
 using boost::lexical_cast;
 using boost::bad_lexical_cast;
 
 using boost::uint16_t;
+using boost::algorithm::to_lower_copy;
 
 //---------------------------------------------------------------------------------------
 
@@ -107,6 +110,54 @@ map<string,string> XMLParser::parseServerSettings()
     string tmp(elem->Value());
     if(tmp == cst_.ss_ctl_port || tmp == cst_.ss_udp_bc_addr || tmp == cst_.ss_udp_port)
       continue;
+
+    if(tmp == cst_.ss_store_data)
+    {
+      string filename;
+      string filetype;
+      string filepath(cst_.ss_filepath_default);
+      string overwrite(cst_.ss_file_overwrite_default);
+      string tmp_filetype;
+
+      ticpp::Iterator<ticpp::Element> child(elem->FirstChildElement(cst_.ss_filename, true));
+      filename = child->GetText(false);
+
+      child = elem->FirstChildElement(cst_.ss_filepath, false);
+      if(child != child.end())
+        filepath = child->GetText(false);
+
+      child = elem->FirstChildElement(cst_.ss_file_overwrite, false);
+      if(child != child.end())
+        overwrite = lexical_cast<string>( cst_.equalsYesOrNo(child->GetText(false)) );
+
+      size_t pos = filename.rfind(".");
+
+      if(pos != string::npos)
+        tmp_filetype = to_lower_copy(filename.substr(pos + 1, filename.length()-pos ));
+
+      child = elem->FirstChildElement(cst_.ss_filetype, false);
+      if(child != child.end())
+        filetype = to_lower_copy(child->GetText(false));
+
+      if(filetype == "" && tmp_filetype != "")
+        filetype = tmp_filetype;
+      if(filetype == tmp_filetype)
+        filename = filename.substr(0, pos);
+
+      
+      if(filename == "")
+        throw(ticpp::Exception("Error in " + cst_.ss + " -- No filename given!"));
+      if(filetype == "")
+        throw(ticpp::Exception("Error in " + cst_.ss + " -- No filetype given!"));
+
+      m.insert(pair<string, string>(cst_.ss_filename, filename));
+      m.insert(pair<string, string>(cst_.ss_filetype, filetype));
+      m.insert(pair<string, string>(cst_.ss_filepath, filepath));
+      m.insert(pair<string, string>(cst_.ss_file_overwrite, overwrite));
+      
+      continue;
+    }
+
     if(elem->GetText(false) != "")
       m.insert(pair<string, string>(elem->Value(), elem->GetText(false)));
 

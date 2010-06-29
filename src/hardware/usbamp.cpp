@@ -42,7 +42,11 @@ USBamp::USBamp(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
 
   cout << " * g.USBamp sucessfully initialized" << endl;
   cout << "    fs: " << fs_ << "Hz, nr of channels: " << nr_ch_ << ", blocksize: " << blocks_ << endl;
-
+  if(!homogenous_signal_type_)
+  {
+    cout << "   ... NOTICE: Device is acquiring different signal types  ";
+    cout << "--  ensure that reference and ground settings are correctly set!" << endl;
+  }
 
   #ifdef DEBUG
     map<uint16_t, pair<string, uint32_t> >::iterator it(channel_info_.begin());
@@ -206,6 +210,8 @@ SampleBlock<double> USBamp::getAsyncData()
     cout << "USBamp: getAsyncData" << endl;
   #endif
 
+  throw(std::runtime_error("USBamp::getAsyncData -- Async data acquisition not available for g.USBamp yet!"));
+  
 //   boost::shared_lock<boost::shared_mutex> lock(rw_);
 //   vector<float> tmp(buffer);
 //   samples_available_ = false;

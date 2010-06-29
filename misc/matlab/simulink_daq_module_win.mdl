@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.264"
+    ComputedModelVersion    "1.265"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -25,9 +25,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "breidi"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Thu May 20 15:14:30 2010"
-  RTWModifiedTimeStamp	  196269229
-  ModelVersionFormat	  "1.%<AutoIncrement:264>"
+  LastModifiedDate	  "Thu May 20 16:03:59 2010"
+  RTWModifiedTimeStamp	  196269284
+  ModelVersionFormat	  "1.%<AutoIncrement:265>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -1145,14 +1145,14 @@ Model {
       BlockType		      DigitalClock
       Name		      "Digital Clock"
       SID		      4
-      Position		      [70, 308, 135, 332]
+      Position		      [85, 308, 150, 332]
     }
     Block {
       BlockType		      Display
       Name		      "Display"
       SID		      5
       Ports		      [1]
-      Position		      [180, 305, 270, 335]
+      Position		      [185, 305, 275, 335]
       Decimation	      "1"
       Lockdown		      off
     }
@@ -1161,7 +1161,7 @@ Model {
       Name		      "S-Function"
       SID		      6
       Ports		      [0, 5]
-      Position		      [15, 33, 170, 177]
+      Position		      [65, 58, 220, 202]
       Priority		      "1"
       FunctionName	      "simulink_get_data"
       Parameters	      "master_info, sig_info, ch_info, server_info"
@@ -1202,10 +1202,10 @@ Model {
       Name		      "Scope3"
       SID		      13
       Ports		      [1]
-      Position		      [395, 284, 425, 316]
+      Position		      [440, 309, 470, 341]
       Floating		      off
       Location		      [1192, 201, 1516, 440]
-      Open		      on
+      Open		      off
       NumInputPorts	      "1"
       List {
 	ListType		AxesTitles
@@ -1277,7 +1277,7 @@ Model {
     Line {
       SrcBlock		      "S-Function"
       SrcPort		      5
-      Points		      [20, 0; 0, 135]
+      Points		      [95, 0; 0, 135]
       DstBlock		      "Scope3"
       DstPort		      1
     }
