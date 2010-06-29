@@ -2,6 +2,9 @@
 
 #include <boost/algorithm/string.hpp>
 
+namespace tobiss
+{
+
 using namespace std;
 using boost::lexical_cast;
 using boost::bad_lexical_cast;
@@ -313,5 +316,7 @@ void XMLParser::checkMandatoryHardwareTags(ticpp::Iterator<ticpp::Element> hw)
       throw(ticpp::Exception(ex_str));
     }
 }
+
+} // Namespace tobiss
 
 //---------------------------------------------------------------------------------------

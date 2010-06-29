@@ -18,6 +18,8 @@
 // local
 #include "tcp_server.h"
 
+namespace tobiss
+{
 // forward declarations
 class DataPacket;
 
@@ -91,6 +93,8 @@ private:
   ClientConnectionMap       connections_transmission_enabled_;
   mutable boost::mutex      mutex_;
 };
+
+} // Namespace tobiss
 
 #endif //TCPDATASERVER_H
 

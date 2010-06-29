@@ -40,6 +40,7 @@
     #define NR_CH_INFO   2
 using boost::asio::ip::udp;
 using namespace std;
+using namespace tobiss;
 
 const string DEFAULT_XML_CONFIG = "server_config.xml";
 static SSClient* client = 0;

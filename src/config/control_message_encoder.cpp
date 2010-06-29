@@ -10,7 +10,9 @@
 
 #include "config/control_message_encoder.h"
 
-using namespace tobiss;
+namespace tobiss
+{
+
 using std::cout;
 using std::endl;
 using std::string;
@@ -322,6 +324,8 @@ void ControlMsgEncoderXML::writeXMLMsg(ticpp::Document& doc, std::ostream& strea
     cout << "<<< XML Message" << endl;
   }
 }
+
+} // namespace tobiss
 
 //-----------------------------------------------------------------------------
 

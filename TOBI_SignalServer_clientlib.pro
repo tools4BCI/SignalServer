@@ -2,12 +2,13 @@
 
 TEMPLATE = lib
 
-CONFIG   = release dll thread warn_on exceptions stl
+CONFIG   = release shared thread warn_on exceptions stl
+
+QT -= core gui
 
 DEFINES  += TIXML_USE_TICPP 
 
 win32:DEFINES += DECL_EXPORT=__declspec(dllexport)
-unix:DEFINES  += DECL_EXPORT
 
 DESTDIR = lib
 TARGET = ssclient
@@ -49,7 +50,7 @@ SOURCES +=  src/signalserver-client/ssclientimpl.cpp \
             src/definitions/constants.cpp
 
 unix:     SOURCES += extern/include/LptTools/LptToolsLinux.cpp
-windows:  SOURCES += extern/include/LptTools/LptTools.cpp
+windows:  SOURCES += extern/include/LptTools/LptTools_.cpp
 
 unix {
     LIBS  += -lboost_thread \
@@ -84,10 +85,10 @@ win32 {
 unix {
     # TODO: 
     exists( /home/breidi/svn/BCI/HEAD/Common/gdf ) {
-        INCLUDEPATH +=  /home/breidi/svn/BCI/HEAD/Common/gdf
+#        INCLUDEPATH +=  /home/breidi/svn/BCI/HEAD/Common/gdf
     
-        LIBS += -L /home/breidi/svn/BCI/HEAD/Common/gdf/libgdf \
-                -lgdf
+#        LIBS += -L /home/breidi/svn/BCI/HEAD/Common/gdf/libgdf \
+#                -lgdf
     }
 }
 

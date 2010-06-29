@@ -27,8 +27,10 @@
 
 #include "hw_thread.h"
 
-
 using namespace std;
+
+namespace tobiss
+{
 
 static const unsigned int USBAMP_MAX_NR_OF_DEVICES    = 16;
 // static const unsigned int USBAMP_TRIGGER_LINE_CHANNEL   = 17;
@@ -185,6 +187,8 @@ class USBamp : public HWThread
 
     Constants cst_;
 };
+
+} // Namespace tobiss
 
 #endif // USBAMP_H
 

@@ -16,13 +16,14 @@
 #include "ssclientimpl_base.h"
 #include "definitions/defines.h"
 
+using std::string;
+
+namespace tobiss
+{
 // forward declaration
 class ControlMsgEncoder;
 class ControlMsgDecoder;
 class DataPacket;
-
-using std::string;
-
 
 //-----------------------------------------------------------------------------
 
@@ -100,9 +101,9 @@ class SSClientImpl : public SSClientImplBase
     private:
       bool  lpt_flag_;
   #endif
-
 };
 
+} // Namespace tobiss
 //-----------------------------------------------------------------------------
 
 #endif // SSCLIENTIMPL_H

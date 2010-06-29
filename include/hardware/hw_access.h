@@ -29,6 +29,9 @@
 	#endif
 
 
+namespace tobiss
+{
+
 using namespace std;
 
 //---------------------------------------------------------------------------------------
@@ -262,6 +265,8 @@ class HWAccess
   #endif
 
 };
+
+} // Namespace tobiss
 
 #endif // HWACCESS_H
 

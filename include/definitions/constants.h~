@@ -21,7 +21,8 @@
 #include "defines.h"
 #include "ticpp/ticpp.h"
 
-
+using std::map;
+using std::string;
 
 //-----------------------------------------------------------------------------
 
@@ -41,8 +42,7 @@
 **/
 class Constants
 {
-  using std::map;
-  using std::string;
+
   public:
     /**
     * @brief Constructor
@@ -202,6 +202,13 @@ class Constants
       static const string ss_ctl_port;
       static const string ss_udp_bc_addr;
       static const string ss_udp_port;
+
+      static const string ss_store_data;
+      static const string ss_filename;
+      static const string ss_filetype;
+      static const string ss_filepath;
+      static const string ss_filepath_default;
+      static const string ss_file_overwrite;
 
     static const string hardware;
       static const string hardware_name;
