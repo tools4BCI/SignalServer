@@ -49,7 +49,9 @@ SignalServer::SignalServer(boost::asio::io_service& io_service)
   config_(0),
   tcp_data_server_(0),
   udp_data_server_(0),
-  control_connection_server_(0)
+  control_connection_server_(0),
+  write_file(0),
+  gdf_writer_(0)
 {
   #ifdef TIMING_TEST
     timestamp_ = boost::posix_time::microsec_clock::local_time();
@@ -62,8 +64,6 @@ SignalServer::SignalServer(boost::asio::io_service& io_service)
         cerr << "Installing LptTools lpt driver failed (do you have access rights for the lpt-port?)." << endl;
         throw std::runtime_error("Error installing LptTools lpt driver!");
       }
-
-  //     LptDetectPorts(tmp,addr,3);
 
       if(!LptInit())
       {
@@ -81,6 +81,11 @@ SignalServer::~SignalServer()
   delete tcp_data_server_;
   delete udp_data_server_;
   delete control_connection_server_;
+  if(gdf_writer_)
+  {
+    gdf_writer_->close();
+    delete gdf_writer_;
+  }
 
   #ifdef TIMING_TEST
     LptExit();
@@ -96,6 +101,12 @@ void SignalServer::initialize(XMLParser* config)
   server_settings_ = config->parseServerSettings();
   uint16_t port = 0;
 
+  map<string,string>::iterator it(server_settings_.begin());
+
+  for( ; it != server_settings_.end(); it++)
+    cout << "First: " << it->first << ";  Second: " << it->second << endl;
+
+
   port = lexical_cast<uint16_t>(server_settings_[Constants::ss_ctl_port]);
   control_connection_server_ = new ControlConnectionServer(io_service_, *this);
   control_connection_server_->bind(port);
@@ -105,16 +116,76 @@ void SignalServer::initialize(XMLParser* config)
   udp_data_server_ = new UDPDataServer(io_service_);
   udp_data_server_->setDestination(server_settings_[Constants::ss_udp_bc_addr], port);
   control_connection_server_->listen();
+
+  try
+  {
+    if(server_settings_[Constants::ss_filetype] == "gdf")
+    {
+      gdf_writer_ =
+        new GDFWriter( server_settings_[Constants::ss_filename] + ".gdf" );
+      initGdf();
+      write_file = true;
+    }
+  }
+  catch( StrException &e )
+  {
+    cout << "Exception: " << e.msg << endl;
+  }
+
 }
 
 //-----------------------------------------------------------------------------
 
 void SignalServer::sendDataPacket(DataPacket& packet)
 {
-
-
   tcp_data_server_->sendDataPacket(packet);
   udp_data_server_->sendDataPacket(packet);
+
+  if(write_file)
+  {
+    uint32_t nr_values = 0;
+    uint32_t nr_blocks = 0;
+    vector<double> v;
+    uint32_t ch_start = 0;
+
+    for(map<uint32_t, vector<string> >::iterator it(channels_per_sig_type_.begin());
+      it != channels_per_sig_type_.end();  it++)
+    {
+      if(gdf_writer_)
+      {
+//         cout << "Writing Samples for SigType: " << it->first << endl;
+        try
+        {
+          v = packet.getSingleDataBlock(it->first);
+          nr_values = packet.getNrOfValues(it->first);
+          nr_blocks = packet.getNrOfBlocks(it->first);
+
+//           cout << "Nr_Values: " << nr_values << ";  Nr_Blocks: " << nr_blocks << endl;
+
+          for(uint32_t n = 0; n < nr_values/nr_blocks; n++)
+            for(uint32_t m = 0; m < nr_blocks; m++)
+            {
+//               cout << "n: " << n << ";  m: " << m << endl;
+              gdf_writer_->addSample(ch_start + n, v[ (n*nr_blocks) + m]);
+            }
+
+        }
+        catch(std::invalid_argument& e)
+        {
+
+        }
+        catch( StrException &e )
+        {
+          cout << "Exception: " << e.msg << endl;
+          throw;
+        }
+
+      }
+
+      ch_start += it->second.size();
+    }
+  }
+
 
   #ifdef TIMING_TEST
     timestamp_ = boost::posix_time::microsec_clock::local_time();
@@ -146,5 +217,51 @@ void SignalServer::sendDataPacket(DataPacket& packet)
     }
 
   #endif
+}
+
+//-----------------------------------------------------------------------------
+
+void SignalServer::initGdf()
+{
+
+  std::map<uint32_t, std::vector<std::string> >::iterator it(channels_per_sig_type_.begin());
+
+  for(uint32_t n = 0 ; it != channels_per_sig_type_.end(); it++)
+    gdf_writer_->addSignal(GDF_FLOAT32_TYPE, fs_per_sig_type_[n++], it->second.size());
+
+
+  gdf_writer_->forceRecordDuration( true, 1 , 1 );
+
+  gdf_writer_->createHeader();
+
+  it = channels_per_sig_type_.begin();
+  for(uint32_t m = 0 ; it != channels_per_sig_type_.end(); it++)
+  {
+    for(uint32_t n = 0; n < it->second.size(); n++)
+    {
+      gdf_writer_->getSignalHeader( )->digmin[m]  = -1;
+      gdf_writer_->getSignalHeader( )->digmax[m]  =  1;
+      gdf_writer_->getSignalHeader( )->physmin[m] = -1;
+      gdf_writer_->getSignalHeader( )->physmax[m] =  1;
+
+      string label = cst_.getSignalName(it->first) + ":" + it->second[n];
+
+      // FIXME: len ... better methods will be provided by libgdf
+      uint16_t len = 0;
+      for( ; (len != 15) || (len < label.size()); len++ )
+        gdf_writer_->getSignalHeader( )->label[m][len] =  label.c_str()[len];
+
+      gdf_writer_->getSignalHeader( )->label[m][len] =  0;
+
+      m++;
+    }
+  }
+
+  gdf_writer_->setEventMode( 1, master_samplingrate_ );     // FIXME: 1 ... EventMode 1 (gdf)
+
+  gdf_writer_->open();
 
 }
+
+//-----------------------------------------------------------------------------
+

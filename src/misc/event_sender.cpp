@@ -25,9 +25,10 @@ int main()
         if(str == "q")
           break;
 
-        string temp = "1234\n456\n";
-        socket.send_to(boost::asio::buffer(temp),
+  //      string temp = "1234\n456\n";
+        socket.send_to(boost::asio::buffer(str + '\n'),
                         udp::endpoint( addr, 12344));
+	sleep(1);
       }
 
   }

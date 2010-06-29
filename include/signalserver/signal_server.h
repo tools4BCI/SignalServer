@@ -21,6 +21,10 @@
 #include <boost/cstdint.hpp>
 
 
+// local
+#include "definitions/constants.h"
+#include "libgdf/gdfwriter.h"
+
 // forward declarations
 class ControlConnectionServer;
 class TCPDataServer;
@@ -58,10 +62,13 @@ class SignalServer
       { sig_types_ = sig_types; }
     void setBlockSizesPerSignalType(const std::vector<boost::uint16_t>& blocksizes)
       { blocksizes_ = blocksizes; }
-	void setSamplingRatePerSignalType(const std::vector<boost::uint32_t>& fs_per_sig_type)
+    void setSamplingRatePerSignalType(const std::vector<boost::uint32_t>& fs_per_sig_type)
       { fs_per_sig_type_ = fs_per_sig_type; }
-	void setChannelNames(const std::map<boost::uint32_t, std::vector<std::string> >& channels_per_sig_type)
+    void setChannelNames(const std::map<boost::uint32_t, std::vector<std::string> >& channels_per_sig_type)
       { channels_per_sig_type_ = channels_per_sig_type; }
+
+  private:
+    void initGdf();
 
   private:
     boost::asio::io_service&            io_service_;
@@ -77,6 +84,11 @@ class SignalServer
     std::vector<boost::uint16_t>                          blocksizes_;
     std::vector<boost::uint32_t>                          fs_per_sig_type_;
     std::map<boost::uint32_t, std::vector<std::string> >  channels_per_sig_type_;
+
+    Constants                           cst_;
+
+    bool                                write_file;
+    GDFWriter*                          gdf_writer_;
 
 #ifdef TIMING_TEST
     boost::posix_time::ptime timestamp_;

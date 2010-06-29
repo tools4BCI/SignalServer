@@ -203,6 +203,14 @@ class Constants
       static const string ss_udp_bc_addr;
       static const string ss_udp_port;
 
+      static const string ss_store_data;
+      static const string ss_filename;
+      static const string ss_filetype;
+      static const string ss_filepath;
+      static const string ss_filepath_default;
+      static const string ss_file_overwrite;
+      static const string ss_file_overwrite_default;
+
     static const string hardware;
       static const string hardware_name;
       static const string hardware_version;
