@@ -2,11 +2,11 @@
 
 TEMPLATE = lib
 
-CONFIG   = release shared thread warn_on exceptions stl
+CONFIG   = release static thread warn_on exceptions stl
 
 QT -= core gui
 
-DEFINES  += TIXML_USE_TICPP 
+DEFINES  += TIXML_USE_TICPP
 
 win32:DEFINES += DECL_EXPORT=__declspec(dllexport)
 
@@ -16,7 +16,7 @@ TARGET = ssclient
 OBJECTS_DIR = tmp
 
 INCLUDEPATH += . include extern/include/LptTools
- 
+
 DEPENDPATH  +=  $$INCLUDEPATH
 
 INCLUDEPATH += extern/include
@@ -58,16 +58,16 @@ unix {
              -lSDL
 
     HARDWARE_PLATFORM = $$system(uname -i)
-        
+
     contains( HARDWARE_PLATFORM, x86_64 ) {
         # 64-bit Linux
         LIBS  += -L extern/lib/ticpp/linux \
                  -lticpp_64
-    }  
+    }
     else {
         # 32-bit Linux
         LIBS  += -L extern/lib/ticpp/linux \
-                 -lticpp  
+                 -lticpp
     }
 }
 
@@ -78,15 +78,15 @@ win32 {
             extern\lib\g.usbamp\win\gUSBamp.lib \
             kernel32.lib advapi32.lib
 
-    # Note: It is assumed that the boost libraries can be automatically detected by the linker 
+    # Note: It is assumed that the boost libraries can be automatically detected by the linker
     # through #pragma comment(lib, xxx) declarations in boost.
 }
 
 unix {
-    # TODO: 
+    # TODO:
     exists( /home/breidi/svn/BCI/HEAD/Common/gdf ) {
 #        INCLUDEPATH +=  /home/breidi/svn/BCI/HEAD/Common/gdf
-    
+
 #        LIBS += -L /home/breidi/svn/BCI/HEAD/Common/gdf/libgdf \
 #                -lgdf
     }

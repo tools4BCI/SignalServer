@@ -214,7 +214,7 @@ SampleBlock<double> USBamp::getAsyncData()
   #endif
 
   throw(std::runtime_error("USBamp::getAsyncData -- Async data acquisition not available for g.USBamp yet!"));
-  
+
 //   boost::shared_lock<boost::shared_mutex> lock(rw_);
 //   vector<float> tmp(buffer);
 //   samples_available_ = false;
@@ -312,6 +312,7 @@ void USBamp::run()
     throw(std::runtime_error("USBamp::run -- Error starting g.USBamp!"));
 
   running_ = 1;
+  cout << " * g.USBamp sucessfully started" << endl;
 }
 
 //-----------------------------------------------------------------------------
@@ -515,7 +516,9 @@ void USBamp::setDeviceFilterSettings(ticpp::Iterator<ticpp::Element>const &elem)
   for(unsigned int n = 0; n < channel_info_.size(); n++)
     filter_id_[n] = id;
 
-//   setUSBampFilter();
+  cout << " * g.USBamp -- filter set to:" << endl;
+  cout << "  ...  order: " << order << ", f_low: " << f_low << ", f_high: " f_high << endl;
+
 }
 
 //---------------------------------------------------------------------------------------
@@ -528,6 +531,9 @@ void USBamp::setChannelFilterSettings(ticpp::Iterator<ticpp::Element>const &fath
 
   ticpp::Iterator<ticpp::Element> elem;
   elem = father->FirstChildElement(cst_.hw_cs_ch,false);
+
+  cout << " * g.USBamp -- channels specific filters set to:" << endl;
+
   for(  ; elem != elem.end(); elem++)
     if(elem->Value() == cst_.hw_cs_ch)
     {
@@ -571,6 +577,8 @@ void USBamp::setChannelFilterSettings(ticpp::Iterator<ticpp::Element>const &fath
       for(it = channel_info_.begin(); it !=channel_info_.find(ch); it++)
         ch_pos++;
       filter_id_.at(ch_pos) = search4FilterID(type, order, f_low, f_high);
+
+      cout << "  ... channel: " << ch << ", order: " << order << ", f_low: " << f_low << ", f_high: " f_high << endl;
     }
     else
       throw(std::invalid_argument("USBamp::setChannelFilterSettings -- Tag not equal to \""+cst_.hw_cs_ch+"\"!"));

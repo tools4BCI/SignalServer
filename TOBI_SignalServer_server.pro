@@ -15,7 +15,7 @@ DESTDIR = bin
 OBJECTS_DIR = tmp
 
 INCLUDEPATH += . include extern/include/LptTools
- 
+
 DEPENDPATH  +=  $$INCLUDEPATH
 
 INCLUDEPATH += extern/include
@@ -81,16 +81,18 @@ unix {
              -lSDL
 
     HARDWARE_PLATFORM = $$system(uname -i)
-        
+
     contains( HARDWARE_PLATFORM, x86_64 ) {
         # 64-bit Linux
         LIBS  += -L extern/lib/ticpp/linux \
                  -lticpp_64
-    }  
+    }
     else {
         # 32-bit Linux
-        LIBS  += -L extern/lib/ticpp/linux \
-                 -lticpp  
+        LIBS  += -Lextern/lib/ticpp/linux \
+                 -lticpp \
+                 -Lextern/lib/libgdf/linux \
+                 -llibgdf
     }
 }
 
@@ -99,22 +101,23 @@ win32 {
             extern\lib\sdl\win\SDLmain.lib \
             extern\lib\ticpp\win\ticpp.lib \
             extern\lib\g.usbamp\win\gUSBamp.lib \
+            extern\lib\libgdf\win\libgdf.lib \
             kernel32.lib advapi32.lib
-            
-    # Note: It is assumed that the boost libraries can be automatically detected by the linker 
+
+    # Note: It is assumed that the boost libraries can be automatically detected by the linker
     # through #pragma comment(lib, xxx) declarations in boost.
 }
 
 unix {
-    # TODO: 
-    exists( /home/breidi/svn/BCI/HEAD/Common/gdf ) {
-        INCLUDEPATH +=  /home/breidi/svn/BCI/HEAD/Common/gdf
-    
-        LIBS += -L/home/breidi/svn/BCI/HEAD/Common/gdf/libgdf \
-                -llibgdf
+    # TODO:
+#    exists( /home/breidi/svn/BCI/HEAD/Common/gdf ) {
+#        INCLUDEPATH +=  /home/breidi/svn/BCI/HEAD/Common/gdf
+
+#        LIBS += -L/home/breidi/svn/BCI/HEAD/Common/gdf/libgdf \
+#                -llibgdf
 #        LIBS += -llibgdf
 
-    }
+#    }
 }
 
 #include ( TOBI_SignalServer_server_customize.pro )

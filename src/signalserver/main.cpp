@@ -12,7 +12,7 @@
 * Information concerning the installation process will be provided soon.
 * Up to now compilation of this project is based on qmake.
 * Needed libraries are:
-*   - boost-libs 1.39
+*   - boost-libs
 *   - ticpp (tinyXML fpr C++)
 *
 *
@@ -85,6 +85,7 @@ int main(int argc, const char* argv[])
   try
   {
     string config_file;
+    bool running = true;
 
     if(argc == 1)
     {
@@ -99,54 +100,71 @@ int main(int argc, const char* argv[])
     else
       cout << " ERROR -- Wrong Number of input arguments!" << endl;
 
-    XMLParser config(config_file);
+    while(running)
+    {
+      XMLParser config(config_file);
 
-    boost::asio::io_service io_service;
+      boost::asio::io_service io_service;
 
-    SignalServer server(io_service);
+      SignalServer server(io_service);
 
-    HWAccess hw_access(io_service, config);
+      HWAccess hw_access(io_service, config);
 
-    // TODO: find a better way to pass this information to the server
-    server.setMasterBlocksize(hw_access.getMastersBlocksize());
-    server.setMasterSamplingRate(hw_access.getMastersSamplingRate());
-    server.setAcquiredSignalTypes(hw_access.getAcquiredSignalTypes());
-    server.setBlockSizesPerSignalType(hw_access.getBlockSizesPerSignalType());
-    server.setSamplingRatePerSignalType(hw_access.getSamplingRatePerSignalType());
-    server.setChannelNames(hw_access.getChannelNames());
+      // TODO: find a better way to pass this information to the server
+      server.setMasterBlocksize(hw_access.getMastersBlocksize());
+      server.setMasterSamplingRate(hw_access.getMastersSamplingRate());
+      server.setAcquiredSignalTypes(hw_access.getAcquiredSignalTypes());
+      server.setBlockSizesPerSignalType(hw_access.getBlockSizesPerSignalType());
+      server.setSamplingRatePerSignalType(hw_access.getSamplingRatePerSignalType());
+      server.setChannelNames(hw_access.getChannelNames());
 
-    server.initialize(&config);
-    hw_access.startDataAcquisition();
+      server.initialize(&config);
+      hw_access.startDataAcquisition();
 
-    boost::thread st(boost::bind(&boost::asio::io_service::run, &io_service));
+      boost::thread st(boost::bind(&boost::asio::io_service::run, &io_service));
 
-    DataPacketReader reader(hw_access, server);
-    boost::thread data_reader_thread(boost::bind(&DataPacketReader::readPacket, &reader));
+      DataPacketReader reader(hw_access, server);
+      boost::thread data_reader_thread(boost::bind(&DataPacketReader::readPacket, &reader));
 
-    #ifdef WIN32
-      SetPriorityClass(GetCurrentProcess(), ABOVE_NORMAL_PRIORITY_CLASS);
-      SetPriorityClass(st.native_handle(), REALTIME_PRIORITY_CLASS);
-      SetThreadPriority(st.native_handle(), THREAD_PRIORITY_TIME_CRITICAL );
-      SetPriorityClass(data_reader_thread.native_handle(), REALTIME_PRIORITY_CLASS);
-      SetThreadPriority(data_reader_thread.native_handle(), THREAD_PRIORITY_TIME_CRITICAL );
-    #endif
+      #ifdef WIN32
+        SetPriorityClass(GetCurrentProcess(), ABOVE_NORMAL_PRIORITY_CLASS);
+        SetPriorityClass(st.native_handle(), REALTIME_PRIORITY_CLASS);
+        SetThreadPriority(st.native_handle(), THREAD_PRIORITY_TIME_CRITICAL );
+        SetPriorityClass(data_reader_thread.native_handle(), REALTIME_PRIORITY_CLASS);
+        SetThreadPriority(data_reader_thread.native_handle(), THREAD_PRIORITY_TIME_CRITICAL );
+      #endif
 
-    string str;
-    cout << endl << ">>";
 
-    while(cin >> str)
-      if(str == "q")
+      string str;
+      cout << endl << ">>";
+
+      while(cin >> str)
+        if(str == "q")
+        {
+          running = false;
+          break;
+        }
+        else if(str == "r")
+        {
+          break;
+        }
+        else
+          cout << endl << ">>";
+
+      reader.stop();
+      io_service.stop();
+      hw_access.stopDataAcquisition();
+      st.join();
+      data_reader_thread.join();
+
+      if(running)
       {
-        reader.stop();
-        break;
+        cout << endl;
+        cout << "   ...  Restarting and reloading SignalServer!" << endl;
+        cout << endl;
+        sleep(1);
       }
-      else
-        cout << endl << ">>";
-
-    io_service.stop();
-    hw_access.stopDataAcquisition();
-    st.join();
-    data_reader_thread.join();
+    }
   }
   catch(ticpp::Exception& ex)
   {

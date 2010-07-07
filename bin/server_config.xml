@@ -20,12 +20,12 @@
     <udp_port> 9998 </udp_port>
     <udp_bc_addr> 127.0.0.1 </udp_bc_addr>
 
-<!--    <store-data>
+    <store-data>
       <filepath> way_to_files </filepath>
       <filename> hugo.gdf </filename>
       <filetype> gdf </filetype>
       <overwrite> yes </overwrite>
-    </store-data>-->
+    </store-data>
   </server_settings>
 
 <!-- =============================================================================== -->
@@ -67,18 +67,18 @@
     <mode> slave </mode>
     <device_settings>
       <sampling_rate> 512 </sampling_rate>
-      <measurement_channels nr="4" names="sensor" type="sensor" />
+      <measurement_channels nr="1" names="sensor" type="sensor" />
       <blocksize> 32 </blocksize>
     </device_settings>
 
-<!--     <channel_settings>
+   <channel_settings>
       <selection>
         <ch nr="01" name="bp1" type="bp" />
         <ch nr="02" name="bp2" type="bp" />
         <ch nr="03" name="asdfg" type="hr" />
         <ch nr="04" name="speed" type="sensor" />
       </selection>
-    </channel_settings>-->
+    </channel_settings>
   </hardware>
 
 <!-- =============================================================================== -->
