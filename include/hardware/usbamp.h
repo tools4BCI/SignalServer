@@ -38,8 +38,8 @@ static const unsigned int USBAMP_MAX_NR_OF_CHANNELS   = 17;
 static const unsigned int USBAMP_MAX_NR_OF_ANALOG_CHANNELS   = 16;
 static const unsigned int USBAMP_NR_OF_CHANNEL_GROUPS = 4;
 static const unsigned int USBAMP_NOTCH_HALF_WIDTH = 2;   // to one side  ...  e.g.  f_center = 50 Hz -->  48/52 Hz
-static const unsigned int USBMAP_ERROR_MSG_SIZE = 256;
-static const unsigned int DIGITS_TO_ROUND = 1;
+static const unsigned int USBAMP_ERROR_MSG_SIZE = 256;
+static const unsigned int DIGITS_TO_ROUND = 2;
 
 //-----------------------------------------------------------------------------
 

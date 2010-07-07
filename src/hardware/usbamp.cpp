@@ -36,7 +36,7 @@ USBamp::USBamp(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
   driver_buffer_size_ = nr_ch_ * blocks_ * sizeof(float) + HEADER_SIZE;
   driver_buffer_ = new BYTE[driver_buffer_size_];
 
-  error_msg_ = new CHAR[USBMAP_ERROR_MSG_SIZE];
+  error_msg_ = new CHAR[USBAMP_ERROR_MSG_SIZE];
 
   data_.init(blocks_, nr_ch_, channel_types_);
   samples_.resize(nr_ch_ * blocks_, 0);
@@ -1217,6 +1217,8 @@ void USBamp::setUSBampFilter()
   {
     if(filter_id_[count] > 0)
       check = GT_SetBandPass(h_, (*it).first, filter_id_[count]);
+    else
+      cout << "Filter for channel " << (*it).first << " NOT set!" << endl;
     count++;
   }
 
