@@ -105,8 +105,8 @@ void SignalServer::initialize(XMLParser* config)
 
   map<string,string>::iterator it(server_settings_.begin());
 
-  for( ; it != server_settings_.end(); it++)
-    cout << "First: " << it->first << ";  Second: " << it->second << endl;
+//   for( ; it != server_settings_.end(); it++)
+//     cout << "First: " << it->first << ";  Second: " << it->second << endl;
 
 
   port = lexical_cast<uint16_t>(server_settings_[Constants::ss_ctl_port]);

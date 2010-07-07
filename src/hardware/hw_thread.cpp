@@ -195,7 +195,7 @@ void HWThread::setChannelSelection(ticpp::Iterator<ticpp::Element>const &father)
     {
       cout << "    Channel: " << dec << (*m_it).first;
       cout << "  ...  Name: " << (*m_it).second.first;
-      cout << "  ...  Type: 0x" << hex << (*m_it).second.second << endl;
+      cout << "  ...  Type: " << cst_.getSignalName((*m_it).second.second) << " (0x" << hex << (*m_it).second.second << ")" << endl;
     }
     cout << dec << endl;
   }

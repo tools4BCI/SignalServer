@@ -2,7 +2,7 @@
 
 TEMPLATE = app
 
-CONFIG   += release console thread warn_on exceptions stl
+CONFIG   += static release console thread warn_on exceptions stl
 
 QT -= core gui
 
@@ -15,7 +15,7 @@ DESTDIR = bin
 OBJECTS_DIR = tmp
 
 INCLUDEPATH += . include
- 
+
 DEPENDPATH  += $$INCLUDEPATH
 
 INCLUDEPATH += extern/include
@@ -36,16 +36,16 @@ unix {
 }
 
 win32 {
-    LIBS += lib/ssclient.lib                
-    # Note: It is assumed that the boost libraries can be automatically detected by the linker 
+    LIBS += lib/ssclient.lib
+    # Note: It is assumed that the boost libraries can be automatically detected by the linker
     # through #pragma comment(lib, xxx) declarations in boost.
 }
 
 unix {
-    # TODO: 
+    # TODO:
     exists( /home/breidi/svn/BCI/HEAD/Common/gdf ) {
 #        INCLUDEPATH +=  /home/breidi/svn/BCI/HEAD/Common/gdf
-    
+
 #        LIBS += -L /home/breidi/svn/BCI/HEAD/Common/gdf/libgdf \
 #                -lgdf
     }
