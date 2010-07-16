@@ -27,18 +27,9 @@
 
 #include "hw_thread.h"
 
-using namespace std;
-
 namespace tobiss
 {
 
-static const unsigned int USBAMP_MAX_NR_OF_DEVICES    = 16;
-// static const unsigned int USBAMP_TRIGGER_LINE_CHANNEL   = 17;
-static const unsigned int USBAMP_MAX_NR_OF_CHANNELS   = 17;
-static const unsigned int USBAMP_MAX_NR_OF_ANALOG_CHANNELS   = 16;
-static const unsigned int USBAMP_NR_OF_CHANNEL_GROUPS = 4;
-static const unsigned int USBAMP_NOTCH_HALF_WIDTH = 2;   // to one side  ...  e.g.  f_center = 50 Hz -->  48/52 Hz
-static const unsigned int USBAMP_ERROR_MSG_SIZE = 256;
 static const unsigned int DIGITS_TO_ROUND = 2;
 
 //-----------------------------------------------------------------------------
@@ -140,7 +131,11 @@ class USBamp : public HWThread
     void initUSBamp();
 
     void callGT_GetData();
+    void callGT_ResetTransfer();
+    void callGT_Start();
+
     void fillSyncBuffer();
+    void fillSampleBlock();
 
     inline double roundD(double number, int digits = DIGITS_TO_ROUND)
     {
@@ -150,32 +145,40 @@ class USBamp : public HWThread
   //-----------------------------------------------
 
   private:
-    static set<static string> serials_;
+    static std::set<static std::string> serials_;
     static bool is_usbamp_master_;
+    std::string serial;
 
     static USBamp*         master_device_;
-    static vector<USBamp*>   slave_devices_;
+    static std::vector<USBamp*>   slave_devices_;
 
     bool enable_sc_;
     bool external_sync_;
     bool trigger_line_;
     boost::uint64_t sample_count_;
+
     boost::uint64_t error_count_;
-
-    BYTE* driver_buffer_;
-    DWORD driver_buffer_size_;
-    DWORD bytes_received_;
-    DWORD timeout_;
-
     WORD error_code_;
     CHAR* error_msg_;
 
-    HANDLE  h_;
-    HANDLE  data_Ev_;
-    OVERLAPPED ov_;
+    std::vector<BYTE*> driver_buffer_;
+    DWORD driver_buffer_size_;
+    std::vector<DWORD> bytes_received_;
+    DWORD timeout_;
 
-    vector<double> samples_;
-    vector<boost::uint16_t> channels_;
+    //std::vector<BYTE> raw_buffer_;
+    boost::uint32_t expected_values_;
+    //static bool received_enough_data_;
+
+    boost::uint32_t first_run_;
+    boost::uint32_t current_overlapped_;
+
+    HANDLE  h_;
+    std::vector<HANDLE>  data_Ev_;
+    std::vector<OVERLAPPED> ov_;
+
+    std::vector<double> samples_;
+    std::vector<boost::uint16_t> channels_;
 
 
     int nr_of_bp_filters_;
@@ -184,13 +187,13 @@ class USBamp : public HWThread
     int nr_of_notch_filters_;
     FILT* notch_filters_;
 
-    vector<boost::int16_t> filter_id_;
-    vector<boost::int16_t> notch_id_;
+    std::vector<boost::int16_t> filter_id_;
+    std::vector<boost::int16_t> notch_id_;
     GND ground_;
     REF reference_;
     CHANNEL bipolar_channels_;
     CHANNEL drl_channels_;
-    string mode_;
+    std::string mode_;
 
     Constants cst_;
 };

@@ -208,7 +208,9 @@ void HWAccess::setMasterSlaveRatio()
 
     fs_ratio_.push_back(ratio);
     sample_it_.push_back(ratio);
+
     cout << "  --> Ratio between master_ and slave nr." << n+1 <<  ": " << fs_ratio_.back() << endl;
+    cout << endl;
   }
 }
 
@@ -240,21 +242,22 @@ void HWAccess::startDataAcquisition()
   #ifdef DEBUG
     cout << "HWAccess: startDataAcquisition" << endl;
   #endif
-
+  
   cout << endl;
-  for(unsigned int n = 0; n < slaves_.size(); n++)
-  {
-    cout << endl;
-    slaves_[n]->run();
-  }
 
+  if(slaves_.size())
+    cout << endl << " Slaves:" << endl;
+  for(unsigned int n = 0; n < slaves_.size(); n++)
+    slaves_[n]->run();
+  
+  if(aperiodics_.size())
+    cout << endl << " Aperiodic devices:" << endl;
   for(unsigned int n = 0; n < aperiodics_.size(); n++)
-  {
-    cout << endl;
     aperiodics_[n]->run();
-  }
 
   event_listener_->run();
+
+  cout << endl << " Master:" << endl;
   master_->run();
 }
 
@@ -269,10 +272,7 @@ void HWAccess::stopDataAcquisition()
   cout << endl;
   master_->stop();
   for(unsigned int n = 0; n < slaves_.size(); n++)
-  {
-    cout << endl;
     slaves_[n]->stop();
-  }
 }
 
 //-----------------------------------------------------------------------------
