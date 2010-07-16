@@ -29,6 +29,8 @@ using std::vector;
 using std::string;
 using std::map;
 using std::pair;
+using std::cout;
+using std::endl;
 
 namespace tobiss
 {
