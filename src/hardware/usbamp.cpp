@@ -9,6 +9,10 @@
 namespace tobiss
 {
 set<string> USBamp::serials_;
+bool USBamp::is_usbamp_master_(0);
+
+USBamp* USBamp::master_device_(0);
+vector<USBamp*>  USBamp::slave_devices_;
 
 using boost::uint8_t;
 using boost::uint16_t;
@@ -42,6 +46,11 @@ USBamp::USBamp(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
   samples_.resize(nr_ch_ * blocks_, 0);
 
   initUSBamp();
+
+  if(external_sync_)
+    slave_devices_.push_back(this);
+  else
+    master_device_ = this;
 
   cout << " * g.USBamp sucessfully initialized" << endl;
   cout << "    fs: " << fs_ << "Hz, nr of channels: " << nr_ch_ << ", blocksize: " << blocks_ << endl;
@@ -163,8 +172,74 @@ SampleBlock<double> USBamp::getSyncData()
   boost::unique_lock<boost::shared_mutex> lock(rw_);
   bytes_received_ = 0;
 
-  if( !GT_GetData(h_, driver_buffer_, driver_buffer_size_, &ov_))
-    throw(std::runtime_error("USBamp::getSyncData -- Error getting data!"));
+  if(!external_sync_)
+  {
+//     cout << "Filling Slave Buffer ..." << endl;
+    for(uint32_t n = 0; n < slave_devices_.size(); n++)
+      slave_devices_[n]->callGT_GetData();
+
+    callGT_GetData();
+
+    for(uint32_t n = 0; n < slave_devices_.size(); n++)
+      slave_devices_[n]->fillSyncBuffer();
+
+  }
+
+//   cout << " --> Filling MASTER Buffer ..." << endl;
+  fillSyncBuffer();
+
+  lock.unlock();
+  return(data_);
+}
+
+//-----------------------------------------------------------------------------
+
+SampleBlock<double> USBamp::getAsyncData()
+{
+  #ifdef DEBUG
+    cout << "USBamp: getAsyncData" << endl;
+  #endif
+
+  if(!running_)
+  {
+    cout << "Not running!" << endl;
+    return(data_);
+  }
+
+//   cout << " --> getting Slave data ..." << endl;
+  if(external_sync_)
+    return(data_);
+
+  throw(std::runtime_error("USBamp::getAsyncData -- Async data acquisition not available for g.USBamp yet!"));
+
+//   boost::shared_lock<boost::shared_mutex> lock(rw_);
+//   vector<float> tmp(buffer);
+//   samples_available_ = false;
+//   lock.unlock();
+//   return(tmp);
+  return(data_);
+}
+
+//-----------------------------------------------------------------------------
+
+void USBamp::callGT_GetData()
+{
+  if(running_)
+    if( !GT_GetData(h_, driver_buffer_, driver_buffer_size_, &ov_))
+      throw(std::runtime_error("USBamp::getSyncData -- Error getting data!"));
+}
+
+//-----------------------------------------------------------------------------
+
+
+void USBamp::fillSyncBuffer()
+{
+
+//   if(external_sync_)
+//     cout << "Slave: fillSyncBuffer ..." << endl;
+//   else
+//     cout << "Master: fillSyncBuffer ..." << endl;
+
   samples_available_ = true;
 
   check4USBampError();
@@ -184,6 +259,26 @@ SampleBlock<double> USBamp::getSyncData()
   if(bytes_received_ != sizeof(float)* nr_ch_ * blocks_)
   {
     cout << "WARNING  -- Buffer-Size only: " << bytes_received_ << ";  -> should be: " << sizeof(float)* nr_ch_ * blocks_;
+    cout << endl;
+    cout << " ... waiting for new data ... ";
+
+        for(uint32_t n = 0; n < slave_devices_.size(); n++)
+          slave_devices_[n]->callGT_GetData();
+
+        callGT_GetData();
+
+
+    timeout_ = WaitForSingleObject(data_Ev_,100);
+    if(timeout_ == WAIT_TIMEOUT)
+    {
+      cout << "Timeout!" << endl;
+      if( !GT_ResetTransfer(h_))
+        throw(std::runtime_error("USBamp::getSyncData -- Error resetting transfer!"));
+    }
+    GetOverlappedResult(h_, &ov_, &bytes_received_, false);
+
+    cout << " got " << bytes_received_ - HEADER_SIZE << " bytes" << endl;
+
     cout << "  (at Sample: " << sample_count_ << ")"<< endl;
     cout << "  ** WARNING: Inserted zeros instead of samples for testing!! **"<< endl;
     error_count_++;
@@ -191,7 +286,7 @@ SampleBlock<double> USBamp::getSyncData()
       samples_[n] = 0;
 
     data_.setSamples(samples_);
-    return(data_);
+    return;
   }
 
   unsigned int values = bytes_received_/sizeof(float);
@@ -201,26 +296,6 @@ SampleBlock<double> USBamp::getSyncData()
       samples_[ (k*blocks_) + j ] = *(reinterpret_cast<float*>(driver_buffer_ + HEADER_SIZE + (k +(j* values/blocks_) )*sizeof(float) ));
 
   data_.setSamples(samples_);
-  lock.unlock();
-  return(data_);
-}
-
-//-----------------------------------------------------------------------------
-
-SampleBlock<double> USBamp::getAsyncData()
-{
-  #ifdef DEBUG
-    cout << "USBamp: getAsyncData" << endl;
-  #endif
-
-  throw(std::runtime_error("USBamp::getAsyncData -- Async data acquisition not available for g.USBamp yet!"));
-
-//   boost::shared_lock<boost::shared_mutex> lock(rw_);
-//   vector<float> tmp(buffer);
-//   samples_available_ = false;
-//   lock.unlock();
-//   return(tmp);
-  return(data_);
 }
 
 //-----------------------------------------------------------------------------
@@ -323,8 +398,14 @@ void USBamp::stop()
     cout << "USBamp: stop" << endl;
   #endif
 
+  if(!running_)
+    return;
   boost::unique_lock<boost::shared_mutex> lock(rw_);
   running_ = 0;
+
+  if(!external_sync_)
+    for(uint32_t n = 0; n < slave_devices_.size(); n++)
+      slave_devices_[n]->stop();
 
   if( !GT_Stop(h_))
     throw(std::runtime_error("USBamp::stop -- Error stopping the device!"));
@@ -337,7 +418,8 @@ void USBamp::stop()
   CloseHandle(data_Ev_);
   lock.unlock();
 
-  cout << " * USBamp sucessfully stopped" << endl;
+  cout << " * USBamp "  << m_.find(cst_.hardware_serial)->second <<  " sucessfully stopped" << endl;
+  serials_.erase(m_.find(cst_.hardware_serial)->second);
 }
 
 //-----------------------------------------------------------------------------
@@ -447,7 +529,7 @@ void USBamp::setDefaultSettings()
 
   //FIXME   --  if needed, implementation of other operation modes
 
-  external_sync_ = 0;
+  is_usbamp_master_ = 0;
   enable_sc_ = 1;
 
   ground_.GND1 = 1;
@@ -517,7 +599,7 @@ void USBamp::setDeviceFilterSettings(ticpp::Iterator<ticpp::Element>const &elem)
     filter_id_[n] = id;
 
   cout << " * g.USBamp -- filter set to:" << endl;
-  cout << "  ...  order: " << order << ", f_low: " << f_low << ", f_high: " f_high << endl;
+  cout << "  ...  order: " << order << ", f_low: " << f_low << ", f_high: " << f_high << endl;
 
 }
 
@@ -578,7 +660,7 @@ void USBamp::setChannelFilterSettings(ticpp::Iterator<ticpp::Element>const &fath
         ch_pos++;
       filter_id_.at(ch_pos) = search4FilterID(type, order, f_low, f_high);
 
-      cout << "  ... channel: " << ch << ", order: " << order << ", f_low: " << f_low << ", f_high: " f_high << endl;
+      cout << "  ... channel: " << ch << ", order: " << order << ", f_low: " << f_low << ", f_high: " << f_high << endl;
     }
     else
       throw(std::invalid_argument("USBamp::setChannelFilterSettings -- Tag not equal to \""+cst_.hw_cs_ch+"\"!"));
@@ -866,6 +948,11 @@ void USBamp::setUSBampMasterOrSlave(ticpp::Iterator<ticpp::Element>const &elem)
   #endif
 
   external_sync_ = !(cst_.equalsYesOrNo(elem->GetText(true)));
+
+  if(is_usbamp_master_ && !external_sync_)
+    throw(std::runtime_error("USBamp::setUSBampMasterOrSlave -- Only one USBamp master allowed!"));
+
+  is_usbamp_master_ = true;
 }
 
 //---------------------------------------------------------------------------------------
@@ -1215,11 +1302,15 @@ void USBamp::setUSBampFilter()
 
   for( it=channel_info_.begin() ; it != stop; it++)
   {
-    if(filter_id_[count] > 0)
-      check = GT_SetBandPass(h_, (*it).first, filter_id_[count]);
-    else
-      cout << "Filter for channel " << (*it).first << " NOT set!" << endl;
-    count++;
+    if(check)
+    {
+      if(filter_id_[count] > 0)
+        check = GT_SetBandPass(h_, (*it).first, filter_id_[count]);
+      else
+        cout << "Filter for channel " << (*it).first << " NOT set!" << endl;
+
+      count++;
+    }
   }
 
   if(!check)
@@ -1245,9 +1336,14 @@ void USBamp::setUSBampNotch()
 
   for( it=channel_info_.begin() ; it != stop; it++)
   {
-    if(notch_id_[count] > 0)
-      check = GT_SetNotch(h_, (*it).first, notch_id_[count]);
-    count++;
+    if(check)
+    {
+      if(notch_id_[count] > 0)
+        check = GT_SetNotch(h_, (*it).first, notch_id_[count]);
+      else
+        cout << "Notch for channel " << (*it).first << " NOT set!" << endl;
+      count++;
+    }
   }
 
   if(!check)

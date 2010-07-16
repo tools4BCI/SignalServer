@@ -14,9 +14,9 @@
 #include <stdexcept>
 #include <bitset>
 
-#include <boost/asio.hpp>
-#include <boost/bind.hpp>
-#include <boost/thread.hpp>
+// #include <boost/asio.hpp>
+// #include <boost/bind.hpp>
+// #include <boost/thread.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/exception/all.hpp>
 #include <boost/numeric/conversion/cast.hpp>
@@ -34,6 +34,7 @@ using namespace tobiss;
 
 using boost::uint16_t;
 using boost::uint32_t;
+using boost::uint64_t;
 using boost::numeric_cast;
 using boost::lexical_cast;
 using boost::numeric::bad_numeric_cast;
@@ -57,18 +58,6 @@ using boost::numeric::negative_overflow;
 // #define BUFFER_SIZE 16777216     ...  defined in defines.h
 #define ITERATIONS_THROW_AWAY   0
 #define MAX_NR_OF_EVENTS_AT_ONCE  128
-
-const string DEFAULT_XML_CONFIG = "server_config.xml";
-const string XML_FILE_ARGUMENT = "-f";
-
-//---------------------------------------------------------------------------------------
-
-void run(boost::asio::io_service* io)
-{
-  cout << "run: io service started in thread" << endl;
-  io->run();
-  cout << "run: io service ended" << endl;
-}
 
 //---------------------------------------------------------------------------------------
 
@@ -101,6 +90,7 @@ void calcSizes(const mxArray* sig_types, vector<int>& width, vector< pair<uint16
 
 static void mdlInitializeSizes(SimStruct *S)
 {
+
   ssAllowSignalsWithMoreThan2D(S);
 
   ssSetNumSFcnParams(S,  NUM_PARAMS);
@@ -127,7 +117,6 @@ static void mdlInitializeSizes(SimStruct *S)
     ssSetErrorStatus(S,"Parameter 3 not correct!");
     return;
   }
-
 
   ssSetNumPWork(S, NUM_WORK_POINTERS);
 
@@ -164,7 +153,7 @@ static void mdlInitializeSizes(SimStruct *S)
   //   ssSetOptions(S, SS_OPTION_ALLOW_CONSTANT_PORT_SAMPLE_TIME);
   ssSetOptions(S, SS_OPTION_DISALLOW_CONSTANT_SAMPLE_TIME |
 		  SS_OPTION_USE_TLC_WITH_ACCELERATOR);
-  
+
   ssSetNumSampleTimes(S, PORT_BASED_SAMPLE_TIMES);
 
   int dimensions[2];
@@ -186,7 +175,7 @@ static void mdlInitializeSizes(SimStruct *S)
       ssSetOutputPortSampleTime(S, n, numeric_cast<double>(dims[n].second) / numeric_cast<double>(fs[n]) );
     else
       ssSetOutputPortSampleTime(S, n, bs_master/fs_master );
-    
+
     ssSetOutputPortOffsetTime(S, n, 0);
 
     ///     FIXME: If blocked transmission is used, data is delayed by "n"  samples --
@@ -400,6 +389,9 @@ static void mdlStart(SimStruct *S)
 
 static void mdlOutputs(SimStruct *S, int_T tid)
 {
+
+
+
   SSClient* client = static_cast<SSClient* >(ssGetPWork(S)[SSClient_POSITION]);
 
   map<uint32_t, pair<uint16_t, uint16_t> >* sig_info =
@@ -479,7 +471,7 @@ static void mdlOutputs(SimStruct *S, int_T tid)
     // double sec  = lexical_cast<double>(str2.substr (4));
     //
     // y[0] = (3600*hour) + (60*min) + sec;
-    
+
     y[0] = *(reinterpret_cast<real_T*>(&timestamp));
 
     //     calc difference of system time and the master-port simulation time
@@ -488,7 +480,8 @@ static void mdlOutputs(SimStruct *S, int_T tid)
       boost::posix_time::microsec_clock::local_time() - *start_time;
 
     boost::posix_time::time_duration diff =
-      sys_time - boost::posix_time::time_duration(0, 0, ssGetT(S), (ssGetT(S)-floor(ssGetT(S)))*1000000 );
+      sys_time - boost::posix_time::time_duration(0, 0, numeric_cast<uint64_t>(ssGetT(S)),
+                  numeric_cast<uint64_t>((ssGetT(S)-floor(ssGetT(S)))*1000000) );
 
     y[0] = lexical_cast<double>( to_iso_string(diff) );
 

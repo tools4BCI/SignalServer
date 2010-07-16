@@ -139,6 +139,9 @@ class USBamp : public HWThread
 
     void initUSBamp();
 
+    void callGT_GetData();
+    void fillSyncBuffer();
+
     inline double roundD(double number, int digits = DIGITS_TO_ROUND)
     {
       return floor(number * pow(10., digits) + .5) / pow(10., digits);
@@ -148,6 +151,10 @@ class USBamp : public HWThread
 
   private:
     static set<static string> serials_;
+    static bool is_usbamp_master_;
+
+    static USBamp*         master_device_;
+    static vector<USBamp*>   slave_devices_;
 
     bool enable_sc_;
     bool external_sync_;
@@ -168,7 +175,7 @@ class USBamp : public HWThread
     OVERLAPPED ov_;
 
     vector<double> samples_;
-    vector<boost::uint8_t> channels_;
+    vector<boost::uint16_t> channels_;
 
 
     int nr_of_bp_filters_;
@@ -177,8 +184,8 @@ class USBamp : public HWThread
     int nr_of_notch_filters_;
     FILT* notch_filters_;
 
-    vector<boost::uint8_t> filter_id_;
-    vector<boost::uint8_t> notch_id_;
+    vector<boost::int16_t> filter_id_;
+    vector<boost::int16_t> notch_id_;
     GND ground_;
     REF reference_;
     CHANNEL bipolar_channels_;

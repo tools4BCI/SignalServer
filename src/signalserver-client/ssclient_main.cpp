@@ -49,6 +49,9 @@ class SSClientDataReader
           boost::unique_lock<boost::mutex> lock(mutex_);
 
           DataPacket packet;
+          vector<double> v;
+          uint16_t nr_values = 0;
+
           if (!client_.receiving())
           {
             cond_.wait(lock);
@@ -58,6 +61,13 @@ class SSClientDataReader
           {
             try {
               client_.getDataPacket(packet);
+              cout << " ... got packet --  flags: " << packet.getFlags() << endl ;
+
+              v = packet.getSingleDataBlock(1);
+              nr_values = packet.getNrOfValues(1);
+
+              cout << "  ... getting Data for " << 1 << ";  Nr of values: " << nr_values << endl;
+
             }
             catch (std::exception& e)
             {

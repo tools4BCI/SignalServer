@@ -106,18 +106,26 @@ void DataPacket::incSampleNr()
 
 //-----------------------------------------------------------------------------
 
-void DataPacket::insertDataBlock(vector<double> v, uint32_t signal_flag, uint16_t blocks)
+void DataPacket::insertDataBlock(vector<double> v, uint32_t signal_flag, uint16_t blocks, bool prepend)
 {
 
   if(!flagsOK())
     throw(std::logic_error("DataPacket::insertDataBlock() -- Flags differ from Amount of Signals in DataPacket!"));
 
-  if(hasFlag(signal_flag))
-    throw(std::logic_error("DataPacket::insertDataBlock() -- Error ... Flag already defined, \
-    equal signal types simultaneously from different sources not supported at the moment!"));
+  if(calcNrOfSignalTypes(signal_flag) >1)
+    throw(std::logic_error("DataPacket::insertDataBlock() -- Trying to insert more than 1 signal type at the same time!"));
 
-    if(calcNrOfSignalTypes(signal_flag) >1)
-      throw(std::logic_error("DataPacket::insertDataBlock() -- Trying to insert more than 1 signal type at the same time!"));
+  if(hasFlag(signal_flag))
+  {
+    if(prepend)
+      prependDataBlock(v, signal_flag, blocks);
+    else
+      appendDataBlock(v, signal_flag, blocks);
+
+    return;
+    /*     throw(std::logic_error("DataPacket::insertDataBlock() -- Error ... Flag already defined, \
+        equal signal types simultaneously from different sources not supported at the moment!")); */
+  }
 
   uint32_t pos = getDataPos(signal_flag);
 
@@ -133,6 +141,38 @@ void DataPacket::insertDataBlock(vector<double> v, uint32_t signal_flag, uint16_
   nr_values_.insert(it_nr, v.size());
 
   nr_of_signal_types_++;
+}
+
+//-----------------------------------------------------------------------------
+
+void DataPacket::appendDataBlock(vector<double> &v, uint32_t signal_flag, uint16_t blocks)
+{
+  if(getNrOfBlocks(signal_flag) != blocks)
+    throw(std::logic_error("DataPacket::appendDataBlock() -- Blocksize of appended signal does not \
+          match the stored one -- check your settings!"));
+
+  uint32_t pos = getDataPos(signal_flag);
+
+  vector<double>::iterator it_data(data_.begin() + getOffset(pos) + nr_values_[pos]);
+  data_.insert(it_data,v.begin(),v.end());
+
+  nr_values_[pos] += v.size();
+}
+
+//-----------------------------------------------------------------------------
+
+void DataPacket::prependDataBlock(vector<double> &v, uint32_t signal_flag, uint16_t blocks)
+{
+  if(getNrOfBlocks(signal_flag) != blocks)
+    throw(std::logic_error("DataPacket::appendDataBlock() -- Blocksize of appended signal does not \
+          match the stored one -- check your settings!"));
+
+  uint32_t pos = getDataPos(signal_flag);
+
+  vector<double>::iterator it_data(data_.begin() + getOffset(pos));
+  data_.insert(it_data,v.begin(),v.end());
+
+  nr_values_[pos] += v.size();
 }
 
 //-----------------------------------------------------------------------------

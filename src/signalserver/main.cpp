@@ -162,7 +162,7 @@ int main(int argc, const char* argv[])
         cout << endl;
         cout << "   ...  Restarting and reloading SignalServer!" << endl;
         cout << endl;
-        sleep(1);
+        boost::this_thread::sleep(boost::posix_time::seconds(1));
       }
     }
   }
