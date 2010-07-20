@@ -58,7 +58,8 @@ SSClientImpl::SSClientImpl() :
   packet_offset_(0),
   buffer_offset_(0),
   buffered_data_(0),
-  recv_buf_(BUFFER_SIZE),
+  buffer_size_(BUFFER_SIZE),
+  recv_buf_(buffer_size_),
   data_buf_(0)
 {
   msg_encoder_ = new ControlMsgEncoderXML;
@@ -254,7 +255,7 @@ void SSClientImpl::establishDataConnection(bool use_udp_bc)
         boost::static_pointer_cast<DataConnectionMsg>(reply);
 
   boost::system::error_code ec;
-  boost::asio::socket_base::receive_buffer_size buffer_size(BUFFER_SIZE);
+  boost::asio::socket_base::receive_buffer_size buffer_size(buffer_size_);
 
   if (use_udp_bc_)
   {
@@ -365,7 +366,7 @@ void SSClientImpl::startReceiving(bool use_udp_bc)
   {
     boost::system::error_code ec;
     data_socket_tcp_.connect(tcp_target_, ec);
-    boost::asio::socket_base::receive_buffer_size buffer_size(BUFFER_SIZE);
+    boost::asio::socket_base::receive_buffer_size buffer_size(buffer_size_);
     data_socket_tcp_.set_option(buffer_size);
   }
 
@@ -591,6 +592,14 @@ void SSClientImpl::getDataPacket(DataPacket& packet)
       LptPortOut(LPT1, 0, port_state & ~0x04);
     }
   #endif
+}
+
+//-----------------------------------------------------------------------------
+	
+void SSClientImpl::setBufferSize(size_t size)
+{
+	recv_buf_.resize(size);
+	buffer_size_ = size;
 }
 
 //-----------------------------------------------------------------------------
