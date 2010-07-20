@@ -49,6 +49,8 @@ class SSClientImplBase
     virtual void stopReceiving() = 0;
 
     virtual void getDataPacket(DataPacket& packet) = 0;
+	
+	virtual void setBufferSize(size_t size) = 0;
 };
 
 } // Namespace tobiss

@@ -47,6 +47,8 @@ public:
   virtual void stopReceiving();
 
   virtual void getDataPacket(DataPacket& packet);
+	
+  virtual void setBufferSize(size_t size);
 
 protected:
   SSClientImplBase* impl_;

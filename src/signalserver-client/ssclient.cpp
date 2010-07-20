@@ -89,5 +89,12 @@ void SSClient::getDataPacket(DataPacket& packet)
 }
 
 //-----------------------------------------------------------------------------
+	
+void SSClient::setBufferSize(size_t size)
+{
+  impl_->setBufferSize(size);
+}
+
+//-----------------------------------------------------------------------------
 
 } // Namespace tobiss

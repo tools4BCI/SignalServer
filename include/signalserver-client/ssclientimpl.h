@@ -51,6 +51,8 @@ class SSClientImpl : public SSClientImplBase
     virtual void stopReceiving();
 
     virtual void getDataPacket(DataPacket& packet);
+	
+	virtual void setBufferSize(size_t size);
 
   protected:
     enum ControlConnState
@@ -93,6 +95,8 @@ class SSClientImpl : public SSClientImplBase
     boost::uint32_t                 buffer_offset_;
     size_t                          buffered_data_;
 
+	size_t                          buffer_size_;
+	
     vector<char>                    recv_buf_;
     vector<char>                    data_buf_;
     boost::asio::ip::tcp::endpoint  tcp_target_;
