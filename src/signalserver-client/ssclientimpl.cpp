@@ -67,8 +67,6 @@ SSClientImpl::SSClientImpl() :
 
   msg_decoder_->setInputStream(&ctl_conn_stream_);
 
-  io_service_.run();
-
     #ifdef WIN32
       SetPriorityClass(GetCurrentProcess(), ABOVE_NORMAL_PRIORITY_CLASS);
     #endif
@@ -96,7 +94,6 @@ SSClientImpl::SSClientImpl() :
 
 SSClientImpl::~SSClientImpl()
 {
-  io_service_.stop();
   delete msg_encoder_;
   delete msg_decoder_;
 
@@ -114,12 +111,14 @@ SSConfig SSClientImpl::config() const
 
 //-----------------------------------------------------------------------------
 
-void SSClientImpl::connect(const std::string& address, uint16_t port)
+void SSClientImpl::connect(const std::string& address,  short unsigned port)
 {
    if (connected())
    {
-     // TODO: error handling
-     return;
+     stringstream ex_str;
+     ex_str << "SSClient: Already connected!"
+            << address << ":" << port << endl;
+     throw std::ios_base::failure(ex_str.str());
    }
 
    stringstream conv;
@@ -128,10 +127,10 @@ void SSClientImpl::connect(const std::string& address, uint16_t port)
    ctl_conn_stream_.connect(address, conv.str());
    if (!ctl_conn_stream_)
    {
-     // TODO: handle errors
-     cerr << "SSClient: An error occurred while connecting to server "
-          << address << ":" << port << endl;
-     return;
+     stringstream ex_str;
+     ex_str << "SSClient: An error occurred while connecting to server "
+            << address << ":" << port << endl;
+     throw std::ios_base::failure(ex_str.str());
    }
 
    ctl_conn_state_ = ControlConnState_Connected;
@@ -164,22 +163,24 @@ void SSClientImpl::disconnect()
 
 void SSClientImpl::requestConfig()
 {
-  if (ctl_conn_state_ == ControlConnState_NotConnected || (ctl_conn_state_ & ControlConnState_AwaitingReply) != 0)
-    return;
+  if (ctl_conn_state_ == ControlConnState_NotConnected)
+  {
+    stringstream ex_str;
+    ex_str << "SSClient: Not connected!";
+    throw std::ios_base::failure(ex_str.str());
+  }
 
   GetConfigMsg msg;
-  msg_encoder_->encodeMsg(msg, ctl_conn_stream_);
 
-  ctl_conn_state_ |= ControlConnState_AwaitingReply;
+  msg_encoder_->encodeMsg(msg, ctl_conn_stream_);
 
   boost::shared_ptr<ControlMsg> reply(msg_decoder_->decodeMsg());
 
-  ctl_conn_state_ =~ ControlConnState_AwaitingReply;
-
   if (reply == 0)
   {
-    cerr << "SSClient: Cannot decode message" << endl;
-    return;
+    stringstream ex_str;
+    ex_str << "SSClient: Cannot decode message" << endl;
+    throw std::ios_base::failure(ex_str.str());
   }
 
   // Check reply type
@@ -189,12 +190,17 @@ void SSClientImpl::requestConfig()
 
     case ControlMsg::ErrorReply:
     {
-      cerr << "SSClient: Getting the config failed due to a server error." << endl;
-      return;
+      stringstream ex_str;
+      ex_str << "SSClient: Getting the config failed due to a server error." << endl;
+      throw std::ios_base::failure(ex_str.str());
     }
 
     default:
-      cerr << "SSClient: Got unexpected reply of type '" << reply->msgType() << "'" << endl;
+    {
+      stringstream ex_str;
+      ex_str << "SSClient: Got unexpected reply of type '" << reply->msgType() << "'" << endl;
+      throw std::ios_base::failure(ex_str.str());
+    }
   }
 
   boost::shared_ptr<ConfigMsg> config_msg =
@@ -202,8 +208,6 @@ void SSClientImpl::requestConfig()
 
   config_.subject_info = config_msg->subject_info;
   config_.signal_info = config_msg->signal_info;
-
-  ctl_conn_state_ =~ ControlConnState_AwaitingReply;
 }
 
 //-----------------------------------------------------------------------------
@@ -220,21 +224,18 @@ void SSClientImpl::establishDataConnection(bool use_udp_bc)
 
   use_udp_bc_ = use_udp_bc;
 
+  // TODO: check for connection loss
   msg_encoder_->encodeMsg(msg, ctl_conn_stream_);
 
   cout << "SSClient: Waiting on reply" << endl;
 
-  ctl_conn_state_ |= ControlConnState_AwaitingReply;
-
   boost::shared_ptr<ControlMsg> reply(msg_decoder_->decodeMsg());
-
-  ctl_conn_state_ =~ ControlConnState_AwaitingReply;
 
   if (reply == 0)
   {
-    // TODO: error handling
-    cerr << "SSClient: Cannot decode message" << endl;
-    return;
+    stringstream ex_str;
+    ex_str << "SSClient: Cannot decode message" << endl;
+    throw std::ios_base::failure(ex_str.str());
   }
 
   // Check reply type
@@ -244,12 +245,17 @@ void SSClientImpl::establishDataConnection(bool use_udp_bc)
 
     case ControlMsg::ErrorReply:
     {
-      cerr << "SSClient: Establishing data connection failed due to a server error." << endl;
-      return;
+      stringstream ex_str;
+      ex_str << "SSClient: Establishing data connection failed due to a server error." << endl;
+      throw std::ios_base::failure(ex_str.str());
     }
 
     default:
-      cerr << "SSClient: Got unexpected reply of type '" << reply->msgType() << "'" << endl;
+    {
+      stringstream ex_str;
+      ex_str << "SSClient: Got unexpected reply of type '" << reply->msgType() << "'" << endl;
+      throw std::ios_base::failure(ex_str.str());
+    }
   }
   boost::shared_ptr<DataConnectionMsg> data_conn_msg =
         boost::static_pointer_cast<DataConnectionMsg>(reply);
@@ -271,21 +277,24 @@ void SSClientImpl::establishDataConnection(bool use_udp_bc)
   }
   else
   {
-//     boost::system::error_code ec;
-    tcp_target_ = boost::asio::ip::tcp::endpoint(
+     boost::system::error_code ec;
+     tcp_target_ = boost::asio::ip::tcp::endpoint(
         ctl_conn_stream_.rdbuf()->remote_endpoint().address(),
         data_conn_msg->port());
-//     data_socket_tcp_.connect(endpoint, ec);
+     data_socket_tcp_.connect(tcp_target_, ec);
+     boost::asio::socket_base::receive_buffer_size buffer_size(buffer_size_);
+     data_socket_tcp_.set_option(buffer_size);
   }
 
   if (ec)
   {
     data_input_state_ = DataInputState_NotConnected;
-    cerr << "SSClient: Could not connect to signal server" << endl;
-    return;
+    stringstream ex_str;
+    ex_str << "SSClient: Could not connect to signal server:" << endl;
+    ex_str << "-->" << ec.message();
+    throw std::ios_base::failure(ex_str.str());
   }
 
-  // TODO: get port from config
   data_input_state_ |= DataInputState_Connected;
 }
 
@@ -308,43 +317,59 @@ void SSClientImpl::closeDataConnection()
 
     if (ec)
     {
-      cerr << "SSClient: An error occurred while closing data connection" << endl;
+      stringstream ex_str;
+      ex_str << "SSClient: An error occurred while closing data connection:" << endl;
+      ex_str << "-->" << ec.message();
+      throw std::ios_base::failure(ex_str.str());
     }
 
     data_input_state_ = DataInputState_NotConnected;
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
 
 void SSClientImpl::startReceiving(bool use_udp_bc)
 {
-  if (ctl_conn_state_ == ControlConnState_NotConnected
-      || (ctl_conn_state_ & ControlConnState_AwaitingReply) != 0 || receiving())
-    return;
+  if (ctl_conn_state_ == ControlConnState_NotConnected)
+  {
+    stringstream ex_str;
+    ex_str << "SSClient: Not connected!";
+    throw std::ios_base::failure(ex_str.str());
+  }
+
+  if (receiving())
+  {
+    stringstream ex_str;
+    ex_str << "SSClient: Client already in receiving state!";
+    throw std::ios_base::failure(ex_str.str());
+  }
 
   if (data_input_state_ == DataInputState_NotConnected)
   {
-    establishDataConnection(use_udp_bc);
+    try
+    {
+      establishDataConnection(use_udp_bc);
+    }
+    catch(std::exception& e)
+    {
+      throw e;
+    }
   }
 
   StartTransmissionMsg msg;
+
+  // TODO: check for connection loss
   msg_encoder_->encodeMsg(msg, ctl_conn_stream_);
 
   cout << "SSClient: Waiting on reply" << endl;
 
-  ctl_conn_state_ |= ControlConnState_AwaitingReply;
-
   boost::shared_ptr<ControlMsg> reply(msg_decoder_->decodeMsg());
-
-  ctl_conn_state_ =~ ControlConnState_AwaitingReply;
 
   if (reply == 0)
   {
-    // TODO: error handling
-    cerr << "SSClient: Cannot decode message" << endl;
-    return;
+    stringstream ex_str;
+    ex_str << "SSClient: Cannot decode message" << endl;
+    throw std::ios_base::failure(ex_str.str());
   }
 
   // Check reply type
@@ -354,20 +379,17 @@ void SSClientImpl::startReceiving(bool use_udp_bc)
 
     case ControlMsg::ErrorReply:
     {
-      cerr << "SSClient: Start receiving failed due to a server error." << endl;
-      return;
+      stringstream ex_str;
+      ex_str << "SSClient: Stop receiving failed due to a server error." << endl;
+      throw std::ios_base::failure(ex_str.str());
     }
 
     default:
-      cerr << "SSClient: Got unexpected reply of type '" << reply->msgType() << "'" << endl;
-  }
-
-  if(!use_udp_bc)
-  {
-    boost::system::error_code ec;
-    data_socket_tcp_.connect(tcp_target_, ec);
-    boost::asio::socket_base::receive_buffer_size buffer_size(buffer_size_);
-    data_socket_tcp_.set_option(buffer_size);
+    {
+      stringstream ex_str;
+      ex_str << "SSClient: Got unexpected reply of type '" << reply->msgType() << "'" << endl;
+      throw std::ios_base::failure(ex_str.str());
+    }
   }
 
   data_input_state_ |= DataInputState_Receiving;
@@ -383,20 +405,23 @@ bool SSClientImpl::receiving() const
 
 void SSClientImpl::stopReceiving()
 {
-  if (ctl_conn_state_ == ControlConnState_NotConnected
-      || (ctl_conn_state_ & ControlConnState_AwaitingReply) != 0 || !receiving())
-    return;
+  if (ctl_conn_state_ == ControlConnState_NotConnected)
+  {
+    stringstream ex_str;
+    ex_str << "SSClient: Not connected!";
+    throw std::ios_base::failure(ex_str.str());
+  }
+
+  if (!receiving()) return;
 
   StopTransmissionMsg msg;
+
+  // TODO: check for connection loss
   msg_encoder_->encodeMsg(msg, ctl_conn_stream_);
 
   cout << "SSClient: Waiting on reply" << endl;
 
-  ctl_conn_state_ |= ControlConnState_AwaitingReply;
-
   boost::shared_ptr<ControlMsg> reply(msg_decoder_->decodeMsg());
-
-  ctl_conn_state_ =~ ControlConnState_AwaitingReply;
 
   // Check reply type
   switch (reply->msgType())
@@ -405,12 +430,17 @@ void SSClientImpl::stopReceiving()
 
     case ControlMsg::ErrorReply:
     {
-      cerr << "SSClient: Stop receiving failed due to a server error." << endl;
-      return;
+      stringstream ex_str;
+      ex_str << "SSClient: Stop receiving failed due to a server error." << endl;
+      throw std::ios_base::failure(ex_str.str());
     }
 
     default:
-      cerr << "SSClient: Got unexpected reply of type '" << reply->msgType() << "'" << endl;
+    {
+      stringstream ex_str;
+      ex_str << "SSClient: Got unexpected reply of type '" << reply->msgType() << "'" << endl;
+      throw std::ios_base::failure(ex_str.str());
+    }
   }
 
   closeDataConnection();
@@ -420,8 +450,19 @@ void SSClientImpl::stopReceiving()
 
 void SSClientImpl::getDataPacket(DataPacket& packet)
 {
-  if ((ctl_conn_state_ == ControlConnState_NotConnected) || !receiving())
-    return;
+  if ((ctl_conn_state_ == ControlConnState_NotConnected))
+  {
+    stringstream ex_str;
+    ex_str << "SSClient: Not connected!";
+    throw std::ios_base::failure(ex_str.str());
+  }
+
+  if (!receiving())
+  {
+    stringstream ex_str;
+    ex_str << "SSClient: Client not in receiving state!";
+    throw std::ios_base::failure(ex_str.str());
+  }
 
   boost::system::error_code error;
   size_t bytes_transferred = 0;
@@ -551,7 +592,6 @@ void SSClientImpl::getDataPacket(DataPacket& packet)
       }
     }
 
-
     if(p.getSampleNr() > (last_packet_nr_ +1) )
     {
       cerr << "SSClient: Warning @packet: " << numeric_cast<uint32_t>(p.getSampleNr());
@@ -595,7 +635,7 @@ void SSClientImpl::getDataPacket(DataPacket& packet)
 }
 
 //-----------------------------------------------------------------------------
-	
+
 void SSClientImpl::setBufferSize(size_t size)
 {
 	recv_buf_.resize(size);

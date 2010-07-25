@@ -9,7 +9,6 @@
 #include "signalserver-client/ssclient.h"
 #include "signalserver-client/ssclientimpl.h"
 
-
 namespace tobiss
 {
 //-----------------------------------------------------------------------------
@@ -27,7 +26,7 @@ SSClient::~SSClient()
 
 //-----------------------------------------------------------------------------
 
-void SSClient::connect(const std::string& address, boost::uint16_t port)
+void SSClient::connect(const std::string& address, short unsigned port)
 {
   impl_->connect(address, port);
 }

@@ -15,6 +15,7 @@
 #include <boost/cstdint.hpp>
 
 // local
+#include "datapacket/data_packet.h"
 #include "signalserver-client/ssclient.h"
 
 using namespace std;
@@ -111,7 +112,6 @@ class SSClientDataReader
     boost::posix_time::time_duration t_mean_;
     boost::int64_t t_var_;
 //     boost::posix_time::time_duration t_var_;
-
 };
 
 
@@ -141,8 +141,17 @@ int main(int argc, const char* argv[])
   }
 
   SSClient client;
-  client.connect(srv_addr, srv_port);
-  client.requestConfig();
+
+  try
+  {
+    client.connect(srv_addr, srv_port);
+    client.requestConfig();
+  }
+  catch(std::exception& e)
+  {
+    cerr << e.what() << endl;
+    return 1;
+  }
 
   boost::mutex mutex;
   boost::condition_variable cond;
@@ -179,7 +188,7 @@ int main(int argc, const char* argv[])
       }
     }
 
-//     boost::unique_lock<boost::mutex> lock(mutex);
+//    boost::unique_lock<boost::mutex> lock(mutex);
 
     if(command == "q")
     {
