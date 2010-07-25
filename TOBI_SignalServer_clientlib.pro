@@ -36,7 +36,8 @@ HEADERS +=  include/config/control_message_decoder.h \
             include/definitions/constants.h \
             include/signalserver-client/ssclient.h \
             include/signalserver-client/ssclientimpl.h \
-            include/signalserver-client/ssclientimpl_base.h
+            include/signalserver-client/ssclientimpl_base.h \
+            include/signalserver-client/ssconfig.h
 
 SOURCES +=  src/signalserver-client/ssclientimpl.cpp \
             src/signalserver-client/ssclient.cpp \

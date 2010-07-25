@@ -17,6 +17,7 @@
 
 #include "definitions/constants.h"
 #include "signalserver-client/ssclient.h"
+#include "signalserver-client/ssconfig.h"
 
 #include <boost/cstdint.hpp>
 

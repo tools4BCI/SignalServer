@@ -26,6 +26,7 @@
 #include "ticpp/ticpp.h"
 #include "config/xml_parser.h"
 #include "signalserver-client/ssclient.h"
+#include "datapacket/data_packet.h"
 
 #include <boost/cstdint.hpp>
 

@@ -9,48 +9,98 @@
 #define SSCLIENTIMPL_BASE_H
 
 // local
-#include "config/ss_meta_info.h"
+
 #include "datapacket/data_packet.h"
 
 namespace tobiss
 {
-//-----------------------------------------------------------------------------
-
-class SSConfig
-{
-  public:
-    SubjectInfo subject_info;
-    SignalInfo  signal_info;
-};
+// forward declarations;
+class SSConfig;
+class DataPacket;
 
 //-----------------------------------------------------------------------------
-
+/**
+* @class SSConfig
+*
+* @brief The core of the Signal Server
+*
+* @todo
+*/
 class SSClientImplBase
 {
-  public:
-    SSClientImplBase(){}
-
-    virtual ~SSClientImplBase(){}
-
-    virtual void connect(const std::string& address, boost::uint16_t port) = 0;
-
-    virtual bool connected() const = 0;
-
-    virtual void disconnect() = 0;
-
-    virtual void requestConfig() = 0;
-
-    virtual SSConfig config() const = 0;
-
-    virtual void startReceiving(bool use_udp_bc) = 0;
-
-    virtual bool receiving() const = 0;
-
-    virtual void stopReceiving() = 0;
-
-    virtual void getDataPacket(DataPacket& packet) = 0;
-	
-	virtual void setBufferSize(size_t size) = 0;
+public:
+  /**
+   * @brief Destructor
+   * @param[in]  packet
+   * @throws
+   */
+  SSClientImplBase(){}
+  /**
+   * @brief Destructor
+   * @param[in]  packet
+   * @throws
+   */
+  virtual ~SSClientImplBase(){}
+  /**
+   * @brief Destructor
+   * @param[in]  packet
+   * @throws
+   */
+  virtual void connect(const std::string& address, short unsigned port) = 0;
+  /**
+   * @brief Destructor
+   * @param[in]  packet
+   * @throws
+   */
+  virtual bool connected() const = 0;
+  /**
+   * @brief Destructor
+   * @param[in]  packet
+   * @throws
+   */
+  virtual void disconnect() = 0;
+  /**
+   * @brief Destructor
+   * @param[in]  packet
+   * @throws
+   */
+  virtual void requestConfig() = 0;
+  /**
+   * @brief Destructor
+   * @param[in]  packet
+   * @throws
+   */
+  virtual SSConfig config() const = 0;
+  /**
+   * @brief Destructor
+   * @param[in]  packet
+   * @throws
+   */
+  virtual void startReceiving(bool use_udp_bc) = 0;
+  /**
+   * @brief Destructor
+   * @param[in]  packet
+   * @throws
+   */
+  virtual bool receiving() const = 0;
+  /**
+   * @brief Destructor
+   * @param[in]  packet
+   * @throws
+   */
+  virtual void stopReceiving() = 0;
+  /**
+   * @brief Destructor
+   * @param[in]  packet
+   * @throws
+   */
+  virtual void getDataPacket(DataPacket& packet) = 0;
+  /**
+   * @brief Destructor
+   * @param[in]  packet
+   * @throws
+   */
+  virtual void setBufferSize(size_t size) = 0;
 };
 
 } // Namespace tobiss

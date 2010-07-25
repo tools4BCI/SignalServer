@@ -13,11 +13,12 @@
 #include <boost/bind.hpp>
 #include <boost/thread.hpp>
 
-#include "../ticpp/ticpp.h"
+#include "ticpp/ticpp.h"
 
-#include "../constants.h"
-#include "../ssclient/ssclient.h"
-
+#include "datapacket/data_packet.h"
+#include "definitions/constants.h"
+#include "signalserver-client/ssclient.h"
+#include "signalserver-client/ssconfig.h"
 
 #ifdef WIN32
 #include <boost/cstdint.hpp>
