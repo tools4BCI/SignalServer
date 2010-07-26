@@ -1,0 +1,9 @@
+<message>
+    <header>
+        <type>getDataConnection</type>
+        <sender />
+    </header>
+    <getDataConnection>
+        <connectionType>tcp</connectionType>
+    </getDataConnection>
+</message>

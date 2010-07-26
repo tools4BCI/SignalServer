@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<message>
+    <header>
+        <type>dataConnection</type>
+        <sender />
+    </header>
+    <dataConnection>
+        <port>55448</port>
+    </dataConnection>
+</message>
