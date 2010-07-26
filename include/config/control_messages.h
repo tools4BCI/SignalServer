@@ -47,12 +47,6 @@ class ControlMsg
     ///
     MsgType msgType() const { return msg_type_; }
     ///
-    void setSeqNumber(boost::uint32_t seq_number) { seq_number_ = seq_number; }
-    ///
-    void incSeqNumber() { seq_number_++; }
-    ///
-    boost::uint32_t seqNumber() const { return seq_number_; }
-    ///
     void setSender(const std::string& sender) { sender_ = sender; }
     ///
     std::string sender() const { return sender_; }

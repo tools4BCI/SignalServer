@@ -30,7 +30,7 @@
 
 <!-- =============================================================================== -->
 
-<!--   <hardware name="sinegenerator" version="1.0" serial="">
+  <hardware name="sinegenerator" version="1.0" serial="">
     <mode> master </mode>
     <device_settings>
       <sampling_rate> 512 </sampling_rate>
@@ -59,7 +59,7 @@
         <ch nr="17" name="eeg" type="user1" />
       </selection>
     </channel_settings>
-  </hardware> -->
+  </hardware>
 
 <!-- =============================================================================== -->
 

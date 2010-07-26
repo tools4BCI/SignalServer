@@ -2,7 +2,6 @@
 <message>
   <header>
     <type>stopTransmission</type>
-    <seqNr></seqNr>
     <sender></sender>
   </header>
   <stopTransmission/>

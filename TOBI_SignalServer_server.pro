@@ -42,6 +42,7 @@ HEADERS +=  include/signalserver/signal_server.h \
             include/config/xml_parser.h \
             include/datapacket/data_packet.h \
             include/datapacket/raw_mem.h \
+            include/network/control_connection.h \
             include/network/control_connection_server.h \
             include/network/tcp_data_server.h \
             include/network/tcp_server.h \
@@ -65,6 +66,7 @@ SOURCES +=  src/signalserver/main.cpp \
             src/config/xml_parser.cpp \
             src/datapacket/data_packet.cpp \
             src/datapacket/raw_mem.cpp \
+            src/network/control_connection.cpp \
             src/network/control_connection_server.cpp \
             src/network/tcp_data_server.cpp \
             src/network/tcp_server.cpp \
@@ -85,7 +87,9 @@ unix {
     contains( HARDWARE_PLATFORM, x86_64 ) {
         # 64-bit Linux
         LIBS  += -L extern/lib/ticpp/linux \
-                 -lticpp_64
+                 -lticpp_64 \
+                 -Lextern/lib/libgdf/linux \
+                 -lgdf
     }
     else {
         # 32-bit Linux

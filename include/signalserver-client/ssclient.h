@@ -1,7 +1,6 @@
 /**
 * @file ssclient.h
-*
-* @brief
+* @brief Declaration of the SSClient class
 *
 **/
 
@@ -31,7 +30,7 @@ class SSConfig;
 * Most of the functions are blocking, which means that the call will not end until
 * the function has completed (time consuming) or resulted in an error.
 *
-* The PIMPL (Pointer to Implemention) idiom is used to achieve binary compatibility.
+* The PIMPL (Pointer to Implementation) idiom is used to achieve binary compatibility.
 *
 * This class is reentrant but not thread-safe.
 *

@@ -30,14 +30,6 @@ using boost::uint32_t;
 
 //-----------------------------------------------------------------------------
 
-static void writeHandler(const boost::system::error_code& error,
-    std::size_t bytes_transferred)
-{
-  std::cerr << "Write: " << error.message() << " transferred: " << bytes_transferred << std::endl;
-}
-
-//-----------------------------------------------------------------------------
-
 UDPDataServer::UDPDataServer(boost::asio::io_service& io_service)
   : io_service_(io_service),
   socket_(io_service, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), 0)),

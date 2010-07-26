@@ -76,7 +76,7 @@ SSClientImpl::SSClientImpl() :
 
     if(!LptDriverInstall())
     {
-      cerr << "Installing LptTools lpt driver failed (do you have access rights for the lpt-port?)." << endl;
+      cerr << "Installing LptTools lpt driver failed (do you have access rights for the lpt-port?).";
       throw std::runtime_error("Error installing LptTools lpt driver!");
     }
 
@@ -84,7 +84,7 @@ SSClientImpl::SSClientImpl() :
 
     if(!LptInit())
     {
-      cerr << "Initializing lpt driver failed (do you have access rights for the lpt-port?)." << endl;
+      cerr << "Initializing lpt driver failed (do you have access rights for the lpt-port?).";
       throw std::runtime_error("Error initializing lpt driver!");
     }
   #endif
@@ -117,7 +117,7 @@ void SSClientImpl::connect(const std::string& address,  short unsigned port)
    {
      stringstream ex_str;
      ex_str << "SSClient: Already connected!"
-            << address << ":" << port << endl;
+            << address << ":" << port;
      throw std::ios_base::failure(ex_str.str());
    }
 
@@ -129,7 +129,7 @@ void SSClientImpl::connect(const std::string& address,  short unsigned port)
    {
      stringstream ex_str;
      ex_str << "SSClient: An error occurred while connecting to server "
-            << address << ":" << port << endl;
+            << address << ":" << port;
      throw std::ios_base::failure(ex_str.str());
    }
 
@@ -179,7 +179,7 @@ void SSClientImpl::requestConfig()
   if (reply == 0)
   {
     stringstream ex_str;
-    ex_str << "SSClient: Cannot decode message" << endl;
+    ex_str << "SSClient: Cannot decode message";
     throw std::ios_base::failure(ex_str.str());
   }
 
@@ -191,14 +191,14 @@ void SSClientImpl::requestConfig()
     case ControlMsg::ErrorReply:
     {
       stringstream ex_str;
-      ex_str << "SSClient: Getting the config failed due to a server error." << endl;
+      ex_str << "SSClient: Getting the config failed due to a server error.";
       throw std::ios_base::failure(ex_str.str());
     }
 
     default:
     {
       stringstream ex_str;
-      ex_str << "SSClient: Got unexpected reply of type '" << reply->msgType() << "'" << endl;
+      ex_str << "SSClient: Got unexpected reply of type '" << reply->msgType() << "'";
       throw std::ios_base::failure(ex_str.str());
     }
   }
@@ -234,7 +234,7 @@ void SSClientImpl::establishDataConnection(bool use_udp_bc)
   if (reply == 0)
   {
     stringstream ex_str;
-    ex_str << "SSClient: Cannot decode message" << endl;
+    ex_str << "SSClient: Cannot decode message";
     throw std::ios_base::failure(ex_str.str());
   }
 
@@ -246,14 +246,14 @@ void SSClientImpl::establishDataConnection(bool use_udp_bc)
     case ControlMsg::ErrorReply:
     {
       stringstream ex_str;
-      ex_str << "SSClient: Establishing data connection failed due to a server error." << endl;
+      ex_str << "SSClient: Establishing data connection failed due to a server error.";
       throw std::ios_base::failure(ex_str.str());
     }
 
     default:
     {
       stringstream ex_str;
-      ex_str << "SSClient: Got unexpected reply of type '" << reply->msgType() << "'" << endl;
+      ex_str << "SSClient: Got unexpected reply of type '" << reply->msgType() << "'";
       throw std::ios_base::failure(ex_str.str());
     }
   }
@@ -290,7 +290,7 @@ void SSClientImpl::establishDataConnection(bool use_udp_bc)
   {
     data_input_state_ = DataInputState_NotConnected;
     stringstream ex_str;
-    ex_str << "SSClient: Could not connect to signal server:" << endl;
+    ex_str << "SSClient: Could not connect to signal server:";
     ex_str << "-->" << ec.message();
     throw std::ios_base::failure(ex_str.str());
   }
@@ -368,7 +368,7 @@ void SSClientImpl::startReceiving(bool use_udp_bc)
   if (reply == 0)
   {
     stringstream ex_str;
-    ex_str << "SSClient: Cannot decode message" << endl;
+    ex_str << "SSClient: Cannot decode message";
     throw std::ios_base::failure(ex_str.str());
   }
 
@@ -380,14 +380,14 @@ void SSClientImpl::startReceiving(bool use_udp_bc)
     case ControlMsg::ErrorReply:
     {
       stringstream ex_str;
-      ex_str << "SSClient: Stop receiving failed due to a server error." << endl;
+      ex_str << "SSClient: Stop receiving failed due to a server error.";
       throw std::ios_base::failure(ex_str.str());
     }
 
     default:
     {
       stringstream ex_str;
-      ex_str << "SSClient: Got unexpected reply of type '" << reply->msgType() << "'" << endl;
+      ex_str << "SSClient: Got unexpected reply of type '" << reply->msgType() << "'";
       throw std::ios_base::failure(ex_str.str());
     }
   }
@@ -431,14 +431,14 @@ void SSClientImpl::stopReceiving()
     case ControlMsg::ErrorReply:
     {
       stringstream ex_str;
-      ex_str << "SSClient: Stop receiving failed due to a server error." << endl;
+      ex_str << "SSClient: Stop receiving failed due to a server error.";
       throw std::ios_base::failure(ex_str.str());
     }
 
     default:
     {
       stringstream ex_str;
-      ex_str << "SSClient: Got unexpected reply of type '" << reply->msgType() << "'" << endl;
+      ex_str << "SSClient: Got unexpected reply of type '" << reply->msgType() << "'";
       throw std::ios_base::failure(ex_str.str());
     }
   }
@@ -608,7 +608,7 @@ void SSClientImpl::getDataPacket(DataPacket& packet)
   {
     string ex_str(" SSClient: ***** SampleNumber overflow detected! *****\n  -->");
     ex_str += boost::diagnostic_information(e);
-    cerr << ex_str << endl;
+    cerr << ex_str;
 
     cerr << "SSClient: *** New packet nr: " << (uint32_t)(p.getSampleNr());
     cerr << " -- previous packet nr: " << (uint32_t)(last_packet_nr_) << "!" << endl;
