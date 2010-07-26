@@ -25,73 +25,137 @@ class DataPacket;
 
 //-----------------------------------------------------------------------------
 
+/**
+* @class TCPConnection
+*
+* @brief Represents a TCP data connection to a client
+*
+* @todo
+*/
 class TCPDataConnection : public TCPServer, public boost::enable_shared_from_this<TCPDataConnection>
 {
 public:
-  virtual ~TCPDataConnection(){}
-
+  /**
+   * @brief TCPDataConnection Handle
+   */
   typedef boost::shared_ptr<TCPDataConnection> pointer;
 
+  /**
+   * @brief Creates a new TCPDataConnection object
+   * @return Handle pointing to the new object
+   */
   static pointer create(boost::asio::io_service& io_service)
   {
     return pointer(new TCPDataConnection(io_service));
   }
 
+public:
+  /**
+   * @brief Destructor
+   */
+  virtual ~TCPDataConnection(){}
+
+  /**
+   * @brief Tells if the client is still connected
+   * @return \c true if connected \c false otherwise
+   */
   bool connected() const {return connection_; }
 
+  /**
+   * @brief The local endpoint
+   */
   boost::asio::ip::tcp::endpoint localEndpoint() const
   {
     return acceptor_.local_endpoint();
   }
 
+  /**
+   * @brief Sends a DataPacket to the clients
+   * @param packet the DataPacket to send
+   */
   void sendDataPacket(DataPacket& packet);
 
 protected:
-  // @
+
+  /**
+   * @brief Handles a new client connection
+   */
   virtual void handleAccept(const TCPConnection::pointer& new_connection,
         const boost::system::error_code& error);
 
 private:
-  /// Construct a connection with the given io_service.
+  /**
+   * @brief Construct a connection with the given io_service.
+   */
   TCPDataConnection(boost::asio::io_service& io_service);
 
-  /// Handle completion of a write operation.
+  /**
+   * @brief Handle completion of a write operation.
+   */
   void handleWrite(const boost::system::error_code& e,
       std::size_t bytes_transferred);
-private:
-  ///
-  TCPConnection::pointer         connection_;
 
-  boost::asio::ip::tcp::endpoint remote_endpoint_;
+private:
+  TCPConnection::pointer         connection_;  ///<
+
+  boost::asio::ip::tcp::endpoint remote_endpoint_;  ///<
 };
 
 //-----------------------------------------------------------------------------
 
+/**
+* @class TCPDataServer
+*
+* @brief This class manages all TCP data connections to clients
+*
+*/
 class TCPDataServer
 {
 public:
-  // @
+  /**
+   * @brief Constructor
+   */
   TCPDataServer(boost::asio::io_service& io_service);
 
+  /**
+   * @brief Tells if the server is connected with given endpoint (client)
+   * @param endpoint the address and port of the client
+   */
   bool connected(const boost::asio::ip::tcp::endpoint& endpoint) const;
 
+  /**
+   * @brief Adds a new client connection
+   * @return The local endpoint the server listens on
+   */
   boost::asio::ip::tcp::endpoint addConnection();
 
+  /**
+   * @brief Removes a client specified by its endpoint
+   * @param endpoint the address and port of the client
+   */
   void removeConnection(const boost::asio::ip::tcp::endpoint& endpoint);
 
+  /**
+   * @brief Enables/Disables the transmission of data packets to the specified client
+   * @param enable If \c true the client will get data packets from the server.
+   */
   void enableTransmission(const boost::asio::ip::tcp::endpoint& endpoint, bool enable);
 
-  // @
-  // FIXME: const correctness
+  /**
+   * @brief Sends a data packet to all active clients
+   * @param packet the DataPacket to send
+   * FIXME: const correctness
+   * \sa enableTransmission()
+   */
   void sendDataPacket(DataPacket& packet);
 
 private:
   typedef std::map<boost::asio::ip::tcp::endpoint, TCPDataConnection::pointer> ClientConnectionMap;
 
-  boost::asio::io_service&  io_service_;
-  ClientConnectionMap       connections_;
-  ClientConnectionMap       connections_transmission_enabled_;
-  mutable boost::mutex      mutex_;
+  boost::asio::io_service&  io_service_; ///<
+  ClientConnectionMap       connections_; ///<
+  ClientConnectionMap       connections_transmission_enabled_; ///<
+  mutable boost::mutex      mutex_; ///<
 };
 
 } // Namespace tobiss

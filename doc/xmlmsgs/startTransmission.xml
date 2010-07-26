@@ -2,10 +2,7 @@
 <message>
   <header>
     <type>startTransmission</type>
-    <seqNr></seqNr>
     <sender></sender>
   </header>
-  <startTransmission>
-    <tcp clientPort=""/>
-  </startTransmission>
+  <startTransmission/>
 </message>

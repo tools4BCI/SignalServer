@@ -2,7 +2,6 @@
 <message>
   <header>
     <type>alive</type>
-    <seqNr></seqNr>
     <sender></sender>
   </header>
   <alive/>

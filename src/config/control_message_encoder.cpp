@@ -278,6 +278,11 @@ void ControlMsgEncoderXML::encodeMsg(const ReplyMsg& msg, std::ostream& stream)
       assert(xml_msg != 0);
       xml_msg->LinkEndChild(new ticpp::Element("errorReply"));
       break;
+    default:
+    {
+      std::cerr << "Unhandled reply message type '" << msg.msgType() << "'" << endl;
+      assert(false);
+    }
   }
 
   writeXMLMsg(doc, stream);
@@ -294,16 +299,14 @@ void ControlMsgEncoderXML::encodeBaseMsg(const ControlMsg& msg, const std::strin
   xml_msg = new ticpp::Element("message");
   doc.LinkEndChild(xml_msg);
 
+  xml_msg->SetAttribute("version", "0.1");
+
   ticpp::Element* header = new ticpp::Element("header");
   xml_msg->LinkEndChild(header);
 
   ticpp::Element* type = new ticpp::Element("type");
   type->SetText(xml_msg_type);
   header->LinkEndChild(type);
-
-  ticpp::Element* seqNr = new ticpp::Element("seqNr");
-  seqNr->SetText(msg.seqNumber());
-  header->LinkEndChild(seqNr);
 
   ticpp::Element* sender = new ticpp::Element("sender");
   sender->SetText(msg.sender());
@@ -324,6 +327,8 @@ void ControlMsgEncoderXML::writeXMLMsg(ticpp::Document& doc, std::ostream& strea
     cout << "<<< XML Message" << endl;
   }
 }
+
+//-----------------------------------------------------------------------------
 
 } // namespace tobiss
 

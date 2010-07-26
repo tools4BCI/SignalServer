@@ -22,6 +22,9 @@
 // TICPP
 #include "ticpp/ticpp.h"
 
+// LibGdf
+#include "libgdf/gdfwriter.h"
+
 // local
 #include "hardware/hw_access.h"
 #include "network/control_connection_server.h"

@@ -148,23 +148,7 @@ bool ControlMsgDecoderXML::getXmlMsgType(ticpp::Element& header, std::string& ty
 
 bool ControlMsgDecoderXML::decodeHeader(ControlMsg& msg)
 {
-    // TODO: check parsing, strict enough?
-    ticpp::Element* element = xml_msg_header_->FirstChildElement("seqNr", false);
-    if (element == 0 || element->Value() != "seqNr")
-    {
-      // TODO: do a proper error handling
-      cerr << "Missing tag 'seqNr' in control message header" << endl;
-      return 0;
-    }
-
-    std::string text = element->GetTextOrDefault("");
-    if (!text.empty())
-    {
-       uint32_t seq_nr = lexical_cast<uint32_t>(text);
-       msg.setSeqNumber(seq_nr);
-    }
-
-    element = element->NextSiblingElement();
+    ticpp::Element* element = xml_msg_header_->FirstChildElement("sender", false);
     if (element == 0 || element->Value() != "sender")
     {
       // TODO: do a proper error handling
@@ -172,7 +156,7 @@ bool ControlMsgDecoderXML::decodeHeader(ControlMsg& msg)
       return false;
     }
 
-    text = element->GetTextOrDefault("");
+    std::string text = element->GetTextOrDefault("");
     msg.setSender(text);
 
     return true;
@@ -622,8 +606,17 @@ void ControlMsgDecoderXML::decodeMsg(ReplyMsg& msg)
       }
       break;
     }
+
+    default:
+    {
+      // TODO: do a proper error handling
+      cerr << "Catastrophic error - aborting" << endl;
+      assert(false);
+    }
   }
 }
+
+//-----------------------------------------------------------------------------
 
 } // Namespace tobiss
 
