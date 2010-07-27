@@ -34,7 +34,7 @@ TCPDataConnection::TCPDataConnection(boost::asio::io_service& io_service) :
 //-----------------------------------------------------------------------------
 
 void TCPDataConnection::handleWrite(const boost::system::error_code& e,
-    std::size_t bytes_transferred)
+    std::size_t /*bytes_transferred*/)
 {
   if (e)
   {

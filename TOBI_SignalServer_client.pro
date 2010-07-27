@@ -2,7 +2,7 @@
 
 TEMPLATE = app
 
-CONFIG   += static release console thread warn_on exceptions stl
+CONFIG   += release console thread warn_on exceptions stl
 
 QT -= core gui
 
@@ -10,6 +10,10 @@ DEFINES  += TIXML_USE_TICPP
 #TIMING_TEST
 
 TARGET = signalserver-sclient
+
+unix:PRE_TARGETDEPS += lib/libssclient.so
+
+win32:PRE_TARGETDEPS += lib/ssclient.lib
 
 DESTDIR = bin
 OBJECTS_DIR = tmp
@@ -26,6 +30,7 @@ INCLUDEPATH += extern/include
 
 # Input
 SOURCES +=  src/signalserver-client/ssclient_main.cpp
+
 
 #-----------------------------------------------------------------------
 
@@ -50,8 +55,6 @@ unix {
 #                -lgdf
     }
 }
-
-#include ( TOBI_SignalServer_client_customize.pro )
 
 #-----------------------------------------------------------------------
 #! end of file
