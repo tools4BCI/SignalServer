@@ -44,6 +44,13 @@ class SSClientDataReader
     {
       unsigned int counter = 0;
 
+      uint16_t nr_values = 0;
+      uint64_t sample_nr = 0;
+      uint64_t packet_nr = 0;
+
+      uint64_t sample_nr_old = 0;
+      uint64_t packet_nr_old = 0;
+
       while(running_)
       {
         {
@@ -51,7 +58,6 @@ class SSClientDataReader
 
           DataPacket packet;
           vector<double> v;
-          uint16_t nr_values = 0;
 
           if (!client_.receiving())
           {
@@ -62,12 +68,28 @@ class SSClientDataReader
           {
             try {
               client_.getDataPacket(packet);
-              cout << " ... got packet --  flags: " << packet.getFlags() << endl ;
+
 
               v = packet.getSingleDataBlock(1);
               nr_values = packet.getNrOfValues(1);
 
-              cout << "  ... getting Data for " << 1 << ";  Nr of values: " << nr_values << endl;
+              sample_nr_old = sample_nr;
+              packet_nr_old = packet_nr;
+
+              sample_nr = packet.getSampleNr();
+              packet_nr = packet.getPacketNr();
+
+              if( (sample_nr - sample_nr_old) > 1)
+              {
+                cerr << "SampleNr difference: " << (sample_nr - sample_nr_old);
+                cerr << " -- @Sample: " << sample_nr << endl;
+              }
+
+              if( (packet_nr - packet_nr_old) > 1)
+              {
+                cerr << "PacketNr difference: " << (packet_nr - packet_nr_old);
+                cerr << " -- @Packet: " << packet_nr << endl;
+              }
 
             }
             catch (std::exception& e)

@@ -38,6 +38,7 @@
 #include "signalserver/signal_server.h"
 #include "config/xml_parser.h"
 #include "hardware/hw_access.h"
+#include "filereading/data_file_handler.h"
 
 using namespace std;
 
@@ -104,36 +105,49 @@ int main(int argc, const char* argv[])
     {
       XMLParser config(config_file);
 
+
       boost::asio::io_service io_service;
 
       SignalServer server(io_service);
 
+      DataFileHandler data_file_handler(io_service, config.getFileReaderMap());
+
       HWAccess hw_access(io_service, config);
-
-      // TODO: find a better way to pass this information to the server
-      server.setMasterBlocksize(hw_access.getMastersBlocksize());
-      server.setMasterSamplingRate(hw_access.getMastersSamplingRate());
-      server.setAcquiredSignalTypes(hw_access.getAcquiredSignalTypes());
-      server.setBlockSizesPerSignalType(hw_access.getBlockSizesPerSignalType());
-      server.setSamplingRatePerSignalType(hw_access.getSamplingRatePerSignalType());
-      server.setChannelNames(hw_access.getChannelNames());
-
-      server.initialize(&config);
-      hw_access.startDataAcquisition();
-
-      boost::thread st(boost::bind(&boost::asio::io_service::run, &io_service));
-
       DataPacketReader reader(hw_access, server);
-      boost::thread data_reader_thread(boost::bind(&DataPacketReader::readPacket, &reader));
+      boost::thread* io_thread_ptr = 0;
+      boost::thread* data_reader_thread_ptr = 0;
+
+      if(config.usesDataFile())
+      {
+        // get DataPackets from FileReader and give it to the networking part
+      }
+      else
+      {
+        // TODO: find a better way to pass this information to the server
+        server.setMasterBlocksize(hw_access.getMastersBlocksize());
+        server.setMasterSamplingRate(hw_access.getMastersSamplingRate());
+        server.setAcquiredSignalTypes(hw_access.getAcquiredSignalTypes());
+        server.setBlockSizesPerSignalType(hw_access.getBlockSizesPerSignalType());
+        server.setSamplingRatePerSignalType(hw_access.getSamplingRatePerSignalType());
+        server.setChannelNames(hw_access.getChannelNames());
+
+        server.initialize(&config);
+        hw_access.startDataAcquisition();
+
+        io_thread_ptr  = new boost::thread(boost::bind(&boost::asio::io_service::run, &io_service));
+        data_reader_thread_ptr = new boost::thread(boost::bind(&DataPacketReader::readPacket, &reader));
+
+        #ifdef WIN32
+          SetPriorityClass(io_thread.native_handle(), REALTIME_PRIORITY_CLASS);
+          SetThreadPriority(io_thread.native_handle(), THREAD_PRIORITY_TIME_CRITICAL );
+          SetPriorityClass(data_reader_thread.native_handle(), REALTIME_PRIORITY_CLASS);
+          SetThreadPriority(data_reader_thread.native_handle(), THREAD_PRIORITY_TIME_CRITICAL );
+        #endif
+      }
 
       #ifdef WIN32
         SetPriorityClass(GetCurrentProcess(), ABOVE_NORMAL_PRIORITY_CLASS);
-        SetPriorityClass(st.native_handle(), REALTIME_PRIORITY_CLASS);
-        SetThreadPriority(st.native_handle(), THREAD_PRIORITY_TIME_CRITICAL );
-        SetPriorityClass(data_reader_thread.native_handle(), REALTIME_PRIORITY_CLASS);
-        SetThreadPriority(data_reader_thread.native_handle(), THREAD_PRIORITY_TIME_CRITICAL );
       #endif
-
 
       string str;
       cout << endl << ">>";
@@ -154,8 +168,16 @@ int main(int argc, const char* argv[])
       reader.stop();
       io_service.stop();
       hw_access.stopDataAcquisition();
-      st.join();
-      data_reader_thread.join();
+      if(io_thread_ptr)
+      {
+        io_thread_ptr->join();
+        delete io_thread_ptr;
+      }
+      if(data_reader_thread_ptr)
+      {
+        data_reader_thread_ptr->join();
+        delete data_reader_thread_ptr;
+      }
 
       if(running)
       {
