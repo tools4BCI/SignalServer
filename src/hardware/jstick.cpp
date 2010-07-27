@@ -144,6 +144,10 @@ SampleBlock<double> JStick::getAsyncData()
 
   bool dirty = 0;
 
+  if(!SDL_JoystickOpened(id_) )
+    throw(std::runtime_error("JStick::getAsyncData -- Joystick not opened any more -- ID: " + id_) );
+
+
   SDL_JoystickUpdate();
 
   for(boost::uint8_t n = 0; n < buttons_values_.size(); n++)
@@ -228,7 +232,7 @@ void JStick::initJoystick()
     {
       joy_ = SDL_JoystickOpen(n);
       if(!static_cast<SDL_Joystick*>(joy_))
-        throw(std::runtime_error("JStick::initJoystick -- Unable to opne joystick at position: " + n));
+        throw(std::runtime_error("JStick::initJoystick -- Unable to open joystick at position: " + n));
       name_= SDL_JoystickName(n);
       id_ = n;
       used_ids_.insert(n);
