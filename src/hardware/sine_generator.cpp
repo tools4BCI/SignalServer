@@ -14,6 +14,12 @@ using boost::uint32_t;
 using boost::lexical_cast;
 using boost::bad_lexical_cast;
 
+using std::map;
+using std::vector;
+using std::string;
+using std::cout;
+using std::endl;
+
 //-----------------------------------------------------------------------------
 
 SineGenerator::SineGenerator(boost::asio::io_service& io, XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
