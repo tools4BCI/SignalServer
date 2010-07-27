@@ -34,6 +34,10 @@ HEADERS +=  include/signalserver/signal_server.h \
             include/hardware/event_listener.h\
             include/hardware/jstick.h\
             include/hardware/usbamp.h\
+            include/filereading/data_file_handler.h\
+            include/filereading/file_reader_factory.h\
+            include/filereading/file_reader.h\
+            include/filereading/gdf_file_reader.h\
             include/sampleblock/sample_block.h \
             include/config/control_message_decoder.h \
             include/config/control_message_encoder.h \
@@ -58,6 +62,10 @@ SOURCES +=  src/signalserver/main.cpp \
             src/hardware/event_listener.cpp\
             src/hardware/jstick.cpp\
             src/hardware/usbamp.cpp\
+            src/filereading/data_file_handler.cpp\
+            src/filereading/file_reader_factory.cpp\
+            src/filereading/file_reader.cpp\
+            src/filereading/gdf_file_reader.cpp\
             src/sampleblock/sample_block.cpp \
             src/config/control_message_decoder.cpp \
             src/config/control_message_encoder.cpp \

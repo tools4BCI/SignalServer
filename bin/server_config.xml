@@ -224,7 +224,7 @@
     </device_settings>
 
   </hardware>
-  
+
     <hardware name="g.usbamp" version="B" serial="UB-2009.07.03">
     <mode> slave </mode>
     <device_settings>
@@ -257,7 +257,7 @@
     </device_settings>
 
   </hardware>
-  
+
 <!-- =============================================================================== -->
 
   <hardware name="g.mobilab" version="1.0" serial="">

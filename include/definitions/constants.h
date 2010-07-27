@@ -211,6 +211,11 @@ namespace tobiss
       static const string ss_file_overwrite;
       static const string ss_file_overwrite_default;
 
+      static const string file_reader;
+        // filepath, name and type from store_data
+      static const string fr_speedup;
+      static const string fr_stop;
+
       static const string hardware;
         static const string hardware_name;
         static const string hardware_version;

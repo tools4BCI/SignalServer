@@ -25,13 +25,6 @@
 
 #include "definitions/constants.h"
 
-using std::vector;
-using std::string;
-using std::map;
-using std::pair;
-using std::cout;
-using std::endl;
-
 namespace tobiss
 {
 //---------------------------------------------------------------------------------------
@@ -58,7 +51,7 @@ class XMLParser
     * @param[in] xml_file XML file to be loaded and parsed.
     * @throw ticpp::Exception if no subject defined or mutliple server settings availabe!
     */
-    XMLParser(const string xml_file);
+    XMLParser(const std::string xml_file);
     /**
     * @brief Default destructor
     */
@@ -92,16 +85,17 @@ class XMLParser
     /**
     * @brief Get the ticpp Element pointing to the respective \<hardware\> node.
     * @param[in] name  Name of the respective hardware.
-    * @return ticpp::Iterator<ticpp::Element>  Element pointing to the respective \<hardware>
-    * @throws ticpp::exception if hardware element not found.
+    * @return ticpp::Iterator<ticpp::Element>  Element pointing to the respective \<hardware> (0 if not found)
     */
-    const ticpp::Iterator<ticpp::Element> getHardwareElement(string& s) const
+    const ticpp::Iterator<ticpp::Element> getHardwareElement(const std::string& s) const
       {
         for(unsigned int n = 0; n < hardware_.size(); n++)
           if(s == hardware_.at(n).first)
             return(hardware_[n].second);
 
-        throw(ticpp::Exception("XMLParser::getHardwareElement -- Element "+s+" not found!"));
+        return(0);
+        //     throw(ticpp::Exception("XMLParser::getHardwareElement -- Element "+s+" not found!"));
+        // * @throws ticpp::exception if hardware element not found.
       }
 
     /**
@@ -109,14 +103,14 @@ class XMLParser
     * @param[in] n  Number of the respective hardware block in the xml config file.
     * @return string  Name of the respective \<hardware>
     */
-    const string getHardwareElementName(const unsigned int n) const {  return(hardware_.at(n).first);  }
+    const std::string getHardwareElementName(const unsigned int n) const {  return(hardware_.at(n).first);  }
 
     /**
     * @brief Get the mode of the n-th  \<hardware\> node.
     * @param[in] n  Number of the respective hardware block in the xml config file.
     * @return string  Type (master or slave) of the respective \<hardware>
     */
-    const string getHardwareElementType(const unsigned int n) const
+    const std::string getHardwareElementType(const unsigned int n) const
     {
       return(hardware_.at(n).second->FirstChildElement(cst_.hw_mode ,false)->GetText());
     }
@@ -132,14 +126,14 @@ class XMLParser
     * @return std::map<string,string> A map containing tags and related text in a map.
     * @throw ticpp::Exception
     */
-    map<string,string> parseSubject();
+    std::map<std::string,std::string> parseSubject();
 
     /**
     * @brief Parse the \<server_setting\> section in the config file into a map.
     * @return std::map<string,string> A map containing tags and related text in a map.
     * @throw ticpp::Exception
     */
-    map<string,string> parseServerSettings();
+    std::map<std::string,std::string> parseServerSettings();
 
     /**
     * @brief Parse the \<measurement_channels\> section in the config file -- used for common channel settings.
@@ -150,7 +144,7 @@ class XMLParser
     * @throw ticpp::Exception
     */
     void parseDeviceChannels(ticpp::Iterator<ticpp::Element>const &elem, boost::uint16_t& nr_ch,
-                             string& naming, string& type);
+                             std::string& naming, std::string& type);
 
     /**
     * @brief Parse the \<selection> section in the config file -- used for individual channel settings.
@@ -161,13 +155,32 @@ class XMLParser
     * @throw ticpp::Exception
     */
     void parseChannelSelection(ticpp::Iterator<ticpp::Element>const &elem, boost::uint16_t& ch,
-                               string& name, string& type);
+                               std::string& name, std::string& type);
 
     /**
     * @brief Check if all mandatory tags in \<hardware\> are given.
     * @throw ticpp::Exception
     */
     void checkMandatoryHardwareTags(ticpp::Iterator<ticpp::Element> hw);
+
+    /**
+    * @brief TODO
+    */
+    void parseFileReader();
+
+    /**
+    * @brief TODO
+    */
+    bool usesDataFile()
+    { return(external_data_file_); }
+
+    /**
+    * @brief TODO
+    */
+    const std::map<std::string, std::string> getFileReaderMap()
+    { return(file_reader_map_); }
+
+
 //-----------------------------------------------
 
   private:
@@ -175,7 +188,7 @@ class XMLParser
     * @brief Check attributes in \<hardware>
     * @throw ticpp::Exception if device name not specified
     */
-    void checkHardwareAttributes(map<string,string>& m);
+    void checkHardwareAttributes(std::map<std::string,std::string>& m);
     /**
     * @brief Check, if a string represents a valid number.
     * @return bool
@@ -189,15 +202,28 @@ class XMLParser
       return true;
     }
 
+    /**
+    * @brief TODO
+    */
+    void parseFileLocation(ticpp::Iterator<ticpp::Element> elem, std::map<std::string, std::string>& m);
+
 //-----------------------------------------------
   private:
     ticpp::Document doc_;    ///< Holding the XML document
     ticpp::Iterator<ticpp::Element> subject_;    ///< Iterator to the \<subject\> tag
     ticpp::Iterator<ticpp::Element> server_settings_;  ///< Iterator to the \<server_setting\> tag
+
+    ticpp::Iterator<ticpp::Element> file_reader_;  ///< Iterator to the \<file-reader\> tag
+    bool external_data_file_;
+
+    std::map<std::string, std::string> subject_map_;
+    std::map<std::string, std::string> server_settings_map_;
+    std::map<std::string, std::string> file_reader_map_;
+
     /**
     * @brief A vector containing iterators to the respective \<hardware> tags.
     */
-    vector< pair<string, ticpp::Iterator<ticpp::Element> > > hardware_;
+    std::vector< std::pair<std::string, ticpp::Iterator<ticpp::Element> > > hardware_;
 
     Constants cst_;  ///< A static object containing constants.
 };
