@@ -22,6 +22,8 @@
 
 namespace tobiss
 {
+
+using std::vector;
 using std::cout;
 using std::endl;
 
