@@ -124,7 +124,5 @@ unix {
 #    }
 }
 
-#include ( TOBI_SignalServer_server_customize.pro )
-
 #-----------------------------------------------------------------------
 #! end of file

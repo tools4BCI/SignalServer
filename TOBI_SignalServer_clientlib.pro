@@ -13,8 +13,6 @@ win32:DEFINES += DECL_EXPORT=__declspec(dllexport)
 DESTDIR = lib
 TARGET = ssclient
 
-OBJECTS_DIR = tmp
-
 INCLUDEPATH += . include extern/include/LptTools
 
 DEPENDPATH  +=  $$INCLUDEPATH

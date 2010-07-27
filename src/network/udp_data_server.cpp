@@ -77,7 +77,7 @@ void UDPDataServer::sendDataPacket(DataPacket& packet)
 //-----------------------------------------------------------------------------
 
 void UDPDataServer::handleWrite(const boost::system::error_code& error,
-    std::size_t bytes_transferred)
+    std::size_t /*bytes_transferred*/)
 {
   if (error)
   {
