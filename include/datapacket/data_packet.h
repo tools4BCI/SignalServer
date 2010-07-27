@@ -132,6 +132,11 @@ class DataPacket
     void setPacketNr(boost::uint64_t);
 
     /**
+    * @brief Set the packet number (can differ from the samplenumber -- e.g. if sending with different rates)
+    */
+    boost::uint64_t getPacketNr();
+
+    /**
     * @brief Set the timestamp to localtime.
     */
     void setTimestamp();
