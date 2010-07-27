@@ -184,6 +184,13 @@ void DataPacket::setPacketNr(uint64_t nr)
 
 //-----------------------------------------------------------------------------
 
+uint64_t DataPacket::getPacketNr()
+{
+  return(packet_nr_);
+}
+
+//-----------------------------------------------------------------------------
+
 void DataPacket::setTimestamp()
 {
   timestamp_ =  boost::posix_time::microsec_clock::local_time();
