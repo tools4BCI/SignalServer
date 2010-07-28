@@ -2,7 +2,7 @@
 
 TEMPLATE = lib
 
-CONFIG   = release static thread warn_on exceptions stl
+CONFIG   += release static thread warn_on exceptions stl
 
 QT -= core gui
 
