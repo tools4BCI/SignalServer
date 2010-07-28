@@ -34,17 +34,19 @@ HWAccess::HWAccess(boost::asio::io_service& io, XMLParser& parser)
 
   for(unsigned int n = 0; n < parser.getNrOfHardwareElements(); n++)
   {
+
     if( cst_.isSineGen(parser.getHardwareElementName(n)) )
       slaves_.push_back(new SineGenerator(io, parser, parser.getHardwareElement(n)));
-#ifdef WIN32
+  #ifdef WIN32
     if( cst_.isUSBamp(parser.getHardwareElementName(n)) )
       slaves_.push_back(new USBamp(parser, parser.getHardwareElement(n)));
-#endif
+  #endif
     if( cst_.isMobilab(parser.getHardwareElementName(n)) )
       { }
     if( cst_.isJoystick(parser.getHardwareElementName(n)) )
       slaves_.push_back(new JStick(parser, parser.getHardwareElement(n)));
   }
+
 
   buildDataInfoMap();
   buildFsInfoMap();
@@ -159,13 +161,13 @@ void HWAccess::checkIfSingleMaster()
   if(master_count == 0)
   {
     string ex_str;
-    ex_str = "Error: No device defined as master!";
+    ex_str = "HWAccess::checkIfSingleMaster() -- Error: No device defined as master!";
     throw(ticpp::Exception(ex_str));
   }
   if(master_count > 1)
   {
     string ex_str;
-    ex_str = "Error: More than 1 device defined as master!";
+    ex_str = "HWAccess::checkIfSingleMaster() -- Error: More than 1 device defined as master!";
     throw(ticpp::Exception(ex_str));
   }
 }
@@ -242,14 +244,14 @@ void HWAccess::startDataAcquisition()
   #ifdef DEBUG
     cout << "HWAccess: startDataAcquisition" << endl;
   #endif
-  
+
   cout << endl;
 
   if(slaves_.size())
     cout << endl << " Slaves:" << endl;
   for(unsigned int n = 0; n < slaves_.size(); n++)
     slaves_[n]->run();
-  
+
   if(aperiodics_.size())
     cout << endl << " Aperiodic devices:" << endl;
   for(unsigned int n = 0; n < aperiodics_.size(); n++)
@@ -284,6 +286,7 @@ DataPacket HWAccess::getDataPacket()
   #endif
 
   packet_.reset();
+
   SampleBlock<double> sb(master_->getSyncData());
   packet_.setTimestamp();
 

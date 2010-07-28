@@ -53,13 +53,18 @@ public:
    */
   boost::asio::ip::tcp::socket& socket() { return socket_; }
 
+  virtual ~TCPConnection()
+  {
+    socket_.close();
+  }
+
 private:
   /**
    * @brief Constructor
    */
   TCPConnection(boost::asio::io_service& io_service) :
-    socket_(io_service)
-  {  }
+      socket_(io_service)
+    {    }
 
 private:
   boost::asio::ip::tcp::socket socket_;

@@ -32,8 +32,6 @@
 #include "definitions/defines.h"
 #include "sampleblock/sample_block.h"
 
-using namespace std;
-
 namespace tobiss
 {
 //-----------------------------------------------------------------------------
@@ -107,12 +105,12 @@ class HWThread
     * @brief Get a vector containing channel types from acquired channels.
     * @return std::vector<uint16_t> channel_types
     */
-    vector<boost::uint32_t> getChannelTypes()  { return(channel_types_); }
+    std::vector<boost::uint32_t> getChannelTypes()  { return(channel_types_); }
     /**
     * @brief Get a map containing all channel information
     * @return std::map<uint16_t channel, pair<string channel name, uint32_t channel type> > channel info
     */
-    map<boost::uint16_t, pair<string, boost::uint32_t> > getChannelInfoMap()  { return(channel_info_); }
+    std::map<boost::uint16_t, std::pair<std::string, boost::uint32_t> > getChannelInfoMap()  { return(channel_info_); }
     /**
     * @brief Check if new samples are available.
     * @return bool
@@ -250,10 +248,10 @@ class HWThread
 
     boost::shared_mutex rw_;     ///< mutex to lock data
 
-    map<boost::uint16_t, pair<string, boost::uint32_t> > channel_info_;  ///< map containing ( ch_nr,  (name,  type) )
+    std::map<boost::uint16_t, std::pair<std::string, boost::uint32_t> > channel_info_;  ///< map containing ( ch_nr,  (name,  type) )
     bool homogenous_signal_type_;  ///< true, if device delivers different signal types -- e.g. EEG and EMG
-    vector<boost::uint32_t> channel_types_;   ///< vector containing signal types of channels (for faster access)
-    map<string, string> m_;   ///< map with generic hardware information  ...  mandatory
+    std::vector<boost::uint32_t> channel_types_;   ///< vector containing signal types of channels (for faster access)
+    std::map<std::string, std::string> m_;   ///< map with generic hardware information  ...  mandatory
 
     Constants cst_;  ///< A static object containing constants.
     XMLParser& parser_;   ///< Reference pointing to the XMLParser.

@@ -13,6 +13,12 @@ using boost::bad_lexical_cast;
 using boost::uint16_t;
 using boost::uint32_t;
 
+using std::map;
+using std::vector;
+using std::string;
+using std::cout;
+using std::endl;
+
 //-----------------------------------------------------------------------------
 
 void HWThread::checkMandatoryHardwareTags(ticpp::Iterator<ticpp::Element> hw)
