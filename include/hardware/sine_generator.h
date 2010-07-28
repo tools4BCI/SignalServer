@@ -28,8 +28,6 @@
 
 #include "hw_thread.h"
 
-using namespace std;
-
 namespace tobiss
 {
 //-----------------------------------------------------------------------------
@@ -152,7 +150,7 @@ class SineGenerator : public HWThread
     boost::mutex sync_mut_;  ///< mutex neede for synchronisation
     boost::condition_variable_any cond_;   ///< condition variable to wake up getSyncData()
 
-    vector<double> samples_; ///< temporary vector holding recent samples of the sine (1 element per channel)
+    std::vector<double> samples_; ///< temporary vector holding recent samples of the sine (1 element per channel)
 
     /**
     * @brief Buffer object used if blockwise data generation is set.

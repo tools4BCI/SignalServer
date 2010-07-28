@@ -93,6 +93,8 @@ void TCPDataConnection::handleAccept(const TCPConnection::pointer& new_connectio
   boost::asio::ip::tcp::no_delay delay_option(true);
   connection_->socket().set_option(delay_option);
 
+  boost::asio::socket_base::linger linger_option(false, 0);
+  connection_->socket().set_option(linger_option);
 
   cout << "Established data connection, client endpoint "
        << remote_endpoint_.address().to_string() << ":" << remote_endpoint_.port() << std::endl;
