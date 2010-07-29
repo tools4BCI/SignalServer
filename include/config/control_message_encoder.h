@@ -70,9 +70,9 @@ public:
 
 protected:
   void encodeBaseMsg(const ControlMsg& msg, const std::string& xml_msg_type,
-      ticpp::Document& doc, ticpp::Element*& xml_msg);
+      TiXmlDocument& doc, TiXmlElement*& xml_msg);
 
-  void writeXMLMsg(ticpp::Document& doc, std::ostream& stream);
+  void writeXMLMsg(TiXmlDocument& doc, std::ostream& stream);
 };
 
 //-----------------------------------------------------------------------------
