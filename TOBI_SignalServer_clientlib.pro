@@ -2,7 +2,7 @@
 
 TEMPLATE = lib
 
-CONFIG   += release static thread warn_on exceptions stl
+CONFIG   += release thread warn_on exceptions stl
 
 QT -= core gui
 
@@ -79,16 +79,6 @@ win32 {
 
     # Note: It is assumed that the boost libraries can be automatically detected by the linker
     # through #pragma comment(lib, xxx) declarations in boost.
-}
-
-unix {
-    # TODO:
-    exists( /home/breidi/svn/BCI/HEAD/Common/gdf ) {
-#        INCLUDEPATH +=  /home/breidi/svn/BCI/HEAD/Common/gdf
-
-#        LIBS += -L /home/breidi/svn/BCI/HEAD/Common/gdf/libgdf \
-#                -lgdf
-    }
 }
 
 #-----------------------------------------------------------------------
