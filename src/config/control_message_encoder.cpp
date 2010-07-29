@@ -5,6 +5,9 @@
 *
 **/
 
+// Boost
+#include <boost/lexical_cast.hpp>
+
 // local
 #include "definitions/constants.h"
 
@@ -13,21 +16,25 @@
 namespace tobiss
 {
 
+using boost::lexical_cast;
+using boost::bad_lexical_cast;
+
 using std::cout;
 using std::endl;
 using std::string;
 using std::stringstream;
 
+
 //-----------------------------------------------------------------------------
 
 void ControlMsgEncoderXML::encodeMsg(const KeepAliveMsg& msg, std::ostream& stream)
 {
-  ticpp::Document doc;
-  ticpp::Element* xml_msg = 0;
+  TiXmlDocument doc;
+  TiXmlElement* xml_msg = 0;
   encodeBaseMsg(msg,"alive", doc, xml_msg);
   assert(xml_msg != 0);
 
-  ticpp::Element* cmd = new ticpp::Element("alive");
+  TiXmlElement* cmd = new TiXmlElement("alive");
   xml_msg->LinkEndChild(cmd);
 
   writeXMLMsg(doc, stream);
@@ -37,12 +44,12 @@ void ControlMsgEncoderXML::encodeMsg(const KeepAliveMsg& msg, std::ostream& stre
 
 void ControlMsgEncoderXML::encodeMsg(const GetConfigMsg& msg, std::ostream& stream)
 {
-  ticpp::Document doc;
-  ticpp::Element* xml_msg = 0;
-  encodeBaseMsg(msg,"getConfig", doc, xml_msg);
+  TiXmlDocument doc;
+  TiXmlElement* xml_msg = 0;
+  encodeBaseMsg(msg, "getConfig", doc, xml_msg);
   assert(xml_msg != 0);
 
-  ticpp::Element* cmd = new ticpp::Element("getConfig");
+  TiXmlElement* cmd = new TiXmlElement("getConfig");
   xml_msg->LinkEndChild(cmd);
 
   writeXMLMsg(doc, stream);
@@ -52,14 +59,13 @@ void ControlMsgEncoderXML::encodeMsg(const GetConfigMsg& msg, std::ostream& stre
 
 void ControlMsgEncoderXML::encodeMsg(const StopTransmissionMsg& msg, std::ostream& stream)
 {
-  ticpp::Document doc;
-  ticpp::Element* xml_msg = 0;
+  TiXmlDocument doc;
+  TiXmlElement* xml_msg = 0;
   encodeBaseMsg(msg,"stopTransmission", doc, xml_msg);
   assert(xml_msg != 0);
 
-  ticpp::Element* cmd = new ticpp::Element("stopTransmission");
+  TiXmlElement* cmd = new TiXmlElement("stopTransmission");
   xml_msg->LinkEndChild(cmd);
-
   writeXMLMsg(doc, stream);
 }
 
@@ -67,14 +73,16 @@ void ControlMsgEncoderXML::encodeMsg(const StopTransmissionMsg& msg, std::ostrea
 
 void ControlMsgEncoderXML::encodeMsg(const GetDataConnectionMsg& msg, std::ostream& stream)
 {
-  ticpp::Document doc;
-  ticpp::Element* xml_msg = 0;
+  TiXmlDocument doc;
+  TiXmlElement* xml_msg = 0;
   encodeBaseMsg(msg,"getDataConnection", doc, xml_msg);
   assert(xml_msg != 0);
 
-  ticpp::Element* cmd_element = new ticpp::Element("getDataConnection");
-  ticpp::Element* element = new ticpp::Element("connectionType");
-  element->SetText(msg.connectionType() == GetDataConnectionMsg::Tcp ? "tcp" : "udp");
+  TiXmlElement* cmd_element = new TiXmlElement("getDataConnection");
+  TiXmlElement* element = new TiXmlElement("connectionType");
+
+  element->LinkEndChild(new TiXmlText(
+      msg.connectionType() == GetDataConnectionMsg::Tcp ? "tcp" : "udp"));
   cmd_element->LinkEndChild(element);
   xml_msg->LinkEndChild(cmd_element);
 
@@ -85,24 +93,25 @@ void ControlMsgEncoderXML::encodeMsg(const GetDataConnectionMsg& msg, std::ostre
 
 void ControlMsgEncoderXML::encodeMsg(const DataConnectionMsg& msg, std::ostream& stream)
 {
-  ticpp::Document doc;
-  ticpp::Element* xml_msg = 0;
+  TiXmlDocument doc;
+  TiXmlElement* xml_msg = 0;
   encodeBaseMsg(msg,"dataConnection", doc, xml_msg);
   assert(xml_msg != 0);
 
-  ticpp::Element* reply_element = new ticpp::Element("dataConnection");
+  TiXmlElement* reply_element = new TiXmlElement("dataConnection");
 
-  ticpp::Element* element = 0;
+  TiXmlElement* element = 0;
 
   if (!msg.address().empty())
   {
-    element = new ticpp::Element("address");
-    element->SetText(msg.address());
+    element = new TiXmlElement("address");
+    element->LinkEndChild(new TiXmlText(msg.address()));
     reply_element->LinkEndChild(element);
   }
 
-  element = new ticpp::Element("port");
-  element->SetText(msg.port());
+  element = new TiXmlElement("port");
+  string value = lexical_cast<string>(msg.port());
+  element->LinkEndChild(new TiXmlText(value));
   reply_element->LinkEndChild(element);
 
   xml_msg->LinkEndChild(reply_element);
@@ -114,12 +123,12 @@ void ControlMsgEncoderXML::encodeMsg(const DataConnectionMsg& msg, std::ostream&
 
 void ControlMsgEncoderXML::encodeMsg(const StartTransmissionMsg& msg, std::ostream& stream)
 {
-  ticpp::Document doc;
-  ticpp::Element* xml_msg = 0;
+  TiXmlDocument doc;
+  TiXmlElement* xml_msg = 0;
   encodeBaseMsg(msg,"startTransmission", doc, xml_msg);
   assert(xml_msg != 0);
 
-  ticpp::Element* cmd_element = new ticpp::Element("startTransmission");
+  TiXmlElement* cmd_element = new TiXmlElement("startTransmission");
   xml_msg->LinkEndChild(cmd_element);
 
   writeXMLMsg(doc, stream);
@@ -129,47 +138,47 @@ void ControlMsgEncoderXML::encodeMsg(const StartTransmissionMsg& msg, std::ostre
 
 void ControlMsgEncoderXML::encodeMsg(const ConfigMsg& msg, std::ostream& stream)
 {
-  ticpp::Document doc;
-  ticpp::Element* xml_msg = 0;
+  TiXmlDocument doc;
+  TiXmlElement* xml_msg = 0;
   encodeBaseMsg(msg,"config", doc, xml_msg);
   assert(xml_msg != 0);
 
-  ticpp::Element* config = new ticpp::Element("config");
+  TiXmlElement* config = new TiXmlElement("config");
 
   xml_msg->LinkEndChild(config);
 
   const SubjectInfo& subject = msg.subject_info;
 
-  ticpp::Element* subject_elem = new ticpp::Element("subject");
+  TiXmlElement* subject_elem = new TiXmlElement("subject");
 
-  ticpp::Element* element = 0;
+  TiXmlElement* element = 0;
 
-  element = new ticpp::Element("id");
-  element->SetText(subject.id());
+  element = new TiXmlElement("id");
+  element->LinkEndChild(new TiXmlText(subject.id()));
   subject_elem->LinkEndChild(element);
 
-  element = new ticpp::Element("firstName");
-  element->SetText(subject.firstName());
+  element = new TiXmlElement("firstName");
+  element->LinkEndChild(new TiXmlText(subject.firstName()));
   subject_elem->LinkEndChild(element);
 
-  element = new ticpp::Element("surname");
-  element->SetText(subject.surname());
+  element = new TiXmlElement("surname");
+  element->LinkEndChild(new TiXmlText(subject.surname()));
   subject_elem->LinkEndChild(element);
 
-  element = new ticpp::Element("sex");
-  element->SetText(subject.sex() == SubjectInfo::Male ? "m" : "f");
+  element = new TiXmlElement("sex");
+  element->LinkEndChild(new TiXmlText(subject.sex() == SubjectInfo::Male ? "m" : "f"));
   subject_elem->LinkEndChild(element);
 
-  element = new ticpp::Element("birthday");
-  element->SetText(subject.birthday());
+  element = new TiXmlElement("birthday");
+  element->LinkEndChild(new TiXmlText(subject.birthday()));
   subject_elem->LinkEndChild(element);
 
-  element = new ticpp::Element("handedness");
-  element->SetText(subject.handedness() == SubjectInfo::RightHanded ? "r" : "l");
+  element = new TiXmlElement("handedness");
+  element->LinkEndChild(new TiXmlText(subject.handedness() == SubjectInfo::RightHanded ? "r" : "l"));
   subject_elem->LinkEndChild(element);
 
-  element = new ticpp::Element("medication");
-  element->SetText(subject.medication());
+  element = new TiXmlElement("medication");
+  element->LinkEndChild(new TiXmlText(subject.medication()));
   subject_elem->LinkEndChild(element);
 
   SubjectInfo::ShortInfoMap::const_iterator it_short_infos = subject.shortInfoMap().begin();
@@ -184,13 +193,13 @@ void ControlMsgEncoderXML::encodeMsg(const ConfigMsg& msg, std::ostream& stream)
     switch(type)
     {
       case SubjectInfo::Glasses:
-        element = new ticpp::Element("glasses");
-        element->SetText(value_as_str);
+        element = new TiXmlElement("glasses");
+        element->LinkEndChild(new TiXmlText(value_as_str));
         subject_elem->LinkEndChild(element);
         break;
       case SubjectInfo::Smoking:
-        element = new ticpp::Element("smoker");
-        element->SetText(value_as_str);
+        element = new TiXmlElement("smoker");
+        element->LinkEndChild(new TiXmlText(value_as_str));
         subject_elem->LinkEndChild(element);
         break;
     }
@@ -200,21 +209,23 @@ void ControlMsgEncoderXML::encodeMsg(const ConfigMsg& msg, std::ostream& stream)
 
   const SignalInfo& signal_info = msg.signal_info;
 
-  ticpp::Element* signal_info_elem = new ticpp::Element("signalInfo");
+  TiXmlElement* signal_info_elem = new TiXmlElement("signalInfo");
 
-  ticpp::Element* master_elem = new ticpp::Element("master");
+  TiXmlElement* master_elem = new TiXmlElement("master");
 
-  element = new ticpp::Element("blockSize");
-  element->SetText(signal_info.masterBlockSize());
+  element = new TiXmlElement("blockSize");
+  string value = lexical_cast<string>(signal_info.masterBlockSize());
+  element->LinkEndChild(new TiXmlText(value));
   master_elem->LinkEndChild(element);
 
-  element = new ticpp::Element("samplingRate");
-  element->SetText(signal_info.masterSamplingRate());
+  element = new TiXmlElement("samplingRate");
+  value = lexical_cast<string>(signal_info.masterSamplingRate());
+  element->LinkEndChild(new TiXmlText(value));
   master_elem->LinkEndChild(element);
 
   signal_info_elem->LinkEndChild(master_elem);
 
-  ticpp::Element* signals_elem = new ticpp::Element("signals");
+  TiXmlElement* signals_elem = new TiXmlElement("signals");
 
   SignalInfo::SignalMap::const_iterator it_signals = signal_info.signals().begin();
   SignalInfo::SignalMap::const_iterator end_signals = signal_info.signals().end();
@@ -223,26 +234,26 @@ void ControlMsgEncoderXML::encodeMsg(const ConfigMsg& msg, std::ostream& stream)
     const std::string& type = (*it_signals).first;
     const Signal& signal = (*it_signals).second;
 
-    ticpp::Element* signal_elem = new ticpp::Element("sig");
+    TiXmlElement* signal_elem = new TiXmlElement("sig");
     signal_elem->SetAttribute("type", type);
 
-    element = new ticpp::Element("blockSize");
-    element->SetText(signal.blockSize());
+    element = new TiXmlElement("blockSize");
+    value = lexical_cast<string>(signal.blockSize());
+    element->LinkEndChild(new TiXmlText(value));
     signal_elem->LinkEndChild(element);
 
-    element = new ticpp::Element("samplingRate");
-    element->SetText(signal.samplingRate());
+    element = new TiXmlElement("samplingRate");
+    value = lexical_cast<string>(signal.samplingRate());
+    element->LinkEndChild(new TiXmlText(value));
     signal_elem->LinkEndChild(element);
 
-    ticpp::Element* channels_elem = new ticpp::Element("channels");
-    element->SetText(signal.samplingRate());
-
+    TiXmlElement* channels_elem = new TiXmlElement("channels");
     std::vector<Channel>::const_iterator it_channels = signal.channels().begin();
     std::vector<Channel>::const_iterator end_channels = signal.channels().end();
     for (; it_channels != end_channels; ++it_channels)
     {
       const Channel& channel = (*it_channels);
-      element = new ticpp::Element("ch");
+      element = new TiXmlElement("ch");
       element->SetAttribute("id", channel.id());
       channels_elem->LinkEndChild(element);
     }
@@ -263,20 +274,20 @@ void ControlMsgEncoderXML::encodeMsg(const ConfigMsg& msg, std::ostream& stream)
 
 void ControlMsgEncoderXML::encodeMsg(const ReplyMsg& msg, std::ostream& stream)
 {
-  ticpp::Document doc;
-  ticpp::Element* xml_msg = 0;
+  TiXmlDocument doc;
+  TiXmlElement* xml_msg = 0;
 
   switch (msg.msgType())
   {
     case ControlMsg::OkReply:
       encodeBaseMsg(msg, "okReply", doc, xml_msg);
       assert(xml_msg != 0);
-      xml_msg->LinkEndChild(new ticpp::Element("okReply"));
+      xml_msg->LinkEndChild(new TiXmlElement("okReply"));
       break;
     case ControlMsg::ErrorReply:
       encodeBaseMsg(msg, "errorReply", doc, xml_msg);
       assert(xml_msg != 0);
-      xml_msg->LinkEndChild(new ticpp::Element("errorReply"));
+      xml_msg->LinkEndChild(new TiXmlElement("errorReply"));
       break;
     default:
     {
@@ -291,31 +302,30 @@ void ControlMsgEncoderXML::encodeMsg(const ReplyMsg& msg, std::ostream& stream)
 //-----------------------------------------------------------------------------
 
 void ControlMsgEncoderXML::encodeBaseMsg(const ControlMsg& msg, const std::string& xml_msg_type,
-    ticpp::Document& doc, ticpp::Element*& xml_msg)
+    TiXmlDocument& doc, TiXmlElement*& xml_msg)
 {
-  ticpp::Declaration* decl = new ticpp::Declaration( "1.0", "", "" );
-  doc.LinkEndChild(decl);
+  TiXmlDeclaration* decl = new TiXmlDeclaration( "1.0", "", "" );
+  doc.LinkEndChild( decl );
 
-  xml_msg = new ticpp::Element("message");
+  xml_msg = new TiXmlElement("message");
   doc.LinkEndChild(xml_msg);
-
   xml_msg->SetAttribute("version", "0.1");
 
-  ticpp::Element* header = new ticpp::Element("header");
+  TiXmlElement* header = new TiXmlElement("header");
   xml_msg->LinkEndChild(header);
 
-  ticpp::Element* type = new ticpp::Element("type");
-  type->SetText(xml_msg_type);
+  TiXmlElement* type = new TiXmlElement("type");
+  type->LinkEndChild(new TiXmlText(xml_msg_type));
   header->LinkEndChild(type);
 
-  ticpp::Element* sender = new ticpp::Element("sender");
-  sender->SetText(msg.sender());
+  TiXmlElement* sender = new TiXmlElement("sender");
+  sender->LinkEndChild(new TiXmlText(msg.sender()));
   header->LinkEndChild(sender);
 }
 
 //-----------------------------------------------------------------------------
 
-void ControlMsgEncoderXML::writeXMLMsg(ticpp::Document& doc, std::ostream& stream)
+void ControlMsgEncoderXML::writeXMLMsg(TiXmlDocument& doc, std::ostream& stream)
 {
   stream << doc;
 
