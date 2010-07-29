@@ -59,11 +59,10 @@ class ControlMsg
 
   protected:
     ///
-    ControlMsg(MsgType msg_type) : msg_type_(msg_type), seq_number_(0) {}
+    ControlMsg(MsgType msg_type) : msg_type_(msg_type) {}
 
   private:
     MsgType     msg_type_;   ///<
-    boost::uint32_t    seq_number_; ///<
     std::string sender_;     ///<
 };
 
