@@ -104,7 +104,7 @@ public:
   virtual void disconnect();
 
   /**
-   * @brief Request the meta data information from the server
+   * @brief Requests the meta data information from the server
    * The caller will be blocked until the request has been processed or an error has occurred.
    * @throw std::ios_base::failure if the client is not connected or if an error occurred
    * sa config()
@@ -140,7 +140,7 @@ public:
    * The caller will be blocked until a packet has been received or an error has occurred.
    * @param[out] packet the received data packet
    * @throw std::ios_base::failure if the client is not connected or isn't in receiving state or
-   *                               if an receiving error occurred
+   *                               if a receiving error has occurred
    * @throw std::overflow_error if an overflow occurs
    *
    */
