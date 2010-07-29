@@ -28,6 +28,7 @@ namespace tobiss
 class ControlMsgDecoder
 {
 public:
+  virtual ~ControlMsgDecoder() {  };
   ///
   void setInputStream(std::istream* stream) { istream_ = stream; }
   ///
