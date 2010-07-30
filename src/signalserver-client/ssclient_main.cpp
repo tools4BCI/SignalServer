@@ -163,7 +163,7 @@ int main(int argc, const char* argv[])
   }
 
   SSClient client;
-
+//test
   try
   {
     client.connect(srv_addr, srv_port);
