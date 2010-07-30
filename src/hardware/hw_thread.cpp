@@ -14,10 +14,13 @@ using boost::uint16_t;
 using boost::uint32_t;
 
 using std::map;
+using std::pair;
 using std::vector;
 using std::string;
 using std::cout;
 using std::endl;
+using std::dec;
+using std::hex;
 
 //-----------------------------------------------------------------------------
 

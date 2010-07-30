@@ -8,6 +8,12 @@
 namespace tobiss
 {
 
+using std::string;
+using std::cout;
+using std::cerr;
+using std::endl;
+using std::flush;
+
 //-----------------------------------------------------------------------------
 
 std::map<unsigned int, std::string> AsioSerialPortTypeNames::flow_control_values_;
@@ -20,7 +26,7 @@ AsioSerialPortTypeNames& AsioSerialPortTypeNames::getInstance()
 {
  static AsioSerialPortTypeNames instance;
  return instance;
-};
+}
 
 //-----------------------------------------------------------------------------
 
@@ -76,7 +82,7 @@ unsigned int AsioSerialPortTypeNames::getFlowControlID(std::string str)
               std::bind2nd(MapValue(), str) );
 
   return(it != stop_bit_values_.end() ? it->first :
-         throw(std::runtime_error("AsioSerialPortTypeNames::getFlowControlID() -- Name not found!")));
+         throw(std::runtime_error("AsioSerialPortTypeNames::getFlowControlID() -- Name not found " + str)));
 }
 
 //-----------------------------------------------------------------------------
@@ -89,7 +95,7 @@ unsigned int AsioSerialPortTypeNames::getStopBitID(std::string str)
               std::bind2nd(MapValue(), str) );
 
   return(it != stop_bit_values_.end() ? it->first :
-        throw( std::runtime_error("AsioSerialPortTypeNames::getStopBitID() -- Name not found!")));
+         throw( std::runtime_error("AsioSerialPortTypeNames::getStopBitID() -- Name not found: " + str)));
 }
 
 //-----------------------------------------------------------------------------
@@ -102,7 +108,7 @@ unsigned int AsioSerialPortTypeNames::getParityID(std::string str)
               std::bind2nd(MapValue(), str) );
 
   return(it != stop_bit_values_.end() ? it->first :
-         throw(std::runtime_error("AsioSerialPortTypeNames::getParityID() -- Name not found!")));
+         throw(std::runtime_error("AsioSerialPortTypeNames::getParityID() -- Name not found: " + str)));
 }
 
 
@@ -116,9 +122,6 @@ SerialPortBase::SerialPortBase(boost::asio::io_service& io, XMLParser& parser)
     baud_rate_(0), flow_control_type_(0), parity_(0), stop_bits_(0), character_size_(0),
     asio_types_(AsioSerialPortTypeNames::getInstance())
 {
-
-
-
 
 }
 
@@ -137,10 +140,27 @@ SerialPortBase::~SerialPortBase()
 
 //-----------------------------------------------------------------------------
 
-void SerialPortBase::open(const std::string port_name)
+void SerialPortBase::setPortName(const std::string& name)
 {
+  port_name_ = name;
+}
+
+//-----------------------------------------------------------------------------
+
+void SerialPortBase::open()
+{
+
+  if( port_name_ == "" )
+    throw(std::runtime_error("SerialPortBase::open() -- No serial port given"));
+
   if( serial_port_.is_open() )
-    throw(std::runtime_error("SerialPortBase::open() -- Port already open: " + port_name));
+    throw(std::runtime_error("SerialPortBase::open() -- Port already open: " + port_name_));
+
+  boost::system::error_code ec;
+  serial_port_.open(port_name_, ec);
+
+  if(ec)
+    throw(std::runtime_error("SerialPortBase::open() -- Error opening serial port: " + port_name_));
 
   if(!baud_rate_)
   {
@@ -148,36 +168,9 @@ void SerialPortBase::open(const std::string port_name)
 
     boost::asio::serial_port_base::baud_rate br(baud_rate_);
     serial_port_.set_option(br);
-
-    boost::asio::serial_port_base::flow_control fc;
-    boost::asio::serial_port_base::parity pa;
-    boost::asio::serial_port_base::stop_bits sb;
-    boost::asio::serial_port_base::character_size cs;
-
-    serial_port_.get_option(fc);
-    flow_control_type_ = fc.value();
-
-    serial_port_.get_option(pa);
-    parity_ = pa.value();
-
-    serial_port_.get_option(sb);
-    stop_bits_ = sb.value();
-
-    serial_port_.get_option(cs);
-    character_size_ =  cs.value();
-
-    std::cout << "Setting serial port " + port_name + " to default values:" << std::endl;
-    std::cout <<  " -- baud rate: " << baud_rate_ << "; ";
-    std::cout <<  "flow control: " << asio_types_.getFlowControlName(flow_control_type_) << "; ";
-    std::cout <<  "parity: " << asio_types_.getParityName(parity_) << "; ";
-    std::cout <<  "stop bits: " << asio_types_.getStopBitName(stop_bits_) << "; ";
-    std::cout <<  "character size: " << character_size_;
-    std::cout << std::endl;
-
   }
 
-  serial_port_.open(port_name);
-  port_name_ = port_name;
+
 }
 
 //-----------------------------------------------------------------------------
@@ -198,6 +191,9 @@ void SerialPortBase::close()
 
 void SerialPortBase::setBaudRate(const unsigned int rate)
 {
+  if( !serial_port_.is_open() )
+    throw(std::runtime_error("SerialPortBase::setBaudRate() -- Port not opened: " + port_name_));
+
   boost::asio::serial_port_base::baud_rate br(rate);
   serial_port_.set_option(br);
 
@@ -208,6 +204,9 @@ void SerialPortBase::setBaudRate(const unsigned int rate)
 
 void SerialPortBase::setFlowControl(const string& type)
 {
+  if( !serial_port_.is_open() )
+    throw(std::runtime_error("SerialPortBase::setFlowControl() -- Port not opened: " + port_name_));
+
   if(asio_types_.getFlowControlID(type) == 1)
   {
     boost::asio::serial_port_base::flow_control o(boost::asio::serial_port_base::flow_control::none);
@@ -229,17 +228,20 @@ void SerialPortBase::setFlowControl(const string& type)
 
 void SerialPortBase::setParity(const string& type)
 {
-  if(asio_types_.getStopBitID(type) == 1)
+  if( !serial_port_.is_open() )
+    throw(std::runtime_error("SerialPortBase::setParity() -- Port not opened: " + port_name_));
+
+  if(asio_types_.getParityID(type) == 1)
   {
     boost::asio::serial_port_base::parity o(boost::asio::serial_port_base::parity::none);
     serial_port_.set_option(o);
   }
-  if(asio_types_.getStopBitID(type) == 2)
+  if(asio_types_.getParityID(type) == 2)
   {
     boost::asio::serial_port_base::parity o(boost::asio::serial_port_base::parity::odd);
     serial_port_.set_option(o);
   }
-  if(asio_types_.getStopBitID(type) == 3)
+  if(asio_types_.getParityID(type) == 3)
   {
     boost::asio::serial_port_base::parity o(boost::asio::serial_port_base::parity::even);
     serial_port_.set_option(o);
@@ -250,6 +252,9 @@ void SerialPortBase::setParity(const string& type)
 
 void SerialPortBase::setStopBits(const string& bits)
 {
+  if( !serial_port_.is_open() )
+    throw(std::runtime_error("SerialPortBase::setStopBits() -- Port not opened: " + port_name_));
+
   if(asio_types_.getStopBitID(bits) == 1)
   {
     boost::asio::serial_port_base::stop_bits sb(boost::asio::serial_port_base::stop_bits::one);
@@ -271,20 +276,29 @@ void SerialPortBase::setStopBits(const string& bits)
 
 void SerialPortBase::setCharacterSize(const unsigned int size)
 {
+  if( !serial_port_.is_open() )
+    throw(std::runtime_error("SerialPortBase::setCharacterSize() -- Port not opened: " + port_name_));
+
   boost::asio::serial_port_base::character_size cs(size);
   serial_port_.set_option(cs);
 }
 
 //-----------------------------------------------------------------------------
 
-void SerialPortBase::sync_read(std::vector<char>& values)
+void SerialPortBase::sync_read(std::vector<unsigned char>& values)
 {
-  boost::asio::read(serial_port_, boost::asio::buffer(values));
+  boost::system::error_code ec;
+  boost::asio::read(serial_port_, boost::asio::buffer(values),
+                    boost::asio::transfer_all(), ec);
+
+  if(ec)
+    throw(std::runtime_error("SerialPortBase::sync_read() -- \
+                             Error reading serial port"));
 }
 
 //-----------------------------------------------------------------------------
 
-void SerialPortBase::sync_read(std::vector<char>& values, unsigned int bytes_to_receive)
+void SerialPortBase::sync_read(std::vector<unsigned char>& values, unsigned int bytes_to_receive)
 {
   boost::system::error_code ec;
 
@@ -310,7 +324,7 @@ void SerialPortBase::handleAsyncRead(const boost::system::error_code& ec,
 
 //-----------------------------------------------------------------------------
 
-void SerialPortBase::async_read(std::vector<char>& values)
+void SerialPortBase::async_read(std::vector<unsigned char>& values)
 {
   if(!data_available_)
     throw(std::logic_error("SerialPortBase::async_read() -- Still waiting for new data ...") );
@@ -327,7 +341,7 @@ void SerialPortBase::async_read(std::vector<char>& values)
 
 //-----------------------------------------------------------------------------
 
-void SerialPortBase::async_read(std::vector<char>& values, unsigned int bytes_to_receive)
+void SerialPortBase::async_read(std::vector<unsigned char>& values, unsigned int bytes_to_receive)
 {
   if(!data_available_)
     throw(std::logic_error("SerialPortBase::async_read() -- Still waiting for new data ...") );
@@ -345,7 +359,7 @@ void SerialPortBase::async_read(std::vector<char>& values, unsigned int bytes_to
 
 //-----------------------------------------------------------------------------
 
-void SerialPortBase::sync_write(std::vector<char>& values)
+void SerialPortBase::sync_write(std::vector<unsigned char>& values)
 {
   boost::asio::write(serial_port_, boost::asio::buffer(values));
 }
@@ -364,7 +378,7 @@ void SerialPortBase::handleAsyncWrite(const boost::system::error_code& ec,
 
 //-----------------------------------------------------------------------------
 
-void SerialPortBase::async_write(std::vector<char>& values)
+void SerialPortBase::async_write(std::vector<unsigned char>& values)
 {
   if(!data_written_)
     throw(std::logic_error("SerialPortBase::async_read() -- Still writing data ...") );

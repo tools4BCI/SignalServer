@@ -10,8 +10,8 @@ CONFIG += console \
 QT -= core \
     gui
 DEFINES += TIXML_USE_TICPP
-# TIMING_TEST
 
+# TIMING_TEST
 TARGET = signalserver
 DESTDIR = bin
 OBJECTS_DIR = tmp
@@ -23,6 +23,9 @@ INCLUDEPATH += extern/include
 win32:INCLUDEPATH += extern/include/SDL-1.2.14-VC8
 
 # unix: QMAKE_CXXFLAGS += -O3
+
+QMAKE_CXXFLAGS_WARN_ON = -Wall -pedantic
+
 # -----------------------------------------------------------------------
 HEADERS += include/signalserver/signal_server.h \
     include/definitions/constants.h \
@@ -33,6 +36,7 @@ HEADERS += include/signalserver/signal_server.h \
     include/hardware/jstick.h \
     include/hardware/serial_port_base.h \
     include/hardware/usbamp.h \
+    include/hardware/g_mobilab.h \
     include/filereading/data_file_handler.h \
     include/filereading/file_reader_factory.h \
     include/filereading/file_reader.h \
@@ -51,7 +55,6 @@ HEADERS += include/signalserver/signal_server.h \
     include/network/tcp_server.h \
     include/network/udp_data_server.h \
     extern/include/LptTools/LptTools.h
-
 SOURCES += src/signalserver/main.cpp \
     src/signalserver/signal_server.cpp \
     src/definitions/constants.cpp \
@@ -62,6 +65,7 @@ SOURCES += src/signalserver/main.cpp \
     src/hardware/jstick.cpp \
     src/hardware/serial_port_base.cpp \
     src/hardware/usbamp.cpp \
+    src/hardware/g_mobilab.cpp \
     src/filereading/data_file_handler.cpp \
     src/filereading/file_reader_factory.cpp \
     src/filereading/file_reader.cpp \
@@ -79,7 +83,6 @@ SOURCES += src/signalserver/main.cpp \
     src/network/tcp_data_server.cpp \
     src/network/tcp_server.cpp \
     src/network/udp_data_server.cpp
-
 unix:SOURCES += extern/include/LptTools/LptToolsLinux.cpp
 win32:SOURCES += extern/include/LptTools/LptTools_.cpp
 
@@ -89,15 +92,14 @@ unix {
         -lboost_system \
         -lSDL
     HARDWARE_PLATFORM = $$system(uname -i)
-    contains( HARDWARE_PLATFORM, x86_64 ):{
+    contains( HARDWARE_PLATFORM, x86_64 )::{
     # 64-bit Linux
     LIBS += -L \
         extern/lib/ticpp/linux \
         -lticpp_64 \
         -Lextern/lib/libgdf/linux \
         -lgdf
-    }
-    else:{
+    }else::{
     # 32-bit Linux
     LIBS += -Lextern/lib/ticpp/linux \
         -lticpp \
@@ -115,4 +117,3 @@ win32:LIBS += extern\lib\sdl\win\SDL.lib \
 
 # Note: It is assumed that the boost libraries can be automatically detected by the linker
 # through #pragma comment(lib, xxx) declarations in boost.
-unix:

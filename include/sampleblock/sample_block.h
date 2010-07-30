@@ -14,14 +14,13 @@
 #define SAMPLEBLOCK_H
 
 #include <map>
-#include <vector>
 #include <string>
+#include <vector>
 #include <iostream>
 #include <stdexcept>
 
 #include <boost/cstdint.hpp>
 
-using namespace std;
 
 namespace tobiss
 {
@@ -118,10 +117,10 @@ template<class T> class SampleBlock
     * if data is read to early (using appending blocks) or if a too short or long vector is
     * inserted.
     */
-    void init(boost::uint16_t blocksize, boost::uint16_t nr_ch, vector<boost::uint32_t> sig_types)
+    void init(boost::uint16_t blocksize, boost::uint16_t nr_ch, std::vector<boost::uint32_t> sig_types)
     {
       #ifdef DEBUG
-        cout << "SampleBlock: init" << endl;
+        std::cout << "SampleBlock: init" << std::endl;
       #endif
 
       using boost::uint16_t;
@@ -150,20 +149,20 @@ template<class T> class SampleBlock
           }
       //       types_ordered_ = sig_types;
 
-      pair<uint16_t, uint16_t> pi;   //  ... pos. information (offset, nr_values)
-      pair<uint32_t, pair<uint16_t, uint16_t> > si; // samples info (flag)
+      std::pair<uint16_t, uint16_t> pi;   //  ... pos. information (offset, nr_values)
+      std::pair<uint32_t, std::pair<uint16_t, uint16_t> > si; // samples info (flag)
       uint16_t pos = 0;
       for(unsigned int n = 1; n < sig_types.size(); n++)
         if(sig_types[n-1] != sig_types[n])
         {
           homogenous_ = 0;
-          pi = make_pair(pos*blocks_ ,(n-pos)*blocks_ );   // (n - pos)
-          si = make_pair(sig_types[n-1], pi);
+          pi = std::make_pair(pos*blocks_ ,(n-pos)*blocks_ );   // (n - pos)
+          si = std::make_pair(sig_types[n-1], pi);
           block_info_.insert(si);
           pos = n;
         }
-      pi = make_pair(pos*blocks_ , (channels_-pos)*blocks_ );
-      si = make_pair(sig_types[pos], pi);
+      pi = std::make_pair(pos*blocks_ , (channels_-pos)*blocks_ );
+      si = std::make_pair(sig_types[pos], pi);
       block_info_.insert(si);
     }
     //-------------------------------------------
@@ -171,17 +170,17 @@ template<class T> class SampleBlock
     * @brief Get a vector with the signal types to be stored in the SampleBlock.
     * @return A vector with the signal types (order like stored in the SampleBlock).
     */
-  vector<boost::uint32_t> getTypes()
+  std::vector<boost::uint32_t> getTypes()
     {
       #ifdef DEBUG
-        cout << "SampleBlock: getTypes" << endl;
+        std::cout << "SampleBlock: getTypes" << std::endl;
       #endif
 
       using boost::uint16_t;
       using boost::uint32_t;
 
-      vector<uint32_t> v;
-      for(map<uint32_t, pair<uint16_t, uint16_t> >::iterator it = block_info_.begin();
+      std::vector<uint32_t> v;
+      for(std::map<uint32_t, std::pair<uint16_t, uint16_t> >::iterator it = block_info_.begin();
           it != block_info_.end(); it++)
         v.push_back(it->first);
       return(v);
@@ -192,10 +191,10 @@ template<class T> class SampleBlock
     * @return A vector containing all samples.
     * @throw  std::length_error if the samples_ vector size does not equal blocks_ *channels_
     */
-    vector<T> getSamples()
+    std::vector<T> getSamples()
     {
       #ifdef DEBUG
-        cout << "SampleBlock: getSamples" << endl;
+        std::cout << "SampleBlock: getSamples" << std::endl;
       #endif
 
       checkBlockIntegrity();
@@ -210,7 +209,7 @@ template<class T> class SampleBlock
     boost::uint32_t getFlagByNr(boost::uint32_t nr)
     {
       #ifdef DEBUG
-        cout << "SampleBlock: getFlagByNr" << endl;
+        std::cout << "SampleBlock: getFlagByNr" << std::endl;
       #endif
 
       using boost::uint16_t;
@@ -219,7 +218,7 @@ template<class T> class SampleBlock
       if(nr > block_info_.size())
         throw(std::invalid_argument("getFlagByNr -- Signal number higher than nr. of different signals available!"));
 
-      map<uint32_t, pair<uint16_t, uint16_t> >::iterator m_it(block_info_.begin());
+      std::map<uint32_t, std::pair<uint16_t, uint16_t> >::iterator m_it(block_info_.begin());
       for(uint32_t n = 0; n < nr; n++)
         m_it++;
 
@@ -232,21 +231,21 @@ template<class T> class SampleBlock
     * @return A vector containing wanted samples.
     * @throw  std::invalid_argument if flag is not defined set in the SampleBlock.
     */
-  vector<T> getSignalByFlag(boost::uint32_t flag)
+  std::vector<T> getSignalByFlag(boost::uint32_t flag)
     {
       #ifdef DEBUG
-        cout << "SampleBlock: getSignalByFlag" << endl;
+        std::cout << "SampleBlock: getSignalByFlag" << std::endl;
       #endif
 
       using boost::uint16_t;
       using boost::uint32_t;
 
-      map<uint32_t, pair<uint16_t, uint16_t> >::iterator m_it(block_info_.find(flag));
+      std::map<uint32_t, std::pair<uint16_t, uint16_t> >::iterator m_it(block_info_.find(flag));
       if(m_it != block_info_.end())
       {
         checkBlockIntegrity();
-        typename vector<T>::iterator v_it(samples_.begin() + m_it->second.first);
-        vector<T> v(v_it, v_it + m_it->second.second);
+        typename std::vector<T>::iterator v_it(samples_.begin() + m_it->second.first);
+        std::vector<T> v(v_it, v_it + m_it->second.second);
         return(v);
       }
       else
@@ -259,20 +258,20 @@ template<class T> class SampleBlock
     * @param[out] v A vector to insert desired samples.
     * @throw  std::invalid_argument if flag is not defined set in the SampleBlock.
     */
-  void getSignalByFlag(boost::uint32_t flag, vector<T>& v)
+  void getSignalByFlag(boost::uint32_t flag, std::vector<T>& v)
     {
       #ifdef DEBUG
-        cout << "SampleBlock: getSignalByFlag" << endl;
+        std::cout << "SampleBlock: getSignalByFlag" << std::endl;
       #endif
 
       using boost::uint16_t;
       using boost::uint32_t;
 
-      map<uint32_t, pair<uint16_t, uint16_t> >::iterator m_it(block_info_.find(flag));
+      std::map<uint32_t, std::pair<uint16_t, uint16_t> >::iterator m_it(block_info_.find(flag));
       if(m_it != block_info_.end())
       {
         checkBlockIntegrity();
-        typename vector<T>::iterator v_it(samples_.begin() + m_it->second.first);
+        typename std::vector<T>::iterator v_it(samples_.begin() + m_it->second.first);
 
         v.assign(v_it, v_it + m_it->second.second);
       }
@@ -286,10 +285,10 @@ template<class T> class SampleBlock
     * @return A vector containing desired samples.
     * @throw  std::invalid_argument if nr is higher than signals stord.
     */
-  vector<T> getSignalByNr(boost::uint32_t nr)
+  std::vector<T> getSignalByNr(boost::uint32_t nr)
     {
       #ifdef DEBUG
-        cout << "SampleBlock: getSignalByNr" << endl;
+        std::cout << "SampleBlock: getSignalByNr" << std::endl;
       #endif
 
       using boost::uint16_t;
@@ -300,11 +299,11 @@ template<class T> class SampleBlock
           of different signals available!"));
       checkBlockIntegrity();
 
-      map<uint32_t, pair<uint16_t, uint16_t> >::iterator m_it(block_info_.begin());
+      std::map<uint32_t, std::pair<uint16_t, uint16_t> >::iterator m_it(block_info_.begin());
       for(uint32_t n = 0; n < nr; n++)
         m_it++;
-      typename vector<T>::iterator v_it(samples_.begin() + m_it->second.first);
-      vector<T> v(v_it, v_it + m_it->second.second);
+      typename std::vector<T>::iterator v_it(samples_.begin() + m_it->second.first);
+      std::vector<T> v(v_it, v_it + m_it->second.second);
       return(v);
     }
     //-------------------------------------------
@@ -314,10 +313,10 @@ template<class T> class SampleBlock
     * @param[out] v A vector to insert desired samples.
     * @throw  std::invalid_argument if nr is higher than signals stord.
     */
-  void getSignalByNr(boost::uint32_t nr, vector<T>& v)
+  void getSignalByNr(boost::uint32_t nr, std::vector<T>& v)
     {
       #ifdef DEBUG
-        cout << "SampleBlock: getSignalByNr" << endl;
+        std::cout << "SampleBlock: getSignalByNr" << std::endl;
       #endif
 
       using boost::uint16_t;
@@ -328,10 +327,10 @@ template<class T> class SampleBlock
         of different signals available!"));
       checkBlockIntegrity();
 
-      map<uint32_t, pair<uint16_t, uint16_t> >::iterator m_it(block_info_.begin());
+      std::map<uint32_t, std::pair<uint16_t, uint16_t> >::iterator m_it(block_info_.begin());
       for(uint32_t n = 0; n < nr; n++)
         m_it++;
-      typename vector<T>::iterator v_it(samples_.begin() + m_it->second.first);
+      typename std::vector<T>::iterator v_it(samples_.begin() + m_it->second.first);
 
       v.assign(v_it, v_it + m_it->second.second);
     }
@@ -342,10 +341,10 @@ template<class T> class SampleBlock
     * @throw  std::length_error if v.size does not equal channels or trying to append more blocks than defined.
     * @todo If needed: Possibility to append already blocked data.
     */
-    void appendBlock(vector<T> v)
+    void appendBlock(std::vector<T> v)
     {
       #ifdef DEBUG
-        cout << "SampleBlock: appendBlock" << endl;
+        std::cout << "SampleBlock: appendBlock" << std::endl;
       #endif
 
       if(v.size() != channels_)
@@ -368,17 +367,17 @@ template<class T> class SampleBlock
     * @throw  std::length_error if the samples vector size does not equal blocks_ *channels_
     * @todo Check, if setting already blocked data in an unordered manner performs correct sorting!!
     */
-    void setSamples(vector<T> v)
+    void setSamples(std::vector<T> v)
     {
       #ifdef DEBUG
-        cout << "SampleBlock: setSamples" << endl;
+        std::cout << "SampleBlock: setSamples" << std::endl;
       #endif
 
       if(v.size() != static_cast<boost::uint32_t>(blocks_ *channels_))
       {
-        string ex_str;
-        string nr_samples(boost::lexical_cast<string>(v.size()));
-        string available(boost::lexical_cast<string>(blocks_ *channels_));
+        std::string ex_str;
+        std::string nr_samples(boost::lexical_cast<std::string>(v.size()));
+        std::string available(boost::lexical_cast<std::string>(blocks_ *channels_));
         ex_str = "Values in vector: " + nr_samples + " -- awaiting: " + available;
           throw(std::length_error("Sample Block contains a different amount of values than sampled channels! -- " +ex_str ));
       }
@@ -403,10 +402,10 @@ template<class T> class SampleBlock
     * are used to order both v and order.
     * Bubble-sort is used as a sorting algorithm.
     */
-  void sort(vector<T>& v, vector<boost::uint32_t> order)
+  void sort(std::vector<T>& v, std::vector<boost::uint32_t> order)
     {
       #ifdef DEBUG
-        cout << "SampleBlock: sort" << endl;
+        std::cout << "SampleBlock: sort" << std::endl;
       #endif
 
       double v_tmp;
@@ -433,15 +432,15 @@ template<class T> class SampleBlock
     void checkBlockIntegrity()
     {
       #ifdef DEBUG
-        cout << "SampleBlock: checkBlockIntegrity" << endl;
+        std::cout << "SampleBlock: checkBlockIntegrity" << std::endl;
       #endif
 
       if(samples_.size() != static_cast<boost::uint32_t>(channels_*blocks_ ))
       {
-        string ex_str;
-        string n(boost::lexical_cast<string>(samples_.size()));
-        string c(boost::lexical_cast<string>(channels_));
-        string b(boost::lexical_cast<string>(blocks_ ));
+        std::string ex_str;
+        std::string n(boost::lexical_cast<std::string>(samples_.size()));
+        std::string c(boost::lexical_cast<std::string>(channels_));
+        std::string b(boost::lexical_cast<std::string>(blocks_ ));
         ex_str = "("+n+ ") different to channels_ ("+c+ ") * blocks_  ("+b+ ")!";
         throw(std::length_error("Inconsistent sample block -- nr of samples" + ex_str));
       }
@@ -456,7 +455,7 @@ template<class T> class SampleBlock
     boost::uint16_t curr_block_;    ///< Counter to know the current block.
 
     //vector<uint32_t> types_ordered_;   //< Signal types in an ordered manner (and how samples are stored)
-    vector<boost::uint32_t> types_input_;   ///< Order, how signal types come from the hardware device.
+    std::vector<boost::uint32_t> types_input_;   ///< Order, how signal types come from the hardware device.
     /**
     * @brief A Map to store every the offset and number of values for every signal type.
     *
@@ -464,8 +463,8 @@ template<class T> class SampleBlock
     * data:  pair->first ... offset    pair->second ... nr of values
     * This map is also used to compute the number of different signal types stored.
     */
-    map<boost::uint32_t, pair<boost::uint16_t, boost::uint16_t> > block_info_;  // flag ... identifier, offset & nr_values as data
-    vector<T> samples_;    ///<  A vector containing the data.
+    std::map<boost::uint32_t, std::pair<boost::uint16_t, boost::uint16_t> > block_info_;  // flag ... identifier, offset & nr_values as data
+    std::vector<T> samples_;    ///<  A vector containing the data.
 };
 
 //-----------------------------------------------------------------------------
