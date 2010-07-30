@@ -21,7 +21,7 @@ INCLUDEPATH += extern/include
 
 win32:INCLUDEPATH += extern/include/SDL-1.2.14-VC8
 
-#unix: QMAKE_CXXFLAGS += -O3
+QMAKE_CXXFLAGS_WARN_ON = -Wall -pedantic
 
 # Input
 HEADERS +=  include/config/control_message_decoder.h \
