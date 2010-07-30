@@ -7,7 +7,8 @@
 
 namespace tobiss
 {
-
+using std::string;
+using std::map;
 using namespace std;
 using boost::uint32_t;
 using boost::algorithm::to_lower_copy;
@@ -95,6 +96,13 @@ const string Constants::hw_bip("bipolar");
 const string Constants::hw_bip_with("with");
 const string Constants::hw_drl("driven_right_leg");
 const string Constants::hw_drl_value("value");
+
+
+//g.Mobilab specific start
+const string Constants::hw_mobilab_serial_port("serial_port");
+const string Constants::hw_mobilab_type("mobilab_type");
+const string Constants::hw_mobilab_eeg("eeg");
+const string Constants::hw_mobilab_multi("multi");
 
 //-----------------------------------------------------------------------------
 

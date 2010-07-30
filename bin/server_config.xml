@@ -30,7 +30,7 @@
 
 <!-- =============================================================================== -->
 
-  <hardware name="sinegenerator" version="1.0" serial="">
+<!--  <hardware name="sinegenerator" version="1.0" serial="">
     <mode> master </mode>
     <device_settings>
       <sampling_rate> 512 </sampling_rate>
@@ -59,7 +59,7 @@
         <ch nr="17" name="eeg" type="user1" />
       </selection>
     </channel_settings>
-  </hardware>
+  </hardware>-->
 
 <!-- =============================================================================== -->
 
@@ -261,22 +261,24 @@
 <!-- =============================================================================== -->
 
   <hardware name="g.mobilab" version="1.0" serial="">
-    <mode> slave </mode>
+    <mode> master </mode>
     <device_settings>
-      <sampling_rate fs="512"/>
-      <filter f_low="0.5" f_high="100"/>
+      <serial_port> /dev/ttyS0 </serial_port>
+      <mobilab_type> eeg </mobilab_type>  <!--  .... or  multi-->
+      <measurement_channels nr="4" names="eeg" type="eeg" />
+      <blocksize> 1 </blocksize>
     </device_settings>
 
     <channel_settings>
       <selection>
         <ch nr="01" name="eeg" type="eeg" />
-        <ch nr="02" name="eeg" type="eeg" />
+<!--        <ch nr="02" name="eeg" type="eeg" />-->
         <ch nr="03" name="eeg" type="eeg" />
-        <ch nr="04" name="eeg" type="eeg" />
+<!--        <ch nr="04" name="eeg" type="eeg" />
         <ch nr="05" name="eeg" type="eeg" />
         <ch nr="06" name="eeg" type="eeg" />
         <ch nr="07" name="eeg" type="eeg" />
-        <ch nr="08" name="eeg" type="eeg" />
+        <ch nr="08" name="eeg" type="eeg" />-->
       </selection>
     </channel_settings>
 

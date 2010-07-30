@@ -38,9 +38,9 @@ class AsioSerialPortTypeNames
     static std::map<unsigned int, std::string> parity_values_;
 
     struct MapValue: public std::binary_function<
-        pair<unsigned int, std::string>, std::string, bool >
+        std::pair<unsigned int, std::string>, std::string, bool >
     {
-      bool operator () ( const pair<unsigned int, std::string> p, std::string str ) const
+      bool operator () ( const std::pair<unsigned int, std::string> p, std::string str ) const
       {
         return(p.second == str);
       }
@@ -57,7 +57,8 @@ class SerialPortBase : public HWThread
     SerialPortBase(boost::asio::io_service& io, XMLParser& parser);
     virtual ~SerialPortBase();
 
-    void open(const std::string port_name);
+    void setPortName(const std::string& name);
+    void open();
     void close();
     void setBaudRate(const unsigned int rate);
     void setFlowControl(const std::string& type);
@@ -65,14 +66,14 @@ class SerialPortBase : public HWThread
     void setStopBits(const std::string& bits);
     void setCharacterSize(const unsigned int size);
 
-    void sync_read(std::vector<char>& values);
-    void sync_read(std::vector<char>& values, unsigned int bytes_to_receive);
+    void sync_read(std::vector<unsigned char>& values);
+    void sync_read(std::vector<unsigned char>& values, unsigned int bytes_to_receive);
 
-    void async_read(std::vector<char>& values);
-    void async_read(std::vector<char>& values, unsigned int bytes_to_receive);
+    void async_read(std::vector<unsigned char>& values);
+    void async_read(std::vector<unsigned char>& values, unsigned int bytes_to_receive);
 
-    void sync_write(std::vector<char>& values);
-    void async_write(std::vector<char>& values);
+    void sync_write(std::vector<unsigned char>& values);
+    void async_write(std::vector<unsigned char>& values);
 
     bool isDataAvailable()
     {
@@ -93,6 +94,7 @@ class SerialPortBase : public HWThread
   private:
     boost::asio::serial_port    serial_port_;
     std::string                 port_name_;
+
     bool                        data_available_;
     bool                        data_written_;
 
