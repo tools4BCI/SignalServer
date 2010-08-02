@@ -21,6 +21,8 @@
 using namespace std;
 using namespace tobiss;
 
+const string CONFIG_FILE_ARGUMENT = "-c";
+
 //-----------------------------------------------------------------------------
 
 class SSClientDataReader
@@ -143,27 +145,43 @@ int main(int argc, const char* argv[])
 {
   string   srv_addr = "127.0.0.1";
   boost::uint16_t srv_port = 9000;
+  string config_file;
 
   if(argc == 1)
   {
     cout << "Using default server " << srv_addr << ":" << srv_port << endl;
   }
-  else if(argc == 3)
+  else if(argc == 3 && argv[1] == CONFIG_FILE_ARGUMENT)
+  {
+    cout << "Using default server " << srv_addr << ":" << srv_port << endl;
+    cout << endl << "  ***  Loading own client-based XML configuration file: " << argv[2] << endl << endl;
+    config_file = argv[2];
+  }
+  else if(argc == 3 && argv[1] != CONFIG_FILE_ARGUMENT)
   {
     srv_addr = argv[1];
     stringstream conv(argv[2]);
     conv >> srv_port;
     cout << "Using server " << srv_addr << ":" << srv_port << endl;
   }
+  else if(argc == 5 && argv[3] == CONFIG_FILE_ARGUMENT)
+  {
+    srv_addr = argv[1];
+    stringstream conv(argv[2]);
+    conv >> srv_port;
+    cout << "Using server " << srv_addr << ":" << srv_port << endl;
+    cout << endl << "  ***  Loading own client-based XML configuration file: " << argv[4] << endl << endl;
+    config_file = argv[4];
+  }
   else
   {
     cout << "Wrong number of arguments given: " << argc-1 << endl;
-    cout << " - Usage: " << argv[0] << "  signalserver-ip   port" << endl;
+    cout << " - Usage: " << argv[0] << "  [signalserver-ip   port] [-c config-file]" << endl;
     return(-1);
   }
 
   SSClient client;
-//test
+
   try
   {
     client.connect(srv_addr, srv_port);
