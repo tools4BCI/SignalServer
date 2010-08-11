@@ -66,14 +66,19 @@ class SerialPortBase : public HWThread
     void setStopBits(const std::string& bits);
     void setCharacterSize(const unsigned int size);
 
-    void sync_read(std::vector<unsigned char>& values);
-    void sync_read(std::vector<unsigned char>& values, unsigned int bytes_to_receive);
+    template<typename T> void sync_read(std::vector<T>& values);
+    template<typename T> void sync_read(std::vector<T>& values, unsigned int bytes_to_receive);
 
-    void async_read(std::vector<unsigned char>& values);
-    void async_read(std::vector<unsigned char>& values, unsigned int bytes_to_receive);
+    template<typename T> void async_read(std::vector<T>& values);
+    template<typename T> void async_read(std::vector<T>& values, unsigned int bytes_to_receive);
 
-    void sync_write(std::vector<unsigned char>& values);
-    void async_write(std::vector<unsigned char>& values);
+    template<typename T> void sync_write(std::vector<T>& values);
+    template<typename T> void async_write(std::vector<T>& values);
+
+    std::string getSerialPortName()
+    {
+      return(port_name_);
+    }
 
     bool isDataAvailable()
     {
@@ -107,7 +112,98 @@ class SerialPortBase : public HWThread
     AsioSerialPortTypeNames& asio_types_;
 };
 
-}  //tobiss
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
+// template code:
+
+template<typename T> void SerialPortBase::sync_read(std::vector<T>& values)
+{
+  boost::system::error_code ec;
+  boost::asio::read(serial_port_, boost::asio::buffer(values),
+                    boost::asio::transfer_all(), ec);
+
+  if(ec)
+    throw(std::runtime_error("SerialPortBase::sync_read() -- \
+                             Error reading serial port"));
+}
+
+//-----------------------------------------------------------------------------
+
+template<typename T> void SerialPortBase::sync_read(std::vector<T>& values, unsigned int bytes_to_receive)
+{
+  boost::system::error_code ec;
+
+  boost::asio::read(serial_port_, boost::asio::buffer(values),
+                    boost::asio::transfer_at_least(bytes_to_receive), ec);
+
+  if(ec)
+    throw(std::runtime_error("SerialPortBase::sync_read() -- \
+                             Error reading serial port -- bytes: " + bytes_to_receive));
+}
+
+//-----------------------------------------------------------------------------
+
+template<typename T> void SerialPortBase::async_read(std::vector<T>& values)
+{
+  if(!data_available_)
+    throw(std::logic_error("SerialPortBase::async_read() -- Still waiting for new data ...") );
+
+  data_available_ = false;
+  boost::asio::async_read(serial_port_,
+                          boost::asio::buffer(values),
+                          boost::bind(&SerialPortBase::handleAsyncRead,
+                                      this,
+                                      boost::asio::placeholders::error,
+                                      boost::asio::placeholders::bytes_transferred)
+                          );
+}
+
+//-----------------------------------------------------------------------------
+
+template<typename T> void SerialPortBase::async_read(std::vector<T>& values, unsigned int bytes_to_receive)
+{
+  if(!data_available_)
+    throw(std::logic_error("SerialPortBase::async_read() -- Still waiting for new data ...") );
+
+  data_available_ = false;
+  boost::asio::async_read(serial_port_,
+                          boost::asio::buffer(values),
+                          boost::asio::transfer_at_least(bytes_to_receive),
+                          boost::bind(&SerialPortBase::handleAsyncRead,
+                                      this,
+                                      boost::asio::placeholders::error,
+                                      boost::asio::placeholders::bytes_transferred)
+                          );
+}
+
+//-----------------------------------------------------------------------------
+
+template<typename T> void SerialPortBase::sync_write(std::vector<T>& values)
+{
+  boost::asio::write(serial_port_, boost::asio::buffer(values));
+}
+
+//-----------------------------------------------------------------------------
+
+template<typename T> void SerialPortBase::async_write(std::vector<T>& values)
+{
+  if(!data_written_)
+    throw(std::logic_error("SerialPortBase::async_read() -- Still writing data ...") );
+
+  data_written_ = false;
+  boost::asio::async_write(serial_port_,
+                          boost::asio::buffer(values),
+                          boost::bind(&SerialPortBase::handleAsyncWrite,
+                                      this,
+                                      boost::asio::placeholders::error,
+                                      boost::asio::placeholders::bytes_transferred)
+                          );
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+}  //tobiss
 
 #endif // SERIALPORTBASE_H
