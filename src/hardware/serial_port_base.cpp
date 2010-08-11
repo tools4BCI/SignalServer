@@ -20,6 +20,72 @@ std::map<unsigned int, std::string> AsioSerialPortTypeNames::flow_control_values
 std::map<unsigned int, std::string> AsioSerialPortTypeNames::stop_bit_values_;
 std::map<unsigned int, std::string> AsioSerialPortTypeNames::parity_values_;
 
+
+//BOOST_ASIO_OPTION_STORAGE  ... termios
+class RTSControl
+{
+public:
+    explicit RTSControl(bool enable = false) : m_enable(enable) {};
+    boost::system::error_code store(termios& storage,
+        boost::system::error_code& ec) const
+    {
+        #if defined(BOOST_WINDOWS) || defined(__CYGWIN__)
+        if (m_enable) storage.fRtsControl = RTS_CONTROL_ENABLE;
+        else storage.fRtsControl = RTS_CONTROL_DISABLE;
+        #else
+        #endif
+        //ec = boost::asio::error::operation_not_supported;
+        //ec = boost::system::error_code();
+        return ec;
+    };
+
+    boost::system::error_code load(const termios& storage,
+        boost::system::error_code& ec)
+    {
+        #if defined(BOOST_WINDOWS) || defined(__CYGWIN__)
+        if (storage.fRtsControl == RTS_CONTROL_ENABLE) m_enable = true;
+        else m_enable = true;
+        #else
+        #endif
+        return ec;
+    };
+private:
+    bool m_enable;
+};
+
+
+class DTRControl
+{
+public:
+    explicit DTRControl(bool enable = false) : m_enable(enable) {};
+    boost::system::error_code store(termios& storage,
+        boost::system::error_code& ec) const
+    {
+        #if defined(BOOST_WINDOWS) || defined(__CYGWIN__)
+        if (m_enable) storage.fRtsControl = DTR_CONTROL_ENABLE;
+        else storage.fRtsControl = DTR_CONTROL_ENABLE;
+        #else
+        #endif
+        //ec = boost::asio::error::operation_not_supported;
+        //ec = boost::system::error_code();
+        return ec;
+    };
+
+    boost::system::error_code load(const termios& storage,
+        boost::system::error_code& ec)
+    {
+        #if defined(BOOST_WINDOWS) || defined(__CYGWIN__)
+        if (storage.fRtsControl == DTR_CONTROL_ENABLE) m_enable = true;
+        else m_enable = true;
+        #else
+        #endif
+        return ec;
+    };
+private:
+    bool m_enable;
+};
+
+
 //-----------------------------------------------------------------------------
 
 AsioSerialPortTypeNames& AsioSerialPortTypeNames::getInstance()
@@ -171,6 +237,8 @@ void SerialPortBase::open()
   }
 
 
+//  serial_port_.set_option(RTSControl(true));
+//  serial_port_.set_option(DTRControl(true));
 }
 
 //-----------------------------------------------------------------------------
@@ -285,33 +353,6 @@ void SerialPortBase::setCharacterSize(const unsigned int size)
 
 //-----------------------------------------------------------------------------
 
-void SerialPortBase::sync_read(std::vector<unsigned char>& values)
-{
-  boost::system::error_code ec;
-  boost::asio::read(serial_port_, boost::asio::buffer(values),
-                    boost::asio::transfer_all(), ec);
-
-  if(ec)
-    throw(std::runtime_error("SerialPortBase::sync_read() -- \
-                             Error reading serial port"));
-}
-
-//-----------------------------------------------------------------------------
-
-void SerialPortBase::sync_read(std::vector<unsigned char>& values, unsigned int bytes_to_receive)
-{
-  boost::system::error_code ec;
-
-  boost::asio::read(serial_port_, boost::asio::buffer(values),
-                    boost::asio::transfer_at_least(bytes_to_receive), ec);
-
-  if(ec)
-    throw(std::runtime_error("SerialPortBase::sync_read() -- \
-                             Error reading serial port -- bytes: " + bytes_to_receive));
-}
-
-//-----------------------------------------------------------------------------
-
 void SerialPortBase::handleAsyncRead(const boost::system::error_code& ec,
                                      std::size_t bytes_transferred )
 {
@@ -320,48 +361,6 @@ void SerialPortBase::handleAsyncRead(const boost::system::error_code& ec,
                              Error handling async read -- bytes transferred: " + bytes_transferred));
 
   data_available_ = true;
-}
-
-//-----------------------------------------------------------------------------
-
-void SerialPortBase::async_read(std::vector<unsigned char>& values)
-{
-  if(!data_available_)
-    throw(std::logic_error("SerialPortBase::async_read() -- Still waiting for new data ...") );
-
-  data_available_ = false;
-  boost::asio::async_read(serial_port_,
-                          boost::asio::buffer(values),
-                          boost::bind(&SerialPortBase::handleAsyncRead,
-                                      this,
-                                      boost::asio::placeholders::error,
-                                      boost::asio::placeholders::bytes_transferred)
-                          );
-}
-
-//-----------------------------------------------------------------------------
-
-void SerialPortBase::async_read(std::vector<unsigned char>& values, unsigned int bytes_to_receive)
-{
-  if(!data_available_)
-    throw(std::logic_error("SerialPortBase::async_read() -- Still waiting for new data ...") );
-
-  data_available_ = false;
-  boost::asio::async_read(serial_port_,
-                          boost::asio::buffer(values),
-                          boost::asio::transfer_at_least(bytes_to_receive),
-                          boost::bind(&SerialPortBase::handleAsyncRead,
-                                      this,
-                                      boost::asio::placeholders::error,
-                                      boost::asio::placeholders::bytes_transferred)
-                          );
-}
-
-//-----------------------------------------------------------------------------
-
-void SerialPortBase::sync_write(std::vector<unsigned char>& values)
-{
-  boost::asio::write(serial_port_, boost::asio::buffer(values));
 }
 
 //-----------------------------------------------------------------------------
@@ -376,22 +375,7 @@ void SerialPortBase::handleAsyncWrite(const boost::system::error_code& ec,
   data_written_ = true;
 }
 
-//-----------------------------------------------------------------------------
 
-void SerialPortBase::async_write(std::vector<unsigned char>& values)
-{
-  if(!data_written_)
-    throw(std::logic_error("SerialPortBase::async_read() -- Still writing data ...") );
-
-  data_written_ = false;
-  boost::asio::async_write(serial_port_,
-                          boost::asio::buffer(values),
-                          boost::bind(&SerialPortBase::handleAsyncWrite,
-                                      this,
-                                      boost::asio::placeholders::error,
-                                      boost::asio::placeholders::bytes_transferred)
-                          );
-}
 
 //-----------------------------------------------------------------------------
 

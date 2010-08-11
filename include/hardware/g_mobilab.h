@@ -10,6 +10,8 @@
 #include <vector>
 #include <string>
 
+#include <boost/thread.hpp>
+
 #include "serial_port_base.h"
 
 
@@ -30,11 +32,15 @@ class GMobilab : public SerialPortBase
              ticpp::Iterator<ticpp::Element> hw);
     virtual ~GMobilab()
     {
+      async_acqu_thread_->join();
       close();
+      if(async_acqu_thread_)
+        delete async_acqu_thread_;
     }
 
 
     virtual SampleBlock<double> getSyncData();
+    virtual SampleBlock<double> getAsyncData();
 
     /**
     * @brief Method to start data acquisition.
@@ -46,9 +52,6 @@ class GMobilab : public SerialPortBase
     virtual void stop();
 
   private:
-
-    virtual SampleBlock<double> getAsyncData();
-
     virtual void setDeviceSettings(ticpp::Iterator<ticpp::Element>const &father);
     virtual void setChannelSettings(ticpp::Iterator<ticpp::Element>const &father);
     void setHardware(ticpp::Iterator<ticpp::Element>const &hw);
@@ -57,14 +60,18 @@ class GMobilab : public SerialPortBase
     unsigned char getChannelCode();
     void checkNrOfChannels();
 
+    void acquireData();
+
     enum device_types_ { EEG, MULTI };
 
   private:
     device_types_ type_;
     std::map<unsigned int, unsigned char> channel_coding_;
     std::vector<double> scaling_factors_;
-    std::vector<unsigned char>  raw_data_;
+    std::vector<boost::int16_t>  raw_data_;
     std::vector<double>  samples_;
+
+    boost::thread*  async_acqu_thread_;
 
 
 };

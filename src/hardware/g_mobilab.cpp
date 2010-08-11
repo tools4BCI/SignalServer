@@ -2,6 +2,7 @@
 #include <hardware/g_mobilab.h>
 
 #include <vector>
+#include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
 
 namespace tobiss
@@ -39,14 +40,70 @@ static const std::string  MOBILAB_PARITY       = "none";
 
 //-----------------------------------------------------------------------------
 
+#ifndef WIN32
+
+  #include <termios.h>
+
+  // very very bad hack ... taken from ttylog
+  // don't know if something similar has to be done for windows
+  // if this code is not executed, the mobilab does not respond
+  // don't know why
+  // only starting ttylog before the sigserver was enough, otherwise
+  // the mobilab did not respond
+  // maybe some pins have to be set manually
+  void DO_BAD_SERIAL_PORT_HACK(std::string dev)
+  {
+    unsigned int count = 2;
+    while(count)
+    {
+      FILE *logfile;
+      int fd;
+      fd_set rfds;
+      struct termios oldtio, newtio;
+
+      logfile = fopen (dev.c_str(), "rb");
+
+      fd = fileno (logfile);
+
+      tcgetattr (fd, &oldtio);	/* save current serial port settings */
+      bzero (&newtio, sizeof (newtio));	/* clear struct for new port settings */
+
+      newtio.c_cflag = B57600 | CRTSCTS | CS8 | CLOCAL | CREAD;
+      newtio.c_iflag = IGNPAR | IGNCR;
+      newtio.c_oflag = 0;
+      newtio.c_lflag = ICANON;
+
+      tcflush (fd, TCIFLUSH);
+      tcsetattr (fd, TCSANOW, &newtio);
+
+      /* Clear the device */
+      FD_ZERO (&rfds);
+      FD_SET (fd, &rfds);
+
+      fclose (logfile);
+      tcsetattr (fd, TCSANOW, &oldtio);
+
+      count--;
+      usleep(20000);
+    }
+  }
+
+#endif
+
+//-----------------------------------------------------------------------------
+
 GMobilab::GMobilab(boost::asio::io_service& io, XMLParser& parser,
          ticpp::Iterator<ticpp::Element> hw)
-  : SerialPortBase(io, parser), type_(EEG)
+  : SerialPortBase(io, parser), type_(EEG), async_acqu_thread_(0)
 {
   setHardware(hw);
 
   checkNrOfChannels();
   setScalingValues();
+
+#ifndef WIN32
+  DO_BAD_SERIAL_PORT_HACK(getSerialPortName());
+#endif
 
   open();
   setBaudRate(MOBILAB_BAUD_RATE);
@@ -55,9 +112,10 @@ GMobilab::GMobilab(boost::asio::io_service& io, XMLParser& parser,
   setStopBits(MOBILAB_STOP_BITS);
   setCharacterSize(MOBILAB_CHAR_SIZE);
 
-  raw_data_.resize(nr_ch_ * MOBILAB_DAQ_RESOLUTION_BYTE, 0);
-  samples_.resize(nr_ch_, 0);
+  raw_data_.resize(nr_ch_, 0);
 
+  samples_.reserve(4 * nr_ch_);
+  samples_.resize(nr_ch_, 0);
 
   if(blocks_ != 1)
     throw(std::invalid_argument("Blocksize > 1 not supported yet!") );
@@ -67,6 +125,7 @@ GMobilab::GMobilab(boost::asio::io_service& io, XMLParser& parser,
 
   unsigned char channel_code = getChannelCode();
 
+  // command to set channels ... sniffed from serial communication
   command.push_back(0x63);
   command.push_back(channel_code);
   command.push_back(0x20);
@@ -74,6 +133,7 @@ GMobilab::GMobilab(boost::asio::io_service& io, XMLParser& parser,
   sync_write(command);
   sync_read(reply);
 
+  // response from mobilab if channel setting was ok -- don't know other messages
   if(reply[0] != 0x63)
     throw(std::runtime_error("GMobilab::Constructor -- Wrong hardware response from mobilab!") );
 
@@ -87,8 +147,13 @@ GMobilab::GMobilab(boost::asio::io_service& io, XMLParser& parser,
 
 void GMobilab::run()
 {
+
+  // command to start data transmission
   std::vector<unsigned char> command(1, 0x61);
   sync_write(command);
+
+  if(mode_ == SLAVE)
+    async_acqu_thread_ = new boost::thread( boost::bind(&GMobilab::acquireData, this) );
 
   running_ = true;
   std::cout << " * g.Mobilab sucessfully started" << std::endl;
@@ -101,6 +166,7 @@ void GMobilab::stop()
   running_ = false;
   boost::unique_lock<boost::shared_mutex> lock(rw_);
 
+  // command to stop data transmission
   std::vector<unsigned char> command(1,0x62);
   sync_write(command);
 
@@ -117,12 +183,8 @@ SampleBlock<double> GMobilab::getSyncData()
 
     sync_read(raw_data_);
 
-    unsigned int counter = 0;
-    for(unsigned int n = 0; n < raw_data_.size(); n+=2)
-    {
-      samples_[counter] = *(reinterpret_cast<short*>(&(raw_data_[n]) )) * scaling_factors_[counter];
-      counter++;
-    }
+    for(unsigned int n = 0; n < raw_data_.size(); n++)
+      samples_[n] = raw_data_[n]* scaling_factors_[n];
 
     data_.setSamples(samples_);
   }
@@ -133,8 +195,13 @@ SampleBlock<double> GMobilab::getSyncData()
 
 SampleBlock<double> GMobilab::getAsyncData()
 {
+  if(running_)
+  {
+    boost::unique_lock<boost::shared_mutex> lock(rw_);
 
-  // TODO
+    data_.setSamples(samples_);
+
+  }
 
   return(data_);
 }
@@ -260,6 +327,7 @@ void GMobilab::setScalingValues()
 
 unsigned char GMobilab::getChannelCode()
 {
+  // binary channel coding for the mobilab
   channel_coding_[1] = 0x80;
   channel_coding_[2] = 0x40;
   channel_coding_[3] = 0x20;
@@ -272,15 +340,8 @@ unsigned char GMobilab::getChannelCode()
   unsigned char code = 0;
   std::map<boost::uint16_t, std::pair<std::string, boost::uint32_t> >::iterator it;
   for(it = channel_info_.begin(); it != channel_info_.end(); it++)
-  {
     code |= channel_coding_[ (*it).first ];
-    cout << "ch: " << (*it).first << ";  code: ";
-    cout << std::hex << static_cast<unsigned int> (channel_coding_[ (*it).first ]) << endl;
-  }
 
-  cout << "End-code: ";
-  cout << std::hex << static_cast<unsigned int> (code) <<  endl;
-  cout << std::hex << static_cast<unsigned int> (code & 0xFF) <<  endl;
   return(code);
 }
 
@@ -306,6 +367,20 @@ void GMobilab::checkNrOfChannels()
 
 //---------------------------------------------------------------------------------------
 
+void GMobilab::acquireData()
+{
+  while(running_)
+  {
+    sync_read(raw_data_);
+
+    boost::unique_lock<boost::shared_mutex> lock(rw_);
+    for(unsigned int n = 0; n < raw_data_.size(); n++)
+      samples_[n] = raw_data_[n]* scaling_factors_[n];
+    lock.unlock();
+  }
+}
+
+//---------------------------------------------------------------------------------------
 
 } // Namespace tobiss
 
