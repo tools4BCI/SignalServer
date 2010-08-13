@@ -20,6 +20,7 @@ namespace tobiss
 class DataPacket;
 class SSClientImplBase;
 class SSConfig;
+class XMLParser;
 
 /**
 * @class SSClient
@@ -150,6 +151,13 @@ public:
    * @param size the size of the input buffer in [byte]
    */
   virtual void setBufferSize(size_t size);
+  /**
+   * @brief Sends the meta data information to the server
+   *
+   * @throw std::ios_base::failure if the client is not connected or if an error occurred
+   * sa config(), requestConfig()
+   */
+  virtual void sendConfig(std::string& config);
 
 protected:
   SSClientImplBase* impl_; ///< Pointer to implementation

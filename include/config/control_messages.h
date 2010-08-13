@@ -24,6 +24,7 @@ namespace tobiss
 // forward declarations
 class ControlMsgEncoder;
 class ControlMsgDecoder;
+class XMLParser;
 
 //-----------------------------------------------------------------------------
 
@@ -39,7 +40,8 @@ class ControlMsg
       StartTransmission,
       StopTransmission,
       OkReply,
-      ErrorReply
+      ErrorReply,
+      SendConfig
     };
 
     ///
@@ -222,6 +224,29 @@ class ReplyMsg : public ControlMsg
     ReplyMsg(MsgType type) : ControlMsg(type)
     {}
 };
+
+//-----------------------------------------------------------------------------
+
+class SendConfigMsg : public ControlMsg
+{
+  public:
+    SendConfigMsg() : ControlMsg(ControlMsg::SendConfig) {}
+    virtual ~SendConfigMsg(){}
+
+    std::string configString() const { return config_string_; }
+    void setConfigString(std::string config_string) { config_string_ = config_string; }
+
+    virtual void writeMsg(ControlMsgEncoder& encoder, std::ostream& stream) const;
+
+    virtual void readMsg(ControlMsgDecoder& decoder);
+
+    virtual ControlMsg* clone() const { return new SendConfigMsg(); };
+
+  public:
+    std::string config_string_;
+};
+
+//-----------------------------------------------------------------------------
 
 } // Namespace tobiss
 

@@ -139,6 +139,20 @@ void ConfigMsg::readMsg(ControlMsgDecoder& decoder)
 
 //-----------------------------------------------------------------------------
 
+void SendConfigMsg::writeMsg(ControlMsgEncoder& encoder, std::ostream& stream) const
+{
+  encoder.encodeMsg(*this, stream);
+}
+
+//-----------------------------------------------------------------------------
+
+void SendConfigMsg::readMsg(ControlMsgDecoder& decoder)
+{
+  decoder.decodeMsg(*this);
+}
+
+//-----------------------------------------------------------------------------
+
 } // Namespace tobiss
 
 // End Of File

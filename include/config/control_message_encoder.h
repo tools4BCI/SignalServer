@@ -44,6 +44,8 @@ public:
   virtual void encodeMsg(const ConfigMsg& msg, std::ostream& stream) = 0;
   ///
   virtual void encodeMsg(const ReplyMsg& msg, std::ostream& stream) = 0;
+  ///
+  virtual void encodeMsg(const SendConfigMsg& msg, std::ostream& stream) = 0;
 };
 
 //-----------------------------------------------------------------------------
@@ -67,6 +69,8 @@ public:
   virtual void encodeMsg(const ConfigMsg& msg, std::ostream& stream);
   ///
   virtual void encodeMsg(const ReplyMsg& msg, std::ostream& stream);
+  ///
+  virtual void encodeMsg(const SendConfigMsg& msg, std::ostream& stream);
 
 protected:
   void encodeBaseMsg(const ControlMsg& msg, const std::string& xml_msg_type,

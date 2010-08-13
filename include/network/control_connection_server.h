@@ -70,6 +70,12 @@ public:
    */
   void getConfig(ConfigMsg& config);
 
+  /**
+   * @brief Set the server meta data got from the client
+   * @param[in] config config message containing the new server meta data
+   */
+  void setConfig(std::string config);
+
 protected:
   /**
    * @brief Creates the SubjectInfo object

@@ -26,6 +26,7 @@ class ControlMsgEncoder;
 class ControlMsgDecoder;
 class DataPacket;
 class SSConfig;
+class XMLParser;
 
 //-----------------------------------------------------------------------------
 /**
@@ -115,6 +116,13 @@ public:
    * @param size the size of the input buffer in [byte]
    */
   virtual void setBufferSize(size_t size);
+  /**
+   * @brief Sends the meta data information to the server
+   *
+   * @throw std::ios_base::failure if the client is not connected or if an error occurred
+   * sa config(), requestConfig()
+   */
+  virtual void sendConfig(std::string& config);
 
 protected:
   enum ControlConnState
@@ -169,6 +177,8 @@ protected:
   vector<char>                    recv_buf_; ///<
   vector<char>                    data_buf_; ///<
   boost::asio::ip::tcp::endpoint  tcp_target_; ///<
+
+  XMLParser*                      config_to_send_;
 
 #ifdef TIMING_TEST
 private:

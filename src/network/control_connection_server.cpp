@@ -78,6 +78,13 @@ void ControlConnectionServer::getConfig(ConfigMsg& config)
 
 //-----------------------------------------------------------------------------
 
+void ControlConnectionServer::setConfig(std::string config)
+{
+  server_.setClientConfig(config);
+}
+
+//-----------------------------------------------------------------------------
+
 void ControlConnectionServer::createSubjectInfo()
 {
   map<string,string> subject_map = server_.config_->parseSubject();

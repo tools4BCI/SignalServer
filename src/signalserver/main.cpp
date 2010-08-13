@@ -87,6 +87,7 @@ int main(int argc, const char* argv[])
   {
     string config_file;
     bool running = true;
+    bool first_run = true;
 
     if(argc == 1)
     {
@@ -101,19 +102,41 @@ int main(int argc, const char* argv[])
     else
       cout << " ERROR -- Wrong Number of input arguments!" << endl;
 
+// Testing if it functions outside the while()
+//    XMLParser config(config_file);
+//    boost::asio::io_service io_service;
+//    SignalServer server(io_service);
+//    DataFileHandler data_file_handler(io_service, config.getFileReaderMap());
+//    server.initialize(&config); //von Zeile 143
+    XMLParser config(config_file);
+    XMLParser temp_config;
+// Testing - End
+
     while(running)
     {
-      XMLParser config(config_file);
-
-
       boost::asio::io_service io_service;
 
       SignalServer server(io_service);
 
+      if(!first_run)
+      {
+//        XMLParser &config;
+        cout << "Ich starte neu" <<endl;
+        config = temp_config;
+        cout << "Ich starte neu" <<endl;
+      }
+      else
+      {
+//        config = XMLParser(config_file);
+        first_run = false;
+      }
+
       DataFileHandler data_file_handler(io_service, config.getFileReaderMap());
 
-      HWAccess hw_access(io_service, config);
-      DataPacketReader reader(hw_access, server);
+      server.startServerSettings(config);
+
+      HWAccess* hw_access = server.getHWAccess();
+      DataPacketReader reader((*hw_access), server);
       boost::thread* io_thread_ptr = 0;
       boost::thread* data_reader_thread_ptr = 0;
 
@@ -123,16 +146,7 @@ int main(int argc, const char* argv[])
       }
       else
       {
-        // TODO: find a better way to pass this information to the server
-        server.setMasterBlocksize(hw_access.getMastersBlocksize());
-        server.setMasterSamplingRate(hw_access.getMastersSamplingRate());
-        server.setAcquiredSignalTypes(hw_access.getAcquiredSignalTypes());
-        server.setBlockSizesPerSignalType(hw_access.getBlockSizesPerSignalType());
-        server.setSamplingRatePerSignalType(hw_access.getSamplingRatePerSignalType());
-        server.setChannelNames(hw_access.getChannelNames());
-
-        server.initialize(&config);
-        hw_access.startDataAcquisition();
+//        (*hw_access).startDataAcquisition();
 
         io_thread_ptr  = new boost::thread(boost::bind(&boost::asio::io_service::run, &io_service));
         data_reader_thread_ptr = new boost::thread(boost::bind(&DataPacketReader::readPacket, &reader));
@@ -158,16 +172,17 @@ int main(int argc, const char* argv[])
           running = false;
           break;
         }
-        else if(str == "r")
+        else if(str == "r" || !hw_access)
         {
           break;
         }
         else
           cout << endl << ">>";
 
+      server.getConfig(temp_config);
       reader.stop();
       io_service.stop();
-      hw_access.stopDataAcquisition();
+      (*hw_access).stopDataAcquisition();
       if(io_thread_ptr)
       {
         io_thread_ptr->join();

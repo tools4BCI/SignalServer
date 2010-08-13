@@ -24,7 +24,6 @@ using boost::uint16_t;
 using boost::uint32_t;
 
 //-----------------------------------------------------------------------------
-
 HWAccess::HWAccess(boost::asio::io_service& io, XMLParser& parser)
   : master_(0), event_listener_(0)
 {

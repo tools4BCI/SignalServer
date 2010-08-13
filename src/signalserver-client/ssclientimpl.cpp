@@ -644,4 +644,52 @@ void SSClientImpl::setBufferSize(size_t size)
 
 //-----------------------------------------------------------------------------
 
+void SSClientImpl::sendConfig(std::string& config)
+{
+  if (ctl_conn_state_ == ControlConnState_NotConnected)
+  {
+    stringstream ex_str;
+    ex_str << "SSClient: Not connected!";
+    throw std::ios_base::failure(ex_str.str());
+  }
+
+  SendConfigMsg msg;
+  msg.setConfigString(config);
+
+  msg_encoder_->encodeMsg(msg, ctl_conn_stream_);
+
+  boost::shared_ptr<ControlMsg> reply(msg_decoder_->decodeMsg());
+
+  if (reply == 0)
+  {
+    stringstream ex_str;
+    ex_str << "SSClient: Cannot decode message";
+    throw std::ios_base::failure(ex_str.str());
+  }
+
+  // Check reply type
+  switch (reply->msgType())
+  {
+    case ControlMsg::OkReply: break;
+
+    case ControlMsg::ErrorReply:
+    {
+      stringstream ex_str;
+      ex_str << "SSClient: Stop receiving failed due to a server error.";
+      throw std::ios_base::failure(ex_str.str());
+    }
+
+    default:
+    {
+      stringstream ex_str;
+      ex_str << "SSClient: Got unexpected reply of type '" << reply->msgType() << "'";
+      throw std::ios_base::failure(ex_str.str());
+    }
+  }
+
+  requestConfig();
+}
+
+//-----------------------------------------------------------------------------
+
 } // Namespace tobiss

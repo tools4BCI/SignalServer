@@ -17,6 +17,7 @@ namespace tobiss
 // forward declarations;
 class SSConfig;
 class DataPacket;
+class XMLParser;
 
 //-----------------------------------------------------------------------------
 /**
@@ -84,6 +85,11 @@ public:
    * @brief Sets the client's data input buffer size to the given value
    */
   virtual void setBufferSize(size_t size) = 0;
+  /**
+   * @brief Sends the meta data information to the server
+   * sa config(), requestConfig()
+   */
+  virtual void sendConfig(std::string& config) = 0;
 };
 
 } // Namespace tobiss

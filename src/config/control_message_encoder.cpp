@@ -301,6 +301,26 @@ void ControlMsgEncoderXML::encodeMsg(const ReplyMsg& msg, std::ostream& stream)
 
 //-----------------------------------------------------------------------------
 
+void ControlMsgEncoderXML::encodeMsg(const SendConfigMsg& msg, std::ostream& stream)
+{
+  TiXmlDocument doc;
+  TiXmlDocument doc2(msg.configString());
+  doc2.LoadFile();
+  TiXmlElement* xml_msg = 0;
+  encodeBaseMsg(msg, "sendConfig", doc, xml_msg);
+  assert(xml_msg != 0);
+
+
+
+  TiXmlElement* config = new TiXmlElement("sendConfig");
+  config->LinkEndChild(new TiXmlText(lexical_cast<string>(doc2)));
+  xml_msg->LinkEndChild(config);
+
+  writeXMLMsg(doc, stream);
+}
+
+//-----------------------------------------------------------------------------
+
 void ControlMsgEncoderXML::encodeBaseMsg(const ControlMsg& msg, const std::string& xml_msg_type,
     TiXmlDocument& doc, TiXmlElement*& xml_msg)
 {

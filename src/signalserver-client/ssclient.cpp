@@ -96,4 +96,11 @@ void SSClient::setBufferSize(size_t size)
 
 //-----------------------------------------------------------------------------
 
+void SSClient::sendConfig(std::string& config)
+{
+  impl_->sendConfig(config);
+}
+
+//-----------------------------------------------------------------------------
+
 } // Namespace tobiss

@@ -115,6 +115,18 @@ void ControlConnection::handle_read(const boost::system::error_code& error,
         break;
       }
 
+      case ControlMsg::SendConfig:
+      {
+        cout << "Got Client SendConfig Request" << endl;
+
+        boost::shared_ptr<SendConfigMsg> send_config_msg =
+            boost::static_pointer_cast<SendConfigMsg>(msg);
+
+        ctl_conn_server_.setConfig(send_config_msg->configString());
+        sendMsg(ReplyMsg::ok());
+        break;
+      }
+
       case ControlMsg::GetDataConnection:
       {
         cout << "Got GetDataConnection Request" << endl;

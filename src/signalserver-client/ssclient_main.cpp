@@ -145,7 +145,8 @@ int main(int argc, const char* argv[])
 {
   string   srv_addr = "127.0.0.1";
   boost::uint16_t srv_port = 9000;
-  string config_file;
+  std::string config_file;
+  bool client_sends_config = false; //0 if server should make config, 1 if client should send config
 
   if(argc == 1)
   {
@@ -156,6 +157,7 @@ int main(int argc, const char* argv[])
     cout << "Using default server " << srv_addr << ":" << srv_port << endl;
     cout << endl << "  ***  Loading own client-based XML configuration file: " << argv[2] << endl << endl;
     config_file = argv[2];
+    client_sends_config = true;
   }
   else if(argc == 3 && argv[1] != CONFIG_FILE_ARGUMENT)
   {
@@ -172,6 +174,7 @@ int main(int argc, const char* argv[])
     cout << "Using server " << srv_addr << ":" << srv_port << endl;
     cout << endl << "  ***  Loading own client-based XML configuration file: " << argv[4] << endl << endl;
     config_file = argv[4];
+    client_sends_config = true;
   }
   else
   {
@@ -185,7 +188,17 @@ int main(int argc, const char* argv[])
   try
   {
     client.connect(srv_addr, srv_port);
-    client.requestConfig();
+    if(!client_sends_config)
+    {
+      client.requestConfig();
+    }
+    else
+    {
+//      XMLParser config_to_send(config_file);
+      client.sendConfig(config_file);
+//      boost::this_thread::sleep(boost::posix_time::seconds(5));
+//      client.requestConfig();
+    }
   }
   catch(std::exception& e)
   {
@@ -206,12 +219,13 @@ int main(int argc, const char* argv[])
     #endif
 
   map<string, string> known_commands;
-  known_commands.insert(make_pair("config",   "Requests the config from server."));
-  known_commands.insert(make_pair("starttcp", "Starts the data transmission using tcp"));
-  known_commands.insert(make_pair("startudp", "Starts the data transmission using udp broadcast"));
-  known_commands.insert(make_pair("stop",     "Stops the data transmission"));
-  known_commands.insert(make_pair("q",        "Quits the client."));
-  known_commands.insert(make_pair("help",     "Prints this help text."));
+  known_commands.insert(make_pair("config",       "Requests the config from server."));
+  known_commands.insert(make_pair("sendconfig",   "Sends the config to server."));
+  known_commands.insert(make_pair("starttcp",     "Starts the data transmission using tcp"));
+  known_commands.insert(make_pair("startudp",     "Starts the data transmission using udp broadcast"));
+  known_commands.insert(make_pair("stop",         "Stops the data transmission"));
+  known_commands.insert(make_pair("q",            "Quits the client."));
+  known_commands.insert(make_pair("help",         "Prints this help text."));
 
   string command;
   cout << endl << ">>";
@@ -245,6 +259,11 @@ int main(int argc, const char* argv[])
     }
     if (command == "config")
     {
+      client.requestConfig();
+    }
+    else if (command == "sendconfig" && (argv[1] == CONFIG_FILE_ARGUMENT || argv[3] == CONFIG_FILE_ARGUMENT))
+    {
+      client.sendConfig(config_file);
       client.requestConfig();
     }
     else if (command == "starttcp" || command == "startudp")

@@ -271,6 +271,75 @@ void SignalServer::initGdf()
 
 //-----------------------------------------------------------------------------
 
+void SignalServer::startServerSettings(XMLParser& config)
+{
+  config_ = &config;
+  hw_access_ = new HWAccess(io_service_, config);
+
+  if((*config_).usesDataFile())
+  {
+    // get DataPackets from FileReader and give it to the networking part
+  }
+  else
+  {
+    // TODO: find a better way to pass this information to the server
+    setMasterBlocksize((*hw_access_).getMastersBlocksize());
+    setMasterSamplingRate((*hw_access_).getMastersSamplingRate());
+    setAcquiredSignalTypes((*hw_access_).getAcquiredSignalTypes());
+    setBlockSizesPerSignalType((*hw_access_).getBlockSizesPerSignalType());
+    setSamplingRatePerSignalType((*hw_access_).getSamplingRatePerSignalType());
+    setChannelNames((*hw_access_).getChannelNames());
+
+    initialize(config_);
+    (*hw_access_).startDataAcquisition();
+  }
+
+}
+
+//-----------------------------------------------------------------------------
+
+void SignalServer::stopAndRestartServerSettings()
+{
+  (*hw_access_).stopDataAcquisition();
+}
+
+//-----------------------------------------------------------------------------
+
+void SignalServer::setClientConfig(const std::string& config)
+{
+  ticpp::Document doc_;
+  doc_.Parse(config);
+  doc_.SaveFile("client_conf.xml");
+  XMLParser* new_config = new XMLParser("client_conf.xml");
+  (*hw_access_).stopDataAcquisition();
+  config_ = new_config;
+  hw_access_ = new HWAccess(io_service_, *config_);
+
+  if((*config_).usesDataFile())
+  {
+    // get DataPackets from FileReader and give it to the networking part
+  }
+  else
+  {
+    // TODO: find a better way to pass this information to the server
+    setMasterBlocksize((*hw_access_).getMastersBlocksize());
+    setMasterSamplingRate((*hw_access_).getMastersSamplingRate());
+    setAcquiredSignalTypes((*hw_access_).getAcquiredSignalTypes());
+    setBlockSizesPerSignalType((*hw_access_).getBlockSizesPerSignalType());
+    setSamplingRatePerSignalType((*hw_access_).getSamplingRatePerSignalType());
+    setChannelNames((*hw_access_).getChannelNames());
+    (*hw_access_).startDataAcquisition();
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+void SignalServer::getConfig(XMLParser& config)
+{
+  config = *config_;
+}
+
+//-----------------------------------------------------------------------------
 
 } // Namespace tobiss
 

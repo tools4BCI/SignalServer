@@ -44,6 +44,7 @@ ControlMsgDecoderXML::ControlMsgDecoderXML() :
   prototypes_["dataConnection"]           = ControlMsgHandle(new DataConnectionMsg());
   prototypes_["stopTransmission"]         = ControlMsgHandle(new StopTransmissionMsg());
   prototypes_["config"]                   = ControlMsgHandle(new ConfigMsg());
+  prototypes_["sendConfig"]               = ControlMsgHandle(new SendConfigMsg());
   prototypes_["okReply"]                  = ControlMsgHandle(ReplyMsg::ok().clone());
   prototypes_["errorReply"]               = ControlMsgHandle(ReplyMsg::error().clone());
 }
@@ -614,6 +615,32 @@ void ControlMsgDecoderXML::decodeMsg(ReplyMsg& msg)
       assert(false);
     }
   }
+}
+
+//-----------------------------------------------------------------------------
+void ControlMsgDecoderXML::decodeMsg(SendConfigMsg& msg)
+{
+  cout << "Calling ControlMsgDecoderXML::decodeMsg SendConfigMsg" << endl;
+  if (!decodeHeader(msg))
+  {
+    // TODO: do a proper error handling
+    cerr << "Error decoding SendConfigMsg" << endl;
+    return;
+  }
+
+  ticpp::Element* config_element = xml_msg_header_->NextSiblingElement();
+  if (config_element == 0 || config_element->Value() != "sendConfig")
+  {
+    // TODO: do a proper error handling
+    cerr << "Missing element 'sendConfig' in SendConfigMsg" << endl;
+    return;
+  }
+  else
+  {
+    std::string text = config_element->GetText();
+    msg.setConfigString(text);
+  }
+
 }
 
 //-----------------------------------------------------------------------------

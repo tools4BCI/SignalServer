@@ -35,6 +35,9 @@ class TCPDataServer;
 class UDPDataServer;
 class XMLParser;
 class DataPacket;
+class HWAccess;
+class ControlMsgEncoder;
+class ControlMsgDecoder;
 
 //-----------------------------------------------------------------------------
 
@@ -125,6 +128,16 @@ class SignalServer : boost::noncopyable
     void setChannelNames(const std::map<boost::uint32_t, std::vector<std::string> >& channels_per_sig_type)
       { channels_per_sig_type_ = channels_per_sig_type; }
 
+    /**
+    * @brief Starts HWAccess and passes config-information to server
+    */
+    void startServerSettings(XMLParser& config);
+    void stopAndRestartServerSettings();
+    void setClientConfig(const std::string& config);
+
+    HWAccess* getHWAccess() {return hw_access_;}
+    void getConfig(XMLParser& config);
+
   private:
     /**
      * @brief Sends a DataPacket to the clients
@@ -140,6 +153,8 @@ class SignalServer : boost::noncopyable
     TCPDataServer*                      tcp_data_server_; ///<
     UDPDataServer*                      udp_data_server_; ///<
     ControlConnectionServer*            control_connection_server_; ///<
+    ControlMsgEncoder*                  msg_encoder_; ///<
+    ControlMsgDecoder*                  msg_decoder_; ///<
 
     boost::uint32_t                                       master_blocksize_; ///<
     boost::uint32_t                                       master_samplingrate_; ///<
@@ -152,6 +167,7 @@ class SignalServer : boost::noncopyable
 
     bool                                write_file; ///<
     GDFWriter*                          gdf_writer_; ///<
+    HWAccess*                           hw_access_;
 
 #ifdef TIMING_TEST
     boost::posix_time::ptime timestamp_;
