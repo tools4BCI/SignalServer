@@ -33,6 +33,7 @@ HEADERS +=  include/signalserver/signal_server.h \
             include/hardware/sine_generator.h \
             include/hardware/event_listener.h\
             include/hardware/jstick.h\
+            include/hardware/mouse.h\
             include/hardware/usbamp.h\
             include/filereading/data_file_handler.h\
             include/filereading/file_reader_factory.h\
@@ -61,6 +62,7 @@ SOURCES +=  src/signalserver/main.cpp \
             src/hardware/sine_generator.cpp \
             src/hardware/event_listener.cpp\
             src/hardware/jstick.cpp\
+            src/hardware/mouse.cpp\
             src/hardware/usbamp.cpp\
             src/filereading/data_file_handler.cpp\
             src/filereading/file_reader_factory.cpp\

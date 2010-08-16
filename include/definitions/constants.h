@@ -102,6 +102,14 @@ namespace tobiss
       bool isJoystick(const string& s);
 
       /**
+      * @brief Checks, if the given string represents a Mouse device.
+      * @param[in] s String to be checked.
+      * @return Bool
+      *
+      */
+      bool isMouse(const string& s);
+
+      /**
       * @brief Maps given strings "on" or "off" to boolean values 0 or 1.
       * @param[in] s String to be checked.
       * @return Bool
