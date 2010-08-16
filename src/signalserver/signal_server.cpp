@@ -88,10 +88,10 @@ SignalServer::~SignalServer()
   delete tcp_data_server_;
   delete udp_data_server_;
   delete control_connection_server_;
-  if(hw_access_)
-  {
+//  if(hw_access_)
+//  {
     delete hw_access_;
-  }
+//  }
   if(gdf_writer_)
   {
     gdf_writer_->close();

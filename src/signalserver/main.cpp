@@ -129,6 +129,8 @@ int main(int argc, const char* argv[])
       boost::thread* io_thread_ptr = 0;
       boost::thread* data_reader_thread_ptr = 0;
 
+      server.getConfig(temp_config);
+
       if(config.usesDataFile())
       {
         // get DataPackets from FileReader and give it to the networking part
