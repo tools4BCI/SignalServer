@@ -123,6 +123,7 @@ void ControlConnection::handle_read(const boost::system::error_code& error,
             boost::static_pointer_cast<SendConfigMsg>(msg);
 
         ctl_conn_server_.setConfig(send_config_msg->configString());
+        ctl_conn_server_.getConfig(*config_msg_);
         sendMsg(ReplyMsg::ok());
         break;
       }

@@ -38,6 +38,7 @@ class DataPacket;
 class HWAccess;
 class ControlMsgEncoder;
 class ControlMsgDecoder;
+class SSMethods;
 
 //-----------------------------------------------------------------------------
 
@@ -140,14 +141,17 @@ class SignalServer : boost::noncopyable
     void setClientConfig(const std::string& config);
 
     /**
-    * @brief Returns reference to HWAccess
+    * @brief Returns reference to the used config
     */
-    HWAccess* getHWAccess() {return hw_access_;}
+    void setConfig(XMLParser* config);
 
     /**
     * @brief Returns reference to the used config
     */
     void getConfig(XMLParser& config);
+    boost::asio::io_service& getIOService() {return io_service_;}
+    void setSSMethods(SSMethods* ssm) {ss_methods_ = ssm;}
+    void setServerSettings();
 
   private:
     /**
@@ -160,7 +164,6 @@ class SignalServer : boost::noncopyable
   private:
     boost::asio::io_service&            io_service_; ///<
     XMLParser*                          config_; ///<
-//    XMLParser*                          client_config_;
     std::map<std::string, std::string>  server_settings_; ///<
     TCPDataServer*                      tcp_data_server_; ///<
     UDPDataServer*                      udp_data_server_; ///<
@@ -179,7 +182,7 @@ class SignalServer : boost::noncopyable
 
     bool                                write_file; ///<
     GDFWriter*                          gdf_writer_; ///<
-    HWAccess*                           hw_access_;
+    SSMethods*                          ss_methods_;
 
 #ifdef TIMING_TEST
     boost::posix_time::ptime timestamp_;

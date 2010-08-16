@@ -81,6 +81,12 @@ void ControlConnectionServer::getConfig(ConfigMsg& config)
 void ControlConnectionServer::setConfig(std::string config)
 {
   server_.setClientConfig(config);
+  delete signal_info_;
+  delete subject_info_;
+  signal_info_ = new SignalInfo;
+  subject_info_ = new SubjectInfo;
+  createSubjectInfo();
+  createSignalInfo();
 }
 
 //-----------------------------------------------------------------------------

@@ -29,6 +29,7 @@
 #include "hardware/hw_access.h"
 #include "network/control_connection_server.h"
 #include "signalserver/signal_server.h"
+#include "signalserver/ssmethods.h"
 #include "network/tcp_data_server.h"
 #include "network/udp_data_server.h"
 
@@ -58,7 +59,8 @@ SignalServer::SignalServer(boost::asio::io_service& io_service)
   udp_data_server_(0),
   control_connection_server_(0),
   write_file(0),
-  gdf_writer_(0)
+  gdf_writer_(0),
+  hw_access_(0)
 {
   #ifdef TIMING_TEST
     timestamp_ = boost::posix_time::microsec_clock::local_time();
@@ -88,10 +90,7 @@ SignalServer::~SignalServer()
   delete tcp_data_server_;
   delete udp_data_server_;
   delete control_connection_server_;
-//  if(hw_access_)
-//  {
-    delete hw_access_;
-//  }
+
   if(gdf_writer_)
   {
     gdf_writer_->close();
@@ -116,7 +115,6 @@ void SignalServer::initialize(XMLParser* config)
 
 //   for( ; it != server_settings_.end(); it++)
 //     cout << "First: " << it->first << ";  Second: " << it->second << endl;
-
 
   port = lexical_cast<uint16_t>(server_settings_[Constants::ss_ctl_port]);
   control_connection_server_ = new ControlConnectionServer(io_service_, *this);
@@ -277,58 +275,13 @@ void SignalServer::initGdf()
 
 //-----------------------------------------------------------------------------
 
-void SignalServer::startServerSettings(XMLParser& config)
-{
-  config_ = &config;
-//  if(!hw_access_) HWAccess* hw_access_;
-  hw_access_ = new HWAccess(io_service_, config);
-
-  if((*config_).usesDataFile())
-  {
-    // get DataPackets from FileReader and give it to the networking part
-  }
-  else
-  {
-    // TODO: find a better way to pass this information to the server
-    setMasterBlocksize((*hw_access_).getMastersBlocksize());
-    setMasterSamplingRate((*hw_access_).getMastersSamplingRate());
-    setAcquiredSignalTypes((*hw_access_).getAcquiredSignalTypes());
-    setBlockSizesPerSignalType((*hw_access_).getBlockSizesPerSignalType());
-    setSamplingRatePerSignalType((*hw_access_).getSamplingRatePerSignalType());
-    setChannelNames((*hw_access_).getChannelNames());
-
-    initialize(config_);
-    (*hw_access_).startDataAcquisition();
-  }
-
-}
-
-//-----------------------------------------------------------------------------
-
 void SignalServer::setClientConfig(const std::string& config)
 {
   ticpp::Document doc_;
   doc_.Parse(config);
   doc_.SaveFile(CLIENT_XML_CONFIG);
-  (*hw_access_).stopDataAcquisition();
   *config_ = XMLParser(CLIENT_XML_CONFIG);
-  hw_access_ = new HWAccess(io_service_, *config_);
-
-  if((*config_).usesDataFile())
-  {
-    // get DataPackets from FileReader and give it to the networking part
-  }
-  else
-  {
-    // TODO: find a better way to pass this information to the server
-    setMasterBlocksize((*hw_access_).getMastersBlocksize());
-    setMasterSamplingRate((*hw_access_).getMastersSamplingRate());
-    setAcquiredSignalTypes((*hw_access_).getAcquiredSignalTypes());
-    setBlockSizesPerSignalType((*hw_access_).getBlockSizesPerSignalType());
-    setSamplingRatePerSignalType((*hw_access_).getSamplingRatePerSignalType());
-    setChannelNames((*hw_access_).getChannelNames());
-    (*hw_access_).startDataAcquisition();
-  }
+  ss_methods_->setClientConfig(config_);
 }
 
 //-----------------------------------------------------------------------------
@@ -336,6 +289,21 @@ void SignalServer::setClientConfig(const std::string& config)
 void SignalServer::getConfig(XMLParser& config)
 {
   config = *config_;
+}
+
+//-----------------------------------------------------------------------------
+
+void SignalServer::setConfig(XMLParser* config)
+{
+  config_ = config;
+  server_settings_ = config_->parseServerSettings();
+}
+
+//-----------------------------------------------------------------------------
+
+void SignalServer::setServerSettings()
+{
+  server_settings_ = config_->parseServerSettings();
 }
 
 //-----------------------------------------------------------------------------

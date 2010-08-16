@@ -27,6 +27,7 @@ win32:INCLUDEPATH += extern/include/SDL-1.2.14-VC8
 #-----------------------------------------------------------------------
 
 HEADERS +=  include/signalserver/signal_server.h \
+            include/signalserver/ssmethods.h \
             include/definitions/constants.h \
             include/hardware/hw_access.h \
             include/hardware/hw_thread.h \
@@ -55,6 +56,7 @@ HEADERS +=  include/signalserver/signal_server.h \
 
 SOURCES +=  src/signalserver/main.cpp \
             src/signalserver/signal_server.cpp \
+            src/signalserver/ssmethods.cpp \
             src/definitions/constants.cpp \
             src/hardware/hw_access.cpp \
             src/hardware/hw_thread.cpp \

@@ -36,6 +36,7 @@
 
 // local
 #include "signalserver/signal_server.h"
+#include "signalserver/ssmethods.h"
 #include "config/xml_parser.h"
 #include "hardware/hw_access.h"
 #include "filereading/data_file_handler.h"
@@ -104,6 +105,8 @@ int main(int argc, const char* argv[])
 
     XMLParser config(config_file);
     XMLParser temp_config;
+//    HWAccess* hw_access = 0;
+    SSMethods* ss_methods = 0;
 
     while(running)
     {
@@ -120,16 +123,17 @@ int main(int argc, const char* argv[])
         first_run = false;
       }
 
+//      hw_access = new HWAccess(io_service, config);
+
       DataFileHandler data_file_handler(io_service, config.getFileReaderMap());
 
-      server.startServerSettings(config);
+      HWAccess hw_access(io_service, config);
 
-      HWAccess* hw_access = server.getHWAccess();
-      DataPacketReader reader((*hw_access), server);
+//      HWAccess* hw_access = ss_helper.getHWAccess();
+      DataPacketReader reader(hw_access, server);
+
       boost::thread* io_thread_ptr = 0;
       boost::thread* data_reader_thread_ptr = 0;
-
-      server.getConfig(temp_config);
 
       if(config.usesDataFile())
       {
@@ -137,7 +141,9 @@ int main(int argc, const char* argv[])
       }
       else
       {
-//        (*hw_access).startDataAcquisition();
+        ss_methods = new SSMethods(&server, &config, &hw_access);
+        ss_methods->startServerSettings();
+        server.getConfig(temp_config);
 
         io_thread_ptr  = new boost::thread(boost::bind(&boost::asio::io_service::run, &io_service));
         data_reader_thread_ptr = new boost::thread(boost::bind(&DataPacketReader::readPacket, &reader));
@@ -163,17 +169,17 @@ int main(int argc, const char* argv[])
           running = false;
           break;
         }
-        else if(str == "r" || !hw_access)
+        else if(str == "r")
         {
           break;
         }
         else
           cout << endl << ">>";
 
-      server.getConfig(temp_config);
       reader.stop();
       io_service.stop();
-      (*hw_access).stopDataAcquisition();
+      hw_access.stopDataAcquisition();
+
       if(io_thread_ptr)
       {
         io_thread_ptr->join();
@@ -184,12 +190,17 @@ int main(int argc, const char* argv[])
         data_reader_thread_ptr->join();
         delete data_reader_thread_ptr;
       }
+      if(ss_methods)
+      {
+        delete ss_methods;
+      }
 
       if(running)
       {
         cout << endl;
         cout << "   ...  Restarting and reloading SignalServer!" << endl;
         cout << endl;
+        server.getConfig(temp_config);
         boost::this_thread::sleep(boost::posix_time::seconds(1));
       }
     }
