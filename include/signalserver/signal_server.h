@@ -132,10 +132,21 @@ class SignalServer : boost::noncopyable
     * @brief Starts HWAccess and passes config-information to server
     */
     void startServerSettings(XMLParser& config);
-    void stopAndRestartServerSettings();
+
+    /**
+    * @brief Starts HWAccess and passes config-information to server
+    * but with the new config sent by the client
+    */
     void setClientConfig(const std::string& config);
 
+    /**
+    * @brief Returns reference to HWAccess
+    */
     HWAccess* getHWAccess() {return hw_access_;}
+
+    /**
+    * @brief Returns reference to the used config
+    */
     void getConfig(XMLParser& config);
 
   private:
@@ -149,6 +160,7 @@ class SignalServer : boost::noncopyable
   private:
     boost::asio::io_service&            io_service_; ///<
     XMLParser*                          config_; ///<
+//    XMLParser*                          client_config_;
     std::map<std::string, std::string>  server_settings_; ///<
     TCPDataServer*                      tcp_data_server_; ///<
     UDPDataServer*                      udp_data_server_; ///<

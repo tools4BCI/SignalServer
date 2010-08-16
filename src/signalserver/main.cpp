@@ -102,15 +102,8 @@ int main(int argc, const char* argv[])
     else
       cout << " ERROR -- Wrong Number of input arguments!" << endl;
 
-// Testing if it functions outside the while()
-//    XMLParser config(config_file);
-//    boost::asio::io_service io_service;
-//    SignalServer server(io_service);
-//    DataFileHandler data_file_handler(io_service, config.getFileReaderMap());
-//    server.initialize(&config); //von Zeile 143
     XMLParser config(config_file);
     XMLParser temp_config;
-// Testing - End
 
     while(running)
     {
@@ -120,14 +113,10 @@ int main(int argc, const char* argv[])
 
       if(!first_run)
       {
-//        XMLParser &config;
-        cout << "Ich starte neu" <<endl;
         config = temp_config;
-        cout << "Ich starte neu" <<endl;
       }
       else
       {
-//        config = XMLParser(config_file);
         first_run = false;
       }
 

@@ -47,6 +47,8 @@ using boost::int16_t;
 using boost::int64_t;
 using boost::lexical_cast;
 
+const string CLIENT_XML_CONFIG = "new_client_config.xml";
+
 //-----------------------------------------------------------------------------
 
 SignalServer::SignalServer(boost::asio::io_service& io_service)
@@ -86,6 +88,10 @@ SignalServer::~SignalServer()
   delete tcp_data_server_;
   delete udp_data_server_;
   delete control_connection_server_;
+  if(hw_access_)
+  {
+    delete hw_access_;
+  }
   if(gdf_writer_)
   {
     gdf_writer_->close();
@@ -274,6 +280,7 @@ void SignalServer::initGdf()
 void SignalServer::startServerSettings(XMLParser& config)
 {
   config_ = &config;
+//  if(!hw_access_) HWAccess* hw_access_;
   hw_access_ = new HWAccess(io_service_, config);
 
   if((*config_).usesDataFile())
@@ -298,21 +305,13 @@ void SignalServer::startServerSettings(XMLParser& config)
 
 //-----------------------------------------------------------------------------
 
-void SignalServer::stopAndRestartServerSettings()
-{
-  (*hw_access_).stopDataAcquisition();
-}
-
-//-----------------------------------------------------------------------------
-
 void SignalServer::setClientConfig(const std::string& config)
 {
   ticpp::Document doc_;
   doc_.Parse(config);
-  doc_.SaveFile("client_conf.xml");
-  XMLParser* new_config = new XMLParser("client_conf.xml");
+  doc_.SaveFile(CLIENT_XML_CONFIG);
   (*hw_access_).stopDataAcquisition();
-  config_ = new_config;
+  *config_ = XMLParser(CLIENT_XML_CONFIG);
   hw_access_ = new HWAccess(io_service_, *config_);
 
   if((*config_).usesDataFile())
