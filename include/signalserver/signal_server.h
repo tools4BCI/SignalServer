@@ -135,13 +135,13 @@ class SignalServer : boost::noncopyable
     void startServerSettings(XMLParser& config);
 
     /**
-    * @brief Starts HWAccess and passes config-information to server
-    * but with the new config sent by the client
+    * @brief Writes a new XML-document and sends it to a Method in SSMethods
+    * which sets then the new config sent by the Client
     */
     void setClientConfig(const std::string& config);
 
     /**
-    * @brief Returns reference to the used config
+    * @brief Sets a pointer to the config
     */
     void setConfig(XMLParser* config);
 
@@ -149,8 +149,21 @@ class SignalServer : boost::noncopyable
     * @brief Returns reference to the used config
     */
     void getConfig(XMLParser& config);
+
+    /**
+    * @brief Returns reference to the used IOService
+    */
     boost::asio::io_service& getIOService() {return io_service_;}
+
+    /**
+    * @brief Sets a pointer to SSMethods
+    */
     void setSSMethods(SSMethods* ssm) {ss_methods_ = ssm;}
+
+    /**
+    * @brief Sets server_settings_
+    * used by SSMethods to tell the Server the new settings sent by the Client
+    */
     void setServerSettings();
 
   private:

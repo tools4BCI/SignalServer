@@ -59,8 +59,7 @@ SignalServer::SignalServer(boost::asio::io_service& io_service)
   udp_data_server_(0),
   control_connection_server_(0),
   write_file(0),
-  gdf_writer_(0),
-  hw_access_(0)
+  gdf_writer_(0)
 {
   #ifdef TIMING_TEST
     timestamp_ = boost::posix_time::microsec_clock::local_time();
