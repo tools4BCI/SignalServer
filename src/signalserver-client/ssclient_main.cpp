@@ -54,24 +54,36 @@ class SSClientDataReader
       while(running_)
       {
         {
+
           boost::unique_lock<boost::mutex> lock(mutex_);
 
           DataPacket packet;
           vector<double> v;
-
+          
           if (!client_.receiving())
           {
             cond_.wait(lock);
           }
-
+           
           if(running_ && client_.receiving())
           {
             try {
               client_.getDataPacket(packet);
 
+              if(packet.hasFlag(SIG_MOUSE))
+              {
+                v = packet.getSingleDataBlock(SIG_MOUSE);
+                nr_values = packet.getNrOfValues(SIG_MOUSE);
 
-              v = packet.getSingleDataBlock(1);
-              nr_values = packet.getNrOfValues(1);
+                cout << "mousepos: "<< packet.getSingleDataBlock(SIG_MOUSE)[1]<<","<<packet.getSingleDataBlock(SIG_MOUSE)[2];
+              }
+
+              if(packet.hasFlag(SIG_MBUTTON))
+              {
+                v = packet.getSingleDataBlock(SIG_MBUTTON);
+                nr_values = packet.getNrOfValues(SIG_MBUTTON);
+                cout<<" ... buttons: "<<packet.getSingleDataBlock(SIG_MBUTTON)[1]<<packet.getSingleDataBlock(SIG_MBUTTON)[2]<<packet.getSingleDataBlock(SIG_MBUTTON)[3]<<endl;
+              }
 
               sample_nr_old = sample_nr;
               packet_nr_old = packet_nr;
