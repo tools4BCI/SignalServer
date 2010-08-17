@@ -22,7 +22,10 @@ SSClient::SSClient() :
 //-----------------------------------------------------------------------------
 
 SSClient::~SSClient()
-{}
+{
+  if(impl_)
+    delete impl_;
+}
 
 //-----------------------------------------------------------------------------
 
@@ -88,7 +91,7 @@ void SSClient::getDataPacket(DataPacket& packet)
 }
 
 //-----------------------------------------------------------------------------
-	
+
 void SSClient::setBufferSize(size_t size)
 {
   impl_->setBufferSize(size);
