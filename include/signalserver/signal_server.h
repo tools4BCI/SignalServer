@@ -35,7 +35,6 @@ class TCPDataServer;
 class UDPDataServer;
 class XMLParser;
 class DataPacket;
-class HWAccess;
 class ControlMsgEncoder;
 class ControlMsgDecoder;
 class SSMethods;

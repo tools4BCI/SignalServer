@@ -194,10 +194,7 @@ int main(int argc, const char* argv[])
     }
     else
     {
-//      XMLParser config_to_send(config_file);
       client.sendConfig(config_file);
-//      boost::this_thread::sleep(boost::posix_time::seconds(5));
-//      client.requestConfig();
     }
   }
   catch(std::exception& e)
