@@ -131,7 +131,7 @@ void DataPacket::insertDataBlock(vector<double> v, uint32_t signal_flag, uint16_
 
   setFlag(signal_flag);
 
-  vector<double>::iterator it_data(data_.begin() + getOffset(pos) );
+  vector<double>::iterator it_data(data_.begin() + getOffset(pos));
   data_.insert(it_data,v.begin(),v.end());
 
   vector<uint16_t>::iterator it_nr(nr_blocks_.begin() + pos );
@@ -346,11 +346,11 @@ uint32_t DataPacket::getDataPos(uint32_t flag)
 
 //-----------------------------------------------------------------------------
 
-uint32_t DataPacket::getOffset(uint16_t pos)
+uint32_t DataPacket::getOffset(uint32_t pos)
 {
   uint32_t offset = 0;
 
-  for(int n = 0; n<pos; n++)
+  for(uint32_t n = 0; n<pos; n++)
     offset += nr_values_[n];
   return(offset);
 }

@@ -4,7 +4,7 @@
 #include "hardware/usbamp.h"
 
 #include <boost/bind.hpp>
-
+#include <boost/numeric/conversion/cast.hpp>
 
 namespace tobiss
 {
@@ -74,6 +74,7 @@ USBamp::USBamp(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
   else
     master_device_ = this;
   
+  cout << endl;
   cout << " * g.USBamp sucessfully initialized" << endl;
   cout << "    fs: " << fs_ << "Hz, nr of channels: " << nr_ch_ << ", blocksize: " << blocks_ << endl;
   cout << endl;
@@ -383,7 +384,7 @@ void USBamp::getHandles()
       ov_[n].hEvent = data_Ev_[n];
       ov_[n].Offset = 0;
       ov_[n].OffsetHigh = 0;
-      // ResetEvent(data_Ev_[n]);
+      // ResetEvent(data_Ev_[n]);   ... done in callGT_RestetTransfer
     }
   }
   else
@@ -443,16 +444,13 @@ void USBamp::run()
     current_overlapped_ = 0;      
     first_run_ = true;
   
-
     for(uint32_t n = 0; n < slave_devices_.size(); n++)
     {
       slave_devices_[n]->running_ = 1;
       cout << " * g.USBamp " << slave_devices_[n]->serial << " sucessfully started by the master" << endl;
     }
-    
     running_ = 1;
     cout << " * g.USBamp " << serial << " sucessfully started" << endl;
-  
   }
   else
     cout << " * g.USBamp " << serial << " will be started by the master ..." << endl;
@@ -512,6 +510,7 @@ void USBamp::setDeviceSettings(ticpp::Iterator<ticpp::Element>const &father)
     setBlocks(elem);
 
   setDefaultSettings();
+
   //---- optional ---
 
   elem = father->FirstChildElement(cst_.hw_fil,false);
@@ -563,6 +562,8 @@ void USBamp::setChannelSettings(ticpp::Iterator<ticpp::Element>const &father)
   if (elem != elem.end())
     setChannelSelection(elem);
   checkNrOfChannels();
+
+  adjustSettingsToChannelSelection();
 
   elem = father->FirstChildElement(cst_.hw_fil,false);
   if(elem != elem.end())
@@ -658,8 +659,8 @@ void USBamp::setDeviceFilterSettings(ticpp::Iterator<ticpp::Element>const &elem)
 
   unsigned int type = 0;
   unsigned int order = 0;
-  float f_low = 0;
-  float f_high = 0;
+  double f_low = 0;
+  double f_high = 0;
 
   getFilterParams(elem, type, order, f_low, f_high);
 
@@ -670,7 +671,6 @@ void USBamp::setDeviceFilterSettings(ticpp::Iterator<ticpp::Element>const &elem)
   cout << " * g.USBamp -- filter set to:" << endl;
   cout << "    ...  order: " << order << ", f_low: " << f_low << ", f_high: " << f_high << endl;
   cout << endl;
-
 }
 
 //---------------------------------------------------------------------------------------
@@ -719,8 +719,8 @@ void USBamp::setChannelFilterSettings(ticpp::Iterator<ticpp::Element>const &fath
 
       unsigned int type = 0;
       unsigned int order = 0;
-      float f_low = 0;
-      float f_high = 0;
+      double f_low = 0;
+      double f_high = 0;
 
       getFilterParams(elem, type, order, f_low, f_high);
 
@@ -739,7 +739,7 @@ void USBamp::setChannelFilterSettings(ticpp::Iterator<ticpp::Element>const &fath
 //---------------------------------------------------------------------------------------
 
 void USBamp::getFilterParams(ticpp::Iterator<ticpp::Element>const &elem,\
-  unsigned int &type, unsigned int &order, float &f_low, float &f_high)
+  unsigned int &type, unsigned int &order, double &f_low, double &f_high)
 {
   #ifdef DEBUG
     cout << "USBamp: getFilterParams" << endl;
@@ -750,8 +750,8 @@ void USBamp::getFilterParams(ticpp::Iterator<ticpp::Element>const &elem,\
   {
     order = lexical_cast<unsigned int>( elem.Get()->GetAttribute(cst_.hw_fil_order) );
 
-    f_low  = lexical_cast<float>( elem.Get()->GetAttribute(cst_.hw_fil_low) );
-    f_high = lexical_cast<float>( elem.Get()->GetAttribute(cst_.hw_fil_high ));
+    f_low  = lexical_cast<double>( elem.Get()->GetAttribute(cst_.hw_fil_low) );
+    f_high = lexical_cast<double>( elem.Get()->GetAttribute(cst_.hw_fil_high ));
   }
   catch(bad_lexical_cast &)
   {
@@ -802,34 +802,29 @@ void USBamp::checkFilterAttributes(ticpp::Iterator<ticpp::Element>const &elem)
 
 //---------------------------------------------------------------------------------------
 
-int USBamp::search4FilterID(unsigned int type, unsigned int order, float f_low, float f_high)
+int USBamp::search4FilterID(unsigned int type, unsigned int order, double f_low, double f_high)
 {
   #ifdef DEBUG
     cout << "USBamp: search4FilterID" << endl;
   #endif
-
-  int id = -1;
 
   for(int n = 0; n < nr_of_bp_filters_; n++)
   {
     if(( roundD(bp_filters_[n].fs)  == fs_)      &&  ( roundD(bp_filters_[n].type) == type) && \
        ( roundD(bp_filters_[n].order) == order) &&  ( roundD(bp_filters_[n].fu)  == f_low) && \
        ( roundD(bp_filters_[n].fo)    == f_high) )
-      id = n;
+      return(n);
   }
 
-  if(id < 0)
-  {
-    string ex_str = "USBamp::search4FilterID -- Filter settings not possible -- ";
-    ex_str = ex_str + "Fs: "   + lexical_cast<string>(fs_)  +  ", ";
-    ex_str = ex_str + "Type: "   + lexical_cast<string>(type)  +  ", ";
-    ex_str = ex_str + "Order: "  + lexical_cast<string>(order) +  ", ";
-    ex_str = ex_str + "f_low: "  + lexical_cast<string>(f_low) +  ", ";
-    ex_str = ex_str + "f_high: " + lexical_cast<string>(f_high);
-    throw(std::invalid_argument(ex_str));
-  }
+  string ex_str = "USBamp::search4FilterID -- Filter settings not possible -- ";
+  ex_str = ex_str + "Fs: "   + lexical_cast<string>(fs_)  +  ", ";
+  ex_str = ex_str + "Type: "   + lexical_cast<string>(type)  +  ", ";
+  ex_str = ex_str + "Order: "  + lexical_cast<string>(order) +  ", ";
+  ex_str = ex_str + "f_low: "  + lexical_cast<string>(f_low) +  ", ";
+  ex_str = ex_str + "f_high: " + lexical_cast<string>(f_high);
+  throw(std::invalid_argument(ex_str));
 
-  return(id);
+  return(-1);
 }
 
 //---------------------------------------------------------------------------------------
@@ -951,24 +946,19 @@ int USBamp::search4NotchID(float f_center)
     cout << "USBamp: search4NotchID" << endl;
   #endif
 
-  int id = -1;
-
   for(int n = 0; n < nr_of_notch_filters_; n++)
   {
     if( ( roundD(notch_filters_[n].fs)  == fs_) && \
       ( roundD(notch_filters_[n].fu) == f_center - USBAMP_NOTCH_HALF_WIDTH ) && \
       ( roundD(notch_filters_[n].fo) == f_center + USBAMP_NOTCH_HALF_WIDTH ) )
-      id = n;
+      return(n);
   }
 
-  if(id < 0)
-  {
-    string ex_str = "USBamp::search4NotchID -- Notch settings not possible -- ";
-    ex_str = ex_str + "f_center: " + lexical_cast<string>(f_center);
-    throw(std::invalid_argument(ex_str));
-  }
+  string ex_str = "USBamp::search4NotchID -- Notch settings not possible -- ";
+  ex_str = ex_str + "f_center: " + lexical_cast<string>(f_center);
+  throw(std::invalid_argument(ex_str));
 
-  return(id);
+  return(-1);
 }
 
 //---------------------------------------------------------------------------------------
@@ -1170,7 +1160,7 @@ void USBamp::setBipolar(ticpp::Iterator<ticpp::Element>const &father)
 
       // FIXME  --  check channels, if in range ( USBAMP_MAX_NR... )
 
-      v.at(ch) = with;
+      v.at(ch) = boost::numeric_cast<uint8_t>(with);
     }
     else
       throw(std::invalid_argument("USBamp::setBipolar -- Tag not equal to \""+cst_.hw_cs_ch+"\"!"));
@@ -1326,6 +1316,24 @@ void USBamp::checkNrOfChannels()
 
 //---------------------------------------------------------------------------------------
 
+void USBamp::adjustSettingsToChannelSelection()
+{
+  unsigned int new_size = channel_info_.size();
+
+  boost::uint16_t notch  = notch_id_.at(0);
+  boost::uint16_t filter = filter_id_.at(0);
+  notch_id_.resize(new_size);
+  filter_id_.resize(new_size);
+
+  for(unsigned int n = 0; n < new_size; n++)
+  {
+    filter_id_[n] = filter;
+    notch_id_[n]  = notch;
+  }
+}
+
+//---------------------------------------------------------------------------------------
+
 void USBamp::setUSBampChannels()
 {
   #ifdef DEBUG
@@ -1344,7 +1352,7 @@ void USBamp::setUSBampChannels()
 
   UCHAR* uc_channels = new UCHAR[channels.size()];
   for(unsigned int n = 0; n < channels.size(); n++)
-    uc_channels[n] = channels[n];
+    uc_channels[n] = boost::numeric_cast<UCHAR>( channels[n] );
 
   if( !GT_SetChannels(h_, uc_channels, channels.size()))
     throw(std::runtime_error("USBamp::setUSBampChannels -- Error setting channels!"));
@@ -1373,7 +1381,7 @@ void USBamp::setUSBampFilter()
     if(check)
     {
       if(filter_id_[count] > 0)
-        check = GT_SetBandPass(h_, (*it).first, filter_id_[count]);
+        check = GT_SetBandPass(h_, boost::numeric_cast<UCHAR>((*it).first)   , filter_id_[count]);
       else
         cout << "Filter for channel " << (*it).first << " NOT set!" << endl;
 
@@ -1383,7 +1391,6 @@ void USBamp::setUSBampFilter()
 
   if(!check)
     throw(std::runtime_error("USBamp::setUSBampFilter -- Error setting filter!"));
-
 }
 
 //---------------------------------------------------------------------------------------
@@ -1407,7 +1414,7 @@ void USBamp::setUSBampNotch()
     if(check)
     {
       if(notch_id_[count] > 0)
-        check = GT_SetNotch(h_, (*it).first, notch_id_[count]);
+        check = GT_SetNotch(h_, boost::numeric_cast<UCHAR>((*it).first), notch_id_[count]);
       else
         cout << "Notch for channel " << (*it).first << " NOT set!" << endl;
       count++;
@@ -1416,7 +1423,6 @@ void USBamp::setUSBampNotch()
 
   if(!check)
     throw(std::runtime_error("USBamp::setUSBampNotch -- Error setting notch!"));
-
 }
 
 //---------------------------------------------------------------------------------------
@@ -1449,7 +1455,7 @@ void USBamp::initUSBamp()
   if( !GT_SetMode(h_, M_NORMAL) )
     throw(std::runtime_error("USBamp::initUSBamp -- Error setting mode!"));
 
-  if( !GT_SetSampleRate(h_, fs_))
+  if( !GT_SetSampleRate(h_, boost::numeric_cast<WORD>(fs_) ))
     throw(std::runtime_error("USBamp::initUSBamp -- Error setting sampling rate!"));
 
   if( !GT_SetBufferSize(h_, blocks_))
