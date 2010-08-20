@@ -96,12 +96,40 @@ class SubjectInfo
 class Channel
 {
   public:
+    void setId(const std::string& id) { id_ = id; }
     std::string id() const { return id_; }
 
-    void setId(const std::string& id) { id_ = id; }
+    void setDeviceId(const boost::uint32_t& id) { device_id_ = id; }
+    boost::uint32_t deviceId() const { return device_id_; }
+
+    void setDescription(const std::string& id) { description_ = id; }
+    std::string description() const { return description_; }
+
+    void setPhysicalRange(const int& range) { physical_range_ = range; }
+    int physicalRange() const { return physical_range_; }
+
+    void setDigitalRange(const int& range) { digital_range_ = range; }
+    int digitalRange() const { return digital_range_; }
+
+    void setDataType(int type) { data_type_ = type; }
+    int dataType() const { return data_type_; }
+
+    void setBpFilter(const std::pair<float, float> bp_filter) { bandpass_filter_ = bp_filter; }
+    std::pair<float, float> bpFilter() const { return bandpass_filter_; }
+
+    void setNFilter(const std::pair<float, float> n_filter) { notch_filter_ = n_filter; }
+    std::pair<float, float> nFilter() const { return notch_filter_; }
 
   private:
-    std::string id_;
+    std::string               id_;
+    boost::uint32_t           device_id_;
+    std::string               description_;
+    int                       physical_range_;
+    int                       digital_range_;
+    std::pair<float, float>   bandpass_filter_;
+    std::pair<float, float>   notch_filter_;
+    int                       data_type_;
+
 };
 
 //-----------------------------------------------------------------------------

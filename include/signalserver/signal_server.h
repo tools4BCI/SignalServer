@@ -54,6 +54,20 @@ class SignalServer : boost::noncopyable
 {
   friend class ControlConnectionServer;
 
+  private:
+//    enum DataType {
+//      uint8_,
+//      int8_,
+//      uint16_,
+//      int16_,
+//      uint32_,
+//      int32_,
+//      uint64_,
+//      int64_,
+//      float_,
+//      double_
+//    };
+
     // Methods
     //-----------------------------------
   public:
@@ -128,6 +142,20 @@ class SignalServer : boost::noncopyable
     void setChannelNames(const std::map<boost::uint32_t, std::vector<std::string> >& channels_per_sig_type)
       { channels_per_sig_type_ = channels_per_sig_type; }
 
+    void setPhysicalRange(const std::vector<int>& physical_range)
+      { physical_range_ = physical_range; }
+    void setDigitalRange(const std::vector<int>& digital_range)
+      { digital_range_ = digital_range; }
+    void setDataType(const std::vector<Constants::DataType>& data_type)
+      { data_type_ = data_type; }
+    void setBpFilterSettings(const std::vector<std::pair<float, float> >& bandpass_filter)
+      { bandpass_filter_ = bandpass_filter; }
+    void setNFilterSettings(const std::vector<std::pair<float, float> >& notch_filter)
+      { notch_filter_ = notch_filter; }
+    void setDescription(const std::vector<std::string>& description)
+      { description_ = description; }
+    void setDeviceId(const std::vector<boost::uint32_t>& device_id)
+      { device_id_ = device_id; }
     /**
     * @brief Starts HWAccess and passes config-information to server
     */
@@ -189,6 +217,14 @@ class SignalServer : boost::noncopyable
     std::vector<boost::uint16_t>                          blocksizes_; ///<
     std::vector<boost::uint32_t>                          fs_per_sig_type_; ///<
     std::map<boost::uint32_t, std::vector<std::string> >  channels_per_sig_type_; ///<
+
+    std::vector<boost::uint32_t>            device_id_;
+    std::vector<std::string>                description_;
+    std::vector<int>                        physical_range_;
+    std::vector<int>                        digital_range_;
+    std::vector<std::pair<float, float> >   bandpass_filter_;
+    std::vector<std::pair<float, float> >   notch_filter_;
+    std::vector<Constants::DataType>                   data_type_;
 
     Constants                           cst_; ///<
 

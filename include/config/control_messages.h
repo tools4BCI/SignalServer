@@ -41,7 +41,8 @@ class ControlMsg
       StopTransmission,
       OkReply,
       ErrorReply,
-      SendConfig
+      SendConfig,
+      HWConfig
     };
 
     ///
@@ -244,6 +245,25 @@ class SendConfigMsg : public ControlMsg
 
   public:
     std::string config_string_;
+};
+
+//-----------------------------------------------------------------------------
+
+class HWConfigMsg : public ControlMsg
+{
+  public:
+    HWConfigMsg() : ControlMsg(ControlMsg::HWConfig) {}
+    virtual ~HWConfigMsg(){}
+
+    virtual void writeMsg(ControlMsgEncoder& encoder, std::ostream& stream) const;
+
+    virtual void readMsg(ControlMsgDecoder& decoder);
+
+    virtual ControlMsg* clone() const { return new HWConfigMsg(); };
+
+  public:
+    SubjectInfo subject_info;
+    SignalInfo  signal_info;
 };
 
 //-----------------------------------------------------------------------------

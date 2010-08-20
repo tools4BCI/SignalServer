@@ -74,6 +74,9 @@ class SSMethods
     HWAccess* getHWAccess() {return hw_access_;}
 
   private:
+    void setServerSettings();
+
+  private:
     SignalServer*   server_;
     XMLParser*      config_;
     HWAccess*       hw_access_;

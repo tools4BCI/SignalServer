@@ -51,6 +51,8 @@ public:
   virtual void decodeMsg(ReplyMsg& msg) = 0;
   ///
   virtual void decodeMsg(SendConfigMsg& msg) = 0;
+  ///
+  virtual void decodeMsg(HWConfigMsg& msg) = 0;
 
 protected:
   std::istream* istream_;
@@ -85,6 +87,8 @@ public:
   virtual void decodeMsg(ReplyMsg& msg);
   ///
   virtual void decodeMsg(SendConfigMsg& msg);
+  ///
+  virtual void decodeMsg(HWConfigMsg& msg);
 
 private:
   ///

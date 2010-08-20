@@ -44,6 +44,20 @@ namespace tobiss
   {
 
     public:
+      enum DataType {
+        uint8_,
+        int8_,
+        uint16_,
+        int16_,
+        uint32_,
+        int32_,
+        uint64_,
+        int64_,
+        float_,
+        double_
+      };
+
+    public:
       /**
       * @brief Constructor
       *

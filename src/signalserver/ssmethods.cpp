@@ -42,12 +42,8 @@ SSMethods::~SSMethods()
 
 void SSMethods::startServerSettings()
 {
-  server_->setMasterBlocksize(hw_access_->getMastersBlocksize());
-  server_->setMasterSamplingRate(hw_access_->getMastersSamplingRate());
-  server_->setAcquiredSignalTypes(hw_access_->getAcquiredSignalTypes());
-  server_->setBlockSizesPerSignalType(hw_access_->getBlockSizesPerSignalType());
-  server_->setSamplingRatePerSignalType(hw_access_->getSamplingRatePerSignalType());
-  server_->setChannelNames(hw_access_->getChannelNames());
+  setServerSettings();
+
   server_->initialize(config_);
   hw_access_->startDataAcquisition();
 }
@@ -61,17 +57,35 @@ void SSMethods::setClientConfig(XMLParser* config)
   hw_access_->stopDataAcquisition();
   hw_access_ = new HWAccess(server_->getIOService(), *config_);
 
+  setServerSettings();
+
+  server_->setServerSettings();
+  hw_access_->startDataAcquisition();
+}
+
+//-----------------------------------------------------------------------------
+//void setDataType(const std::vector<DataType>& data_type)
+//  { data_type_ = data_type; }
+
+void SSMethods::setServerSettings()
+{
   server_->setMasterBlocksize(hw_access_->getMastersBlocksize());
   server_->setMasterSamplingRate(hw_access_->getMastersSamplingRate());
   server_->setAcquiredSignalTypes(hw_access_->getAcquiredSignalTypes());
   server_->setBlockSizesPerSignalType(hw_access_->getBlockSizesPerSignalType());
   server_->setSamplingRatePerSignalType(hw_access_->getSamplingRatePerSignalType());
   server_->setChannelNames(hw_access_->getChannelNames());
-  server_->setServerSettings();
-  hw_access_->startDataAcquisition();
+//  server_->setPhysicalRange(hw_access_->getPhysicalRange());
+//  server_->setDigitalRange(hw_access_->getDigitalRange());
+//  server_->setDataType(hw_access_->getDataType());
+//  server_->setBpFilterSettings(hw_access_->getBpFilterSettings());
+//  server_->setNFilterSettings(hw_access_->getNFilterSettings());
+//  server_->setDescription(hw_access_->getDescription());
+//  server_->setDeviceId(hw_access_->getDeviceId());
 }
 
 //-----------------------------------------------------------------------------
+
 
 } // Namespace tobiss
 

@@ -45,6 +45,7 @@ ControlMsgDecoderXML::ControlMsgDecoderXML() :
   prototypes_["stopTransmission"]         = ControlMsgHandle(new StopTransmissionMsg());
   prototypes_["config"]                   = ControlMsgHandle(new ConfigMsg());
   prototypes_["sendConfig"]               = ControlMsgHandle(new SendConfigMsg());
+  prototypes_["HWConfig"]                 = ControlMsgHandle(new HWConfigMsg());
   prototypes_["okReply"]                  = ControlMsgHandle(ReplyMsg::ok().clone());
   prototypes_["errorReply"]               = ControlMsgHandle(ReplyMsg::error().clone());
 }
@@ -556,7 +557,127 @@ void ControlMsgDecoderXML::decodeMsg(ConfigMsg& msg)
           }
 
           Channel ch;
-          ch.setId(ch_element->GetAttributeOrDefault("id", ""));
+          std::string attr_name;
+          std::string id;
+          uint32_t value = 0;
+          float filter_low = 0.0;
+          float filter_high = 0.0;
+
+          id = ch_element->GetAttribute("id");
+          ch.setId(id);
+
+          attr_name = "deviceId";
+          try {
+            value = lexical_cast<int>(ch_element->GetAttribute(attr_name));
+            ch.setDeviceId(value);
+          }
+          catch(...)
+          {
+            cerr << "Invalid value for '" << attr_name << "' in element 'sig'" << endl;
+          }
+
+          attr_name = "description";
+          try {
+            id = ch_element->GetAttribute(attr_name);
+            ch.setDescription(id);
+          }
+          catch(...)
+          {
+            cerr << "Invalid value for '" << attr_name << "' in element 'sig'" << endl;
+          }
+
+          attr_name = "physicalRange";
+          try {
+            value = lexical_cast<int>(ch_element->GetAttribute(attr_name));
+            ch.setPhysicalRange(value);
+          }
+          catch(...)
+          {
+            cerr << "Invalid value for '" << attr_name << "' in element 'sig'" << endl;
+          }
+
+          attr_name = "digitalRange";
+          try {
+            value = lexical_cast<int>(ch_element->GetAttribute(attr_name));
+            ch.setPhysicalRange(value);
+          }
+          catch(...)
+          {
+            cerr << "Invalid value for '" << attr_name << "' in element 'sig'" << endl;
+          }
+
+          attr_name = "datatype";
+          try {
+            id = ch_element->GetAttribute(attr_name);
+            if (id != "")
+            {
+              if (id == "uint8")
+                ch.setDataType(Constants::uint8_);
+              else if (id == "int8")
+                ch.setDataType(Constants::int8_);
+              else if (id == "uint16")
+                ch.setDataType(Constants::uint16_);
+              else if (id == "int16")
+                ch.setDataType(Constants::int16_);
+              else if (id == "uint32")
+                ch.setDataType(Constants::uint32_);
+              else if (id == "int32")
+                ch.setDataType(Constants::int32_);
+              else if (id == "uint64")
+                ch.setDataType(Constants::uint64_);
+              else if (id == "int64")
+                ch.setDataType(Constants::int64_);
+              else if (id == "float")
+                ch.setDataType(Constants::float_);
+              else if (id == "double")
+                ch.setDataType(Constants::double_);
+              else
+                cerr << "Invalid value for element '" << attr_name << "' in element 'channel'" << endl;
+            }
+            else
+              cerr << "Missing element '" << attr_name << "' in channel" << endl;
+          }
+          catch(...)
+          {
+            cerr << "Invalid value for '" << attr_name << "' in element 'channel'" << endl;
+          }
+
+          attr_name = "bp_filter_low";
+          try {
+            filter_low = lexical_cast<float>(ch_element->GetAttribute(attr_name));
+          }
+          catch(...)
+          {
+            cerr << "Invalid value for '" << attr_name << "' in element 'sig'" << endl;
+          }
+          attr_name = "bp_filter_high";
+          try {
+            filter_high = lexical_cast<float>(ch_element->GetAttribute(attr_name));
+          }
+          catch(...)
+          {
+            cerr << "Invalid value for '" << attr_name << "' in element 'sig'" << endl;
+          }
+          ch.setBpFilter(std::pair<float, float>(filter_low, filter_high));
+
+          attr_name = "notch_filter_low";
+          try {
+            filter_low = lexical_cast<float>(ch_element->GetAttribute(attr_name));
+          }
+          catch(...)
+          {
+            cerr << "Invalid value for '" << attr_name << "' in element 'sig'" << endl;
+          }
+          attr_name = "notch_filter_high";
+          try {
+            filter_high = lexical_cast<float>(ch_element->GetAttribute(attr_name));
+          }
+          catch(...)
+          {
+            cerr << "Invalid value for '" << attr_name << "' in element 'sig'" << endl;
+          }
+          ch.setNFilter(std::pair<float, float>(filter_low, filter_high));
+
           signal.channels().push_back(ch);
         }
       }
@@ -641,6 +762,383 @@ void ControlMsgDecoderXML::decodeMsg(SendConfigMsg& msg)
     msg.setConfigString(text);
   }
 
+}
+
+//-----------------------------------------------------------------------------
+
+void ControlMsgDecoderXML::decodeMsg(HWConfigMsg& msg)
+{
+  cout << "Calling ControlMsgDecoderXML::decodeMsg ConfigMsg"  << endl;
+
+  if (!decodeHeader(msg))
+  {
+    // TODO: do a proper error handling
+    cerr << "Error decoding ConfigMsg" << endl;
+    return;
+  }
+
+  ticpp::Element* config_element = xml_msg_header_->NextSiblingElement();
+  if (config_element == 0 || config_element->Value() != "hwconfig")
+  {
+    // TODO: do a proper error handling
+    cerr << "Missing element 'hwconfig' in ConfigMsg" << endl;
+    return;
+  }
+
+  ticpp::Element* subject_element = config_element->FirstChildElement("subject", false);
+  if (subject_element == 0)
+  {
+    // TODO: do a proper error handling
+    cerr << "Missing element 'subject' in ConfigMsg" << endl;
+    return;
+  }
+
+  std::string element_name;
+  ticpp::Element* element = 0;
+
+  element_name = "id";
+  element = subject_element->FirstChildElement(element_name, false);
+  if (element != 0)
+    msg.subject_info.setId(element->GetText());
+  else
+    cerr << "Missing element '" << element_name << "' in element 'subject'" << endl;
+
+  element_name = "firstName";
+  element = subject_element->FirstChildElement(element_name, false);
+  if (element != 0)
+    msg.subject_info.setFirstName(element->GetText());
+  else
+    cerr << "Missing element '" << element_name << "' in element 'subject'" << endl;
+
+  element_name = "surname";
+  element = subject_element->FirstChildElement(element_name, false);
+  if (element != 0)
+    msg.subject_info.setSurname(element->GetText());
+  else
+    cerr << "Missing element '" << element_name << "' in element 'subject'" << endl;
+
+  element_name = "birthday";
+  element = subject_element->FirstChildElement(element_name, false);
+  if (element != 0)
+    msg.subject_info.setBirthday(element->GetText());
+  else
+    cerr << "Missing element '" << element_name << "' in element 'subject'" << endl;
+
+  element_name = "medication";
+  element = subject_element->FirstChildElement(element_name, false);
+  if (element != 0)
+    msg.subject_info.setBirthday(element->GetText());
+  else
+    cerr << "Missing element '" << element_name << "' in element 'subject'" << endl;
+
+  element_name = "sex";
+  element = subject_element->FirstChildElement(element_name, false);
+  if (element != 0)
+  {
+    if (element->GetText() == "m")
+      msg.subject_info.setSex(SubjectInfo::Male);
+    else if (element->GetText() == "f")
+      msg.subject_info.setSex(SubjectInfo::Female);
+    else
+      cerr << "Invalid value for element '" << element_name << "' in element 'subject'" << endl;
+  }
+  else
+    cerr << "Missing element '" << element_name << "' in subject" << endl;
+
+  element_name = "handedness";
+  element = subject_element->FirstChildElement(element_name, false);
+  if (element != 0)
+  {
+    if (element->GetText() == "r")
+      msg.subject_info.setHandedness(SubjectInfo::RightHanded);
+    else if (element->GetText() == "l")
+      msg.subject_info.setHandedness(SubjectInfo::LeftHanded);
+    else
+      cerr << "Invalid value for element '" << element_name << "' in element 'subject'" << endl;
+  }
+  else
+    cerr << "Missing element '" << element_name << "' in subject" << endl;
+
+  // Optional elements
+
+  element_name = "glasses";
+  element = subject_element->FirstChildElement(element_name, false);
+  if (element != 0)
+  {
+    if (element->GetText() == "yes")
+      msg.subject_info.setShortInfo(SubjectInfo::Glasses, SubjectInfo::Yes);
+    else if (element->GetText() == "no")
+      msg.subject_info.setShortInfo(SubjectInfo::Glasses, SubjectInfo::No);
+    else
+      cerr << "Invalid value for element '" << element_name << "' in element 'subject'" << endl;
+  }
+
+  element_name = "smoker";
+  element = subject_element->FirstChildElement(element_name, false);
+  if (element != 0)
+  {
+    if (element->GetText() == "yes")
+      msg.subject_info.setShortInfo(SubjectInfo::Smoking, SubjectInfo::Yes);
+    else if (element->GetText() == "no")
+      msg.subject_info.setShortInfo(SubjectInfo::Smoking, SubjectInfo::No);
+    else
+      cerr << "Invalid value for element '" << element_name << "' in element 'subject'" << endl;
+  }
+
+  ticpp::Element* signal_info_element = config_element->FirstChildElement("signalInfo", false);
+  if (signal_info_element == 0)
+  {
+    // TODO: do a proper error handling
+    cerr << "Missing element 'signalInfo' in ConfigMsg" << endl;
+    return;
+  }
+
+  ticpp::Element* master_element = signal_info_element->FirstChildElement("master", false);
+  if (master_element != 0)
+  {
+    element_name = "samplingRate";
+    element = master_element->FirstChildElement(element_name, false);
+    if (element != 0)
+    {
+      try {
+        uint16_t value = 0;
+        element->GetText(&value);
+        msg.signal_info.setMasterSamplingRate(value);
+      }
+      catch(...)
+      {
+        cerr << "Invalid value for '" << element_name << "' in element 'master'" << endl;
+      }
+    }
+    else
+      cerr << "Missing element '" << element_name << "' in element 'master'" << endl;
+
+    element_name = "blockSize";
+    element = master_element->FirstChildElement(element_name, false);
+    if (element != 0)
+    {
+      try {
+        uint16_t value = 0;
+        element->GetText(&value);
+        msg.signal_info.setMasterBlockSize(value);
+      }
+      catch(...)
+      {
+        cerr << "Invalid value for '" << element_name << "' in element 'master'" << endl;
+      }
+    }
+    else
+      cerr << "Missing element '" << element_name << "' in element 'master'" << endl;
+  }
+  else
+  {
+    cerr << "Missing element 'master' in element 'signalInfo'" << endl;
+    return;
+  }
+
+  ticpp::Element* signals_element = signal_info_element->FirstChildElement("signals", false);
+
+  if (signals_element != 0)
+  {
+    ticpp::Element* sig_element = signals_element->FirstChildElement(false);
+    for (; sig_element != 0; sig_element = sig_element->NextSiblingElement(false))
+    {
+      if (sig_element->Value() != "sig")
+      {
+        cerr << "Misplaced element '" << sig_element->Value() << "' in element 'signals'" << endl;
+        continue;
+      }
+
+      std::string signal_type = sig_element->GetAttributeOrDefault("type", "");
+      if (signal_type.empty())
+      {
+        cerr << "Element 'sig' without attribute 'type' in element signals" << endl;
+        continue;
+      }
+
+      Signal signal;
+      signal.setType(signal_type);
+
+      element_name = "blockSize";
+      element = sig_element->FirstChildElement(element_name, false);
+      if (element != 0)
+      {
+        try {
+          uint16_t value = 0;
+          element->GetText(&value);
+          signal.setBlockSize(value);
+        }
+        catch(...)
+        {
+          cerr << "Invalid value for '" << element_name << "' in element 'sig'" << endl;
+        }
+      }
+      else
+        cerr << "Missing element '" << element_name << "' in element 'sig'" << endl;
+
+      element_name = "samplingRate";
+      element = sig_element->FirstChildElement(element_name, false);
+      if (element != 0)
+      {
+        try {
+          uint16_t value = 0;
+          element->GetText(&value);
+          signal.setSamplingRate(value);
+        }
+        catch(...)
+        {
+          cerr << "Invalid value for '" << element_name << "' in element 'sig'" << endl;
+        }
+      }
+      else
+        cerr << "Missing element '" << element_name << "' in element 'sig'" << endl;
+
+      ticpp::Element* channels_element = sig_element->FirstChildElement("channels", false);
+
+      if (channels_element != 0)
+      {
+        ticpp::Element* ch_element = channels_element->FirstChildElement(false);
+        for (; ch_element != 0; ch_element = ch_element->NextSiblingElement(false))
+        {
+          if (ch_element->Value() != "ch")
+          {
+            cerr << "Misplaced element '" << ch_element->Value() << "' in element 'signals'" << endl;
+            continue;
+          }
+
+          Channel ch;
+          std::string attr_name;
+          std::string id;
+          uint32_t value = 0;
+          float filter_low = 0.0;
+          float filter_high = 0.0;
+
+          id = ch_element->GetAttribute("id");
+          ch.setId(id);
+
+          attr_name = "deviceId";
+          try {
+            value = lexical_cast<int>(ch_element->GetAttribute(attr_name));
+            ch.setDeviceId(value);
+          }
+          catch(...)
+          {
+            cerr << "Invalid value for '" << attr_name << "' in element 'sig'" << endl;
+          }
+
+          attr_name = "description";
+          try {
+            id = ch_element->GetAttribute(attr_name);
+            ch.setDescription(id);
+          }
+          catch(...)
+          {
+            cerr << "Invalid value for '" << attr_name << "' in element 'sig'" << endl;
+          }
+
+          attr_name = "physicalRange";
+          try {
+            value = lexical_cast<int>(ch_element->GetAttribute(attr_name));
+            ch.setPhysicalRange(value);
+          }
+          catch(...)
+          {
+            cerr << "Invalid value for '" << attr_name << "' in element 'sig'" << endl;
+          }
+
+          attr_name = "digitalRange";
+          try {
+            value = lexical_cast<int>(ch_element->GetAttribute(attr_name));
+            ch.setPhysicalRange(value);
+          }
+          catch(...)
+          {
+            cerr << "Invalid value for '" << attr_name << "' in element 'sig'" << endl;
+          }
+
+          attr_name = "datatype";
+          try {
+            id = ch_element->GetAttribute(attr_name);
+            if (id != "")
+            {
+              if (id == "uint8")
+                ch.setDataType(Constants::uint8_);
+              else if (id == "int8")
+                ch.setDataType(Constants::int8_);
+              else if (id == "uint16")
+                ch.setDataType(Constants::uint16_);
+              else if (id == "int16")
+                ch.setDataType(Constants::int16_);
+              else if (id == "uint32")
+                ch.setDataType(Constants::uint32_);
+              else if (id == "int32")
+                ch.setDataType(Constants::int32_);
+              else if (id == "uint64")
+                ch.setDataType(Constants::uint64_);
+              else if (id == "int64")
+                ch.setDataType(Constants::int64_);
+              else if (id == "float")
+                ch.setDataType(Constants::float_);
+              else if (id == "double")
+                ch.setDataType(Constants::double_);
+              else
+                cerr << "Invalid value for element '" << attr_name << "' in element 'channel'" << endl;
+            }
+            else
+              cerr << "Missing element '" << attr_name << "' in channel" << endl;
+          }
+          catch(...)
+          {
+            cerr << "Invalid value for '" << attr_name << "' in element 'channel'" << endl;
+          }
+
+          attr_name = "bp_filter_low";
+          try {
+            filter_low = lexical_cast<float>(ch_element->GetAttribute(attr_name));
+          }
+          catch(...)
+          {
+            cerr << "Invalid value for '" << attr_name << "' in element 'sig'" << endl;
+          }
+          attr_name = "bp_filter_high";
+          try {
+            filter_high = lexical_cast<float>(ch_element->GetAttribute(attr_name));
+          }
+          catch(...)
+          {
+            cerr << "Invalid value for '" << attr_name << "' in element 'sig'" << endl;
+          }
+          ch.setBpFilter(std::pair<float, float>(filter_low, filter_high));
+
+          attr_name = "notch_filter_low";
+          try {
+            filter_low = lexical_cast<float>(ch_element->GetAttribute(attr_name));
+          }
+          catch(...)
+          {
+            cerr << "Invalid value for '" << attr_name << "' in element 'sig'" << endl;
+          }
+          attr_name = "notch_filter_high";
+          try {
+            filter_high = lexical_cast<float>(ch_element->GetAttribute(attr_name));
+          }
+          catch(...)
+          {
+            cerr << "Invalid value for '" << attr_name << "' in element 'sig'" << endl;
+          }
+          ch.setNFilter(std::pair<float, float>(filter_low, filter_high));
+
+          signal.channels().push_back(ch);
+        }
+      }
+      else
+        cerr << "Missing element 'channels' in element 'sig'" << endl;
+
+      msg.signal_info.signals().insert(make_pair(signal_type, signal));
+    }
+  }
+  else
+    cerr << "Missing element 'signals' in 'signalInfo'" << endl;
 }
 
 //-----------------------------------------------------------------------------
