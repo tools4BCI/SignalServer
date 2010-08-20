@@ -175,7 +175,7 @@ void SignalServer::sendDataPacket(DataPacket& packet)
             }
 
         }
-        catch(std::invalid_argument& e)
+        catch(std::invalid_argument&)
         {
 
         }
