@@ -298,4 +298,15 @@
     </device_settings>
   </hardware> -->
 
+<!-- =============================================================================== -->
+
+  <hardware name="mouse" version="1.0" serial="">
+    <mode> aperiodic </mode>
+    <device_settings>
+
+    </device_settings>
+  </hardware>  
+
+
+
 </tobi-config>
