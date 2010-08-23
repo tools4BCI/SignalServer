@@ -22,7 +22,7 @@ INCLUDEPATH += extern/include
 
 win32:INCLUDEPATH += extern/include/SDL-1.2.14-VC8
 
-#unix: QMAKE_CXXFLAGS += -O3
+unix: QMAKE_CXXFLAGS += -pedantic
 
 #-----------------------------------------------------------------------
 
@@ -90,17 +90,20 @@ unix {
              -lboost_system \
              -lSDL
 
-    HARDWARE_PLATFORM = $$system(uname -i)
+    HARDWARE_PLATFORM = $$system(uname -m)
 
     contains( HARDWARE_PLATFORM, x86_64 ) {
+        message(Building 64 bit )
         # 64-bit Linux
         LIBS  += -L extern/lib/ticpp/linux \
                  -lticpp_64 \
                  -Lextern/lib/libgdf/linux \
-                 -lgdf
+                 -llibgdf_64
     }
     else {
         # 32-bit Linux
+        message(Building 32 bit )
+
         LIBS  += -Lextern/lib/ticpp/linux \
                  -lticpp \
                  -Lextern/lib/libgdf/linux \

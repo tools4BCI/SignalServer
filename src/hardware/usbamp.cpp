@@ -26,7 +26,7 @@ static const unsigned int USBAMP_MAX_NR_OF_CHANNELS   = 17;
 static const unsigned int USBAMP_NR_OF_CHANNEL_GROUPS = 4;
 static const unsigned int USBAMP_NOTCH_HALF_WIDTH = 2;   // to one side  ...  e.g.  f_center = 50 Hz -->  48/52 Hz
 static const unsigned int USBAMP_ERROR_MSG_SIZE = 256;
-static const unsigned int USBAMP_NR_OF_OVERLAPPED = 2;
+static const unsigned int USBAMP_NR_OF_OVERLAPPED = 3;
 
 
 //-----------------------------------------------------------------------------
@@ -43,19 +43,19 @@ USBamp::USBamp(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
   #pragma comment(lib,"gUSBamp.lib")
 
   checkMandatoryHardwareTags(hw);
-  
+
   ov_.resize(USBAMP_NR_OF_OVERLAPPED);
   data_Ev_.resize(USBAMP_NR_OF_OVERLAPPED);
   bytes_received_.resize(USBAMP_NR_OF_OVERLAPPED);
   getHandles();
-  
+
   initFilterPtrs();
   setHardware(hw);
 
   expected_values_ = nr_ch_ * blocks_;
-  
+
   driver_buffer_size_ = expected_values_ * sizeof(float) + HEADER_SIZE;
-  
+
   for(unsigned int n = 0; n < ov_.size(); n++)
     driver_buffer_.push_back( new BYTE[driver_buffer_size_] );
 
@@ -73,7 +73,7 @@ USBamp::USBamp(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
     slave_devices_.push_back(this);
   else
     master_device_ = this;
-  
+
   cout << endl;
   cout << " * g.USBamp sucessfully initialized" << endl;
   cout << "    fs: " << fs_ << "Hz, nr of channels: " << nr_ch_ << ", blocksize: " << blocks_ << endl;
@@ -194,10 +194,10 @@ SampleBlock<double> USBamp::getSyncData()
     cout << "Not running!" << endl;
     return(data_);
   }
-  
+
   boost::unique_lock<boost::shared_mutex> lock(rw_);
   bytes_received_[current_overlapped_] = 0;
-  
+
   if(!first_run_)
   {
     for(uint32_t n = 0; n < slave_devices_.size(); n++)
@@ -206,15 +206,15 @@ SampleBlock<double> USBamp::getSyncData()
   }
   else
     first_run_ = false;
-  
+
   for(uint32_t n = 0; n < slave_devices_.size(); n++)
     slave_devices_[n]->fillSyncBuffer();
   fillSyncBuffer();
-  
+
   fillSampleBlock();
   for(uint32_t n = 0; n < slave_devices_.size(); n++)
-    slave_devices_[n]->fillSampleBlock(); 
-  
+    slave_devices_[n]->fillSampleBlock();
+
   lock.unlock();
   return(data_);
 }
@@ -250,28 +250,28 @@ SampleBlock<double> USBamp::getAsyncData()
 //-----------------------------------------------------------------------------
 
 inline void USBamp::callGT_GetData()
-{ 
+{
   // if(first_run_)
   // {
     // for(unsigned int n = 0; n < ov_.size(); n++)
       // if( !GT_GetData(h_, driver_buffer_[n], driver_buffer_size_, &ov_[n]))
         // throw(std::runtime_error("USBamp::getSyncData -- Error getting data!"));
-        
+
     // first_run_ = false;
     // return;
   // }
-  
+
   if( !GT_GetData(h_, driver_buffer_[current_overlapped_], driver_buffer_size_, &ov_[current_overlapped_]))
     throw(std::runtime_error("USBamp::getSyncData -- Error getting data!"));
-    
+
   // GT_GetData(h_, driver_buffer_[current_overlapped_], driver_buffer_size_, &ov_[current_overlapped_]);
-    
+
 }
 
 //-----------------------------------------------------------------------------
 
 void USBamp::callGT_ResetTransfer()
-{ 
+{
   if( !GT_ResetTransfer(h_))
     throw(std::runtime_error("USBamp::run -- Error resetting transfer!"));
 
@@ -282,10 +282,10 @@ void USBamp::callGT_ResetTransfer()
 //-----------------------------------------------------------------------------
 
 inline void USBamp::callGT_Start()
-{ 
+{
   if( !GT_Start(h_))
     throw(std::runtime_error("USBamp::run -- Error starting g.USBamp!"));
-    
+
 }
 
 //-----------------------------------------------------------------------------
@@ -294,7 +294,7 @@ void USBamp::fillSyncBuffer()
 {
   if(!running_)
     return;
-      
+
   samples_available_ = true;
   check4USBampError();
 
@@ -315,11 +315,11 @@ void USBamp::fillSyncBuffer()
   if(bytes_received_[current_overlapped_] != expected_values_ * sizeof(float) )
   {
     cerr << "Received not enough data  ... " << bytes_received_[current_overlapped_] << ";  expected: " << expected_values_ * sizeof(float) << endl;
-    
+
     for(unsigned int n = 0; n < ( (expected_values_ * sizeof(float) ) - bytes_received_[current_overlapped_] ) ; n++)
       driver_buffer_[current_overlapped_][ bytes_received_[current_overlapped_] + n ]  = 0;
   }
-    
+
 }
 
 //-----------------------------------------------------------------------------
@@ -331,7 +331,7 @@ void USBamp::fillSampleBlock()
        samples_[ (k*blocks_) + j ] = *(reinterpret_cast<float*>(driver_buffer_[current_overlapped_] + HEADER_SIZE + (k +(j* expected_values_/blocks_) )*sizeof(float) ));
 
   data_.setSamples(samples_);
-  
+
   (current_overlapped_ == ov_.size() -1)?(current_overlapped_ = 0):(current_overlapped_++);
 }
 
@@ -380,7 +380,7 @@ void USBamp::getHandles()
     {
       memset(&ov_[n], 0, sizeof(OVERLAPPED) );
       data_Ev_[n] = CreateEvent(0, false, false, 0);
-      
+
       ov_[n].hEvent = data_Ev_[n];
       ov_[n].Offset = 0;
       ov_[n].OffsetHigh = 0;
@@ -422,28 +422,28 @@ void USBamp::run()
   #endif
 
   if(!external_sync_)
-  {  
+  {
     for(uint32_t n = 0; n < slave_devices_.size(); n++)
       slave_devices_[n]->callGT_ResetTransfer();
 
     callGT_ResetTransfer();
-      
+
     for(uint32_t n = 0; n < slave_devices_.size(); n++)
       slave_devices_[n]->callGT_Start();
-      
+
     callGT_Start();
 
     for(unsigned int m = 0; m < ov_.size(); m++)
     {
       current_overlapped_ = m;
-      
+
       for(uint32_t n = 0; n < slave_devices_.size(); n++)
         slave_devices_[n]->callGT_GetData();
       callGT_GetData();
     }
-    current_overlapped_ = 0;      
+    current_overlapped_ = 0;
     first_run_ = true;
-  
+
     for(uint32_t n = 0; n < slave_devices_.size(); n++)
     {
       slave_devices_[n]->running_ = 1;
