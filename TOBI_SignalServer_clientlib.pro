@@ -21,7 +21,7 @@ INCLUDEPATH += extern/include
 
 win32:INCLUDEPATH += extern/include/SDL-1.2.14-VC8
 
-#unix: QMAKE_CXXFLAGS += -O3
+unix: QMAKE_CXXFLAGS += -pedantic
 
 # Input
 HEADERS +=  include/config/control_message_decoder.h \
@@ -56,15 +56,18 @@ unix {
              -lboost_system \
              -lSDL
 
-    HARDWARE_PLATFORM = $$system(uname -i)
+    HARDWARE_PLATFORM = $$system(uname -m)
 
     contains( HARDWARE_PLATFORM, x86_64 ) {
+
         # 64-bit Linux
+        message(Building 64 bit )
         LIBS  += -L extern/lib/ticpp/linux \
                  -lticpp_64
     }
     else {
         # 32-bit Linux
+        message(Building 32 bit )
         LIBS  += -L extern/lib/ticpp/linux \
                  -lticpp
     }

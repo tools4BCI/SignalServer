@@ -120,7 +120,7 @@ protected:
   enum ControlConnState
   {
     ControlConnState_NotConnected    = 0,
-    ControlConnState_Connected       = 1,
+    ControlConnState_Connected       = 1
   };
 
   enum DataInputState
