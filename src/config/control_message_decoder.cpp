@@ -599,14 +599,14 @@ void ControlMsgDecoderXML::decodeMsg(ConfigMsg& msg)
           attr_name = "digitalRange";
           try {
             value = lexical_cast<int>(ch_element->GetAttribute(attr_name));
-            ch.setPhysicalRange(value);
+            ch.setDigitalRange(value);
           }
           catch(...)
           {
             cerr << "Invalid value for '" << attr_name << "' in element 'sig'" << endl;
           }
 
-          attr_name = "datatype";
+          attr_name = "dataType";
           try {
             id = ch_element->GetAttribute(attr_name);
             if (id != "")
@@ -660,7 +660,7 @@ void ControlMsgDecoderXML::decodeMsg(ConfigMsg& msg)
           }
           ch.setBpFilter(std::pair<float, float>(filter_low, filter_high));
 
-          attr_name = "notch_filter_low";
+          attr_name = "n_filter_low";
           try {
             filter_low = lexical_cast<float>(ch_element->GetAttribute(attr_name));
           }
@@ -668,7 +668,7 @@ void ControlMsgDecoderXML::decodeMsg(ConfigMsg& msg)
           {
             cerr << "Invalid value for '" << attr_name << "' in element 'sig'" << endl;
           }
-          attr_name = "notch_filter_high";
+          attr_name = "n_filter_high";
           try {
             filter_high = lexical_cast<float>(ch_element->GetAttribute(attr_name));
           }

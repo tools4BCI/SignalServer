@@ -122,9 +122,20 @@ void ControlConnection::handle_read(const boost::system::error_code& error,
         boost::shared_ptr<SendConfigMsg> send_config_msg =
             boost::static_pointer_cast<SendConfigMsg>(msg);
 
-        ctl_conn_server_.setConfig(send_config_msg->configString());
+        bool configOk = false;
+
         ctl_conn_server_.getConfig(*config_msg_);
-        sendMsg(ReplyMsg::ok());
+        ctl_conn_server_.setConfig(send_config_msg->configString(), configOk);
+
+        if(configOk)
+        {
+          ctl_conn_server_.getConfig(*config_msg_);
+          sendMsg(ReplyMsg::ok());
+        }
+        else
+        {
+          sendMsg(ReplyMsg::configError());
+        }
         break;
       }
 

@@ -53,6 +53,7 @@ void SSMethods::startServerSettings()
 void SSMethods::setClientConfig(XMLParser* config)
 {
   config_ = config;
+//  server_->getConfig(*config_);
 
   hw_access_->stopDataAcquisition();
   hw_access_ = new HWAccess(server_->getIOService(), *config_);
@@ -64,8 +65,6 @@ void SSMethods::setClientConfig(XMLParser* config)
 }
 
 //-----------------------------------------------------------------------------
-//void setDataType(const std::vector<DataType>& data_type)
-//  { data_type_ = data_type; }
 
 void SSMethods::setServerSettings()
 {
@@ -75,6 +74,28 @@ void SSMethods::setServerSettings()
   server_->setBlockSizesPerSignalType(hw_access_->getBlockSizesPerSignalType());
   server_->setSamplingRatePerSignalType(hw_access_->getSamplingRatePerSignalType());
   server_->setChannelNames(hw_access_->getChannelNames());
+
+  vector<int32_t> v1;
+  vector<pair<float, float> > v3;
+  vector<std::string> v4;
+  vector<uint32_t> v5;
+  //  vector<int> v2;
+  for(int i = 0; i<17; i++)
+  {
+    v1.push_back(250);
+//    v2.push_back(9);
+    v3.push_back(pair<float, float>(0.45, 0.77));
+    v4.push_back("temp_description");
+    v5.push_back(123);
+  }
+  server_->setPhysicalRange(v1);
+  server_->setDigitalRange(v1);
+//  server_->setDataType(v2);
+  server_->setBpFilterSettings(v3);
+  server_->setNFilterSettings(v3);
+  server_->setDescription(v4);
+  server_->setDeviceId(v5);
+
 //  server_->setPhysicalRange(hw_access_->getPhysicalRange());
 //  server_->setDigitalRange(hw_access_->getDigitalRange());
 //  server_->setDataType(hw_access_->getDataType());

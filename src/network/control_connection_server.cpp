@@ -78,9 +78,9 @@ void ControlConnectionServer::getConfig(ConfigMsg& config)
 
 //-----------------------------------------------------------------------------
 
-void ControlConnectionServer::setConfig(std::string config)
+void ControlConnectionServer::setConfig(std::string config, bool& configOk)
 {
-  server_.setClientConfig(config);
+  server_.setClientConfig(config, configOk);
   delete signal_info_;
   delete subject_info_;
   signal_info_ = new SignalInfo;
@@ -161,7 +161,7 @@ void ControlConnectionServer::createSignalInfo()
 
     std::map<uint32_t, std::vector<std::string> >::const_iterator it_channel_map =
       channel_map.find(sig_num_type);
-
+    int i = 0;
     if (it_channel_map != channel_map.end())
     {
       const std::vector<std::string>& channel_names = (*it_channel_map).second;
@@ -171,7 +171,17 @@ void ControlConnectionServer::createSignalInfo()
       {
         Channel channel;
         channel.setId(*it_channels);
+
+        channel.setDeviceId(server_.device_id_[i]);
+        channel.setDescription(server_.description_[i]);
+        channel.setPhysicalRange(server_.physical_range_[i]);
+        channel.setDigitalRange(server_.digital_range_[i]);
+        channel.setDataType(server_.data_type_[i]);
+        channel.setBpFilter(server_.bandpass_filter_[i]);
+        channel.setNFilter(server_.notch_filter_[i]);
+
         signal.channels().push_back(channel);
+        i++;
       }
     }
 

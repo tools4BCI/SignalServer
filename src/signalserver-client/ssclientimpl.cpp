@@ -672,6 +672,12 @@ void SSClientImpl::sendConfig(std::string& config)
   {
     case ControlMsg::OkReply: break;
 
+    case ControlMsg::ConfigErrorReply:
+    {
+      cout << "SSClient: SendConfig was not successfull" << endl;
+      break;
+    }
+
     case ControlMsg::ErrorReply:
     {
       stringstream ex_str;
@@ -687,6 +693,7 @@ void SSClientImpl::sendConfig(std::string& config)
     }
   }
 
+  cout << "SSClient: Requesting config from Server" << endl;
   requestConfig();
 }
 

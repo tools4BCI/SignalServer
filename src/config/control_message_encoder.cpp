@@ -255,6 +255,7 @@ void ControlMsgEncoderXML::encodeMsg(const ConfigMsg& msg, std::ostream& stream)
       const Channel& channel = (*it_channels);
       element = new TiXmlElement("ch");
       element->SetAttribute("id", channel.id());
+
       element->SetAttribute("deviceId", lexical_cast<string>(channel.deviceId()));
       element->SetAttribute("description", channel.description());
       element->SetAttribute("physicalRange", lexical_cast<string>(channel.physicalRange()));
@@ -263,23 +264,39 @@ void ControlMsgEncoderXML::encodeMsg(const ConfigMsg& msg, std::ostream& stream)
       std::string dataType;
       switch(channel.dataType())
       {
-        case 0: dataType = "uint8"; break;
-        case 1: dataType = "int8"; break;
-        case 2: dataType = "uint16"; break;
-        case 3: dataType = "int16"; break;
-        case 4: dataType = "uint32"; break;
-        case 5: dataType = "int32"; break;
-        case 6: dataType = "uint64"; break;
-        case 7: dataType = "int64"; break;
-        case 8: dataType = "float"; break;
-        case 9: dataType = "double"; break;
+        case Constants::uint8_  : dataType = "uint8"; break;
+        case Constants::int8_   : dataType = "int8"; break;
+        case Constants::uint16_ : dataType = "uint16"; break;
+        case Constants::int16_  : dataType = "int16"; break;
+        case Constants::uint32_ : dataType = "uint32"; break;
+        case Constants::int32_  : dataType = "int32"; break;
+        case Constants::uint64_ : dataType = "uint64"; break;
+        case Constants::int64_  : dataType = "int64"; break;
+        case Constants::float_  : dataType = "float"; break;
+        case Constants::double_ : dataType = "double"; break;
       }
       element->SetAttribute("dataType", dataType);
 
-      element->SetAttribute("bp_filter_low", lexical_cast<string>(channel.bpFilter().first));
-      element->SetAttribute("bp_filter_high", lexical_cast<string>(channel.bpFilter().second));
-      element->SetAttribute("n_filter_low", lexical_cast<string>(channel.nFilter().first));
-      element->SetAttribute("n_filter_high", lexical_cast<string>(channel.nFilter().second));
+      std::string filter;
+      std::ostringstream temp_filter;
+      temp_filter << channel.bpFilter().first;
+      filter = temp_filter.str();
+      element->SetAttribute("bp_filter_low", filter);
+      temp_filter.str("");
+      temp_filter.clear();
+      temp_filter << channel.bpFilter().second;
+      filter = temp_filter.str();
+      element->SetAttribute("bp_filter_high", filter);
+      temp_filter.str("");
+      temp_filter.clear();
+      temp_filter << channel.nFilter().first;
+      filter = temp_filter.str();
+      element->SetAttribute("n_filter_low", filter);
+      temp_filter.str("");
+      temp_filter.clear();
+      temp_filter << channel.nFilter().second;
+      filter = temp_filter.str();
+      element->SetAttribute("n_filter_high", filter);
 
       channels_elem->LinkEndChild(element);
     }
@@ -309,6 +326,11 @@ void ControlMsgEncoderXML::encodeMsg(const ReplyMsg& msg, std::ostream& stream)
       encodeBaseMsg(msg, "okReply", doc, xml_msg);
       assert(xml_msg != 0);
       xml_msg->LinkEndChild(new TiXmlElement("okReply"));
+      break;
+    case ControlMsg::ConfigErrorReply:
+      encodeBaseMsg(msg, "configErrorReply", doc, xml_msg);
+      assert(xml_msg != 0);
+      xml_msg->LinkEndChild(new TiXmlElement("configErrorReply"));
       break;
     case ControlMsg::ErrorReply:
       encodeBaseMsg(msg, "errorReply", doc, xml_msg);

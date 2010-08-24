@@ -105,6 +105,14 @@ SignalServer::~SignalServer()
 
 void SignalServer::initialize(XMLParser* config)
 {
+  //Temporäre Auffüllung des Vektors
+  vector<Constants::DataType> v2;
+  for(int i = 0; i<17; i++)
+  {
+    v2.push_back(Constants::uint32_);
+  }
+  setDataType(v2);
+
   assert(config != 0);
   config_ = config;
   server_settings_ = config->parseServerSettings();
@@ -274,13 +282,23 @@ void SignalServer::initGdf()
 
 //-----------------------------------------------------------------------------
 
-void SignalServer::setClientConfig(const std::string& config)
+void SignalServer::setClientConfig(const std::string& config, bool& configOk)
 {
   ticpp::Document doc_;
   doc_.Parse(config);
   doc_.SaveFile(CLIENT_XML_CONFIG);
-  *config_ = XMLParser(CLIENT_XML_CONFIG);
-  ss_methods_->setClientConfig(config_);
+  XMLParser config_temp(CLIENT_XML_CONFIG);
+  if(checkChannelAttributes(&config_temp))
+  {
+    *config_ = XMLParser(CLIENT_XML_CONFIG);
+//    setConfig(&config_temp);
+    ss_methods_->setClientConfig(config_);
+    configOk = true;
+  }
+  else
+  {
+    configOk = false;
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -303,6 +321,13 @@ void SignalServer::setConfig(XMLParser* config)
 void SignalServer::setServerSettings()
 {
   server_settings_ = config_->parseServerSettings();
+}
+
+//-----------------------------------------------------------------------------
+
+bool SignalServer::checkChannelAttributes(XMLParser* config)
+{
+  return true;
 }
 
 //-----------------------------------------------------------------------------

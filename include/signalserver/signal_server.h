@@ -54,20 +54,6 @@ class SignalServer : boost::noncopyable
 {
   friend class ControlConnectionServer;
 
-  private:
-//    enum DataType {
-//      uint8_,
-//      int8_,
-//      uint16_,
-//      int16_,
-//      uint32_,
-//      int32_,
-//      uint64_,
-//      int64_,
-//      float_,
-//      double_
-//    };
-
     // Methods
     //-----------------------------------
   public:
@@ -165,7 +151,7 @@ class SignalServer : boost::noncopyable
     * @brief Writes a new XML-document and sends it to a Method in SSMethods
     * which sets then the new config sent by the Client
     */
-    void setClientConfig(const std::string& config);
+    void setClientConfig(const std::string& config, bool& configOk);
 
     /**
     * @brief Sets a pointer to the config
@@ -201,6 +187,11 @@ class SignalServer : boost::noncopyable
      */
     void initGdf();
 
+    /**
+     * @brief Checks if attributes of client-config are conform with HWAccess-Channels
+     */
+    bool checkChannelAttributes(XMLParser* config);
+
   private:
     boost::asio::io_service&            io_service_; ///<
     XMLParser*                          config_; ///<
@@ -224,7 +215,7 @@ class SignalServer : boost::noncopyable
     std::vector<int>                        digital_range_;
     std::vector<std::pair<float, float> >   bandpass_filter_;
     std::vector<std::pair<float, float> >   notch_filter_;
-    std::vector<Constants::DataType>                   data_type_;
+    std::vector<Constants::DataType>        data_type_;
 
     Constants                           cst_; ///<
 

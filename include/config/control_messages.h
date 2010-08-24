@@ -41,6 +41,7 @@ class ControlMsg
       StopTransmission,
       OkReply,
       ErrorReply,
+      ConfigErrorReply,
       SendConfig,
       HWConfig
     };
@@ -209,8 +210,9 @@ class ConfigMsg : public ControlMsg
 class ReplyMsg : public ControlMsg
 {
   public:
-    static ReplyMsg error() { return ReplyMsg(ErrorReply); }
-    static ReplyMsg ok()    { return ReplyMsg(OkReply); }
+    static ReplyMsg error()       { return ReplyMsg(ErrorReply); }
+    static ReplyMsg ok()          { return ReplyMsg(OkReply); }
+    static ReplyMsg configError() {return ReplyMsg(ConfigErrorReply); }
 
     ///
     virtual ~ReplyMsg(){}
