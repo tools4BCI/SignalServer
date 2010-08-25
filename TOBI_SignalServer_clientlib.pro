@@ -60,12 +60,12 @@ unix {
 
     contains( HARDWARE_PLATFORM, x86_64 ) {
         # 64-bit Linux
-        LIBS  += -L extern/lib/ticpp/linux \
+        LIBS  += -L$$_PRO_FILE_PWD_/extern/lib/ticpp/linux \
                  -lticpp_64
     }
     else {
         # 32-bit Linux
-        LIBS  += -L extern/lib/ticpp/linux \
+        LIBS  += -L$$_PRO_FILE_PWD_/extern/lib/ticpp/linux \
                  -lticpp
     }
 }
