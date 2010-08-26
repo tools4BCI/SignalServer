@@ -12,6 +12,7 @@
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <boost/thread.hpp>
+#include <boost/cast.hpp>
 
 #include "ticpp/ticpp.h"
 
@@ -42,6 +43,10 @@
 using boost::asio::ip::udp;
 using namespace std;
 using namespace tobiss;
+
+#ifdef WIN32
+using namespace boost;
+#endif
 
 const string DEFAULT_XML_CONFIG = "server_config.xml";
 static SSClient* client = 0;
