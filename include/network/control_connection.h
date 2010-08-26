@@ -1,5 +1,5 @@
 /**
-* @control_connection_server.h
+* @control_connection.h
 *
 * @brief \TODO.
 *

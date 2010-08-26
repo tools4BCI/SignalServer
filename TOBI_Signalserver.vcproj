@@ -307,6 +307,10 @@
 				Name="network"
 				>
 				<File
+					RelativePath=".\src\network\control_connection.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\network\control_connection_server.cpp"
 					>
 				</File>
@@ -336,6 +340,26 @@
 				>
 				<File
 					RelativePath=".\src\signalserver\signal_server.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="filereading"
+				>
+				<File
+					RelativePath=".\src\filereading\data_file_handler.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\filereading\file_reader.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\filereading\file_reader_factory.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\filereading\gdf_file_reader.cpp"
 					>
 				</File>
 			</Filter>
@@ -425,6 +449,10 @@
 				Name="network"
 				>
 				<File
+					RelativePath=".\include\network\control_connection.h"
+					>
+				</File>
+				<File
 					RelativePath=".\include\network\control_connection_server.h"
 					>
 				</File>
@@ -458,6 +486,26 @@
 				>
 				<File
 					RelativePath=".\include\signalserver\signal_server.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="filereading"
+				>
+				<File
+					RelativePath=".\include\filereading\data_file_handler.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\filereading\file_reader.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\filereading\file_reader_factory.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\filereading\gdf_file_reader.h"
 					>
 				</File>
 			</Filter>
