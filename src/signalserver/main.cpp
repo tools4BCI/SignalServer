@@ -113,6 +113,7 @@ int main(int argc, const char* argv[])
       boost::asio::io_service io_service;
 
       SignalServer server(io_service);
+      server.setTimeoutKeepAlive(10);
 
       if(!first_run)
       {

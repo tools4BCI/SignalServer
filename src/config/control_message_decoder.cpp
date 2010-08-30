@@ -717,6 +717,28 @@ void ControlMsgDecoderXML::decodeMsg(ReplyMsg& msg)
       }
       break;
     }
+    case ControlMsg::AliveReply:
+    {
+      ticpp::Element* reply_element = xml_msg_header_->NextSiblingElement();
+      if (reply_element == 0 || reply_element->Value() != "aliveReply")
+      {
+        // TODO: do a proper error handling
+        cerr << "Missing element 'aliveReply' in ReplyMsg" << endl;
+        return;
+      }
+      break;
+    }
+    case ControlMsg::ConfigErrorReply:
+    {
+      ticpp::Element* reply_element = xml_msg_header_->NextSiblingElement();
+      if (reply_element == 0 || reply_element->Value() != "configErrorReply")
+      {
+        // TODO: do a proper error handling
+        cerr << "Missing element 'configErrorReply' in ReplyMsg" << endl;
+        return;
+      }
+      break;
+    }
     case ControlMsg::ErrorReply:
     {
       ticpp::Element* reply_element = xml_msg_header_->NextSiblingElement();

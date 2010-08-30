@@ -81,12 +81,15 @@ void ControlConnectionServer::getConfig(ConfigMsg& config)
 void ControlConnectionServer::setConfig(std::string config, bool& configOk)
 {
   server_.setClientConfig(config, configOk);
-  delete signal_info_;
-  delete subject_info_;
-  signal_info_ = new SignalInfo;
-  subject_info_ = new SubjectInfo;
-  createSubjectInfo();
-  createSignalInfo();
+  if(configOk)
+  {
+    delete signal_info_;
+    delete subject_info_;
+    signal_info_ = new SignalInfo;
+    subject_info_ = new SubjectInfo;
+    createSubjectInfo();
+    createSignalInfo();
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -212,6 +215,14 @@ void ControlConnectionServer::handleAccept(const TCPConnection::pointer& new_con
   connections_.push_back(connection);
 
   startAccept();
+}
+
+//-----------------------------------------------------------------------------
+
+void ControlConnectionServer::checkAllKeepAlive()
+{
+//  std::for_each(connections_.begin(), connections_.end(),
+//                boost::bind(&ControlConnection::checkKeepAlive, _1));
 }
 
 //-----------------------------------------------------------------------------

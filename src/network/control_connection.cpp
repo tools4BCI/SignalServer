@@ -53,6 +53,7 @@ ControlConnection::ControlConnection(boost::asio::io_service& io_service,
 
   config_msg_ = boost::shared_ptr<ConfigMsg>(new ConfigMsg);
   ctl_conn_server.getConfig(*config_msg_);
+  keep_alive_msg_ = boost::shared_ptr<KeepAliveMsg>(new KeepAliveMsg);
 }
 
 //-----------------------------------------------------------------------------
@@ -105,6 +106,8 @@ void ControlConnection::handle_read(const boost::system::error_code& error,
       case ControlMsg::KeepAlive:
       {
         // TODO:
+        cout << "Got KeepAlive Request" << endl;
+        sendMsg(ReplyMsg::alive());
         break;
       }
 
@@ -307,6 +310,56 @@ void ControlConnection::handle_write(const boost::system::error_code& e, std::si
   // references to the connection object will disappear and the object will be
   // destroyed automatically after this handler returns. The connection class's
   // destructor closes the socket.
+}
+
+//-----------------------------------------------------------------------------
+
+void ControlConnection::checkKeepAlive()
+{
+  sendMsg(*keep_alive_msg_);
+//  cout << "bin da" << endl;
+//  ControlMsgDecoder* msg_decoder;
+//  msg_decoder = new ControlMsgDecoderXML;
+  boost::shared_ptr<ControlMsg> reply(msg_decoder_->decodeMsg());
+//  cout << "bin da" << endl;
+//  delete msg_decoder;
+//  cout << reply << endl;
+  if (reply == 0)
+  {
+    std::stringstream ex_str;
+    ex_str << "SSClient: Cannot decode message";
+    this->close();
+//    throw std::ios_base::failure(ex_str.str());
+  }
+  else
+  {
+    // Check reply type
+    switch (reply->msgType())
+    {
+      case ControlMsg::OkReply: break;
+
+      case ControlMsg::AliveReply:
+      {
+        cout << "SignalServer: Client still alive" << endl;
+        break;
+      }
+
+      case ControlMsg::ErrorReply:
+      {
+        std::stringstream ex_str;
+        ex_str << "SSClient: Stop receiving failed due to a server error.";
+//        throw std::ios_base::failure(ex_str.str());
+      }
+
+      default:
+      {
+        std::stringstream ex_str;
+        ex_str << "SSClient: Got unexpected reply of type '" << reply->msgType() << "'";
+//        throw std::ios_base::failure(ex_str.str());
+      }
+    }
+  }
+
 }
 
 //-----------------------------------------------------------------------------

@@ -40,6 +40,7 @@ class ControlMsg
       StartTransmission,
       StopTransmission,
       OkReply,
+      AliveReply,
       ErrorReply,
       ConfigErrorReply,
       SendConfig,
@@ -212,7 +213,8 @@ class ReplyMsg : public ControlMsg
   public:
     static ReplyMsg error()       { return ReplyMsg(ErrorReply); }
     static ReplyMsg ok()          { return ReplyMsg(OkReply); }
-    static ReplyMsg configError() {return ReplyMsg(ConfigErrorReply); }
+    static ReplyMsg configError() { return ReplyMsg(ConfigErrorReply); }
+    static ReplyMsg alive()       { return ReplyMsg(AliveReply); }
 
     ///
     virtual ~ReplyMsg(){}

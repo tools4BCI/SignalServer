@@ -76,6 +76,11 @@ public:
    */
   void setConfig(std::string config, bool& configOk);
 
+  /**
+   * @brief Checks all connections of the connection-vector if still alive
+   */
+  void checkAllKeepAlive();
+
 protected:
   /**
    * @brief Creates the SubjectInfo object

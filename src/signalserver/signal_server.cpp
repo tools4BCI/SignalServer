@@ -59,7 +59,8 @@ SignalServer::SignalServer(boost::asio::io_service& io_service)
   udp_data_server_(0),
   control_connection_server_(0),
   write_file(0),
-  gdf_writer_(0)
+  gdf_writer_(0),
+  timeout_(io_service_)
 {
   #ifdef TIMING_TEST
     timestamp_ = boost::posix_time::microsec_clock::local_time();
@@ -284,14 +285,14 @@ void SignalServer::initGdf()
 
 void SignalServer::setClientConfig(const std::string& config, bool& configOk)
 {
-  ticpp::Document doc_;
-  doc_.Parse(config);
-  doc_.SaveFile(CLIENT_XML_CONFIG);
-  XMLParser config_temp(CLIENT_XML_CONFIG);
-  if(checkChannelAttributes(&config_temp))
+  if(checkClientConfig(config))
   {
+    ticpp::Document doc_;
+    doc_.Parse(config);
+    doc_.SaveFile(CLIENT_XML_CONFIG);
+
+    cout << "XMLParser hat funktioniert" << endl;
     *config_ = XMLParser(CLIENT_XML_CONFIG);
-//    setConfig(&config_temp);
     ss_methods_->setClientConfig(config_);
     configOk = true;
   }
@@ -325,9 +326,64 @@ void SignalServer::setServerSettings()
 
 //-----------------------------------------------------------------------------
 
-bool SignalServer::checkChannelAttributes(XMLParser* config)
+bool SignalServer::checkClientConfig(const std::string& config)
 {
+  ticpp::Document doc_;
+  doc_.Parse(config);
+  doc_.SaveFile(CLIENT_XML_CONFIG);
+  doc_.LoadFile(CLIENT_XML_CONFIG);
+
+  ticpp::Iterator<ticpp::Element> conf(doc_.FirstChildElement(cst_.tobi, true));
+  ticpp::Iterator<ticpp::Element> hw(conf->FirstChildElement(cst_.hardware, true));
+
+  std::string hw_name = hw->GetAttribute("name");;
+  int it = 0;
+  it = cst_.isSupportedHardware(hw_name);
+  if(!it)
+  {
+    cout << "ClientConfig: Hardware not supported" << endl;
+    return false;
+  }
+
+  ticpp::Iterator<ticpp::Element> ds(hw->FirstChildElement(cst_.hw_ds, true));
+
+  ticpp::Iterator<ticpp::Element> sr(ds->FirstChildElement(cst_.hw_fs, true));
+  if(sr->GetText(false) == "")
+  {
+    cout << "ClientConfig: Samplingrate not available" << endl;
+    return false;
+  }
+  ticpp::Iterator<ticpp::Element> bs(ds->FirstChildElement(cst_.hw_buffer, true));
+  if(bs->GetText(false) == "")
+  {
+    cout << "ClientConfig: Blocksize not available" << endl;
+    return false;
+  }
+
+  ticpp::Iterator<ticpp::Element> cs(hw->FirstChildElement(cst_.hw_cs, true));
+  cs = cs->FirstChildElement(cst_.hw_sel, true);
+  ticpp::Iterator<ticpp::Element> channels(cs->FirstChildElement(cst_.hw_cs_ch, true));
+
+  //TODO weitere Ueberpruefungen
+
   return true;
+}
+
+//-----------------------------------------------------------------------------
+
+void SignalServer::setTimeoutKeepAlive(boost::uint32_t seconds)
+{
+  sec_for_timeout_ = seconds;
+  timeout_.expires_from_now(boost::posix_time::seconds(sec_for_timeout_));
+  timeout_.async_wait(boost::bind(&SignalServer::handleTimeoutKeepAlive,this));
+}
+
+//-----------------------------------------------------------------------------
+
+void SignalServer::handleTimeoutKeepAlive()
+{
+  control_connection_server_->checkAllKeepAlive();
+  setTimeoutKeepAlive(sec_for_timeout_);
 }
 
 //-----------------------------------------------------------------------------

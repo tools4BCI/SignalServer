@@ -179,7 +179,16 @@ class SignalServer : boost::noncopyable
     */
     void setServerSettings();
 
+    /**
+    * @brief Sets timeout for KeepAlive
+    */
+    void setTimeoutKeepAlive(boost::uint32_t seconds);
+
   private:
+    /**
+    * @brief Handles timeout for KeepAlive
+    */
+    void handleTimeoutKeepAlive();
     /**
      * @brief Sends a DataPacket to the clients
      * @param[in]  packet
@@ -190,7 +199,7 @@ class SignalServer : boost::noncopyable
     /**
      * @brief Checks if attributes of client-config are conform with HWAccess-Channels
      */
-    bool checkChannelAttributes(XMLParser* config);
+    bool checkClientConfig(const std::string& config);
 
   private:
     boost::asio::io_service&            io_service_; ///<
@@ -217,11 +226,14 @@ class SignalServer : boost::noncopyable
     std::vector<std::pair<float, float> >   notch_filter_;
     std::vector<Constants::DataType>        data_type_;
 
-    Constants                           cst_; ///<
+    Constants                               cst_; ///<
 
-    bool                                write_file; ///<
-    GDFWriter*                          gdf_writer_; ///<
-    SSMethods*                          ss_methods_;
+    bool                                    write_file; ///<
+    GDFWriter*                              gdf_writer_; ///<
+    SSMethods*                              ss_methods_;
+
+    boost::asio::deadline_timer             timeout_; ///< needed for KeepAlive
+    boost::uint32_t                         sec_for_timeout_;
 
 #ifdef TIMING_TEST
     boost::posix_time::ptime timestamp_;

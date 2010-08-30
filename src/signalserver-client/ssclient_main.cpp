@@ -25,6 +25,39 @@ const string CONFIG_FILE_ARGUMENT = "-c";
 
 //-----------------------------------------------------------------------------
 
+class SSClientKeepAliveReader
+{
+  public:
+    SSClientKeepAliveReader(SSClient& client) :
+      client_(client),
+      running_(1)
+    {}
+
+    void stop()
+    {
+      running_ = 0;
+    }
+
+    void read()
+    {
+      std::size_t bytes_transferred;
+      while(running_)
+      {
+//        cout << "keepalivethread geht" << endl;
+//        input_buffer_->commit(bytes_transferred);
+//        istream instream(input_buffer_);
+//        msg_decoder_->setInputStream(&instream);
+//        boost::shared_ptr<ControlMsg> msg(msg_decoder_->decodeMsg());
+      }
+    }
+  private:
+    SSClient&   client_;
+    bool        running_;
+    boost::asio::streambuf* input_buffer_; ///<
+};
+
+//-----------------------------------------------------------------------------
+
 class SSClientDataReader
 {
   public:
@@ -138,7 +171,6 @@ class SSClientDataReader
 //     boost::posix_time::time_duration t_var_;
 };
 
-
 //-----------------------------------------------------------------------------
 
 int main(int argc, const char* argv[])
@@ -209,10 +241,15 @@ int main(int argc, const char* argv[])
   SSClientDataReader reader(client, mutex, cond);
   boost::thread reader_thread(boost::bind(&SSClientDataReader::readData, &reader));
 
+//  SSClientKeepAliveReader keep_alive_reader(client);
+//  boost::thread keep_alive_thread(boost::bind(&SSClientKeepAliveReader::read, &keep_alive_reader));
+
     #ifdef WIN32
       SetPriorityClass(GetCurrentProcess(), ABOVE_NORMAL_PRIORITY_CLASS);
       SetPriorityClass(reader_thread.native_handle(), REALTIME_PRIORITY_CLASS);
       SetThreadPriority(reader_thread.native_handle(), THREAD_PRIORITY_TIME_CRITICAL );
+      SetPriorityClass(ka_reader_thread.native_handle(), REALTIME_PRIORITY_CLASS);
+      SetThreadPriority(ka_reader_thread.native_handle(), THREAD_PRIORITY_TIME_CRITICAL );
     #endif
 
   map<string, string> known_commands;
@@ -245,9 +282,11 @@ int main(int argc, const char* argv[])
     {
       client.stopReceiving();
       reader.stop();
+//      keep_alive_reader.stop();
       cond.notify_all();
 
       reader_thread.join();
+//      keep_alive_thread.join();
       if (client.receiving())
       {
         cerr << "Cannot Stop Receiving!" << endl;
@@ -258,10 +297,16 @@ int main(int argc, const char* argv[])
     {
       client.requestConfig();
     }
-    else if (command == "sendconfig" && (argv[1] == CONFIG_FILE_ARGUMENT || argv[3] == CONFIG_FILE_ARGUMENT))
+    else if (command == "sendconfig")
     {
-      client.sendConfig(config_file);
-      client.requestConfig();
+      if((argv[1] == CONFIG_FILE_ARGUMENT || argv[3] == CONFIG_FILE_ARGUMENT))
+      {
+        client.sendConfig(config_file);
+      }
+      else
+      {
+        cerr << "Client not started with own config-file" << endl;
+      }
     }
     else if (command == "starttcp" || command == "startudp")
     {

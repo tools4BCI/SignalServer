@@ -59,6 +59,8 @@ public:
     return pointer(new ControlConnection(io_service, ctl_conn_server, tcp_conn_handle));
   }
 
+  void checkKeepAlive();
+
 public:
   /**
    * @brief Destructor
@@ -122,6 +124,8 @@ private:
   ControlMsgDecoder*                       msg_decoder_; ///<
 
   boost::shared_ptr<ConfigMsg>             config_msg_; ///<
+
+  boost::shared_ptr<KeepAliveMsg>          keep_alive_msg_; ///<
 
   bool                                     transmission_started_; ///<
   int                                      connection_type_; ///<
