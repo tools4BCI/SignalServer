@@ -90,7 +90,8 @@ win32:SOURCES += extern/include/LptTools/LptTools_.cpp
 unix {
     LIBS  += -lboost_thread \
              -lboost_system \
-             -lSDL
+             -lSDL \
+             -Lextern/lib/libusb-1.0.8/libusb/.libs -lusb-1.0
 
     HARDWARE_PLATFORM = $$system(uname -i)
 
@@ -136,3 +137,4 @@ unix {
 
 #-----------------------------------------------------------------------
 #! end of file
+

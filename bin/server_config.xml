@@ -303,7 +303,8 @@
   <hardware name="mouse" version="1.0" serial="">
     <mode> aperiodic </mode>
     <device_settings>
-
+      <vendorid> 1133 </vendorid>
+      <productid> 49222 </productid>
     </device_settings>
   </hardware>  
 

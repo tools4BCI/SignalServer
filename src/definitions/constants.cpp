@@ -96,6 +96,11 @@ const string Constants::hw_bip_with("with");
 const string Constants::hw_drl("driven_right_leg");
 const string Constants::hw_drl_value("value");
 
+//Mouse specific start
+const string Constants::hw_vid("vendorid");
+const string Constants::hw_pid("productid");
+//Mouse specific end
+
 //-----------------------------------------------------------------------------
 
 Constants::Constants()
