@@ -15,11 +15,12 @@
 #endif
 
 #include <boost/cstdint.hpp>
-
 #include <set>
+#include <SDL/SDL.h>
+#include <cmath>
 
 #include "hw_thread.h"
-#include <SDL/SDL.h>
+#include "extern/lib/libusb-1.0.8/libusb/libusb.h"
 
 
 using namespace std;
@@ -68,6 +69,8 @@ class Mouse : public HWThread
       virtual SampleBlock<double> getSyncData()   {return data_; }
 
       void initMouse();
+      int blockKernelDriver();
+      int freeKernelDriver();
 
       //-----------------------------------------------
 
@@ -84,10 +87,14 @@ class Mouse : public HWThread
 
       string name_;
 
+      bool user_interrupt_;
+
       SampleBlock<double> empty_block_;
 
-      int wx_;
-      int wy_;
+      int x_,y_;
+      libusb_device **devs_; //pointer to pointer of device, used to retrieve a list of devices
+      libusb_device_handle *dev_handle_; //a device handle
+      libusb_context *ctx_; //a libusb session
   };
 
 

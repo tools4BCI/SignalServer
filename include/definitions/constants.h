@@ -279,6 +279,11 @@ namespace tobiss
           static const string hw_drl_value;   ///< USBamp specific
         //USBamp specific end
 
+        //Mouse specific start
+          static const string hw_vid;
+          static const string hw_pid;
+        //Mouse specific end
+
     private:
       /**
       * @brief Mapping strings, representing hardware, and identifiers together.
