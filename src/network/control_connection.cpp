@@ -128,15 +128,23 @@ void ControlConnection::handle_read(const boost::system::error_code& error,
         bool configOk = false;
 
         ctl_conn_server_.getConfig(*config_msg_);
-        ctl_conn_server_.setConfig(send_config_msg->configString(), configOk);
-
-        if(configOk)
+        if(!ctl_conn_server_.getClientConfigOk())
         {
-          ctl_conn_server_.getConfig(*config_msg_);
-          sendMsg(ReplyMsg::ok());
+          ctl_conn_server_.setConfig(send_config_msg->configString(), configOk);
+          if(configOk)
+          {
+            ctl_conn_server_.getConfig(*config_msg_);
+            sendMsg(ReplyMsg::ok());
+          }
+          else
+          {
+            sendMsg(ReplyMsg::configError());
+          }
+          ctl_conn_server_.setClientConfigOk(configOk);
         }
         else
         {
+          cerr << "Allready got another config from another Client" << endl;
           sendMsg(ReplyMsg::configError());
         }
         break;
@@ -317,13 +325,7 @@ void ControlConnection::handle_write(const boost::system::error_code& e, std::si
 void ControlConnection::checkKeepAlive()
 {
   sendMsg(*keep_alive_msg_);
-//  cout << "bin da" << endl;
-//  ControlMsgDecoder* msg_decoder;
-//  msg_decoder = new ControlMsgDecoderXML;
   boost::shared_ptr<ControlMsg> reply(msg_decoder_->decodeMsg());
-//  cout << "bin da" << endl;
-//  delete msg_decoder;
-//  cout << reply << endl;
   if (reply == 0)
   {
     std::stringstream ex_str;

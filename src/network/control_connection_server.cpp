@@ -37,7 +37,8 @@ ControlConnectionServer::ControlConnectionServer(boost::asio::io_service& io_ser
   : TCPServer(io_service),
   server_(server),
   subject_info_(0),
-  signal_info_(0)
+  signal_info_(0),
+  first_client_config_ok_(false)
 {
   signal_info_ = new SignalInfo;
   subject_info_ = new SubjectInfo;
@@ -212,6 +213,10 @@ void ControlConnectionServer::handleAccept(const TCPConnection::pointer& new_con
 
   // lock the connection list
   boost::unique_lock<boost::mutex> lock(mutex_);
+
+  if(connections_.empty())
+    first_client_ = connection;
+
   connections_.push_back(connection);
 
   startAccept();

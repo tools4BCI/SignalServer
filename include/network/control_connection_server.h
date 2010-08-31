@@ -81,6 +81,11 @@ public:
    */
   void checkAllKeepAlive();
 
+  void setClientConfigOk(bool configOk) {first_client_config_ok_ = configOk;}
+  bool getClientConfigOk() {return first_client_config_ok_;}
+
+  ControlConnection::pointer getFirstClient() {return first_client_;}
+
 protected:
   /**
    * @brief Creates the SubjectInfo object
@@ -106,6 +111,8 @@ private:
   SubjectInfo*                            subject_info_; ///< reference to the subject meta data
   SignalInfo*                             signal_info_;  ///< reference to the signal meta data
   Constants                               cst_;
+  ControlConnection::pointer              first_client_;
+  bool                                    first_client_config_ok_;
 };
 
 } // Namespace tobiss

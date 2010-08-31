@@ -48,6 +48,8 @@ ControlMsgDecoderXML::ControlMsgDecoderXML() :
   prototypes_["HWConfig"]                 = ControlMsgHandle(new HWConfigMsg());
   prototypes_["okReply"]                  = ControlMsgHandle(ReplyMsg::ok().clone());
   prototypes_["errorReply"]               = ControlMsgHandle(ReplyMsg::error().clone());
+  prototypes_["configErrorReply"]         = ControlMsgHandle(ReplyMsg::configError().clone());
+  prototypes_["aliveReply"]               = ControlMsgHandle(ReplyMsg::alive().clone());
 }
 
 //-----------------------------------------------------------------------------

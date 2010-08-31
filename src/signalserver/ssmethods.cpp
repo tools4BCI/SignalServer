@@ -52,16 +52,22 @@ void SSMethods::startServerSettings()
 
 void SSMethods::setClientConfig(XMLParser* config)
 {
-  config_ = config;
-//  server_->getConfig(*config_);
-
-  hw_access_->stopDataAcquisition();
-  hw_access_ = new HWAccess(server_->getIOService(), *config_);
-
-  setServerSettings();
-
-  server_->setServerSettings();
-  hw_access_->startDataAcquisition();
+  try
+  {
+    hw_access_->stopDataAcquisition();
+    hw_access_ = new HWAccess(server_->getIOService(), *config);
+    setServerSettings();
+    server_->setServerSettings();
+    hw_access_->startDataAcquisition();
+    config_ = config;
+  }
+  catch(ticpp::Exception& e)
+  {
+    cout << e.what() << endl;
+    string ex_str;
+    ex_str = "Setting Client-Config caused an error in HWAccess";
+    throw(ticpp::Exception(ex_str));
+  }
 }
 
 //-----------------------------------------------------------------------------

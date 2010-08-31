@@ -277,6 +277,8 @@ void ControlMsgEncoderXML::encodeMsg(const ConfigMsg& msg, std::ostream& stream)
       }
       element->SetAttribute("dataType", dataType);
 
+      // Work-around for FLOAT cause lexical_cast<float> converts wrong
+      // for example 0.45 is then 0.44999999981
       std::string filter;
       std::ostringstream temp_filter;
       temp_filter << channel.bpFilter().first;

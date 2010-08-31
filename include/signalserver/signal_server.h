@@ -196,11 +196,6 @@ class SignalServer : boost::noncopyable
      */
     void initGdf();
 
-    /**
-     * @brief Checks if attributes of client-config are conform with HWAccess-Channels
-     */
-    bool checkClientConfig(const std::string& config);
-
   private:
     boost::asio::io_service&            io_service_; ///<
     XMLParser*                          config_; ///<

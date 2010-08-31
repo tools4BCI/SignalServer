@@ -285,21 +285,28 @@ void SignalServer::initGdf()
 
 void SignalServer::setClientConfig(const std::string& config, bool& configOk)
 {
-  if(checkClientConfig(config))
+  XMLParser* temp;
+  try
   {
     ticpp::Document doc_;
     doc_.Parse(config);
     doc_.SaveFile(CLIENT_XML_CONFIG);
-
-    cout << "XMLParser hat funktioniert" << endl;
-    *config_ = XMLParser(CLIENT_XML_CONFIG);
-    ss_methods_->setClientConfig(config_);
+    temp = new XMLParser(CLIENT_XML_CONFIG);
+    ss_methods_->setClientConfig(temp);
     configOk = true;
+    *config_ = XMLParser(CLIENT_XML_CONFIG);
   }
-  else
+  catch(StrException& e)
   {
+    cerr << e.msg << endl;
     configOk = false;
   }
+  catch(ticpp::Exception& e)
+  {
+    cerr << e.what() << endl;
+    configOk = false;
+  }
+  delete temp;
 }
 
 //-----------------------------------------------------------------------------
@@ -322,51 +329,6 @@ void SignalServer::setConfig(XMLParser* config)
 void SignalServer::setServerSettings()
 {
   server_settings_ = config_->parseServerSettings();
-}
-
-//-----------------------------------------------------------------------------
-
-bool SignalServer::checkClientConfig(const std::string& config)
-{
-  ticpp::Document doc_;
-  doc_.Parse(config);
-  doc_.SaveFile(CLIENT_XML_CONFIG);
-  doc_.LoadFile(CLIENT_XML_CONFIG);
-
-  ticpp::Iterator<ticpp::Element> conf(doc_.FirstChildElement(cst_.tobi, true));
-  ticpp::Iterator<ticpp::Element> hw(conf->FirstChildElement(cst_.hardware, true));
-
-  std::string hw_name = hw->GetAttribute("name");;
-  int it = 0;
-  it = cst_.isSupportedHardware(hw_name);
-  if(!it)
-  {
-    cout << "ClientConfig: Hardware not supported" << endl;
-    return false;
-  }
-
-  ticpp::Iterator<ticpp::Element> ds(hw->FirstChildElement(cst_.hw_ds, true));
-
-  ticpp::Iterator<ticpp::Element> sr(ds->FirstChildElement(cst_.hw_fs, true));
-  if(sr->GetText(false) == "")
-  {
-    cout << "ClientConfig: Samplingrate not available" << endl;
-    return false;
-  }
-  ticpp::Iterator<ticpp::Element> bs(ds->FirstChildElement(cst_.hw_buffer, true));
-  if(bs->GetText(false) == "")
-  {
-    cout << "ClientConfig: Blocksize not available" << endl;
-    return false;
-  }
-
-  ticpp::Iterator<ticpp::Element> cs(hw->FirstChildElement(cst_.hw_cs, true));
-  cs = cs->FirstChildElement(cst_.hw_sel, true);
-  ticpp::Iterator<ticpp::Element> channels(cs->FirstChildElement(cst_.hw_cs_ch, true));
-
-  //TODO weitere Ueberpruefungen
-
-  return true;
 }
 
 //-----------------------------------------------------------------------------

@@ -670,11 +670,17 @@ void SSClientImpl::sendConfig(std::string& config)
   // Check reply type
   switch (reply->msgType())
   {
-    case ControlMsg::OkReply: break;
+    case ControlMsg::OkReply:
+    {
+      cout << "SSClient: SendConfig successfull" << endl;
+      cout << "          Server does accept config of Client!" << endl;
+      break;
+    }
 
     case ControlMsg::ConfigErrorReply:
     {
       cout << "SSClient: SendConfig was not successfull" << endl;
+      cout << "          Server does not accept config of Client!" << endl;
       break;
     }
 
