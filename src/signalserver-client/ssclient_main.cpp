@@ -23,6 +23,7 @@ using namespace tobiss;
 
 const string CONFIG_FILE_ARGUMENT = "-c";
 
+
 //-----------------------------------------------------------------------------
 
 class SSClientKeepAliveReader
@@ -216,6 +217,8 @@ int main(int argc, const char* argv[])
   }
 
   SSClient client;
+
+  client.setTimeoutKeepAlive(10);
 
   try
   {

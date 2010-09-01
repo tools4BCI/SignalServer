@@ -359,8 +359,6 @@ void ControlMsgEncoderXML::encodeMsg(const ReplyMsg& msg, std::ostream& stream)
 void ControlMsgEncoderXML::encodeMsg(const SendConfigMsg& msg, std::ostream& stream)
 {
   TiXmlDocument doc;
-  TiXmlDocument doc2(msg.configString());
-  doc2.LoadFile();
   TiXmlElement* xml_msg = 0;
   encodeBaseMsg(msg, "sendConfig", doc, xml_msg);
   assert(xml_msg != 0);
@@ -368,170 +366,8 @@ void ControlMsgEncoderXML::encodeMsg(const SendConfigMsg& msg, std::ostream& str
 
 
   TiXmlElement* config = new TiXmlElement("sendConfig");
-  config->LinkEndChild(new TiXmlText(lexical_cast<string>(doc2)));
+  config->LinkEndChild(new TiXmlText(msg.configString()));
   xml_msg->LinkEndChild(config);
-
-  writeXMLMsg(doc, stream);
-}
-
-//-----------------------------------------------------------------------------
-
-void ControlMsgEncoderXML::encodeMsg(const HWConfigMsg& msg, std::ostream& stream)
-{
-  TiXmlDocument doc;
-  TiXmlElement* xml_msg = 0;
-  encodeBaseMsg(msg,"hwconfig", doc, xml_msg);
-  assert(xml_msg != 0);
-
-  TiXmlElement* hw_config = new TiXmlElement("hwconfig");
-
-  xml_msg->LinkEndChild(hw_config);
-
-  const SubjectInfo& subject = msg.subject_info;
-
-  TiXmlElement* subject_elem = new TiXmlElement("subject");
-
-  TiXmlElement* element = 0;
-
-  element = new TiXmlElement("id");
-  element->LinkEndChild(new TiXmlText(subject.id()));
-  subject_elem->LinkEndChild(element);
-
-  element = new TiXmlElement("firstName");
-  element->LinkEndChild(new TiXmlText(subject.firstName()));
-  subject_elem->LinkEndChild(element);
-
-  element = new TiXmlElement("surname");
-  element->LinkEndChild(new TiXmlText(subject.surname()));
-  subject_elem->LinkEndChild(element);
-
-  element = new TiXmlElement("sex");
-  element->LinkEndChild(new TiXmlText(subject.sex() == SubjectInfo::Male ? "m" : "f"));
-  subject_elem->LinkEndChild(element);
-
-  element = new TiXmlElement("birthday");
-  element->LinkEndChild(new TiXmlText(subject.birthday()));
-  subject_elem->LinkEndChild(element);
-
-  element = new TiXmlElement("handedness");
-  element->LinkEndChild(new TiXmlText(subject.handedness() == SubjectInfo::RightHanded ? "r" : "l"));
-  subject_elem->LinkEndChild(element);
-
-  element = new TiXmlElement("medication");
-  element->LinkEndChild(new TiXmlText(subject.medication()));
-  subject_elem->LinkEndChild(element);
-
-  SubjectInfo::ShortInfoMap::const_iterator it_short_infos = subject.shortInfoMap().begin();
-  SubjectInfo::ShortInfoMap::const_iterator end_short_infos = subject.shortInfoMap().end();
-
-  for (; it_short_infos != end_short_infos; ++it_short_infos)
-  {
-    SubjectInfo::ShortInfoType type  = (*it_short_infos).first;
-    SubjectInfo::ShortInfoValue value = (*it_short_infos).second;
-
-    std::string value_as_str = value == SubjectInfo::Yes ? "yes" : "no";
-    switch(type)
-    {
-      case SubjectInfo::Glasses:
-        element = new TiXmlElement("glasses");
-        element->LinkEndChild(new TiXmlText(value_as_str));
-        subject_elem->LinkEndChild(element);
-        break;
-      case SubjectInfo::Smoking:
-        element = new TiXmlElement("smoker");
-        element->LinkEndChild(new TiXmlText(value_as_str));
-        subject_elem->LinkEndChild(element);
-        break;
-    }
-  }
-
-  hw_config->LinkEndChild(subject_elem);
-
-  const SignalInfo& signal_info = msg.signal_info;
-
-  TiXmlElement* signal_info_elem = new TiXmlElement("signalInfo");
-
-  TiXmlElement* master_elem = new TiXmlElement("master");
-
-  element = new TiXmlElement("blockSize");
-  string value = lexical_cast<string>(signal_info.masterBlockSize());
-  element->LinkEndChild(new TiXmlText(value));
-  master_elem->LinkEndChild(element);
-
-  element = new TiXmlElement("samplingRate");
-  value = lexical_cast<string>(signal_info.masterSamplingRate());
-  element->LinkEndChild(new TiXmlText(value));
-  master_elem->LinkEndChild(element);
-
-  signal_info_elem->LinkEndChild(master_elem);
-
-  TiXmlElement* signals_elem = new TiXmlElement("signals");
-
-  SignalInfo::SignalMap::const_iterator it_signals = signal_info.signals().begin();
-  SignalInfo::SignalMap::const_iterator end_signals = signal_info.signals().end();
-  for (; it_signals != end_signals; ++it_signals)
-  {
-    const std::string& type = (*it_signals).first;
-    const Signal& signal = (*it_signals).second;
-
-    TiXmlElement* signal_elem = new TiXmlElement("sig");
-    signal_elem->SetAttribute("type", type);
-
-    element = new TiXmlElement("blockSize");
-    value = lexical_cast<string>(signal.blockSize());
-    element->LinkEndChild(new TiXmlText(value));
-    signal_elem->LinkEndChild(element);
-
-    element = new TiXmlElement("samplingRate");
-    value = lexical_cast<string>(signal.samplingRate());
-    element->LinkEndChild(new TiXmlText(value));
-    signal_elem->LinkEndChild(element);
-
-    TiXmlElement* channels_elem = new TiXmlElement("channels");
-    std::vector<Channel>::const_iterator it_channels = signal.channels().begin();
-    std::vector<Channel>::const_iterator end_channels = signal.channels().end();
-    for (; it_channels != end_channels; ++it_channels)
-    {
-      const Channel& channel = (*it_channels);
-      element = new TiXmlElement("ch");
-      element->SetAttribute("id", channel.id());
-      element->SetAttribute("deviceId", lexical_cast<string>(channel.deviceId()));
-      element->SetAttribute("description", channel.description());
-      element->SetAttribute("physicalRange", lexical_cast<string>(channel.physicalRange()));
-      element->SetAttribute("digitalRange", lexical_cast<string>(channel.digitalRange()));
-
-      std::string dataType;
-      switch(channel.dataType())
-      {
-        case 0: dataType = "uint8"; break;
-        case 1: dataType = "int8"; break;
-        case 2: dataType = "uint16"; break;
-        case 3: dataType = "int16"; break;
-        case 4: dataType = "uint32"; break;
-        case 5: dataType = "int32"; break;
-        case 6: dataType = "uint64"; break;
-        case 7: dataType = "int64"; break;
-        case 8: dataType = "float"; break;
-        case 9: dataType = "double"; break;
-      }
-      element->SetAttribute("dataType", dataType);
-
-      element->SetAttribute("bp_filter_low", lexical_cast<string>(channel.bpFilter().first));
-      element->SetAttribute("bp_filter_high", lexical_cast<string>(channel.bpFilter().second));
-      element->SetAttribute("n_filter_low", lexical_cast<string>(channel.nFilter().first));
-      element->SetAttribute("n_filter_high", lexical_cast<string>(channel.nFilter().second));
-
-      channels_elem->LinkEndChild(element);
-    }
-
-    signal_elem->LinkEndChild(channels_elem);
-
-    signals_elem->LinkEndChild(signal_elem);
-  }
-
-  signal_info_elem->LinkEndChild(signals_elem);
-
-  hw_config->LinkEndChild(signal_info_elem);
 
   writeXMLMsg(doc, stream);
 }
@@ -568,9 +404,10 @@ void ControlMsgEncoderXML::writeXMLMsg(TiXmlDocument& doc, std::ostream& stream)
 
   {
     cout << ">>> XML Message:" << endl;
-    stringstream string_str;
-    string_str << doc;
-    cout << string_str.str() << endl;
+//    stringstream string_str;
+//    string_str << doc;
+//    cout << string_str.str() << endl;
+    doc.Print();
     cout << "<<< XML Message" << endl;
   }
 }

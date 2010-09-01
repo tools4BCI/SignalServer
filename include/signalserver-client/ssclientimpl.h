@@ -11,6 +11,7 @@
 // Boost
 #include <boost/asio.hpp>
 #include <boost/cstdint.hpp>
+#include <boost/utility.hpp>
 
 // local
 #include "ssclientimpl_base.h"
@@ -124,6 +125,9 @@ public:
    */
   virtual void sendConfig(std::string& config);
 
+  virtual void setTimeoutKeepAlive(boost::uint32_t seconds);
+  virtual void handleTimeoutKeepAlive();
+
 protected:
   enum ControlConnState
   {
@@ -179,6 +183,8 @@ protected:
   boost::asio::ip::tcp::endpoint  tcp_target_; ///<
 
   XMLParser*                      config_to_send_;
+  boost::asio::deadline_timer     timeout_; ///< needed for KeepAlive
+  boost::uint32_t                 sec_for_timeout_;
 
 #ifdef TIMING_TEST
 private:

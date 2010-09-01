@@ -12,6 +12,7 @@
 #include <boost/bind.hpp>
 #include <boost/exception/all.hpp>
 #include <boost/numeric/conversion/cast.hpp>
+#include "boost/date_time/posix_time/posix_time.hpp"
 
 // local
 #include "signalserver-client/ssclientimpl.h"
@@ -60,7 +61,8 @@ SSClientImpl::SSClientImpl() :
   buffered_data_(0),
   buffer_size_(BUFFER_SIZE),
   recv_buf_(buffer_size_),
-  data_buf_(0)
+  data_buf_(0),
+  timeout_(io_service_)
 {
   msg_encoder_ = new ControlMsgEncoderXML;
   msg_decoder_ = new ControlMsgDecoderXML;
@@ -654,7 +656,11 @@ void SSClientImpl::sendConfig(std::string& config)
   }
 
   SendConfigMsg msg;
-  msg.setConfigString(config);
+  TiXmlDocument doc(config);
+  doc.LoadFile();
+  stringstream string_str;
+  string_str << doc;
+  msg.setConfigString(string_str.str());
 
   msg_encoder_->encodeMsg(msg, ctl_conn_stream_);
 
@@ -701,6 +707,24 @@ void SSClientImpl::sendConfig(std::string& config)
 
   cout << "SSClient: Requesting config from Server" << endl;
   requestConfig();
+}
+
+//-----------------------------------------------------------------------------
+
+void SSClientImpl::setTimeoutKeepAlive(boost::uint32_t seconds)
+{
+  sec_for_timeout_ = seconds;
+  timeout_.expires_from_now(boost::posix_time::seconds(sec_for_timeout_));
+  timeout_.async_wait(boost::bind(&SSClientImpl::handleTimeoutKeepAlive,this));
+}
+
+//-----------------------------------------------------------------------------
+
+void SSClientImpl::handleTimeoutKeepAlive()
+{
+//  control_connection_server_->checkAllKeepAlive();
+  cout << "ich handle gerade keepalive" << endl;
+  setTimeoutKeepAlive(sec_for_timeout_);
 }
 
 //-----------------------------------------------------------------------------

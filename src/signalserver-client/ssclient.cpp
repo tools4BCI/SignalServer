@@ -106,4 +106,18 @@ void SSClient::sendConfig(std::string& config)
 
 //-----------------------------------------------------------------------------
 
+void SSClient::setTimeoutKeepAlive(boost::uint32_t seconds)
+{
+  impl_->setTimeoutKeepAlive(seconds);
+}
+
+//-----------------------------------------------------------------------------
+
+void SSClient::handleTimeoutKeepAlive()
+{
+  impl_->handleTimeoutKeepAlive();
+}
+
+//-----------------------------------------------------------------------------
+
 } // Namespace tobiss

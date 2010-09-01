@@ -11,6 +11,7 @@
 // local
 
 #include "datapacket/data_packet.h"
+#include <boost/cstdint.hpp>
 
 namespace tobiss
 {
@@ -90,6 +91,9 @@ public:
    * sa config(), requestConfig()
    */
   virtual void sendConfig(std::string& config) = 0;
+
+  virtual void setTimeoutKeepAlive(boost::uint32_t seconds) = 0;
+  virtual void handleTimeoutKeepAlive() = 0;
 };
 
 } // Namespace tobiss

@@ -153,20 +153,6 @@ void SendConfigMsg::readMsg(ControlMsgDecoder& decoder)
 
 //-----------------------------------------------------------------------------
 
-void HWConfigMsg::writeMsg(ControlMsgEncoder& encoder, std::ostream& stream) const
-{
-  encoder.encodeMsg(*this, stream);
-}
-
-//-----------------------------------------------------------------------------
-
-void HWConfigMsg::readMsg(ControlMsgDecoder& decoder)
-{
-  decoder.decodeMsg(*this);
-}
-
-//-----------------------------------------------------------------------------
-
 } // Namespace tobiss
 
 // End Of File

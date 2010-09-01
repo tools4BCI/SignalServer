@@ -9,6 +9,7 @@
 
 // STL
 #include <string>
+#include <boost/cstdint.hpp>
 
 #ifndef DECL_EXPORT
   #define DECL_EXPORT
@@ -158,6 +159,9 @@ public:
    * sa config(), requestConfig()
    */
   virtual void sendConfig(std::string& config);
+
+  virtual void setTimeoutKeepAlive(boost::uint32_t seconds);
+  virtual void handleTimeoutKeepAlive();
 
 protected:
   SSClientImplBase* impl_; ///< Pointer to implementation
