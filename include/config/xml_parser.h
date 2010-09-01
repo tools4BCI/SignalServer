@@ -52,6 +52,7 @@ class XMLParser
     * @throw ticpp::Exception if no subject defined or mutliple server settings availabe!
     */
     XMLParser(const std::string xml_file);
+    XMLParser(ticpp::Document doc);
     /**
     * @brief Default destructor
     */

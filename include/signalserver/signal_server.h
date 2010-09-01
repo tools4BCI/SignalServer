@@ -184,6 +184,13 @@ class SignalServer : boost::noncopyable
     */
     void setTimeoutKeepAlive(boost::uint32_t seconds);
 
+    /**
+    * @brief Sets Server in deamon-mode
+    */
+    void setDeamonMode() {deamon_ = true;}
+
+    bool isDeamon() {return deamon_;}
+
   private:
     /**
     * @brief Handles timeout for KeepAlive
@@ -230,6 +237,8 @@ class SignalServer : boost::noncopyable
 
     boost::asio::deadline_timer             timeout_; ///< needed for KeepAlive
     boost::uint32_t                         sec_for_timeout_;
+
+    bool                                    deamon_;
 
 #ifdef TIMING_TEST
     boost::posix_time::ptime timestamp_;

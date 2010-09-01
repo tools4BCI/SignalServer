@@ -48,8 +48,6 @@ using boost::int16_t;
 using boost::int64_t;
 using boost::lexical_cast;
 
-const string CLIENT_XML_CONFIG = "new_client_config.xml";
-
 //-----------------------------------------------------------------------------
 
 SignalServer::SignalServer(boost::asio::io_service& io_service)
@@ -60,7 +58,8 @@ SignalServer::SignalServer(boost::asio::io_service& io_service)
   control_connection_server_(0),
   write_file(0),
   gdf_writer_(0),
-  timeout_(io_service_)
+  timeout_(io_service_),
+  deamon_(false)
 {
   #ifdef TIMING_TEST
     timestamp_ = boost::posix_time::microsec_clock::local_time();
@@ -285,16 +284,15 @@ void SignalServer::initGdf()
 
 void SignalServer::setClientConfig(const std::string& config, bool& configOk)
 {
-  XMLParser* temp;
+  XMLParser* temp = 0;
   try
   {
-    ticpp::Document doc_;
-    doc_.Parse(config);
-    doc_.SaveFile(CLIENT_XML_CONFIG);
-    temp = new XMLParser(CLIENT_XML_CONFIG);
+    ticpp::Document doc;
+    doc.Parse(config);
+    temp = new XMLParser(doc);
     ss_methods_->setClientConfig(temp);
     configOk = true;
-    *config_ = XMLParser(CLIENT_XML_CONFIG);
+    *config_ = XMLParser(doc);
   }
   catch(StrException& e)
   {

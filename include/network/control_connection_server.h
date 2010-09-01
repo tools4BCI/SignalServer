@@ -85,6 +85,7 @@ public:
   bool getClientConfigOk() {return first_client_config_ok_;}
 
   ControlConnection::pointer getFirstClient() {return first_client_;}
+  SignalServer& getServer() {return server_;}
 
 protected:
   /**

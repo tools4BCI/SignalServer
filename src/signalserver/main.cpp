@@ -47,6 +47,7 @@ using namespace tobiss;
 
 const string DEFAULT_XML_CONFIG = "server_config.xml";
 const string XML_FILE_ARGUMENT = "-f";
+const string DEAMON_ARGUMENT = "-d";
 
 class DataPacketReader
 {
@@ -100,6 +101,12 @@ int main(int argc, const char* argv[])
       cout << endl << "  ***  Loading XML configuration file: " << argv[2] << endl << endl;
       config_file = argv[2];
     }
+    else if(argc == 2 && argv[1] == DEAMON_ARGUMENT)
+    {
+      config_file = DEFAULT_XML_CONFIG;
+      cout << endl << "  ***  Server started in deamon-mode";
+      cout << endl << "  ***  Loading XML configuration file: " << DEFAULT_XML_CONFIG << endl << endl;
+    }
     else
       cout << " ERROR -- Wrong Number of input arguments!" << endl;
 
@@ -114,6 +121,8 @@ int main(int argc, const char* argv[])
 
       SignalServer server(io_service);
       server.setTimeoutKeepAlive(10);
+      if(argc == 2 && argv[1] == DEAMON_ARGUMENT)
+        server.setDeamonMode();
 
       if(!first_run)
       {

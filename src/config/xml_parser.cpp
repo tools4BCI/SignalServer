@@ -77,6 +77,60 @@ XMLParser::XMLParser(string xml_file)
 
 //---------------------------------------------------------------------------------------
 
+XMLParser::XMLParser(ticpp::Document doc)
+ : external_data_file_(0)
+{
+  #ifdef DEBUG
+    cout << "XMLParser: Constructor for config sent by client" << endl;
+  #endif
+
+  doc_ = doc;
+  ticpp::Iterator<ticpp::Element> config(doc_.FirstChildElement(cst_.tobi, true));
+
+  file_reader_ = config->FirstChildElement(cst_.file_reader, false);
+
+  if( file_reader_ != file_reader_.end() )
+  {
+    for(ticpp::Iterator<ticpp::Element> it(file_reader_) ; ++it != it.end(); )
+      if(it->Value() == cst_.file_reader)
+        throw(ticpp::Exception("Error -- Only one subject definition allowed!"));
+
+    external_data_file_ = 1;
+
+    parseFileReader();
+  }
+
+
+  server_settings_ = config->FirstChildElement(cst_.ss, true);
+  for(ticpp::Iterator<ticpp::Element> it(server_settings_); ++it != it.end(); )
+    if(it->Value() == cst_.ss)
+      throw(ticpp::Exception("Error -- Multiple server settings found!"));
+
+  if(external_data_file_)
+    return;
+
+  subject_ = config->FirstChildElement(cst_.subject, true);
+  for(ticpp::Iterator<ticpp::Element> it(subject_); ++it != it.end(); )
+    if(it->Value() == cst_.subject)
+      throw(ticpp::Exception("Error -- Only one subject definition allowed!"));
+
+  ticpp::Iterator< ticpp::Attribute > attribute;
+  for(ticpp::Iterator<ticpp::Element> it(config->FirstChildElement(cst_.hardware, true));
+      it != it.end(); it++)
+      if(it->Value() == cst_.hardware)
+    {
+      map<string, string> m;
+      for(attribute = attribute.begin(it.Get()); attribute != attribute.end();
+          attribute++)
+        m.insert(pair<string, string>(attribute->Name(), attribute->Value()));
+      checkHardwareAttributes(m);
+
+      hardware_.push_back(make_pair(m.find(cst_.hardware_name)->second,it));
+    }
+}
+
+//---------------------------------------------------------------------------------------
+
 map<string,string> XMLParser::parseSubject()
 {
   #ifdef DEBUG

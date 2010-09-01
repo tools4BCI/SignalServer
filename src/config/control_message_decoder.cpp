@@ -781,9 +781,6 @@ void ControlMsgDecoderXML::decodeMsg(SendConfigMsg& msg)
   }
   else
   {
-//    ticpp::Document doc(*config_element->GetDocument());
-//    std::stringstream string_str;
-//    string_str << doc;
     std::string text = config_element->GetText();
     msg.setConfigString(text);
   }

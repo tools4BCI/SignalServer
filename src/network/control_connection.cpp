@@ -21,6 +21,7 @@
 #include "network/control_connection_server.h"
 #include "network/tcp_data_server.h"
 #include "network/udp_data_server.h"
+#include "signalserver/signal_server.h"
 
 namespace tobiss
 {
@@ -127,24 +128,32 @@ void ControlConnection::handle_read(const boost::system::error_code& error,
 
         bool configOk = false;
 
-        ctl_conn_server_.getConfig(*config_msg_);
-        if(!ctl_conn_server_.getClientConfigOk())
+        if(ctl_conn_server_.getServer().isDeamon())
         {
-          ctl_conn_server_.setConfig(send_config_msg->configString(), configOk);
-          if(configOk)
+          ctl_conn_server_.getConfig(*config_msg_);
+          if(!ctl_conn_server_.getClientConfigOk())
           {
-            ctl_conn_server_.getConfig(*config_msg_);
-            sendMsg(ReplyMsg::ok());
+            ctl_conn_server_.setConfig(send_config_msg->configString(), configOk);
+            if(configOk)
+            {
+              ctl_conn_server_.getConfig(*config_msg_);
+              sendMsg(ReplyMsg::ok());
+            }
+            else
+            {
+              sendMsg(ReplyMsg::configError());
+            }
+            ctl_conn_server_.setClientConfigOk(configOk);
           }
           else
           {
+            cerr << "Allready got another config from another Client" << endl;
             sendMsg(ReplyMsg::configError());
           }
-          ctl_conn_server_.setClientConfigOk(configOk);
         }
         else
         {
-          cerr << "Allready got another config from another Client" << endl;
+          cerr << "SignalServer is not in deamon-mode" << endl;
           sendMsg(ReplyMsg::configError());
         }
         break;
