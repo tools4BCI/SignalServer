@@ -183,8 +183,12 @@ unsigned int AsioSerialPortTypeNames::getParityID(std::string str)
 //-----------------------------------------------------------------------------
 
 
-SerialPortBase::SerialPortBase(boost::asio::io_service& io, XMLParser& parser)
-  : HWThread(parser), serial_port_(io), data_available_(true), data_written_(true),
+//SerialPortBase::SerialPortBase(boost::asio::io_service& io, XMLParser& parser)
+//  : HWThread(parser), serial_port_(io), data_available_(true), data_written_(true),
+//    baud_rate_(0), flow_control_type_(0), parity_(0), stop_bits_(0), character_size_(0),
+//    asio_types_(AsioSerialPortTypeNames::getInstance())
+SerialPortBase::SerialPortBase(boost::asio::io_service& io)
+  : serial_port_(io), data_available_(true), data_written_(true),
     baud_rate_(0), flow_control_type_(0), parity_(0), stop_bits_(0), character_size_(0),
     asio_types_(AsioSerialPortTypeNames::getInstance())
 {

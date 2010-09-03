@@ -94,7 +94,7 @@ static const std::string  MOBILAB_PARITY       = "none";
 
 GMobilab::GMobilab(boost::asio::io_service& io, XMLParser& parser,
          ticpp::Iterator<ticpp::Element> hw)
-  : SerialPortBase(io, parser), type_(EEG), async_acqu_thread_(0)
+  : SerialPortBase(io), HWThread(parser), type_(EEG), async_acqu_thread_(0)
 {
   setHardware(hw);
 
