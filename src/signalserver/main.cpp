@@ -35,6 +35,7 @@
 #include <boost/exception/all.hpp>
 
 // local
+#include "version.h"
 #include "signalserver/signal_server.h"
 #include "config/xml_parser.h"
 #include "hardware/hw_access.h"
@@ -81,10 +82,24 @@ class DataPacketReader
 
 //-----------------------------------------------------------------------------
 
+void printVersion()
+{
+  cout << endl;
+  cout << "SignalServer -- Version: " << MAJOR_VERSION;
+  cout << " (build " << BUILD_NUMBER << ")";
+  #ifdef WIN32
+    cout << " -- " << BUILD_STR << endl;
+  #else
+    cout << " -- " << __DATE__ << " " << __TIME__ << endl;
+  #endif
+}
+
 int main(int argc, const char* argv[])
 {
   try
   {
+    printVersion();
+
     string config_file;
     bool running = true;
 

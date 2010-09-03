@@ -22,7 +22,16 @@ INCLUDEPATH += extern/include
 
 win32:INCLUDEPATH += extern/include/SDL-1.2.14-VC8
 
-unix: QMAKE_CXXFLAGS += -pedantic
+unix{
+QMAKE_CXXFLAGS += -pedantic
+
+versiontarget.target = ./update-version.sh
+versiontarget.commands = ./update-version.sh
+versiontarget.depends = FORCE
+
+PRE_TARGETDEPS += ./update-version.sh
+QMAKE_EXTRA_TARGETS += versiontarget
+}
 
 #-----------------------------------------------------------------------
 
