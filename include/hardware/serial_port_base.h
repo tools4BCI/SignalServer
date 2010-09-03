@@ -51,10 +51,11 @@ class AsioSerialPortTypeNames
 //-----------------------------------------------------------------------------
 
 
-class SerialPortBase : public HWThread
+class SerialPortBase
 {
   protected:
-    SerialPortBase(boost::asio::io_service& io, XMLParser& parser);
+//    SerialPortBase(boost::asio::io_service& io, XMLParser& parser);
+    SerialPortBase(boost::asio::io_service& io);
     virtual ~SerialPortBase();
 
     void setPortName(const std::string& name);

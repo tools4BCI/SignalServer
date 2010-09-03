@@ -25,7 +25,7 @@ namespace tobiss
 *
 * @brief
 */
-class GMobilab : public SerialPortBase
+class GMobilab : private SerialPortBase, public HWThread
 {
   public:
     GMobilab(boost::asio::io_service& io, XMLParser& parser,
