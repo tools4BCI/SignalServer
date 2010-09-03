@@ -509,6 +509,26 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="filereading"
+				>
+				<File
+					RelativePath=".\include\filereading\data_file_handler.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\filereading\file_reader.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\filereading\file_reader_factory.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\filereading\gdf_file_reader.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>
