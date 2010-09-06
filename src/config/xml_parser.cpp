@@ -1,7 +1,6 @@
 #include "config/xml_parser.h"
 
 #include <boost/algorithm/string.hpp>
-#include "libgdf/gdfwriter.h"
 
 namespace tobiss
 {

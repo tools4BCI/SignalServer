@@ -112,18 +112,19 @@ class USBamp : public HWThread
 
     void checkFilterAttributes(ticpp::Iterator<ticpp::Element>const &elem);
     void getFilterParams(ticpp::Iterator<ticpp::Element>const &elem,\
-      unsigned int &type, unsigned int &order, float &f_low, float &f_high);
+      unsigned int &type, unsigned int &order, double &f_low, double &f_high);
     void checkNotchAttributes(ticpp::Iterator<ticpp::Element>const &elem);
     void getNotchParams(ticpp::Iterator<ticpp::Element>const &elem, float &f_center);
 
     void checkNrOfChannels();
+    void adjustSettingsToChannelSelection();
     void checkTriggerLineChannel();
 
     void getHandles();
     void check4USBampError();
     void initFilterPtrs();
     void setUSBampChannels();
-    int search4FilterID(unsigned int type, unsigned int order, float f_low, float f_high);
+    int search4FilterID(unsigned int type, unsigned int order, double f_low, double f_high);
     int search4NotchID(float f_center);
     void setUSBampFilter();
     void setUSBampNotch();

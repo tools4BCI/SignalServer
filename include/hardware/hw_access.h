@@ -24,12 +24,6 @@
 #include "hw_thread.h"
 // #include "file_reader.h"
 
-
-	#ifdef WIN32
-	  #include "usbamp.h"
-	#endif
-
-
 namespace tobiss
 {
 
