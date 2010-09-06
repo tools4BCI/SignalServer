@@ -17,6 +17,8 @@
 // local
 #include "datapacket/data_packet.h"
 #include "signalserver-client/ssclient.h"
+#include "signalserver-client/ssclientimpl.h"
+#include "config/control_message_decoder.h"
 
 using namespace std;
 using namespace tobiss;
@@ -31,7 +33,7 @@ class SSClientKeepAliveReader
   public:
     SSClientKeepAliveReader(SSClient& client) :
       client_(client),
-      running_(1)
+      running_(true)
     {}
 
     void stop()
@@ -44,17 +46,14 @@ class SSClientKeepAliveReader
       std::size_t bytes_transferred;
       while(running_)
       {
-//        cout << "keepalivethread geht" << endl;
-//        input_buffer_->commit(bytes_transferred);
-//        istream instream(input_buffer_);
-//        msg_decoder_->setInputStream(&instream);
-//        boost::shared_ptr<ControlMsg> msg(msg_decoder_->decodeMsg());
+
       }
     }
   private:
     SSClient&   client_;
     bool        running_;
-    boost::asio::streambuf* input_buffer_; ///<
+    boost::asio::streambuf* input_buffer_;
+    ControlMsgDecoder* msg_decoder_;
 };
 
 //-----------------------------------------------------------------------------
