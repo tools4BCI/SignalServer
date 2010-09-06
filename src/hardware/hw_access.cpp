@@ -6,6 +6,7 @@
 #include "hardware/sine_generator.h"
 #include "hardware/event_listener.h"
 #include "hardware/jstick.h"
+#include "hardware/mouse.h"
 
 #ifdef WIN32
   #include "hardware/usbamp.h"
@@ -45,6 +46,8 @@ HWAccess::HWAccess(boost::asio::io_service& io, XMLParser& parser)
       { }
     if( cst_.isJoystick(parser.getHardwareElementName(n)) )
       slaves_.push_back(new JStick(parser, parser.getHardwareElement(n)));
+    if( cst_.isMouse(parser.getHardwareElementName(n)) )
+      slaves_.push_back(new Mouse(parser, parser.getHardwareElement(n)));
   }
 
 

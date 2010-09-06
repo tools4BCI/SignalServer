@@ -42,6 +42,7 @@ HEADERS +=  include/signalserver/signal_server.h \
             include/hardware/sine_generator.h \
             include/hardware/event_listener.h\
             include/hardware/jstick.h\
+            include/hardware/mouse.h\
             include/hardware/usbamp.h\
             include/filereading/data_file_handler.h\
             include/filereading/file_reader_factory.h\
@@ -70,6 +71,7 @@ SOURCES +=  src/signalserver/main.cpp \
             src/hardware/sine_generator.cpp \
             src/hardware/event_listener.cpp\
             src/hardware/jstick.cpp\
+            src/hardware/mouse.cpp\
             src/hardware/usbamp.cpp\
             src/filereading/data_file_handler.cpp\
             src/filereading/file_reader_factory.cpp\
@@ -97,7 +99,8 @@ win32:SOURCES += extern/include/LptTools/LptTools_.cpp
 unix {
     LIBS  += -lboost_thread \
              -lboost_system \
-             -lSDL
+             -lSDL \
+             -Lextern/lib/libusb-1.0.8/libusb/.libs -lusb-1.0
 
     HARDWARE_PLATFORM = $$system(uname -m)
 
@@ -146,3 +149,4 @@ unix {
 
 #-----------------------------------------------------------------------
 #! end of file
+

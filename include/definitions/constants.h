@@ -102,6 +102,14 @@ namespace tobiss
       bool isJoystick(const string& s);
 
       /**
+      * @brief Checks, if the given string represents a Mouse device.
+      * @param[in] s String to be checked.
+      * @return Bool
+      *
+      */
+      bool isMouse(const string& s);
+
+      /**
       * @brief Maps given strings "on" or "off" to boolean values 0 or 1.
       * @param[in] s String to be checked.
       * @return Bool
@@ -270,6 +278,11 @@ namespace tobiss
           static const string hw_drl;        ///< USBamp specific
           static const string hw_drl_value;   ///< USBamp specific
         //USBamp specific end
+
+        //Mouse specific start
+          static const string hw_vid;
+          static const string hw_pid;
+        //Mouse specific end
 
     private:
       /**
