@@ -118,7 +118,7 @@ void SineGenerator::genSine()
   #endif
 
   for(uint8_t n = 0; n < nr_ch_ ; n++)
-    samples_[n] = sin(step_ * 2 * PI + n);
+    samples_[n] = sin(step_ * 2 * PI + n/4);
 
   (step_ < 1-cycle_dur_ ? step_ += cycle_dur_ : step_ = 0);
   t_->expires_at(t_->expires_at() + td_);

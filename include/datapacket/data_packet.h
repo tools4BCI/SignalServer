@@ -269,7 +269,7 @@ class DataPacket
     * @param[in] pos The position in the DataPacket (from getDataPos() ).
     * @return The offset in the samples vector for the "n-th" signal.
     */
-    boost::uint32_t getOffset(boost::uint16_t pos);
+    boost::uint32_t getOffset(boost::uint32_t pos);
 
     /**
     * @brief Append data (only one signal type) from a hardware device into the DataPacket (will be automatically placed correct).
