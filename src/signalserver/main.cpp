@@ -213,6 +213,10 @@ int main(int argc, const char* argv[])
         server.getConfig(temp_config);
         boost::this_thread::sleep(boost::posix_time::seconds(1));
       }
+      else
+      {
+        cout << "TODO: Notify all clients that server stops now" << endl;
+      }
     }
   }
   catch(ticpp::Exception& ex)

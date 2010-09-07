@@ -32,7 +32,7 @@ class ControlMsg
 {
   public:
     enum MsgType {
-      KeepAlive = 0,
+      KeepAlive = 1,
       GetConfig,
       Config,
       GetDataConnection,
@@ -40,6 +40,7 @@ class ControlMsg
       StartTransmission,
       StopTransmission,
       OkReply,
+      ConfigOkReply,
       AliveReply,
       ErrorReply,
       ConfigErrorReply,
@@ -212,6 +213,7 @@ class ReplyMsg : public ControlMsg
   public:
     static ReplyMsg error()       { return ReplyMsg(ErrorReply); }
     static ReplyMsg ok()          { return ReplyMsg(OkReply); }
+    static ReplyMsg configOk()    { return ReplyMsg(ConfigOkReply); }
     static ReplyMsg configError() { return ReplyMsg(ConfigErrorReply); }
     static ReplyMsg alive()       { return ReplyMsg(AliveReply); }
 

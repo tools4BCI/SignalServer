@@ -25,37 +25,6 @@ using namespace tobiss;
 
 const string CONFIG_FILE_ARGUMENT = "-c";
 
-
-//-----------------------------------------------------------------------------
-
-class SSClientKeepAliveReader
-{
-  public:
-    SSClientKeepAliveReader(SSClient& client) :
-      client_(client),
-      running_(true)
-    {}
-
-    void stop()
-    {
-      running_ = 0;
-    }
-
-    void read()
-    {
-      std::size_t bytes_transferred;
-      while(running_)
-      {
-
-      }
-    }
-  private:
-    SSClient&   client_;
-    bool        running_;
-    boost::asio::streambuf* input_buffer_;
-    ControlMsgDecoder* msg_decoder_;
-};
-
 //-----------------------------------------------------------------------------
 
 class SSClientDataReader
@@ -215,9 +184,13 @@ int main(int argc, const char* argv[])
     return(-1);
   }
 
-  SSClient client;
+  boost::asio::io_service io_service;
+  SSClient client(io_service);
 
-  client.setTimeoutKeepAlive(10);
+  client.setTimeoutKeepAlive(1000);
+
+  boost::thread* io_thread_ptr = 0;
+  io_thread_ptr  = new boost::thread(boost::bind(&boost::asio::io_service::run, &io_service));
 
   try
   {
@@ -242,9 +215,6 @@ int main(int argc, const char* argv[])
 
   SSClientDataReader reader(client, mutex, cond);
   boost::thread reader_thread(boost::bind(&SSClientDataReader::readData, &reader));
-
-//  SSClientKeepAliveReader keep_alive_reader(client);
-//  boost::thread keep_alive_thread(boost::bind(&SSClientKeepAliveReader::read, &keep_alive_reader));
 
     #ifdef WIN32
       SetPriorityClass(GetCurrentProcess(), ABOVE_NORMAL_PRIORITY_CLASS);
@@ -284,11 +254,15 @@ int main(int argc, const char* argv[])
     {
       client.stopReceiving();
       reader.stop();
-//      keep_alive_reader.stop();
+      io_service.stop();
+      if(io_thread_ptr)
+      {
+        io_thread_ptr->join();
+        delete io_thread_ptr;
+      }
       cond.notify_all();
 
       reader_thread.join();
-//      keep_alive_thread.join();
       if (client.receiving())
       {
         cerr << "Cannot Stop Receiving!" << endl;

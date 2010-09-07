@@ -10,13 +10,17 @@
 
 // Boost
 #include <boost/asio.hpp>
+#include <boost/bind.hpp>
+#include <boost/iostreams/stream.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/utility.hpp>
+#include <boost/thread/thread.hpp>
 
 // local
 #include "ssclientimpl_base.h"
 #include "ssconfig.h"
 #include "definitions/defines.h"
+#include "config/control_messages.h"
 
 using std::string;
 
@@ -42,7 +46,7 @@ public:
   /**
   * @brief Default Constructor
   */
-  SSClientImpl();
+  SSClientImpl(boost::asio::io_service& io_service);
   /**
   * @brief Destructor
   */
@@ -56,6 +60,7 @@ public:
   *   connect to the server or if the client is already connected.
   */
   virtual void connect(const std::string& address, short unsigned port);
+
   /**
    * @brief Tells if the client is connected to the server,
    *        i.e. if the control connection has been established.
@@ -155,9 +160,24 @@ protected:
   */
   void closeDataConnection();
 
+  void handleConnect(const boost::system::error_code& error,
+      boost::asio::ip::tcp::resolver::iterator endpoint_iterator);
+  void handle_write(const boost::system::error_code& e,
+      std::size_t bytes_transferred);
+  void handle_read(const boost::system::error_code& e,
+      std::size_t bytes_transferred, int old_msg_type=0);
+  void sendMsg(const ControlMsg& msg);
+
 protected:
-  boost::asio::io_service         io_service_; ///<
+  boost::asio::io_service&        io_service_; ///<
   boost::asio::ip::tcp::iostream  ctl_conn_stream_; ///<
+
+  boost::asio::ip::tcp::socket    socket_;
+  boost::asio::ip::tcp::resolver  resolver_;
+  boost::asio::streambuf*         output_buffer_;
+  boost::asio::streambuf*         input_buffer_;
+  static const size_t MAX_DATA_SIZE = 100 * 1024;
+  boost::thread*                  io_thread_;
 
   boost::asio::ip::tcp::socket    data_socket_tcp_; ///<
   boost::asio::ip::udp::socket    data_socket_udp_; ///<

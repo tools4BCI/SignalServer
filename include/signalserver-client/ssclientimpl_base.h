@@ -26,7 +26,7 @@ class XMLParser;
 *
 * @brief Abstract Base of the SSClient Implementation
 */
-class SSClientImplBase
+class SSClientImplBase : boost::noncopyable
 {
 public:
   /**

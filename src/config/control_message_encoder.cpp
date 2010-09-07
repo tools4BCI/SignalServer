@@ -329,6 +329,11 @@ void ControlMsgEncoderXML::encodeMsg(const ReplyMsg& msg, std::ostream& stream)
       assert(xml_msg != 0);
       xml_msg->LinkEndChild(new TiXmlElement("okReply"));
       break;
+    case ControlMsg::ConfigOkReply:
+      encodeBaseMsg(msg, "configOkReply", doc, xml_msg);
+      assert(xml_msg != 0);
+      xml_msg->LinkEndChild(new TiXmlElement("configOkReply"));
+      break;
     case ControlMsg::AliveReply:
       encodeBaseMsg(msg, "aliveReply", doc, xml_msg);
       assert(xml_msg != 0);

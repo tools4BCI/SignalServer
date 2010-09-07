@@ -10,6 +10,7 @@
 // STL
 #include <string>
 #include <boost/cstdint.hpp>
+#include <boost/asio.hpp>
 
 #ifndef DECL_EXPORT
   #define DECL_EXPORT
@@ -67,7 +68,7 @@ class XMLParser;
 *
 * @endcode
 */
-class DECL_EXPORT SSClient
+class DECL_EXPORT SSClient : boost::noncopyable
 {
 public:
   /**
@@ -75,7 +76,7 @@ public:
    * Call connect() to establish a connection to a TOBI SignalServer.
    * @throws
    */
-  SSClient();
+  SSClient(boost::asio::io_service& io_service);
   /**
    * @brief Destructor
    */
