@@ -195,6 +195,9 @@ int main(int argc, const char* argv[])
   try
   {
     client.connect(srv_addr, srv_port);
+    // Sleep because Client want to send without knowing if connected to Server
+    // TODO: find another way to fix this
+    boost::this_thread::sleep(boost::posix_time::seconds(1));
     if(!client_sends_config)
     {
       client.requestConfig();
@@ -207,6 +210,7 @@ int main(int argc, const char* argv[])
   catch(std::exception& e)
   {
     cerr << e.what() << endl;
+    delete io_thread_ptr;
     return 1;
   }
 

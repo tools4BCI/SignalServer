@@ -408,12 +408,11 @@ void ControlMsgEncoderXML::writeXMLMsg(TiXmlDocument& doc, std::ostream& stream)
   stream << doc;
 
   {
+    cout << "OUTGOING XML message:" << endl;
     cout << ">>> XML Message:" << endl;
-//    stringstream string_str;
-//    string_str << doc;
-//    cout << string_str.str() << endl;
     doc.Print();
     cout << "<<< XML Message" << endl;
+    cout << "OUTGOING XML message - EOF" << endl;
   }
 }
 

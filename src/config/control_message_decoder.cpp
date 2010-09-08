@@ -88,9 +88,11 @@ ControlMsg* ControlMsgDecoderXML::decodeMsgInternal()
     return 0;
   }
 
+  cout << "INCOMING XML message:" << endl;
   cout << ">>> XML message " << endl;
   tixml_doc_->Print();
   cout << "<<< XML message " << endl;
+  cout << "INCOMING XML message - EOF" << endl;
 
   ticpp::Element* message = xml_doc_->FirstChildElement("message", false);
   if (message == 0)

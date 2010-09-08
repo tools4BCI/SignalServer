@@ -142,18 +142,6 @@ void SSClientImpl::connect(const std::string& address,  short unsigned port)
   socket_.async_connect(endpoint,
       boost::bind(&SSClientImpl::handleConnect, this,
         boost::asio::placeholders::error, ++endpoint_iterator));
-
-//
-//   ctl_conn_stream_.connect(address, conv.str());
-//   if (!ctl_conn_stream_)
-//   {
-//     stringstream ex_str;
-//     ex_str << "SSClient: An error occurred while connecting to server "
-//            << address << ":" << port;
-//     throw std::ios_base::failure(ex_str.str());
-//   }
-//
-   ctl_conn_state_ = ControlConnState_Connected;
 }
 
 //-----------------------------------------------------------------------------
@@ -164,6 +152,7 @@ void SSClientImpl::handleConnect(const boost::system::error_code& error,
   if(!error)
   {
     cout << "Connection to server successful" << endl;
+    ctl_conn_state_ = ControlConnState_Connected;
   }
   else if(endpoint_iterator != boost::asio::ip::tcp::resolver::iterator())
   {
@@ -175,7 +164,15 @@ void SSClientImpl::handleConnect(const boost::system::error_code& error,
   }
   else
   {
-    cerr << "An error occured while connecting to Server: " << error.message() << endl;
+    stringstream ex_str;
+    ex_str << "SSClient: An error occurred while connecting to server - Error: "
+        << error.message() << endl;
+    socket_.close();
+    delete msg_encoder_;
+    delete msg_decoder_;
+    delete output_buffer_;
+    delete input_buffer_;
+    throw std::ios_base::failure(ex_str.str());
   }
 }
 
@@ -227,11 +224,6 @@ void SSClientImpl::requestConfig()
         boost::asio::placeholders::error,
         boost::asio::placeholders::bytes_transferred, 0));
 
-//  boost::shared_ptr<ConfigMsg> config_msg =
-//      boost::static_pointer_cast<ConfigMsg>(reply);
-//
-//  config_.subject_info = config_msg->subject_info;
-//  config_.signal_info = config_msg->signal_info;
 }
 
 //-----------------------------------------------------------------------------
@@ -250,77 +242,6 @@ void SSClientImpl::establishDataConnection(bool use_udp_bc)
 
   // TODO: check for connection loss
   sendMsg(msg);
-//  msg_encoder_->encodeMsg(msg, ctl_conn_stream_);
-//
-//  cout << "SSClient: Waiting on reply" << endl;
-//
-//  boost::shared_ptr<ControlMsg> reply(msg_decoder_->decodeMsg());
-//
-//  if (reply == 0)
-//  {
-//    stringstream ex_str;
-//    ex_str << "SSClient: Cannot decode message";
-//    throw std::ios_base::failure(ex_str.str());
-//  }
-//
-//  // Check reply type
-//  switch (reply->msgType())
-//  {
-//    case ControlMsg::DataConnection: break;
-//
-//    case ControlMsg::ErrorReply:
-//    {
-//      stringstream ex_str;
-//      ex_str << "SSClient: Establishing data connection failed due to a server error.";
-//      throw std::ios_base::failure(ex_str.str());
-//    }
-//
-//    default:
-//    {
-//      stringstream ex_str;
-//      ex_str << "SSClient: Got unexpected reply of type '" << reply->msgType() << "'";
-//      throw std::ios_base::failure(ex_str.str());
-//    }
-//  }
-//  boost::shared_ptr<DataConnectionMsg> data_conn_msg =
-//        boost::static_pointer_cast<DataConnectionMsg>(reply);
-//
-//  boost::system::error_code ec;
-//  boost::asio::socket_base::receive_buffer_size buffer_size(buffer_size_);
-//
-//  if (use_udp_bc_)
-//  {
-//    boost::asio::ip::udp::endpoint endpoint(boost::asio::ip::udp::v4(), data_conn_msg->port());
-//    data_socket_udp_.open(boost::asio::ip::udp::v4(), ec);
-//    if (!ec)
-//    {
-//      data_socket_udp_.bind(endpoint, ec);
-//      boost::asio::socket_base::broadcast bcast(true);
-//      data_socket_udp_.set_option(bcast);
-//      data_socket_udp_.set_option(buffer_size);
-//    }
-//  }
-//  else
-//  {
-//     boost::system::error_code ec;
-//     tcp_target_ = boost::asio::ip::tcp::endpoint(
-//        ctl_conn_stream_.rdbuf()->remote_endpoint().address(),
-//        data_conn_msg->port());
-//     data_socket_tcp_.connect(tcp_target_, ec);
-//     boost::asio::socket_base::receive_buffer_size buffer_size(buffer_size_);
-//     data_socket_tcp_.set_option(buffer_size);
-//  }
-//
-//  if (ec)
-//  {
-//    data_input_state_ = DataInputState_NotConnected;
-//    stringstream ex_str;
-//    ex_str << "SSClient: Could not connect to signal server:";
-//    ex_str << "-->" << ec.message();
-//    throw std::ios_base::failure(ex_str.str());
-//  }
-//
-//  data_input_state_ |= DataInputState_Connected;
 }
 
 //-----------------------------------------------------------------------------
@@ -369,6 +290,7 @@ void SSClientImpl::startReceiving(bool use_udp_bc)
     throw std::ios_base::failure(ex_str.str());
   }
 
+//  boost::thread* establish = 0;
   if (data_input_state_ == DataInputState_NotConnected)
   {
     try
@@ -383,42 +305,19 @@ void SSClientImpl::startReceiving(bool use_udp_bc)
 
   StartTransmissionMsg msg;
 
+  // Sleep because StartTransmissionMsg would be sent to early without getting port from Server
+  // TODO: find another way to fix this
+  boost::this_thread::sleep(boost::posix_time::seconds(1));
+
   // TODO: check for connection loss
+  cout << "Schicke jetzt die StartTransmissionMsg" << endl;
   sendMsg(msg);
-//  msg_encoder_->encodeMsg(msg, ctl_conn_stream_);
-//
-//  cout << "SSClient: Waiting on reply" << endl;
-//
-//  boost::shared_ptr<ControlMsg> reply(msg_decoder_->decodeMsg());
-//
-//  if (reply == 0)
-//  {
-//    stringstream ex_str;
-//    ex_str << "SSClient: Cannot decode message";
-//    throw std::ios_base::failure(ex_str.str());
-//  }
-//
-//  // Check reply type
-//  switch (reply->msgType())
-//  {
-//    case ControlMsg::OkReply: break;
-//
-//    case ControlMsg::ErrorReply:
-//    {
-//      stringstream ex_str;
-//      ex_str << "SSClient: Stop receiving failed due to a server error.";
-//      throw std::ios_base::failure(ex_str.str());
-//    }
-//
-//    default:
-//    {
-//      stringstream ex_str;
-//      ex_str << "SSClient: Got unexpected reply of type '" << reply->msgType() << "'";
-//      throw std::ios_base::failure(ex_str.str());
-//    }
-//  }
-//
-//  data_input_state_ |= DataInputState_Receiving;
+  cout << "Hab StartTransmissionMsg geschickt" << endl;
+
+  // Sleep because this thread stops to early without getting okReply from Server
+  // TODO: find another way to fix this
+  boost::this_thread::sleep(boost::posix_time::seconds(1));
+
 }
 
 //-----------------------------------------------------------------------------
@@ -769,6 +668,11 @@ void SSClientImpl::handle_read(const boost::system::error_code& error,
       switch(old_msg_type)
       {
         case 0: break;
+        case ControlMsg::GetDataConnection:
+        {
+          data_input_state_ |= DataInputState_Connected;
+          break;
+        }
         case ControlMsg::StartTransmission:
         {
           data_input_state_ |= DataInputState_Receiving;
@@ -843,7 +747,7 @@ void SSClientImpl::handle_read(const boost::system::error_code& error,
       {
          boost::system::error_code ec;
          tcp_target_ = boost::asio::ip::tcp::endpoint(
-            ctl_conn_stream_.rdbuf()->remote_endpoint().address(),
+            socket_.remote_endpoint().address(),
             data_conn_msg->port());
          data_socket_tcp_.connect(tcp_target_, ec);
          boost::asio::socket_base::receive_buffer_size buffer_size(buffer_size_);
@@ -885,16 +789,17 @@ void SSClientImpl::sendMsg(const ControlMsg& msg)
       boost::bind(&SSClientImpl::handle_write, this,
         boost::asio::placeholders::error, output_buffer_->size()));
 
-//  socket_.async_read_some(input_buffer_->prepare(MAX_DATA_SIZE),
-//      boost::bind(&SSClientImpl::handle_read, this,
-//        boost::asio::placeholders::error,
-//        boost::asio::placeholders::bytes_transferred,
-//        msg.msgType()));
-  async_read(socket_, input_buffer_->prepare(MAX_DATA_SIZE),
+  socket_.async_read_some(input_buffer_->prepare(MAX_DATA_SIZE),
       boost::bind(&SSClientImpl::handle_read, this,
         boost::asio::placeholders::error,
         boost::asio::placeholders::bytes_transferred,
         msg.msgType()));
+//  boost::asio::async_read(socket_,
+//      input_buffer_->prepare(MAX_DATA_SIZE),
+//      boost::bind(&SSClientImpl::handle_read, this,
+//        boost::asio::placeholders::error,
+//        boost::asio::placeholders::bytes_transferred,
+//        msg.msgType()));
 }
 
 //-----------------------------------------------------------------------------
