@@ -1,5 +1,5 @@
 
-/*! \mainpage TOBI SignalServer v0.1
+/*! \mainpage TOBI SignalServer v0.2
 *
 * \section sec_intro Introduction
 * The TOBI SignalServer implements the data acquisition section from the TOBI hybrid BCI (hBCI).
@@ -215,7 +215,8 @@ int main(int argc, const char* argv[])
       }
       else
       {
-        cout << "TODO: Notify all clients that server stops now" << endl;
+        // TODO: Notify all clients that server stops now
+        cout << "Server stopped!" << endl;
       }
     }
   }

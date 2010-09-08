@@ -604,8 +604,8 @@ void SSClientImpl::setTimeoutKeepAlive(boost::uint32_t seconds)
 
 void SSClientImpl::handleTimeoutKeepAlive()
 {
-//  control_connection_server_->checkAllKeepAlive();
-  cout << "ich handle gerade keepalive" << endl;
+  KeepAliveMsg msg;
+  sendMsg(msg);
   setTimeoutKeepAlive(sec_for_timeout_);
 }
 
@@ -662,6 +662,11 @@ void SSClientImpl::handle_read(const boost::system::error_code& error,
   // Check reply type
   switch (reply->msgType())
   {
+    case ControlMsg::AliveReply:
+    {
+      cout << "Server is still alive" << endl;
+      break;
+    }
     case ControlMsg::OkReply:
     {
       cout << "SSClient: got Ok from Server" << endl;
@@ -794,12 +799,6 @@ void SSClientImpl::sendMsg(const ControlMsg& msg)
         boost::asio::placeholders::error,
         boost::asio::placeholders::bytes_transferred,
         msg.msgType()));
-//  boost::asio::async_read(socket_,
-//      input_buffer_->prepare(MAX_DATA_SIZE),
-//      boost::bind(&SSClientImpl::handle_read, this,
-//        boost::asio::placeholders::error,
-//        boost::asio::placeholders::bytes_transferred,
-//        msg.msgType()));
 }
 
 //-----------------------------------------------------------------------------

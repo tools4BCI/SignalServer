@@ -187,7 +187,7 @@ int main(int argc, const char* argv[])
   boost::asio::io_service io_service;
   SSClient client(io_service);
 
-  client.setTimeoutKeepAlive(1000);
+  client.setTimeoutKeepAlive(20);
 
   boost::thread* io_thread_ptr = 0;
   io_thread_ptr  = new boost::thread(boost::bind(&boost::asio::io_service::run, &io_service));
