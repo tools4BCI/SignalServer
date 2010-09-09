@@ -444,13 +444,16 @@ void USBamp::run()
     current_overlapped_ = 0;
     first_run_ = true;
 
+
     for(uint32_t n = 0; n < slave_devices_.size(); n++)
     {
       slave_devices_[n]->running_ = 1;
       cout << " * g.USBamp " << slave_devices_[n]->serial << " sucessfully started by the master" << endl;
     }
+    
     running_ = 1;
     cout << " * g.USBamp " << serial << " sucessfully started" << endl;
+  
   }
   else
     cout << " * g.USBamp " << serial << " will be started by the master ..." << endl;
@@ -671,6 +674,7 @@ void USBamp::setDeviceFilterSettings(ticpp::Iterator<ticpp::Element>const &elem)
   cout << " * g.USBamp -- filter set to:" << endl;
   cout << "    ...  order: " << order << ", f_low: " << f_low << ", f_high: " << f_high << endl;
   cout << endl;
+
 }
 
 //---------------------------------------------------------------------------------------
@@ -808,23 +812,28 @@ int USBamp::search4FilterID(unsigned int type, unsigned int order, double f_low,
     cout << "USBamp: search4FilterID" << endl;
   #endif
 
+  int id = -1;
+
   for(int n = 0; n < nr_of_bp_filters_; n++)
   {
     if(( roundD(bp_filters_[n].fs)  == fs_)      &&  ( roundD(bp_filters_[n].type) == type) && \
        ( roundD(bp_filters_[n].order) == order) &&  ( roundD(bp_filters_[n].fu)  == f_low) && \
        ( roundD(bp_filters_[n].fo)    == f_high) )
-      return(n);
+      id = n;
   }
 
-  string ex_str = "USBamp::search4FilterID -- Filter settings not possible -- ";
-  ex_str = ex_str + "Fs: "   + lexical_cast<string>(fs_)  +  ", ";
-  ex_str = ex_str + "Type: "   + lexical_cast<string>(type)  +  ", ";
-  ex_str = ex_str + "Order: "  + lexical_cast<string>(order) +  ", ";
-  ex_str = ex_str + "f_low: "  + lexical_cast<string>(f_low) +  ", ";
-  ex_str = ex_str + "f_high: " + lexical_cast<string>(f_high);
-  throw(std::invalid_argument(ex_str));
+  if(id < 0)
+  {
+    string ex_str = "USBamp::search4FilterID -- Filter settings not possible -- ";
+    ex_str = ex_str + "Fs: "   + lexical_cast<string>(fs_)  +  ", ";
+    ex_str = ex_str + "Type: "   + lexical_cast<string>(type)  +  ", ";
+    ex_str = ex_str + "Order: "  + lexical_cast<string>(order) +  ", ";
+    ex_str = ex_str + "f_low: "  + lexical_cast<string>(f_low) +  ", ";
+    ex_str = ex_str + "f_high: " + lexical_cast<string>(f_high);
+    throw(std::invalid_argument(ex_str));
+  }
 
-  return(-1);
+  return(id);
 }
 
 //---------------------------------------------------------------------------------------
@@ -946,19 +955,24 @@ int USBamp::search4NotchID(float f_center)
     cout << "USBamp: search4NotchID" << endl;
   #endif
 
+  int id = -1;
+
   for(int n = 0; n < nr_of_notch_filters_; n++)
   {
     if( ( roundD(notch_filters_[n].fs)  == fs_) && \
       ( roundD(notch_filters_[n].fu) == f_center - USBAMP_NOTCH_HALF_WIDTH ) && \
       ( roundD(notch_filters_[n].fo) == f_center + USBAMP_NOTCH_HALF_WIDTH ) )
-      return(n);
+      id = n;
   }
 
-  string ex_str = "USBamp::search4NotchID -- Notch settings not possible -- ";
-  ex_str = ex_str + "f_center: " + lexical_cast<string>(f_center);
-  throw(std::invalid_argument(ex_str));
+  if(id < 0)
+  {
+    string ex_str = "USBamp::search4NotchID -- Notch settings not possible -- ";
+    ex_str = ex_str + "f_center: " + lexical_cast<string>(f_center);
+    throw(std::invalid_argument(ex_str));
+  }
 
-  return(-1);
+  return(id);
 }
 
 //---------------------------------------------------------------------------------------
@@ -1309,9 +1323,9 @@ void USBamp::checkNrOfChannels()
   map<uint16_t, pair<string, uint32_t> >::iterator it(channel_info_.begin());
 
   for(  ; it != channel_info_.end(); it++ )
-    if(it->first >= USBAMP_MAX_NR_OF_CHANNELS )
+    if(it->first > USBAMP_MAX_NR_OF_CHANNELS )
       throw(std::invalid_argument("Channel number too high -- maximum nr of channels: "\
-      +lexical_cast<string>(USBAMP_MAX_NR_OF_CHANNELS)+ " -- (2 digital channels not supported yet!)" ) );
+      +lexical_cast<string>(USBAMP_MAX_NR_OF_CHANNELS)) );
 }
 
 //---------------------------------------------------------------------------------------
@@ -1391,6 +1405,7 @@ void USBamp::setUSBampFilter()
 
   if(!check)
     throw(std::runtime_error("USBamp::setUSBampFilter -- Error setting filter!"));
+
 }
 
 //---------------------------------------------------------------------------------------
@@ -1423,6 +1438,7 @@ void USBamp::setUSBampNotch()
 
   if(!check)
     throw(std::runtime_error("USBamp::setUSBampNotch -- Error setting notch!"));
+
 }
 
 //---------------------------------------------------------------------------------------

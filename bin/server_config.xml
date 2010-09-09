@@ -34,11 +34,11 @@
     <mode> master </mode>
     <device_settings>
       <sampling_rate> 512 </sampling_rate>
-      <measurement_channels nr="2" names="eeg" type="eeg" />
-      <blocksize> 8 </blocksize>
+      <measurement_channels nr="6" names="eeg" type="eeg" />
+      <blocksize> 1 </blocksize>
     </device_settings>
 
-    <channel_settings>
+<!--    <channel_settings>
       <selection>
         <ch nr="01" name="eeg" type="eeg" />
         <ch nr="02" name="eeg" type="eeg" />
@@ -58,7 +58,7 @@
         <ch nr="16" name="eeg" type="eeg" />
         <ch nr="17" name="eeg" type="user1" />
       </selection>
-    </channel_settings>
+    </channel_settings>-->
   </hardware>
 
 <!-- =============================================================================== -->
@@ -260,17 +260,21 @@
 
 <!-- =============================================================================== -->
 
-  <hardware name="g.mobilab" version="1.0" serial="">
-    <mode> slave </mode>
+<!--  ... mobilab_type: eeg   or   multi -->
+
+<!--  <hardware name="g.mobilab" version="1.0" serial="">
+    <mode> master </mode>
     <device_settings>
-      <sampling_rate fs="512"/>
-      <filter f_low="0.5" f_high="100"/>
+      <serial_port> /dev/ttyS0 </serial_port>
+      <mobilab_type> eeg </mobilab_type>
+      <measurement_channels nr="1" names="eeg" type="eeg" />
+      <blocksize> 1 </blocksize>
     </device_settings>
 
     <channel_settings>
       <selection>
         <ch nr="01" name="eeg" type="eeg" />
-        <ch nr="02" name="eeg" type="eeg" />
+       <ch nr="02" name="eeg" type="eeg" />
         <ch nr="03" name="eeg" type="eeg" />
         <ch nr="04" name="eeg" type="eeg" />
         <ch nr="05" name="eeg" type="eeg" />
@@ -280,7 +284,7 @@
       </selection>
     </channel_settings>
 
-  </hardware>
+  </hardware>-->
 
 <!-- =============================================================================== -->
 
@@ -291,11 +295,11 @@
     </device_settings>
   </hardware>-->
 
-<!--  <hardware name="joystick" version="1.0" serial="">
+  <hardware name="joystick" version="1.0" serial="">
     <mode> aperiodic </mode>
     <device_settings>
 
     </device_settings>
-  </hardware> -->
+  </hardware>
 
 </tobi-config>

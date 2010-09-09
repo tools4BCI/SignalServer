@@ -21,7 +21,7 @@ INCLUDEPATH += extern/include
 
 win32:INCLUDEPATH += extern/include/SDL-1.2.14-VC8
 
-unix: QMAKE_CXXFLAGS += -pedantic
+QMAKE_CXXFLAGS_WARN_ON = -Wall -pedantic
 
 # Input
 HEADERS +=  include/config/control_message_decoder.h \
@@ -82,16 +82,6 @@ win32 {
 
     # Note: It is assumed that the boost libraries can be automatically detected by the linker
     # through #pragma comment(lib, xxx) declarations in boost.
-}
-
-unix {
-    # TODO:
-    exists( /home/breidi/svn/BCI/HEAD/Common/gdf ) {
-#        INCLUDEPATH +=  /home/breidi/svn/BCI/HEAD/Common/gdf
-
-#        LIBS += -L /home/breidi/svn/BCI/HEAD/Common/gdf/libgdf \
-#                -lgdf
-    }
 }
 
 #-----------------------------------------------------------------------
