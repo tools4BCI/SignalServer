@@ -6,6 +6,7 @@
 #include "hardware/sine_generator.h"
 #include "hardware/event_listener.h"
 #include "hardware/jstick.h"
+#include "hardware/g_mobilab.h"
 
 #ifdef WIN32
   #include "hardware/usbamp.h"
@@ -37,12 +38,15 @@ HWAccess::HWAccess(boost::asio::io_service& io, XMLParser& parser)
 
     if( cst_.isSineGen(parser.getHardwareElementName(n)) )
       slaves_.push_back(new SineGenerator(io, parser, parser.getHardwareElement(n)));
+
   #ifdef WIN32
     if( cst_.isUSBamp(parser.getHardwareElementName(n)) )
       slaves_.push_back(new USBamp(parser, parser.getHardwareElement(n)));
   #endif
+
     if( cst_.isMobilab(parser.getHardwareElementName(n)) )
-      { }
+      slaves_.push_back(new GMobilab(io, parser, parser.getHardwareElement(n)));
+
     if( cst_.isJoystick(parser.getHardwareElementName(n)) )
       slaves_.push_back(new JStick(parser, parser.getHardwareElement(n)));
   }
