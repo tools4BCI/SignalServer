@@ -5,22 +5,33 @@
 
 #include <boost/bind.hpp>
 #include <boost/numeric/conversion/cast.hpp>
+#include <boost/format.hpp>
+#include <boost/lexical_cast.hpp>
+
 
 namespace tobiss
 {
-set<string> USBamp::serials_;
-bool USBamp::is_usbamp_master_(0);
-// bool USBamp::received_enough_data_(0);
-
-USBamp* USBamp::master_device_(0);
-vector<USBamp*>  USBamp::slave_devices_;
-
 using boost::uint8_t;
 using boost::uint16_t;
 using boost::uint32_t;
 
+using std::cout;
+using std::cerr;
+using std::endl;
+using std::string;
+using std::vector;
+using std::map;
+using std::pair;
+
 using boost::lexical_cast;
 using boost::bad_lexical_cast;
+
+
+std::set<std::string> USBamp::serials_;
+bool USBamp::is_usbamp_master_(0);
+
+USBamp* USBamp::master_device_(0);
+std::vector<USBamp*>  USBamp::slave_devices_;
 
 static const unsigned int USBAMP_MAX_NR_OF_CHANNELS   = 17;
 static const unsigned int USBAMP_NR_OF_CHANNEL_GROUPS = 4;
@@ -80,8 +91,8 @@ USBamp::USBamp(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
   cout << endl;
   if(!homogenous_signal_type_)
   {
-    cout << "   ... NOTICE: Device is acquiring different signal types  ";
-    cout << "--  ensure that reference and ground settings are correctly set!" << endl;
+    cout << "   ... NOTICE: Device is acquiring different signal types" << endl;
+    cout << "     --  ensure that reference and ground settings are correctly set!" << endl;
   }
 
   #ifdef DEBUG
@@ -450,10 +461,10 @@ void USBamp::run()
       slave_devices_[n]->running_ = 1;
       cout << " * g.USBamp " << slave_devices_[n]->serial << " sucessfully started by the master" << endl;
     }
-    
+
     running_ = 1;
     cout << " * g.USBamp " << serial << " sucessfully started" << endl;
-  
+
   }
   else
     cout << " * g.USBamp " << serial << " will be started by the master ..." << endl;
@@ -825,11 +836,11 @@ int USBamp::search4FilterID(unsigned int type, unsigned int order, double f_low,
   if(id < 0)
   {
     string ex_str = "USBamp::search4FilterID -- Filter settings not possible -- ";
-    ex_str = ex_str + "Fs: "   + lexical_cast<string>(fs_)  +  ", ";
+    ex_str = ex_str + "Fs: "   + lexical_cast<string>(boost::format("%d") % fs_)  +  ", ";
     ex_str = ex_str + "Type: "   + lexical_cast<string>(type)  +  ", ";
     ex_str = ex_str + "Order: "  + lexical_cast<string>(order) +  ", ";
-    ex_str = ex_str + "f_low: "  + lexical_cast<string>(f_low) +  ", ";
-    ex_str = ex_str + "f_high: " + lexical_cast<string>(f_high);
+    ex_str = ex_str + "f_low: "  + lexical_cast<string>(boost::format("%d") % f_low) +  ", ";
+    ex_str = ex_str + "f_high: " + lexical_cast<string>(boost::format("%d") % f_high);
     throw(std::invalid_argument(ex_str));
   }
 
@@ -968,7 +979,7 @@ int USBamp::search4NotchID(float f_center)
   if(id < 0)
   {
     string ex_str = "USBamp::search4NotchID -- Notch settings not possible -- ";
-    ex_str = ex_str + "f_center: " + lexical_cast<string>(f_center);
+    ex_str = ex_str + "f_center: " + lexical_cast<string>(boost::format("%d") % f_center);
     throw(std::invalid_argument(ex_str));
   }
 

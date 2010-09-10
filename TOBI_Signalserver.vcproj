@@ -283,6 +283,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\hardware\g_mobilab.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\hardware\hw_access.cpp"
 					>
 				</File>
@@ -292,6 +296,10 @@
 				</File>
 				<File
 					RelativePath=".\src\hardware\jstick.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\hardware\serial_port_base.cpp"
 					>
 				</File>
 				<File
@@ -425,6 +433,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\include\hardware\g_mobilab.h"
+					>
+				</File>
+				<File
 					RelativePath=".\include\hardware\hw_access.h"
 					>
 				</File>
@@ -434,6 +446,10 @@
 				</File>
 				<File
 					RelativePath=".\include\hardware\jstick.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\hardware\serial_port_base.h"
 					>
 				</File>
 				<File
