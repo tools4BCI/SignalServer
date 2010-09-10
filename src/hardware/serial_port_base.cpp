@@ -20,72 +20,6 @@ std::map<unsigned int, std::string> AsioSerialPortTypeNames::flow_control_values
 std::map<unsigned int, std::string> AsioSerialPortTypeNames::stop_bit_values_;
 std::map<unsigned int, std::string> AsioSerialPortTypeNames::parity_values_;
 
-
-//BOOST_ASIO_OPTION_STORAGE  ... termios
-class RTSControl
-{
-public:
-    explicit RTSControl(bool enable = false) : m_enable(enable) {};
-    boost::system::error_code store(termios& storage,
-        boost::system::error_code& ec) const
-    {
-        #if defined(BOOST_WINDOWS) || defined(__CYGWIN__)
-        if (m_enable) storage.fRtsControl = RTS_CONTROL_ENABLE;
-        else storage.fRtsControl = RTS_CONTROL_DISABLE;
-        #else
-        #endif
-        //ec = boost::asio::error::operation_not_supported;
-        //ec = boost::system::error_code();
-        return ec;
-    };
-
-    boost::system::error_code load(const termios& storage,
-        boost::system::error_code& ec)
-    {
-        #if defined(BOOST_WINDOWS) || defined(__CYGWIN__)
-        if (storage.fRtsControl == RTS_CONTROL_ENABLE) m_enable = true;
-        else m_enable = true;
-        #else
-        #endif
-        return ec;
-    };
-private:
-    bool m_enable;
-};
-
-
-class DTRControl
-{
-public:
-    explicit DTRControl(bool enable = false) : m_enable(enable) {};
-    boost::system::error_code store(termios& storage,
-        boost::system::error_code& ec) const
-    {
-        #if defined(BOOST_WINDOWS) || defined(__CYGWIN__)
-        if (m_enable) storage.fRtsControl = DTR_CONTROL_ENABLE;
-        else storage.fRtsControl = DTR_CONTROL_ENABLE;
-        #else
-        #endif
-        //ec = boost::asio::error::operation_not_supported;
-        //ec = boost::system::error_code();
-        return ec;
-    };
-
-    boost::system::error_code load(const termios& storage,
-        boost::system::error_code& ec)
-    {
-        #if defined(BOOST_WINDOWS) || defined(__CYGWIN__)
-        if (storage.fRtsControl == DTR_CONTROL_ENABLE) m_enable = true;
-        else m_enable = true;
-        #else
-        #endif
-        return ec;
-    };
-private:
-    bool m_enable;
-};
-
-
 //-----------------------------------------------------------------------------
 
 AsioSerialPortTypeNames& AsioSerialPortTypeNames::getInstance()
@@ -115,27 +49,36 @@ AsioSerialPortTypeNames::AsioSerialPortTypeNames()
 
 std::string AsioSerialPortTypeNames::getFlowControlName(unsigned int id)
 {
-  return((flow_control_values_.find(id) != flow_control_values_.end() )?
-         flow_control_values_.find(id)->second:
-         throw(std::runtime_error("AsioSerialPortTypeNames::getFlowControlName() -- ID not found!")));
+  std::string str;
+  str = ((flow_control_values_.find(id) != flow_control_values_.end() )?
+         flow_control_values_.find(id)->second : "");
+  if(!str.size())
+    throw(std::runtime_error("AsioSerialPortTypeNames::getFlowControlName() -- ID not found!"));
+  return(str);
 }
 
 //-----------------------------------------------------------------------------
 
 std::string AsioSerialPortTypeNames::getStopBitName(unsigned int id)
 {
-   return( (stop_bit_values_.find(id) != stop_bit_values_.end() )?
-           stop_bit_values_.find(id)->second:
-           throw(std::runtime_error("AsioSerialPortTypeNames::getStopBitName() -- ID not found!")));
+  std::string str;
+  str = ( (stop_bit_values_.find(id) != stop_bit_values_.end() )?
+           stop_bit_values_.find(id)->second : "");
+  if(!str.size())
+    throw(std::runtime_error("AsioSerialPortTypeNames::getStopBitName() -- ID not found!"));
+  return(str);
 }
 
 //-----------------------------------------------------------------------------
 
 std::string AsioSerialPortTypeNames::getParityName(unsigned int id)
 {
-  return( (parity_values_.find(id) != parity_values_.end() )?
-           parity_values_.find(id)->second:
-           throw(std::runtime_error("AsioSerialPortTypeNames::getParityName() -- ID not found!")));
+  std::string str;
+  str = ( (parity_values_.find(id) != parity_values_.end() )?
+    parity_values_.find(id)->second : ""  );
+  if(!str.size())
+    throw(std::runtime_error("AsioSerialPortTypeNames::getParityName() -- ID not found!"));
+  return(str);
 }
 
 //-----------------------------------------------------------------------------
@@ -178,15 +121,10 @@ unsigned int AsioSerialPortTypeNames::getParityID(std::string str)
 }
 
 
-
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 
 
-//SerialPortBase::SerialPortBase(boost::asio::io_service& io, XMLParser& parser)
-//  : HWThread(parser), serial_port_(io), data_available_(true), data_written_(true),
-//    baud_rate_(0), flow_control_type_(0), parity_(0), stop_bits_(0), character_size_(0),
-//    asio_types_(AsioSerialPortTypeNames::getInstance())
 SerialPortBase::SerialPortBase(boost::asio::io_service& io)
   : serial_port_(io), data_available_(true), data_written_(true),
     baud_rate_(0), flow_control_type_(0), parity_(0), stop_bits_(0), character_size_(0),
@@ -238,10 +176,6 @@ void SerialPortBase::open()
     boost::asio::serial_port_base::baud_rate br(baud_rate_);
     serial_port_.set_option(br);
   }
-
-
-//  serial_port_.set_option(RTSControl(true));
-//  serial_port_.set_option(DTRControl(true));
 }
 
 //-----------------------------------------------------------------------------
@@ -377,8 +311,6 @@ void SerialPortBase::handleAsyncWrite(const boost::system::error_code& ec,
 
   data_written_ = true;
 }
-
-
 
 //-----------------------------------------------------------------------------
 

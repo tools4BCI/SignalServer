@@ -181,7 +181,7 @@ template<class T> class SampleBlock
     * @throw  std::length_error if v.size does not equal channels or trying to append more blocks than defined.
     * @todo If needed: Possibility to append already blocked data.
     */
-    void appendBlock(std::vector<T> v, boost::uint32_t nr_blocks = 1);
+    void appendBlock(std::vector<T> v, boost::uint16_t nr_blocks = 1);
 
     /**
     * @brief Directly set samples into the SampleBlock.
@@ -435,7 +435,7 @@ template<class T> void SampleBlock<T>::getSignalByNr(boost::uint32_t nr, std::ve
 
 //-----------------------------------------------------------------------------
 
-template<class T> void SampleBlock<T>::appendBlock(std::vector<T> v, boost::uint32_t nr_blocks)
+template<class T> void SampleBlock<T>::appendBlock(std::vector<T> v, boost::uint16_t nr_blocks)
 {
   #ifdef DEBUG
     std::cout << "SampleBlock: appendBlock" << std::endl;

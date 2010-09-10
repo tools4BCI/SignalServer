@@ -17,15 +17,18 @@ using std::cerr;
 using std::endl;
 using std::flush;
 
+using boost::uint16_t;
+using boost::uint32_t;
+
 static const unsigned int MOBILAB_MAX_NR_OF_CHANNELS    = 8;
-static const unsigned int MOBILAB_DAQ_RESOLUTION_BIT    = 16;
+static const double MOBILAB_DAQ_RESOLUTION_BIT    = 16;
 static const unsigned int MOBILAB_DAQ_RESOLUTION_BYTE   = 2;
 static const unsigned int MOBILAB_SAMPLING_RATE  = 256;  // Hz
 
-static const unsigned int MOBILAB_EEG_SENSITIVITY =       500;  //micro volts
-static const unsigned int MOBILAB_EOG_SENSITIVITY =      2000;  //micro volts
-static const unsigned int MOBILAB_EMG_SENSITIVITY =      5000;  //micro volts
-static const unsigned int MOBILAB_ANALOG_SENSITIVITY = 250000;  //micro volts
+static const float MOBILAB_EEG_SENSITIVITY =       500;  //micro volts
+static const float MOBILAB_EOG_SENSITIVITY =      2000;  //micro volts
+static const float MOBILAB_EMG_SENSITIVITY =      5000;  //micro volts
+static const float MOBILAB_ANALOG_SENSITIVITY = 250000;  //micro volts
 
 static const double MOBILAB_COMMON_LOWPASS  =  100;  // Hz
 static const double MOBILAB_EEG_HIGHPASS    =  0.5;  // Hz
@@ -290,7 +293,7 @@ void GMobilab::setScalingValues()
     for(it = channel_info_.begin(); it != channel_info_.end(); it++)
     {
       scaling_factors_.push_back(
-          MOBILAB_EEG_SENSITIVITY/(2 * pow(2,MOBILAB_DAQ_RESOLUTION_BIT) ) );
+          MOBILAB_EEG_SENSITIVITY/(2.0 * pow(2.0 ,MOBILAB_DAQ_RESOLUTION_BIT) ) );
     }
   }
   if(type_ == MULTI)
@@ -316,8 +319,8 @@ void GMobilab::setScalingValues()
       if(channel == 7 || channel == 8)
         sensitivity = MOBILAB_ANALOG_SENSITIVITY;
 
-      scaling = sensitivity/pow(2,MOBILAB_DAQ_RESOLUTION_BIT);
-      scaling_factors_.push_back(scaling/2);
+      scaling = sensitivity/pow(2.0 ,MOBILAB_DAQ_RESOLUTION_BIT);
+      scaling_factors_.push_back(scaling/2.0);
 
     }
   }
