@@ -112,7 +112,7 @@ int main(int argc, const char* argv[])
 
     XMLParser config(config_file);
     XMLParser temp_config;
-//    HWAccess* hw_access = 0;
+
     SSMethods* ss_methods = 0;
 
     while(running)
@@ -120,7 +120,7 @@ int main(int argc, const char* argv[])
       boost::asio::io_service io_service;
 
       SignalServer server(io_service);
-      server.setTimeoutKeepAlive(10);
+//      server.setTimeoutKeepAlive(20);
       if(argc == 2 && argv[1] == DEAMON_ARGUMENT)
         server.setDeamonMode();
 
@@ -133,13 +133,10 @@ int main(int argc, const char* argv[])
         first_run = false;
       }
 
-//      hw_access = new HWAccess(io_service, config);
-
       DataFileHandler data_file_handler(io_service, config.getFileReaderMap());
 
       HWAccess hw_access(io_service, config);
 
-//      HWAccess* hw_access = ss_helper.getHWAccess();
       DataPacketReader reader(hw_access, server);
 
       boost::thread* io_thread_ptr = 0;

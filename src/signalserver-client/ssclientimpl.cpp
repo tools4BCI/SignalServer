@@ -310,9 +310,7 @@ void SSClientImpl::startReceiving(bool use_udp_bc)
   boost::this_thread::sleep(boost::posix_time::seconds(1));
 
   // TODO: check for connection loss
-  cout << "Schicke jetzt die StartTransmissionMsg" << endl;
   sendMsg(msg);
-  cout << "Hab StartTransmissionMsg geschickt" << endl;
 
   // Sleep because this thread stops to early without getting okReply from Server
   // TODO: find another way to fix this
@@ -344,33 +342,10 @@ void SSClientImpl::stopReceiving()
 
   // TODO: check for connection loss
   sendMsg(msg);
-//  msg_encoder_->encodeMsg(msg, ctl_conn_stream_);
-//
-//  cout << "SSClient: Waiting on reply" << endl;
-//
-//  boost::shared_ptr<ControlMsg> reply(msg_decoder_->decodeMsg());
-//
-//  // Check reply type
-//  switch (reply->msgType())
-//  {
-//    case ControlMsg::OkReply: break;
-//
-//    case ControlMsg::ErrorReply:
-//    {
-//      stringstream ex_str;
-//      ex_str << "SSClient: Stop receiving failed due to a server error.";
-//      throw std::ios_base::failure(ex_str.str());
-//    }
-//
-//    default:
-//    {
-//      stringstream ex_str;
-//      ex_str << "SSClient: Got unexpected reply of type '" << reply->msgType() << "'";
-//      throw std::ios_base::failure(ex_str.str());
-//    }
-//  }
-//
-//  closeDataConnection();
+
+  // Sleep because this thread stops to early without getting okReply from Server
+  // TODO: find another way to fix this
+  boost::this_thread::sleep(boost::posix_time::seconds(1));
 }
 
 //-----------------------------------------------------------------------------
@@ -718,13 +693,14 @@ void SSClientImpl::handle_read(const boost::system::error_code& error,
     {
       cout << "SSClient: SendConfig was not successfull" << endl;
       cout << "          Server does not accept config of Client!" << endl;
+      requestConfig();
       break;
     }
 
     case ControlMsg::ErrorReply:
     {
       stringstream ex_str;
-      ex_str << "SSClient: Stop receiving failed due to a server error.";
+      ex_str << "SSClient: Got error reply from Server";
       throw std::ios_base::failure(ex_str.str());
     }
 

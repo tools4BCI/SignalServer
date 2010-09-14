@@ -214,9 +214,6 @@ void ControlConnectionServer::handleAccept(const TCPConnection::pointer& new_con
   // lock the connection list
   boost::unique_lock<boost::mutex> lock(mutex_);
 
-  if(connections_.empty())
-    first_client_ = connection;
-
   connections_.push_back(connection);
 
   startAccept();
@@ -226,8 +223,8 @@ void ControlConnectionServer::handleAccept(const TCPConnection::pointer& new_con
 
 void ControlConnectionServer::checkAllKeepAlive()
 {
-//  std::for_each(connections_.begin(), connections_.end(),
-//                boost::bind(&ControlConnection::checkKeepAlive, _1));
+  std::for_each(connections_.begin(), connections_.end(),
+                boost::bind(&ControlConnection::checkKeepAlive, _1));
 }
 
 //-----------------------------------------------------------------------------

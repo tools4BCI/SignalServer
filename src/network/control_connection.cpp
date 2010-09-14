@@ -76,15 +76,6 @@ void ControlConnection::start()
       boost::bind(&ControlConnection::handle_read, shared_from_this(),
         boost::asio::placeholders::error,
         boost::asio::placeholders::bytes_transferred));
-//  boost::asio::async_read(tcp_connection_->socket(),
-//      input_buffer_->prepare(MAX_DATA_SIZE),
-//      boost::bind(&ControlConnection::handle_read, shared_from_this(),
-//        boost::asio::placeholders::error,
-//        boost::asio::placeholders::bytes_transferred));
-//  tcp_connection_->socket().async_receive(input_buffer_->prepare(MAX_DATA_SIZE),
-//      boost::bind(&ControlConnection::handle_read, shared_from_this(),
-//        boost::asio::placeholders::error,
-//        boost::asio::placeholders::bytes_transferred));
 }
 
 //-----------------------------------------------------------------------------
@@ -148,6 +139,7 @@ void ControlConnection::handle_read(const boost::system::error_code& error,
             {
               ctl_conn_server_.getConfig(*config_msg_);
               sendMsg(ReplyMsg::configOk());
+              ctl_conn_server_.setFirstClient(this);
             }
             else
             {
@@ -274,16 +266,6 @@ void ControlConnection::handle_read(const boost::system::error_code& error,
         boost::bind(&ControlConnection::handle_read, shared_from_this(),
           boost::asio::placeholders::error,
           boost::asio::placeholders::bytes_transferred));
-//    if(!error)
-//    boost::asio::async_read(tcp_connection_->socket(),
-//        input_buffer_->prepare(MAX_DATA_SIZE),
-//        boost::bind(&ControlConnection::handle_read, shared_from_this(),
-//          boost::asio::placeholders::error,
-//          boost::asio::placeholders::bytes_transferred));
-//    tcp_connection_->socket().async_receive(input_buffer_->prepare(MAX_DATA_SIZE),
-//        boost::bind(&ControlConnection::handle_read, shared_from_this(),
-//          boost::asio::placeholders::error,
-//          boost::asio::placeholders::bytes_transferred));
   }
 }
 
@@ -359,7 +341,7 @@ void ControlConnection::checkKeepAlive()
   {
     std::stringstream ex_str;
     ex_str << "SSClient: Cannot decode message";
-    this->close();
+    close();
 //    throw std::ios_base::failure(ex_str.str());
   }
   else
@@ -378,15 +360,13 @@ void ControlConnection::checkKeepAlive()
       case ControlMsg::ErrorReply:
       {
         std::stringstream ex_str;
-        ex_str << "SSClient: Stop receiving failed due to a server error.";
-//        throw std::ios_base::failure(ex_str.str());
+        ex_str << "SSClient: No keepalive but error !?";
       }
 
       default:
       {
         std::stringstream ex_str;
-        ex_str << "SSClient: Got unexpected reply of type '" << reply->msgType() << "'";
-//        throw std::ios_base::failure(ex_str.str());
+        ex_str << "SSClient: No keepalive but got unexpected reply of type '" << reply->msgType() << "'";
       }
     }
   }
