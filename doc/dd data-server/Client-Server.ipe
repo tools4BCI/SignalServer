@@ -1,300 +1,339 @@
-<ipe version="60032" creator="Ipe 6.0 preview 32">
-<info created="D:20090528102321" modified="D:20091028120228" bbox="cropbox"/>
-<ipestyle>
+<?xml version="1.0"?>
+<!DOCTYPE ipe SYSTEM "ipe.dtd">
+<ipe version="70010" creator="Ipe 7.0.10">
+<info created="D:20090527113011" modified="D:20100914105843"/>
+<ipestyle name="ipe6">
+<symbol name="mark/circle(sx)" transformations="translations">
+<path fill="sym-stroke">
+0.6 0 0 0.6 0 0 e
+0.4 0 0 0.4 0 0 e
+</path>
+</symbol>
+<symbol name="mark/disk(sx)" transformations="translations">
+<path fill="sym-stroke">
+0.6 0 0 0.6 0 0 e
+</path>
+</symbol>
+<symbol name="mark/fdisk(sfx)" transformations="translations">
+<group>
+<path fill="sym-stroke" fillrule="eofill">
+0.6 0 0 0.6 0 0 e
+0.4 0 0 0.4 0 0 e
+</path>
+<path fill="sym-fill">
+0.4 0 0 0.4 0 0 e
+</path>
+</group>
+</symbol>
+<symbol name="mark/box(sx)" transformations="translations">
+<path fill="sym-stroke" fillrule="eofill">
+-0.6 -0.6 m
+0.6 -0.6 l
+0.6 0.6 l
+-0.6 0.6 l
+h
+-0.4 -0.4 m
+0.4 -0.4 l
+0.4 0.4 l
+-0.4 0.4 l
+h
+</path>
+</symbol>
+<symbol name="mark/square(sx)" transformations="translations">
+<path fill="sym-stroke">
+-0.6 -0.6 m
+0.6 -0.6 l
+0.6 0.6 l
+-0.6 0.6 l
+h
+</path>
+</symbol>
+<symbol name="mark/fsquare(sfx)" transformations="translations">
+<group>
+<path fill="sym-stroke" fillrule="eofill">
+-0.6 -0.6 m
+0.6 -0.6 l
+0.6 0.6 l
+-0.6 0.6 l
+0 -0.4 m
+0.4 -0.4 l
+0.4 0.4 l
+-0.4 0.4 l
+h
+</path>
+<path fill="sym-fill">
+-0.4 -0.4 m
+0.4 -0.4 l
+0.4 0.4 l
+-0.4 0.4 l
+h
+</path>
+</group>
+</symbol>
+<symbol name="mark/cross(sx)" transformations="translations">
+<group>
+<path fill="sym-stroke">
+-0.43 -0.57 m
+0.57 0.43 l
+0.43 0.57 l
+-0.57 -0.43 l
+h
+</path>
+<path fill="sym-stroke">
+-0.43 0.57 m
+0.57 -0.43 l
+0.43 -0.57 l
+-0.57 0.43 l
+h
+</path>
+</group>
+</symbol>
+<pen name="heavier" value="0.8"/>
+<pen name="fat" value="1.2"/>
+<pen name="ultrafat" value="2"/>
+<symbolsize name="large" value="5"/>
+<symbolsize name="small" value="2"/>
+<symbolsize name="tiny" value="1.1"/>
+<arrowsize name="large" value="10"/>
+<arrowsize name="small" value="5"/>
+<arrowsize name="tiny" value="3"/>
+<color name="red" value="1 0 0"/>
+<color name="green" value="0 1 0"/>
+<color name="blue" value="0 0 1"/>
+<color name="yellow" value="1 1 0"/>
+<color name="gray1" value="0.125"/>
+<color name="gray2" value="0.25"/>
+<color name="gray3" value="0.375"/>
+<color name="gray4" value="0.5"/>
+<color name="gray5" value="0.625"/>
+<color name="gray6" value="0.75"/>
+<color name="gray7" value="0.875"/>
+<dashstyle name="dashed" value="[4] 0"/>
+<dashstyle name="dotted" value="[1 3] 0"/>
+<dashstyle name="dash dotted" value="[4 2 1 2] 0"/>
+<dashstyle name="dash dot dotted" value="[4 2 1 2 1 2] 0"/>
+<textsize name="large" value="\large"/>
+<textsize name="Large" value="\Large"/>
+<textsize name="LARGE" value="\LARGE"/>
+<textsize name="huge" value="\huge"/>
+<textsize name="Huge" value="\Huge"/>
+<textsize name="small" value="\small"/>
+<textsize name="footnote" value="\footnotesize"/>
+<textsize name="tiny" value="\tiny"/>
+<textstyle name="center" begin="\begin{center}" end="\end{center}"/>
+<textstyle name="itemize" begin="\begin{itemize}" end="\end{itemize}"/>
+<textstyle name="item" begin="\begin{itemize}\item{}" end="\end{itemize}"/>
 </ipestyle>
-<ipestyle>
-</ipestyle>
-<ipestyle>
-</ipestyle>
-<page gridsize="4">
+<page>
 <layer name="alpha"/>
 <view layers="alpha" active="alpha"/>
-<text layer="alpha" stroke="black" matrix="1 0 0 1 48 -24" pos="168 776" type="label" width="62" height="9" depth="0" valign="baseline" size="Large">IP Header</text>
-<path stroke="black" matrix="1 0 0 1 16 -32" pen="normal">
-72 776 m
-384 776 l
-384 800 l
-72 800 l
+<path layer="alpha" matrix="1 0 0 1.63793 0 -500.138" stroke="black">
+64 552 m
+192 552 l
+192 784 l
+64 784 l
 h
 </path>
-<path stroke="black" matrix="1 0 0 1 16 -32" pen="normal">
-72 752 m
-384 752 l
-384 776 l
-72 776 l
+<path matrix="1 0 0 1 0 -68" stroke="black">
+136 744 m
+192 744 l
+192 768 l
+136 768 l
 h
 </path>
-<text stroke="black" matrix="1 0 0 1 16 -48" pos="168 776" type="label" width="130" height="9" depth="0" valign="baseline" size="Large">UDP or TCP Header</text>
-<path stroke="black" matrix="1 0 0 1 16 -52" pen="normal">
-72 736 m
-176 736 l
-176 752 l
-72 752 l
+<path matrix="1 0 0 1 0 -68" stroke="black">
+136 688 m
+192 688 l
+192 712 l
+136 712 l
 h
 </path>
-<path stroke="black" matrix="1 0 0 1 16 -52" pen="normal">
-176 736 m
-280 736 l
-280 752 l
-176 752 l
+<path matrix="1 0 0 1 144 32" stroke="black">
+80 480 m
+176 480 l
+176 528 l
+80 528 l
 h
 </path>
-<path stroke="black" matrix="1 0 0 1 16 -52" pen="normal">
-280 736 m
+<text matrix="1 0 0 1 144 32" transformations="translations" pos="96 496" stroke="black" type="label" width="67.698" height="11.761" depth="0" valign="baseline" size="LARGE">EEG-HW</text>
+<text matrix="1 0 0 1 0 -68" transformations="translations" pos="152 752" stroke="black" type="label" width="21.863" height="6.808" depth="0" valign="baseline">UDP</text>
+<text matrix="1 0 0 1 0 -68" transformations="translations" pos="152 696" stroke="black" type="label" width="21.171" height="6.808" depth="0" valign="baseline">TCP</text>
+<path matrix="1 0 0 1 248 -44" stroke="black">
+136 744 m
+192 744 l
+192 768 l
+136 768 l
+h
+</path>
+<text matrix="1 0 0 1 248 -44" transformations="translations" pos="152 752" stroke="black" type="label" width="21.863" height="6.808" depth="0" valign="baseline">UDP</text>
+<path matrix="1 0 0 1 248 56" stroke="black">
+136 688 m
+192 688 l
+192 712 l
+136 712 l
+h
+</path>
+<text matrix="1 0 0 1 248 56" transformations="translations" pos="152 696" stroke="black" type="label" width="21.171" height="6.808" depth="0" valign="baseline">TCP</text>
+<use name="mark/fdisk(sfx)" pos="456 508" size="large" stroke="black" fill="black"/>
+<use name="mark/fdisk(sfx)" pos="456 496" size="large" stroke="black" fill="black"/>
+<use name="mark/fdisk(sfx)" pos="456 484" size="large" stroke="black" fill="black"/>
+<text matrix="1 0 0 1 32 12" transformations="translations" pos="464 752" stroke="black" type="label" width="81.637" height="11.955" depth="0" valign="baseline" size="LARGE">UDP Client</text>
+<text matrix="1 0 0 1 -356 -160" transformations="translations" pos="464 752" stroke="black" type="label" width="42.875" height="11.761" depth="0" valign="baseline" size="LARGE">Server</text>
+<text matrix="1 0 0 1 20 -172" transformations="translations" pos="240 768" stroke="black" type="label" width="21.447" height="6.808" depth="0" valign="baseline" size="10">Data</text>
+<text matrix="1 0 0 1 32 12" transformations="translations" pos="468 736" stroke="black" type="label" width="59.57" height="8.965" depth="2.99" valign="baseline" size="large">(e.g. scope)</text>
+<path matrix="1 0 0 1 0 -68" stroke="black">
+104 680 m
+192 680 l
+192 776 l
+104 776 l
+h
+</path>
+<text matrix="1 0 0 1 -40 -92" transformations="translations" pos="152 752" stroke="black" type="label" width="19.838" height="6.127" depth="0" valign="baseline" size="9">Data</text>
+<text matrix="1 0 0 1 -40 -100" transformations="translations" pos="152 752" stroke="black" type="label" width="29.749" height="6.227" depth="0" valign="baseline" size="9">Sockets</text>
+<path matrix="1 0 0 1 12 -28" stroke="black">
+76 552 m
+180 552 l
+180 576 l
+76 576 l
+h
+</path>
+<text matrix="1 0 0 1 24 -24" transformations="translations" pos="84 560" stroke="black" type="label" width="61.798" height="6.227" depth="0" valign="baseline" size="9">EEG Hardware</text>
+<text matrix="1 0 0 1 24 -32" transformations="translations" pos="84 560" stroke="black" type="label" width="63.74" height="6.127" depth="0" valign="baseline" size="9">Communication</text>
+<text matrix="1 0 0 1 0 -44" transformations="translations" pos="392 772" stroke="black" type="label" width="19.838" height="6.127" depth="0" valign="baseline" size="9">Data</text>
+<text matrix="1 0 0 1 0 44" transformations="translations" pos="392 728" stroke="black" type="label" width="70.319" height="6.23" depth="1.74" valign="baseline" size="9">Control Messages</text>
+<path matrix="1 0 0 1 0 -44" stroke="black">
+384 740 m
+488 740 l
+488 780 l
+384 780 l
+h
+</path>
+<path matrix="1 0 0 1 0 44" stroke="black">
+384 696 m
+488 696 l
+488 736 l
 384 736 l
-384 752 l
-280 752 l
 h
 </path>
-<path stroke="black" matrix="1 0 0 1 16 -52" pen="normal">
-72 720 m
-176 720 l
-176 736 l
-72 736 l
+<path matrix="1 0 0 1 0 36" stroke="black">
+136 688 m
+192 688 l
+192 712 l
+136 712 l
 h
 </path>
-<path stroke="black" matrix="1 0 0 1 16 -52" pen="normal">
-176 720 m
-280 720 l
-280 736 l
-176 736 l
+<text matrix="1 0 0 1 0 36" transformations="translations" pos="152 696" stroke="black" type="label" width="21.171" height="6.808" depth="0" valign="baseline">TCP</text>
+<text transformations="translations" pos="112 768" stroke="black" type="label" width="66.684" height="6.23" depth="1.74" valign="baseline" size="9">Control Message</text>
+<text transformations="translations" pos="112 756" stroke="black" type="label" width="26.114" height="6.227" depth="0" valign="baseline" size="9">Socket</text>
+<path stroke="black" pen="0.4">
+384 684 m
+584 684 l
+584 784 l
+384 784 l
 h
 </path>
-<mark stroke="black" matrix="1 0 0 1 16 -52" pos="296 728" shape="1" size="normal" fill="black" pen="normal"/>
-<mark stroke="black" matrix="1 0 0 1 8 -52" pos="312 728" shape="1" size="normal" fill="black" pen="normal"/>
-<mark stroke="black" matrix="1 0 0 1 0 -52" pos="328 728" shape="1" size="normal" fill="black" pen="normal"/>
-<text stroke="black" matrix="1 0 0 1 -88 -52" pos="184 748" type="minipage" width="88" height="6.51" depth="2.49" valign="top" size="normal">EEG ch1 (bl 1)</text>
-<text stroke="black" matrix="1 0 0 1 16 -52" pos="184 748" type="minipage" width="88" height="6.51" depth="2.49" valign="top" size="normal">EEG ch2 (bl 1)</text>
-<text stroke="black" matrix="1 0 0 1 120 -52" pos="184 748" type="minipage" width="88" height="6.51" depth="2.49" valign="top" size="normal">EEG ch3 (bl 1)</text>
-<text stroke="black" matrix="1 0 0 1 -88 -68" pos="184 748" type="minipage" width="88" height="6.51" depth="2.49" valign="top" size="normal">EEG ch4 (bl 1)</text>
-<text stroke="black" matrix="1 0 0 1 0 4" pos="56 800" type="minipage" width="272" height="7.51" depth="3.49" valign="top" size="LARGE">RAW Data Packet Structure:</text>
-<path stroke="black" matrix="1 0 0 1 16 -68" pen="normal">
-72 720 m
-176 720 l
-176 736 l
-72 736 l
+<path matrix="1 0 0 1 248 -172" stroke="black">
+136 744 m
+192 744 l
+192 768 l
+136 768 l
 h
 </path>
-<path stroke="black" matrix="1 0 0 1 16 -68" pen="normal">
-176 720 m
-280 720 l
-280 736 l
-176 736 l
+<text matrix="1 0 0 1 248 -172" transformations="translations" pos="152 752" stroke="black" type="label" width="21.171" height="6.808" depth="0" valign="baseline">TCP</text>
+<path matrix="1 0 0 1 248 -72" stroke="black">
+136 688 m
+192 688 l
+192 712 l
+136 712 l
 h
 </path>
-<text stroke="black" matrix="1 0 0 1 -88 -84" pos="184 748" type="minipage" width="88" height="6.51" depth="2.49" valign="top" size="normal">EMG ch1 (bl 1)</text>
-<text stroke="black" matrix="1 0 0 1 16 -84" pos="184 748" type="minipage" width="88" height="6.51" depth="2.49" valign="top" size="normal">EMG ch2 (bl 1)</text>
-<text stroke="black" matrix="1 0 0 1 20 -68" pos="168 776" type="label" width="118" height="9.21" depth="2.79" valign="baseline" size="Large">\emph{Data packet header}</text>
-<text stroke="black" matrix="1 0 0 1 24 -220" pos="56 800" type="minipage" width="272" height="7.18" depth="2.82" valign="top" size="large">Data packet header:</text>
-<text stroke="black" matrix="1 0 0 1 64 -192" pos="80 748" type="minipage" width="88" height="5.95" depth="1.05" valign="top" size="footnote">uint64 SampleNr</text>
-<text stroke="black" matrix="1 0 0 1 16 -68" pos="184 748" type="minipage" width="88" height="6.51" depth="2.49" valign="top" size="normal">EEG ch5 (bl 1)</text>
-<text stroke="black" matrix="1 0 0 1 12 -192" pos="80 748" type="minipage" width="88" height="5.95" depth="1.05" valign="top" size="footnote">uint32 Flags</text>
-<path stroke="black" matrix="1 0 0 1 -36 -192" pen="heavier">
-176 736 m
-280 736 l
-280 752 l
-176 752 l
+<text matrix="1 0 0 1 248 -72" transformations="translations" pos="152 696" stroke="black" type="label" width="21.171" height="6.808" depth="0" valign="baseline">TCP</text>
+<text matrix="1 0 0 1 32 -116" transformations="translations" pos="464 752" stroke="black" type="label" width="80.524" height="11.955" depth="0" valign="baseline" size="LARGE">TCP Client</text>
+<text matrix="1 0 0 1 0 -172" transformations="translations" pos="392 772" stroke="black" type="label" width="19.838" height="6.127" depth="0" valign="baseline" size="9">Data</text>
+<text matrix="1 0 0 1 0 -84" transformations="translations" pos="392 728" stroke="black" type="label" width="70.319" height="6.23" depth="1.74" valign="baseline" size="9">Control Messages</text>
+<path matrix="1 0 0 1 0 -172" stroke="black">
+384 740 m
+488 740 l
+488 780 l
+384 780 l
 h
 </path>
-<path stroke="black" matrix="1 0 0 1 68 -192" pen="heavier">
-176 736 m
-280 736 l
-280 752 l
-176 752 l
+<path matrix="1 0 0 1 0 -84" stroke="black">
+384 696 m
+488 696 l
+488 736 l
+384 736 l
 h
 </path>
-<text stroke="black" matrix="1 0 0 1 168 -192" pos="80 748" type="minipage" width="88" height="4.73" depth="0.27" valign="top" size="footnote">uint64 PacketNr</text>
-<path stroke="black" matrix="1 0 0 1 0 -32" pen="heavier">
-348 576 m
-404 576 l
-404 592 l
-348 592 l
+<path matrix="1 0 0 1 0 -128" stroke="black" pen="0.4">
+384 684 m
+584 684 l
+584 784 l
+384 784 l
 h
 </path>
-<path stroke="black" matrix="1 0 0 1 0 -32" dash="dashed" pen="normal">
-376 592 m
-376 576 l
-</path>
-<path stroke="black" matrix="1 0 0 1 0 -32" pen="heavier">
-84 576 m
-140 576 l
-140 592 l
-84 592 l
+<path stroke="black" pen="0.4">
+104 716 m
+192 716 l
+192 776 l
+104 776 l
 h
 </path>
-<path stroke="black" matrix="1 0 0 1 0 -32" pen="heavier">
-84 560 m
-140 560 l
-140 576 l
-84 576 l
+<path stroke="black" dash="dashed" pen="0.4" arrow="normal/7" rarrow="normal/7">
+192 736 m
+384 756 l
+</path>
+<path stroke="black" dash="dashed" pen="0.4" arrow="normal/7">
+192 688 m
+384 712 l
+</path>
+<path stroke="black" dash="dashed" pen="0.4" arrow="normal/7" rarrow="normal/7">
+192 736 m
+384 628 l
+</path>
+<path stroke="black" dash="dashed" pen="0.4" arrow="normal/7">
+192 632 m
+384 584 l
+</path>
+<text matrix="1 0 0 1 -32 -92" transformations="translations" pos="240 768" stroke="black" type="label" width="21.447" height="6.808" depth="0" valign="baseline" size="10">Data</text>
+<text matrix="1 0 0 1 68.4867 -85.2194" transformations="translations" pos="260 752" stroke="black" type="label" width="47.876" height="6.926" depth="1.93" valign="baseline" size="10">xml-Config</text>
+<text matrix="1 0 0 1 68.2749 9.10332" transformations="translations" pos="260 752" stroke="black" type="label" width="47.876" height="6.926" depth="1.93" valign="baseline" size="10">xml-Config</text>
+<path stroke="black" arrow="normal/normal" rarrow="normal/normal">
+224 536 m
+192 536 l
+</path>
+<path matrix="1 0 0 1 144 -28" stroke="black">
+80 480 m
+176 480 l
+176 528 l
+80 528 l
 h
 </path>
-<text stroke="black" matrix="1 0 0 1 264 -172" pos="80 748" type="minipage" width="88" height="5.51" depth="1.49" valign="top" size="footnote">uint16 [ ] NrValues</text>
-<text stroke="black" matrix="1 0 0 1 12 -228" pos="80 748" type="minipage" width="88" height="5.51" depth="1.49" valign="top" size="footnote">uint16 [ ] NrBlocks</text>
-<path stroke="black" matrix="1 0 0 1 0 -32" dash="dashed" pen="normal">
-112 576 m
-112 560 l
-</path>
-<path stroke="black" matrix="1 0 0 1 0 -32" pen="normal">
-96 568 m
-112 552 l
-</path>
-<path stroke="black" matrix="1 0 0 1 0 -32" pen="normal">
-128 568 m
-116 552 l
-</path>
-<path stroke="black" matrix="1 0 0 1 0 -32" pen="normal">
-360 584 m
-368 600 l
-</path>
-<path stroke="black" matrix="1 0 0 1 0 -32" pen="normal">
-392 584 m
-372 600 l
-</path>
-<path stroke="black" matrix="1 0 0 1 0 -32" pen="ultrafat">
-140 576 m
-140 560 l
-</path>
-<path stroke="black" matrix="1 0 0 1 0 -32" dash="dotted" pen="normal">
-140 560 m
-192 560 l
-192 576 l
-140 576 l
+<text matrix="1 0 0 1 144 -28" transformations="translations" pos="96 496" stroke="black" type="label" width="71.517" height="11.761" depth="0" valign="baseline" size="LARGE">EMG-HW</text>
+<path matrix="1 0 0 1 12 -88" stroke="black">
+76 552 m
+180 552 l
+180 576 l
+76 576 l
 h
 </path>
-<path stroke="black" matrix="1 0 0 1 0 -32" dash="dotted" pen="normal">
-192 560 m
-244 560 l
-244 576 l
-192 576 l
-h
+<text matrix="1 0 0 1 24 -84" transformations="translations" pos="84 560" stroke="black" type="label" width="63.973" height="6.227" depth="0" valign="baseline" size="9">EMG Hardware</text>
+<text matrix="1 0 0 1 24 -92" transformations="translations" pos="84 560" stroke="black" type="label" width="63.74" height="6.127" depth="0" valign="baseline" size="9">Communication</text>
+<path matrix="1 0 0 1 0 -60" stroke="black" arrow="normal/normal" rarrow="normal/normal">
+224 536 m
+192 536 l
 </path>
-<path stroke="black" matrix="1 0 0 1 52 -32" dash="dotted" pen="normal">
-192 560 m
-244 560 l
-244 576 l
-192 576 l
-h
+<use matrix="1 0 0 1 -184 -72" name="mark/fdisk(sfx)" pos="456 508" size="large" stroke="black" fill="black"/>
+<use matrix="1 0 0 1 -184 -72" name="mark/fdisk(sfx)" pos="456 496" size="large" stroke="black" fill="black"/>
+<use matrix="1 0 0 1 -184 -72" name="mark/fdisk(sfx)" pos="456 484" size="large" stroke="black" fill="black"/>
+<use matrix="1 0 0 1 -324 -60" name="mark/fdisk(sfx)" pos="456 508" size="large" stroke="black" fill="black"/>
+<use matrix="1 0 0 1 -324 -60" name="mark/fdisk(sfx)" pos="456 496" size="large" stroke="black" fill="black"/>
+<use matrix="1 0 0 1 -324 -60" name="mark/fdisk(sfx)" pos="456 484" size="large" stroke="black" fill="black"/>
+<path matrix="1 0 0 0.928571 0 41.1429" stroke="red" dash="dashed" pen="fat">
+288 800 m
+288 576 l
 </path>
-<path stroke="black" matrix="1 0 0 1 104 -32" dash="dotted" pen="normal">
-192 560 m
-244 560 l
-244 576 l
-192 576 l
-h
-</path>
-<mark stroke="black" matrix="1 0 0 1 64 -192" pos="296 728" shape="1" size="normal" fill="black" pen="normal"/>
-<mark stroke="black" matrix="1 0 0 1 56 -192" pos="312 728" shape="1" size="normal" fill="black" pen="normal"/>
-<mark stroke="black" matrix="1 0 0 1 48 -192" pos="328 728" shape="1" size="normal" fill="black" pen="normal"/>
-<text stroke="black" matrix="1 0 0 1 76 -212" pos="80 748" type="minipage" width="88" height="4.73" depth="0.27" valign="top" size="footnote">data</text>
-<text stroke="black" matrix="1 0 0 1 128 -212" pos="80 748" type="minipage" width="88" height="4.73" depth="0.27" valign="top" size="footnote">data</text>
-<text stroke="black" matrix="1 0 0 1 180 -212" pos="80 748" type="minipage" width="88" height="4.73" depth="0.27" valign="top" size="footnote">data</text>
-<text stroke="black" matrix="1 0 0 1 236 -212" pos="80 748" type="minipage" width="88" height="4.73" depth="0.27" valign="top" size="footnote">data</text>
-<path stroke="black" matrix="1 0 0 1 224 -68" pen="normal">
-72 720 m
-176 720 l
-176 736 l
-72 736 l
-h
-</path>
-<path stroke="black" matrix="1 0 0 1 -88 -84" pen="normal">
-176 720 m
-280 720 l
-280 736 l
-176 736 l
-h
-</path>
-<text stroke="black" matrix="1 0 0 1 120 -84" pos="184 748" type="minipage" width="88" height="6.51" depth="2.49" valign="top" size="normal">EMG ch1 (bl 2)</text>
-<text stroke="black" matrix="1 0 0 1 -88 -100" pos="184 748" type="minipage" width="88" height="6.51" depth="2.49" valign="top" size="normal">EMG ch2 (bl 2)</text>
-<path stroke="black" matrix="1 0 0 1 120 -84" pen="normal">
-72 720 m
-176 720 l
-176 736 l
-72 736 l
-h
-</path>
-<path stroke="black" matrix="1 0 0 1 120 -84" pen="normal">
-176 720 m
-280 720 l
-280 736 l
-176 736 l
-h
-</path>
-<text stroke="black" matrix="1 0 0 1 16 -100" pos="184 748" type="minipage" width="88" height="6.51" depth="2.49" valign="top" size="normal">EMG ch1 (bl 3)</text>
-<text stroke="black" matrix="1 0 0 1 120 -100" pos="184 748" type="minipage" width="88" height="6.51" depth="2.49" valign="top" size="normal">EMG ch2 (bl 3)</text>
-<path stroke="black" matrix="1 0 0 1 16 -100" pen="normal">
-72 720 m
-176 720 l
-176 736 l
-72 736 l
-h
-</path>
-<path stroke="black" matrix="1 0 0 1 16 -100" pen="normal">
-176 720 m
-280 720 l
-280 736 l
-176 736 l
-h
-</path>
-<text stroke="black" matrix="1 0 0 1 -88 -116" pos="184 748" type="minipage" width="88" height="6.51" depth="2.49" valign="top" size="normal">EMG ch1 (bl 4)</text>
-<text stroke="black" matrix="1 0 0 1 16 -116" pos="184 748" type="minipage" width="88" height="6.51" depth="2.49" valign="top" size="normal">EMG ch2 (bl 4)</text>
-<path stroke="black" dash="dashed" pen="fat">
-88 668 m
-400 668 l
-400 700 l
-88 700 l
-h
-</path>
-<path stroke="black" pen="normal">
-88 700 m
-400 700 l
-400 720 l
-88 720 l
-h
-</path>
-<path stroke="black" pen="normal">
-88 600 m
-88 768 l
-400 768 l
-400 600 l
-</path>
-<path stroke="black" dash="dotted" pen="normal">
-88 600 m
-400 600 l
-</path>
-<mark stroke="black" matrix="1 0 0 1 -60 -120" pos="296 728" shape="1" size="normal" fill="black" pen="normal"/>
-<mark stroke="black" matrix="1 0 0 1 -68 -120" pos="312 728" shape="1" size="normal" fill="black" pen="normal"/>
-<mark stroke="black" matrix="1 0 0 1 -76 -120" pos="328 728" shape="1" size="normal" fill="black" pen="normal"/>
-<path stroke="black" pen="normal" arrow="normal">
-80 552 m
-24 624
-84 708 s
-</path>
-<path stroke="black" dash="dashed" pen="fat">
-88 668 m
-88 620 l
-400 620 l
-400 668 l
-</path>
-<text stroke="black" matrix="1 0 0 1 232 -32" pos="184 748" type="minipage" width="88" height="6.59" depth="2.41" valign="top" size="Large">EEG</text>
-<text stroke="black" matrix="1 0 0 1 232 -68" pos="184 748" type="minipage" width="88" height="6.59" depth="2.41" valign="top" size="Large">EMG</text>
-<text stroke="black" matrix="1 0 0 1 232 -128" pos="184 748" type="minipage" width="88" height="6.12" depth="1.88" valign="top" size="normal">EOG, ECG,...</text>
-<path stroke="black" pen="normal">
-416 708 m
-396 692 l
-</path>
-<path stroke="black" pen="normal">
-416 672 m
-396 644 l
-</path>
-<path stroke="black" dash="dashed" pen="normal">
-392 608 m
-416 616 l
-</path>
-<text stroke="black" matrix="1 0 0 1 -12 0" pos="76 780" type="label" width="102" height="5.76" depth="2.24" valign="baseline" size="small" style="default">(with exemplary content)</text>
-<text stroke="black" matrix="1 0 0 1 8 4" pos="416 700" type="minipage" width="88" height="10.77" depth="6.23" valign="top" size="footnote">(blocksize = 1, \\ 
-\hspace*{0.1cm} several channels)</text>
-<text stroke="black" matrix="1 0 0 1 8 -32" pos="416 700" type="minipage" width="88" height="10.77" depth="6.23" valign="top" size="footnote">(blocksize = 4, \\
-\hspace*{0.1cm} 2 channels)</text>
+<text matrix="1 0 0 1 -8 0" transformations="translations" pos="304 784" stroke="black" type="label" width="27.726" height="11.761" depth="0" valign="baseline" size="LARGE">TiA</text>
+<text matrix="1 0 0 1 32 -116" transformations="translations" pos="468 736" stroke="black" type="label" width="68.606" height="8.965" depth="2.99" valign="baseline" size="large">(e.g. Matlab)</text>
 </page>
 </ipe>
