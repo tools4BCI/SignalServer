@@ -48,6 +48,7 @@ using namespace tobiss;
 const string DEFAULT_XML_CONFIG = "server_config.xml";
 const string XML_FILE_ARGUMENT = "-f";
 const string DEAMON_ARGUMENT = "-d";
+const int KEEP_ALIVE_TIMER = 50;
 
 class DataPacketReader
 {
@@ -120,7 +121,7 @@ int main(int argc, const char* argv[])
       boost::asio::io_service io_service;
 
       SignalServer server(io_service);
-//      server.setTimeoutKeepAlive(20);
+//      server.setTimeoutKeepAlive(KEEP_ALIVE_TIMER);
       if(argc == 2 && argv[1] == DEAMON_ARGUMENT)
         server.setDeamonMode();
 

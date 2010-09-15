@@ -179,7 +179,6 @@ void ControlMsgDecoderXML::decodeMsg(KeepAliveMsg& msg)
     cerr << "Error decoding KeepAliveMsg" << endl;
     return;
   }
-  // TODO: parse message body
 }
 
 //-----------------------------------------------------------------------------

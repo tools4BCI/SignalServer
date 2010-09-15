@@ -642,6 +642,7 @@ void SSClientImpl::handle_read(const boost::system::error_code& error,
       cout << "Server is still alive" << endl;
       break;
     }
+
     case ControlMsg::OkReply:
     {
       cout << "SSClient: got Ok from Server" << endl;

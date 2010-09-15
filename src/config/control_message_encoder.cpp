@@ -406,7 +406,6 @@ void ControlMsgEncoderXML::encodeBaseMsg(const ControlMsg& msg, const std::strin
 void ControlMsgEncoderXML::writeXMLMsg(TiXmlDocument& doc, std::ostream& stream)
 {
   stream << doc;
-
   {
     cout << "OUTGOING XML message:" << endl;
     cout << ">>> XML Message:" << endl;

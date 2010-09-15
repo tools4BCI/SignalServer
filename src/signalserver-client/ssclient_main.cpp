@@ -24,6 +24,7 @@ using namespace std;
 using namespace tobiss;
 
 const string CONFIG_FILE_ARGUMENT = "-c";
+const int KEEP_ALIVE_TIMER = 50;
 
 //-----------------------------------------------------------------------------
 
@@ -187,7 +188,7 @@ int main(int argc, const char* argv[])
   boost::asio::io_service io_service;
   SSClient client(io_service);
 
-  client.setTimeoutKeepAlive(150);
+  client.setTimeoutKeepAlive(KEEP_ALIVE_TIMER);
 
   boost::thread* io_thread_ptr = 0;
   io_thread_ptr  = new boost::thread(boost::bind(&boost::asio::io_service::run, &io_service));
