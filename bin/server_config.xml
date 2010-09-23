@@ -159,7 +159,7 @@
 
 <!-- =============================================================================== -->
 
-<hardware name="g.usbamp" version="B" serial="UB-2009.07.07">
+  <!-- [KALTNER] <hardware name="g.usbamp" version="B" serial="UB-2009.07.07">
     <mode> master </mode>
     <device_settings>
       <sampling_rate> 1200 </sampling_rate>
@@ -256,7 +256,7 @@
       </common_reference>
     </device_settings>
 
-  </hardware>
+  </hardware> [KALTNER] -->
 
 <!-- =============================================================================== -->
 
@@ -303,8 +303,9 @@
   <hardware name="mouse" version="1.0" serial="">
     <mode> aperiodic </mode>
     <device_settings>
-      <vendorid> 1133 </vendorid>
-      <productid> 49222 </productid>
+      <vendorid> 1351 </vendorid>
+      <productid> 4136 </productid>
+      <usb_port>130</usb_port>
     </device_settings>
   </hardware>  
 

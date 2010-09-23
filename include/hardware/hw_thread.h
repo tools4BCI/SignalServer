@@ -234,6 +234,11 @@ class HWThread
     */
     void setProductId(ticpp::Iterator<ticpp::Element>const &elem);
 
+	/**
+    * @brief Sets vendorId for Mousedevice.
+    */
+    void setUsbPort(ticpp::Iterator<ticpp::Element>const &elem);
+
     /**
     * @brief Check, if a string represents a valid number.
     * @return bool
@@ -257,6 +262,7 @@ class HWThread
     bool running_;      ///< variable, to stop hardware
     boost::uint32_t vid_;
     boost::uint32_t pid_;
+    boost::uint32_t usb_port_;
 
     boost::shared_mutex rw_;     ///< mutex to lock data
 

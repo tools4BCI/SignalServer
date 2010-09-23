@@ -99,6 +99,7 @@ const string Constants::hw_drl_value("value");
 //Mouse specific start
 const string Constants::hw_vid("vendorid");
 const string Constants::hw_pid("productid");
+const string Constants::usb_port("usb_port");
 //Mouse specific end
 
 //-----------------------------------------------------------------------------

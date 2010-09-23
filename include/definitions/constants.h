@@ -282,6 +282,7 @@ namespace tobiss
         //Mouse specific start
           static const string hw_vid;
           static const string hw_pid;
+          static const string usb_port;
         //Mouse specific end
 
     private:
