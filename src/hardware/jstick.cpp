@@ -49,6 +49,9 @@ JStick::JStick(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
   cout << " * Joystick sucessfully initialized -- running as aperiodic: ";
   cout << (mode_ == APERIODIC) << ";  ";
   cout << "Jostick ID: " << id_ << ",  Name: " << name_ << endl;
+  cout << " ... buttons: " << buttons_;
+  cout << ", axes: " << axes_;
+  cout << ", balls: " << balls_ << endl;
 }
 
 //-----------------------------------------------------------------------------
