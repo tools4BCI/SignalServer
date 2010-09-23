@@ -1,5 +1,5 @@
 
-#include "hardware/mouse.h"
+#include "hardware/mouse_linux.h"
 
 
 namespace tobiss
@@ -82,7 +82,7 @@ void Mouse::setDeviceSettings(ticpp::Iterator<ticpp::Element>const& father)
     ticpp::Iterator<ticpp::Element> elem2(father->FirstChildElement(cst_.hw_pid,true));
     setProductId(elem2);
 
-	ticpp::Iterator<ticpp::Element> elem3(father->FirstChildElement(cst_.usb_port,true));
+    ticpp::Iterator<ticpp::Element> elem3(father->FirstChildElement(cst_.usb_port,true));
     setUsbPort(elem3);
 
   string naming;
@@ -98,34 +98,6 @@ void Mouse::setDeviceSettings(ticpp::Iterator<ticpp::Element>const& father)
   for(boost::uint32_t n = 0; n < axes_; n++)
     channel_types_.push_back(SIG_MOUSE);
   nr_ch_= channel_types_.size();
-
-  char VID[4];
-  char PID[4];
-  strcpy_s(hw_id_,"");
-  strcat_s(hw_id_,"\"USB\\VID_");
-  itoa (vid_,VID,16);
-  if((vid_ & 0x1000) == 0)
-  	strcat_s(hw_id_,"0");
-  if((vid_ & 0x1100) == 0)
-    strcat_s(hw_id_,"0");
-  if((vid_ & 0x1110) == 0)
-  	strcat_s(hw_id_,"0");
-  if((vid_ & 0x1111) == 0)
-  	strcat_s(hw_id_,"0");
-  strcat_s(hw_id_,VID);
-  strcat_s(hw_id_,"&PID_");
-  itoa (pid_,PID,16);
-  if((pid_ & 0x1000) == 0)
-  	strcat_s(hw_id_,"0");
-  if((pid_ & 0x1100) == 0)
-  	strcat_s(hw_id_,"0");
-  if((pid_ & 0x1110) == 0)
-  	strcat_s(hw_id_,"0");
-  if((pid_ & 0x1111) == 0)
-  	strcat_s(hw_id_,"0");	
-  strcat_s(hw_id_,PID);
-  strcat_s(hw_id_,"\"");
-
 
   //try
   //{
@@ -156,9 +128,9 @@ void Mouse::setDeviceSettings(ticpp::Iterator<ticpp::Element>const& father)
 
 void Mouse::setChannelSettings(ticpp::Iterator<ticpp::Element>const& )
 {
-  #ifdef DEBUG
+//  #ifdef DEBUG
     cout << "Mouse: setChannelSettings" << endl;
-  #endif
+//  #endif
 
 //   ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(cst_.hw_sel,false));
 //   if (elem != elem.end())
@@ -178,50 +150,39 @@ SampleBlock<double> Mouse::getAsyncData()
           int x,y;
           x=y=0;
 
-          //// UNIX:
-		  //unsigned char data[5];
-          //int actual_length;
-          //int r = libusb_bulk_transfer(dev_handle_, 129, data, sizeof(data), &actual_length, 0);
-          //if (r == 0 && actual_length == sizeof(data))
-          //{
-          //    int dx = (int)(char)data[1];
-          //    int dy = (int)(char)data[2];
-          //    x += dx;
-          //    y += dy;
-          //}
-
-		char data[10];
-        int actual_length;
-		int ret = usb_interrupt_read(dev_handle_,usb_port_, (char *)data, sizeof(data), 100);
-		
-		if(ret==3)
-		{
-			int dx = (int)data[1];
-			int dy = (int)data[2];
-			x += dx;
-			y += dy;			
-		
-			for(int n = 0; n < buttons_values_.size(); n++)
-			  {
-				bool value = 0;
-				int state_n = ((int)data[0] & (int)pow((double)2,n));
-				if (state_n!=value)
-					value = 1;
-				  if( value != buttons_values_[n])
-				{
-				  dirty = 1;
-				  buttons_values_[n] = value;
-				}
-			  }
-
-			  if(x!=0 || y!=0)
-			  {
-				  dirty = 1;
-				  axes_values_[0]+=x;
-				  axes_values_[1]+=y;
-
-			  }
+          unsigned char data[3];
+          int actual_length;
+          int r = libusb_bulk_transfer(dev_handle_, usb_port_, data, sizeof(data), &actual_length, 0);
+          if (r == 0 && actual_length == sizeof(data))
+          {
+              int dx = (int)(char)data[1];
+              int dy = (int)(char)data[2];
+              x += dx;
+              y += dy;
           }
+
+
+          for(uint n = 0; n < buttons_values_.size(); n++)
+          {
+            bool value = 0;
+            int state_n = ((int)data[0] & (int)pow(2,n));
+            if (state_n!=value)
+                value = 1;
+              if( value != buttons_values_[n])
+            {
+              dirty = 1;
+              buttons_values_[n] = value;
+            }
+          }
+
+          if(x!=0 || y!=0)
+          {
+              dirty = 1;
+              axes_values_[0]+=x;
+              axes_values_[1]+=y;
+
+          }
+
           if(!dirty)
             return(empty_block_);
 
@@ -271,10 +232,9 @@ void Mouse::initMouse()
 
   axes_values_[0] = 0;
   axes_values_[1] = 0;
-  
-//  ctx_ = NULL; //a libusb session
-  user_interrupt_ = false;
 
+  ctx_ = NULL; //a libusb session
+  user_interrupt_ = false;
 }
 
 
@@ -282,125 +242,38 @@ void Mouse::initMouse()
 
 int Mouse::blockKernelDriver()
 {
-	STARTUPINFO         siStartupInfo;
-    PROCESS_INFORMATION piProcessInfo;
+    int ret;
+    ret = libusb_init(&ctx_);
+    if(ret < 0) {
+      return -1;
+    }
+    dev_handle_ = libusb_open_device_with_vid_pid(ctx_, vid_, pid_);
+    if(dev_handle_ == NULL)
+        return -2;
 
-    memset(&siStartupInfo, 0, sizeof(siStartupInfo));
-    memset(&piProcessInfo, 0, sizeof(piProcessInfo));
-
-    siStartupInfo.cb = sizeof(siStartupInfo);
-
-	char command[100];
-	strcpy_s(command," disable -r ");
-	strcat_s(command,hw_id_);
-
-    CreateProcess("F:\\WinDDK\\7600.16385.1\\tools\\devcon\\i386\\devcon.exe",     // Application name
-                     (char*)command,                 // Application arguments
-                     0,
-                     0,
-                     FALSE,
-                     CREATE_DEFAULT_ERROR_MODE,
-                     0,
-                     0,                              // Working directory
-                     &siStartupInfo,
-                     &piProcessInfo);
-    
-    WaitForSingleObject(piProcessInfo.hProcess, 10000);
-
-	const char *inf_file = "test.inf";
-	int test = usb_install_driver_np(inf_file);
-    
-	struct usb_bus *UsbBus = NULL;
-    struct usb_device *UsbDevice = NULL;
-
-        usb_find_busses();
-        usb_find_devices();
-
-        for (UsbBus = usb_get_busses(); UsbBus; UsbBus = UsbBus->next) {
-                for (UsbDevice = UsbBus->devices; UsbDevice; UsbDevice = UsbDevice->next) {
-                        if (UsbDevice->descriptor.idVendor == vid_ && UsbDevice->descriptor.idProduct== pid_) {
-                                break;
-                        }
-                }
-        }
-		if (!UsbDevice) return -1;
-        dev_handle_ = usb_open(UsbDevice);
-
-        if (usb_set_configuration (dev_handle_, 1) < 0) {
-                usb_close(dev_handle_);
-                return -2;
-        }
-
-        if (usb_claim_interface (dev_handle_, 0) < 0) {
-                usb_close(dev_handle_);
-                return -3;
-        } 
-
-		cout<< "MouseDevice successfully connected: "<<endl;
-		return 0;
-
- //   int ret;
- //   ret = libusb_init(&ctx_);
- //   if(ret < 0) {
- //     return -1;
- //   }
- //   dev_handle_ = libusb_open_device_with_vid_pid(ctx_, vid_, pid_);
- //   if(dev_handle_ == NULL)
- //       return -2;
-
- //   if(libusb_kernel_driver_active(dev_handle_, 0) == 1) {
- //       libusb_detach_kernel_driver(dev_handle_, 0);
- //   }
-	//ret = usb_set_configuration();
- //   ret = libusb_claim_interface(dev_handle_, 0);
- //   if(ret)
- //       return -3;
- //   return 0;
+    if(libusb_kernel_driver_active(dev_handle_, 0) == 1) {
+        libusb_detach_kernel_driver(dev_handle_, 0);
+    }
+    ret = libusb_claim_interface(dev_handle_, 0);
+    if(ret)
+        return -3;
+    return 0;
 }
 
 //-----------------------------------------------------------------------------
 
 int Mouse::freeKernelDriver()
 {
-    //int ret;
-    //ret = libusb_release_interface(dev_handle_, 0);
-    //if(ret)
-    //    return-1;
-    //ret = libusb_attach_kernel_driver(dev_handle_, 0);
-    //if(ret)
-    //    return -2;
-    //libusb_close(dev_handle_);
-    //libusb_exit(ctx_);
-    //return 0;
-	usb_release_interface(dev_handle_,0);
-	usb_close(dev_handle_);
-    
-STARTUPINFO         siStartupInfo;
-    PROCESS_INFORMATION piProcessInfo;
-
-    memset(&siStartupInfo, 0, sizeof(siStartupInfo));
-    memset(&piProcessInfo, 0, sizeof(piProcessInfo));
-
-    siStartupInfo.cb = sizeof(siStartupInfo);
-	char command[100];
-	strcpy_s(command," remove -r ");
-	strcat_s(command,hw_id_);
-    CreateProcess("F:\\WinDDK\\7600.16385.1\\tools\\devcon\\i386\\devcon.exe",     // Application name
-                     (char*)command,                 // Application arguments
-                     0,
-                     0,
-                     FALSE,
-                     CREATE_DEFAULT_ERROR_MODE,
-                     0,
-                     0,                              // Working directory
-                     &siStartupInfo,
-                     &piProcessInfo);
-    
-    WaitForSingleObject(piProcessInfo.hProcess, 10000);
-	WinExec("\"F:\\WinDDK\\7600.16385.1\\tools\\devcon\\i386\\devcon.exe\" rescan", 1);
-	
-	cout<< "MouseDevice disconnected"<<endl;
-	return 0;
+    int ret;
+    ret = libusb_release_interface(dev_handle_, 0);
+    if(ret)
+        return-1;
+    ret = libusb_attach_kernel_driver(dev_handle_, 0);
+    if(ret)
+        return -2;
+    libusb_close(dev_handle_);
+    libusb_exit(ctx_);
+    return 0;
 }
 
 //-----------------------------------------------------------------------------

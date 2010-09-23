@@ -6,9 +6,14 @@
 #include "hardware/sine_generator.h"
 #include "hardware/event_listener.h"
 #include "hardware/jstick.h"
-#include "hardware/mouse.h"
+#include "hardware/mouse_linux.h"
+
+#ifdef UNIX
+  #include "hardware/mouse_linux.h"
+#endif
 
 #ifdef WIN32
+  #include "hardware/mouse_.h"
   #include "hardware/usbamp.h"
 #endif
 
