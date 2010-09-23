@@ -207,45 +207,54 @@ int main(int argc, const char* argv[])
   {
    cerr << endl << " ***** TICPP Exception caught! *****" << endl;
    cerr << " --> " << ex.what() << endl << endl;
+   std::cin.peek();
   }
   catch(std::invalid_argument& e)
   {
    cerr << endl << " ***** STL Exception -- Invalid argument -- caught! *****" << endl;
    cerr << " --> " << e.what() << endl << endl;
+   std::cin.peek();
   }
   catch(std::length_error& e)
   {
    cerr << endl << " ***** STL Exception -- Length error -- caught! *****" << endl;
    cerr << " --> " << e.what() << endl << endl;
+   std::cin.peek();
   }
   catch(std::logic_error& e)
   {
    cerr << endl << " ***** STL Exception -- Logic error -- caught! *****" << endl;
    cerr << " --> " << e.what() << endl << endl;
+   std::cin.peek();
   }
   catch(std::range_error& e)
   {
    cerr << endl << " ***** STL Exception -- Range error -- caught! *****" << endl;
    cerr << " --> " << e.what() << endl << endl;
+   std::cin.peek();
   }
   catch(std::runtime_error& e)
   {
    cerr << endl << " ***** STL Exception -- Runtime error -- caught! *****" << endl;
    cerr << " --> " << e.what() << endl << endl;
+   std::cin.peek();
   }
   catch(std::exception& e)
   {
    cerr << endl << " ***** STL Exception caught! *****" << endl;
    cerr << " --> " << e.what() << endl << endl;
+   std::cin.peek();
   }
   catch(boost::exception& e)
   {
    cerr << endl << " ***** Boost Exception caught! *****" << endl;
    cerr << " --> " << boost::diagnostic_information(e) << endl << endl;
+   std::cin.peek();
   }
   catch(...)
   {
    cerr << endl << " ***** Caught unknown exception! *****" << endl;
+   std::cin.peek();
   }
 
    cerr.flush();

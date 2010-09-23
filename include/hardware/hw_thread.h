@@ -60,7 +60,7 @@ class HWThread
     * @brief Get the name of the device.
     * @return string device name
     */
-    string getName()  { return(m_.find("name")->second); }
+    std::string getName()  { return(m_.find("name")->second); }
 
     /**
     * @brief Check if device is the master.
