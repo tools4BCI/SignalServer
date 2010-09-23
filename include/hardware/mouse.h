@@ -20,8 +20,7 @@
 #include <cmath>
 
 #include "hw_thread.h"
-#include "extern/lib/libusb-1.0.8/libusb/libusb.h"
-
+#include "extern\lib\libusb\win\usb.h"
 
 using namespace std;
 
@@ -67,7 +66,7 @@ class Mouse : public HWThread
       virtual void setChannelSettings(ticpp::Iterator<ticpp::Element>const &father);
 
       virtual SampleBlock<double> getSyncData()   {return data_; }
-
+ 
       void initMouse();
       int blockKernelDriver();
       int freeKernelDriver();
@@ -92,9 +91,10 @@ class Mouse : public HWThread
       SampleBlock<double> empty_block_;
 
       int x_,y_;
-      libusb_device **devs_; //pointer to pointer of device, used to retrieve a list of devices
-      libusb_device_handle *dev_handle_; //a device handle
-      libusb_context *ctx_; //a libusb session
+      struct usb_device **devs_; //pointer to pointer of device, used to retrieve a list of devices
+      usb_dev_handle *dev_handle_; //a device handle
+	  char hw_id_[28];
+	  //libusb_context *ctx_; //a libusb session
   };
 
 

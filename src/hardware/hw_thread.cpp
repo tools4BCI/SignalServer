@@ -286,4 +286,32 @@ void HWThread::setProductId(ticpp::Iterator<ticpp::Element>const &elem)
 
 //-----------------------------------------------------------------------------
 
+void HWThread::setUsbPort(ticpp::Iterator<ticpp::Element>const &elem)
+{
+    #ifdef DEBUG
+      cout << "HWThread: setUsbPort" << endl;
+    #endif
+
+    try
+    {
+      usb_port_ = lexical_cast<int>(elem->GetText(true));
+    }
+    catch(bad_lexical_cast &)
+    {
+      string ex_str;
+      ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+      ex_str += "Usb port: value is not a number!";
+      throw(ticpp::Exception(ex_str));
+    }
+    if(blocks_ == 0)
+    {
+      string ex_str;
+      ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+      ex_str += "Usb port: value is 0!";
+      throw(ticpp::Exception(ex_str));
+    }
+}
+
+//-----------------------------------------------------------------------------
+
 } // Namespace tobiss

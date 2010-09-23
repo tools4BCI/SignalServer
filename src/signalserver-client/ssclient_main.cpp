@@ -44,12 +44,12 @@ class SSClientDataReader
     {
       unsigned int counter = 0;
 
-      uint16_t nr_values = 0;
-      uint64_t sample_nr = 0;
-      uint64_t packet_nr = 0;
+      boost::uint16_t nr_values = 0;
+      boost::uint64_t sample_nr = 0;
+      boost::uint64_t packet_nr = 0;
 
-      uint64_t sample_nr_old = 0;
-      uint64_t packet_nr_old = 0;
+      boost::uint64_t sample_nr_old = 0;
+      boost::uint64_t packet_nr_old = 0;
 
       while(running_)
       {
