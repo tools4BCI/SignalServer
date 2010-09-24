@@ -99,7 +99,7 @@ namespace tobiss
       bool isJoystick(const std::string& s);
 
       /**
-<<<<<<< HEAD
+
       * @brief Checks, if the given string represents a Mouse device.
       * @param[in] s String to be checked.
       * @return Bool
@@ -110,10 +110,6 @@ namespace tobiss
       /**
       * @brief Maps given strings "on" or "off" to boolean values 0 or 1.
       * @param[in] s String to be checked.
-=======
-      * @brief Maps given std::strings "on" or "off" to boolean values 0 or 1.
-      * @param[in] s std::string to be checked.
->>>>>>> 1dddd42df71e07609c9fe4eab2226f3a9c939ada
       * @return Bool
       * @throw ticpp::Exception thrown if std::string neither on or off (or 0/1)!
       *
@@ -281,20 +277,17 @@ namespace tobiss
           static const std::string hw_drl_value;   ///< USBamp specific
         //USBamp specific end
 
-<<<<<<< HEAD
         //Mouse specific start
           static const string hw_vid;
           static const string hw_pid;
           static const string usb_port;
         //Mouse specific end
-=======
+
           //g.Mobilab specific start
           static const std::string hw_mobilab_serial_port;
           static const std::string hw_mobilab_type;
           static const std::string hw_mobilab_eeg;
           static const std::string hw_mobilab_multi;
-
->>>>>>> 1dddd42df71e07609c9fe4eab2226f3a9c939ada
 
     private:
       /**

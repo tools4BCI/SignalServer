@@ -97,20 +97,17 @@ const string Constants::hw_bip_with("with");
 const string Constants::hw_drl("driven_right_leg");
 const string Constants::hw_drl_value("value");
 
-<<<<<<< HEAD
 //Mouse specific start
 const string Constants::hw_vid("vendorid");
 const string Constants::hw_pid("productid");
 const string Constants::usb_port("usb_port");
 //Mouse specific end
-=======
 
 //g.Mobilab specific start
 const string Constants::hw_mobilab_serial_port("serial_port");
 const string Constants::hw_mobilab_type("mobilab_type");
 const string Constants::hw_mobilab_eeg("eeg");
 const string Constants::hw_mobilab_multi("multi");
->>>>>>> 1dddd42df71e07609c9fe4eab2226f3a9c939ada
 
 //-----------------------------------------------------------------------------
 
