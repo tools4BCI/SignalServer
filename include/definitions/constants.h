@@ -105,7 +105,7 @@ namespace tobiss
       * @return Bool
       *
       */
-      bool isMouse(const string& s);
+      bool isMouse(const std::string& s);
 
       /**
       * @brief Maps given strings "on" or "off" to boolean values 0 or 1.
@@ -278,9 +278,9 @@ namespace tobiss
         //USBamp specific end
 
         //Mouse specific start
-          static const string hw_vid;
-          static const string hw_pid;
-          static const string usb_port;
+          static const std::string hw_vid;
+          static const std::string hw_pid;
+          static const std::string usb_port;
         //Mouse specific end
 
           //g.Mobilab specific start
