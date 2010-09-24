@@ -6,15 +6,13 @@
 #include "hardware/sine_generator.h"
 #include "hardware/event_listener.h"
 #include "hardware/jstick.h"
-<<<<<<< HEAD
 #include "hardware/mouse_linux.h"
+#include "hardware/g_mobilab.h"
 
-#ifdef UNIX
+#ifdef LINUX
   #include "hardware/mouse_linux.h"
 #endif
-=======
-#include "hardware/g_mobilab.h"
->>>>>>> 1dddd42df71e07609c9fe4eab2226f3a9c939ada
+
 
 #ifdef WIN32
   #include "hardware/mouse_.h"
