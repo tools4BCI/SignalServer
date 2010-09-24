@@ -8,7 +8,7 @@
 #include "hardware/jstick.h"
 #include "hardware/g_mobilab.h"
 
-#ifdef LINUX
+#ifdef __linux__
   #include "hardware/mouse_linux.h"
 #endif
 
