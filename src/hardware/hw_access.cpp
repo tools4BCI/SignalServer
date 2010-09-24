@@ -6,7 +6,6 @@
 #include "hardware/sine_generator.h"
 #include "hardware/event_listener.h"
 #include "hardware/jstick.h"
-#include "hardware/mouse_linux.h"
 #include "hardware/g_mobilab.h"
 
 #ifdef LINUX

@@ -307,7 +307,7 @@ int Mouse::blockKernelDriver()
     
     WaitForSingleObject(piProcessInfo.hProcess, 10000);
 
-	const char *inf_file = "test.inf";
+	const char *inf_file = "libusb/test.inf";
 	int test = usb_install_driver_np(inf_file);
     
 	struct usb_bus *UsbBus = NULL;
