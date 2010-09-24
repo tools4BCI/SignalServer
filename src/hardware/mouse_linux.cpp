@@ -47,7 +47,10 @@ Mouse::Mouse(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
   vector<boost::uint32_t> v;
   empty_block_.init(0,0, v);
 
-  blockKernelDriver();
+  int ret = blockKernelDriver();
+  if(ret)
+    throw(std::runtime_error("Mouse::Mouse -- Mouse device could not be connected!"));
+
   cout<<"vid: "<<vid_<<"pid: "<<pid_<<endl;
   cout << " * Mouse sucessfully initialized -- running as aperiodic: ";
   cout << (mode_ == APERIODIC) << ";  ";
