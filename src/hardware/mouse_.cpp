@@ -47,7 +47,10 @@ Mouse::Mouse(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
   vector<boost::uint32_t> v;
   empty_block_.init(0,0, v);
 
-  blockKernelDriver();
+  int ret = blockKernelDriver();
+  if(ret)
+    throw(std::runtime_error("Mouse::Mouse -- Mouse device could not be connected!"));
+
   cout<<"vid: "<<vid_<<"pid: "<<pid_<<endl;
   cout << " * Mouse sucessfully initialized -- running as aperiodic: ";
   cout << (mode_ == APERIODIC) << ";  ";
@@ -339,23 +342,6 @@ int Mouse::blockKernelDriver()
 		cout<< "MouseDevice successfully connected: "<<endl;
 		return 0;
 
- //   int ret;
- //   ret = libusb_init(&ctx_);
- //   if(ret < 0) {
- //     return -1;
- //   }
- //   dev_handle_ = libusb_open_device_with_vid_pid(ctx_, vid_, pid_);
- //   if(dev_handle_ == NULL)
- //       return -2;
-
- //   if(libusb_kernel_driver_active(dev_handle_, 0) == 1) {
- //       libusb_detach_kernel_driver(dev_handle_, 0);
- //   }
-	//ret = usb_set_configuration();
- //   ret = libusb_claim_interface(dev_handle_, 0);
- //   if(ret)
- //       return -3;
- //   return 0;
 }
 
 //-----------------------------------------------------------------------------
