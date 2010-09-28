@@ -70,6 +70,7 @@ class Mouse : public HWThread
       void initMouse();
       int blockKernelDriver();
       int freeKernelDriver();
+	  void acquireData();
 
       //-----------------------------------------------
 
@@ -95,6 +96,11 @@ class Mouse : public HWThread
       usb_dev_handle *dev_handle_; //a device handle
 	  char hw_id_[28];
 	  //libusb_context *ctx_; //a libusb session
+
+	  boost::thread*  async_acqu_thread_;
+      std::vector<boost::int16_t>  raw_data_;
+	  char async_data_[10];
+	  bool dirty_;
   };
 
 
