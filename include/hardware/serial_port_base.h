@@ -2,6 +2,7 @@
 #define SERIALPORTBASE_H
 
 #include <boost/asio.hpp>
+#include <boost/bind.hpp>
 #include <boost/cstdint.hpp>
 
 #include <string>

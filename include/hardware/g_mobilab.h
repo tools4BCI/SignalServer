@@ -13,7 +13,7 @@
 #include <boost/thread.hpp>
 
 #include "serial_port_base.h"
-
+#include "hardware/hw_thread.h"
 
 namespace tobiss
 {
