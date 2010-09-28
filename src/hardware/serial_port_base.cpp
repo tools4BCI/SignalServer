@@ -150,7 +150,7 @@ SerialPortBase::~SerialPortBase()
 
 void SerialPortBase::setPortName(const std::string& name)
 {
-  if( port_name_ == "" )
+  if( name == "" )
     throw(std::runtime_error("SerialPortBase::open() -- No serial port given"));
 
   port_name_ = name;
