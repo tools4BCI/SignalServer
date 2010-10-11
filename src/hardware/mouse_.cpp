@@ -177,74 +177,53 @@ SampleBlock<double> Mouse::getAsyncData()
   #endif
   if(!user_interrupt_)
   {
-          bool dirty = 0;
-          int x,y;
-          x=y=0;
+    bool dirty = 0;
+    int x,y;
+    x=y=0;
 
-          //// UNIX:
-		  //unsigned char data[5];
-          //int actual_length;
-          //int r = libusb_bulk_transfer(dev_handle_, 129, data, sizeof(data), &actual_length, 0);
-          //if (r == 0 && actual_length == sizeof(data))
-          //{
-          //    int dx = (int)(char)data[1];
-          //    int dy = (int)(char)data[2];
-          //    x += dx;
-          //    y += dy;
-          //}
-
-		char data[10];
-        int actual_length;
-		int ret = usb_interrupt_read(dev_handle_,usb_port_, (char *)data, sizeof(data), 100);
-		
-		if(ret==3)
+	int dx = (int)async_data_[1];
+	int dy = (int)async_data_[2];
+	x += dx;
+	y += dy;			
+	
+	for(int n = 0; n < buttons_values_.size(); n++)
+	{
+		bool value = 0;
+		int state_n = ((int)async_data_[0] & (int)pow((double)2,n));
+		if (state_n!=value)
+		value = 1;
+		if( value != buttons_values_[n])
 		{
-			int dx = (int)data[1];
-			int dy = (int)data[2];
-			x += dx;
-			y += dy;			
-		
-			for(int n = 0; n < buttons_values_.size(); n++)
-			  {
-				bool value = 0;
-				int state_n = ((int)data[0] & (int)pow((double)2,n));
-				if (state_n!=value)
-					value = 1;
-				  if( value != buttons_values_[n])
-				{
-				  dirty = 1;
-				  buttons_values_[n] = value;
-				}
-			  }
+			dirty = 1;
+			buttons_values_[n] = value;
+		}
+	 }
 
-			  if(x!=0 || y!=0)
-			  {
-				  dirty = 1;
-				  axes_values_[0]+=x;
-				  axes_values_[1]+=y;
+	 if(x!=0 || y!=0)
+	 {
+		dirty = 1;
+		axes_values_[0]+=x;
+		axes_values_[1]+=y;
+	 }
+     
+	 if(!dirty)
+		return(empty_block_);
 
-			  }
-          }
-          if(!dirty)
-            return(empty_block_);
+     vector<double> v;
 
-          vector<double> v;
+     if(buttons_)
+	 v.push_back(id_);
+	 for(boost::uint8_t n = 0; n < buttons_values_.size(); n++)
+	 v.push_back(buttons_values_[n]);
 
-          if(buttons_)
-            v.push_back(id_);
-          for(boost::uint8_t n = 0; n < buttons_values_.size(); n++)
-              v.push_back(buttons_values_[n]);
-
-          if(axes_)
-            v.push_back(id_);
-          for(boost::uint8_t n = 0; n < axes_values_.size(); n++)
-            v.push_back(axes_values_[n]);
-
-          data_.setSamples(v);
-
-        return(data_);
+	 if(axes_)
+	 v.push_back(id_);
+	 for(boost::uint8_t n = 0; n < axes_values_.size(); n++)
+		v.push_back(axes_values_[n]);
+		data_.setSamples(v);
+		return(data_);
     }
-    else
+    else 
         return(empty_block_);
 }
 
@@ -252,6 +231,9 @@ SampleBlock<double> Mouse::getAsyncData()
 
 void Mouse::run()  {
 
+	if(mode_ == APERIODIC)
+		async_acqu_thread_ = new boost::thread( boost::bind(&Mouse::acquireData, this) );
+     running_ = true;
 }
 
 //-----------------------------------------------------------------------------
@@ -274,9 +256,12 @@ void Mouse::initMouse()
 
   axes_values_[0] = 0;
   axes_values_[1] = 0;
-  
+  async_data_[0] = 0;
+  async_data_[1] = 0;
+  async_data_[2] = 0;
 //  ctx_ = NULL; //a libusb session
   user_interrupt_ = false;
+  dirty_ = false;
 
 }
 
@@ -297,7 +282,7 @@ int Mouse::blockKernelDriver()
 	strcpy_s(command," disable -r ");
 	strcat_s(command,hw_id_);
 
-    CreateProcess("F:\\WinDDK\\7600.16385.1\\tools\\devcon\\i386\\devcon.exe",     // Application name
+    CreateProcess("C:\\WinDDK\\7600.16385.1\\tools\\devcon\\i386\\devcon.exe",     // Application name
                      (char*)command,                 // Application arguments
                      0,
                      0,
@@ -310,7 +295,7 @@ int Mouse::blockKernelDriver()
     
     WaitForSingleObject(piProcessInfo.hProcess, 10000);
 
-	const char *inf_file = "libusb/test.inf";
+	const char *inf_file = "libusb/mouse.inf";
 	int test = usb_install_driver_np(inf_file);
     
 	struct usb_bus *UsbBus = NULL;
@@ -371,7 +356,7 @@ STARTUPINFO         siStartupInfo;
 	char command[100];
 	strcpy_s(command," remove -r ");
 	strcat_s(command,hw_id_);
-    CreateProcess("F:\\WinDDK\\7600.16385.1\\tools\\devcon\\i386\\devcon.exe",     // Application name
+    CreateProcess("C:\\WinDDK\\7600.16385.1\\tools\\devcon\\i386\\devcon.exe",     // Application name
                      (char*)command,                 // Application arguments
                      0,
                      0,
@@ -383,10 +368,24 @@ STARTUPINFO         siStartupInfo;
                      &piProcessInfo);
     
     WaitForSingleObject(piProcessInfo.hProcess, 10000);
-	WinExec("\"F:\\WinDDK\\7600.16385.1\\tools\\devcon\\i386\\devcon.exe\" rescan", 1);
+	WinExec("\"C:\\WinDDK\\7600.16385.1\\tools\\devcon\\i386\\devcon.exe\" rescan", 1);
 	
 	cout<< "MouseDevice disconnected"<<endl;
 	return 0;
+}
+
+//-----------------------------------------------------------------------------
+
+
+void Mouse::acquireData()
+{
+  while(running_)
+  {
+
+    boost::unique_lock<boost::shared_mutex> lock(rw_);
+	int ret = usb_interrupt_read(dev_handle_,usb_port_, (char *)async_data_, sizeof(async_data_), 100);
+    lock.unlock();
+  }
 }
 
 //-----------------------------------------------------------------------------
