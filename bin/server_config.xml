@@ -33,8 +33,8 @@
   <hardware name="sinegenerator" version="1.0" serial="">
     <mode> master </mode>
     <device_settings>
-      <sampling_rate> 512 </sampling_rate>
-      <measurement_channels nr="6" names="eeg" type="eeg" />
+      <sampling_rate> 128 </sampling_rate>
+      <measurement_channels nr="1" names="eeg" type="eeg" />
       <blocksize> 1 </blocksize>
     </device_settings>
 
