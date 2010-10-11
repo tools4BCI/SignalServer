@@ -71,6 +71,7 @@ class Mouse : public HWThread
       void initMouse();
       int blockKernelDriver();
       int freeKernelDriver();
+      void acquireData();
 
       //-----------------------------------------------
 
@@ -95,6 +96,11 @@ class Mouse : public HWThread
       libusb_device **devs_; //pointer to pointer of device, used to retrieve a list of devices
       libusb_device_handle *dev_handle_; //a device handle
       libusb_context *ctx_; //a libusb session
+
+      boost::thread*  async_acqu_thread_;
+      std::vector<boost::int16_t>  raw_data_;
+      unsigned char async_data_[10];
+      bool dirty_;
   };
 
 

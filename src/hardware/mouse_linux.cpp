@@ -151,24 +151,14 @@ SampleBlock<double> Mouse::getAsyncData()
   {
           bool dirty = 0;
           int x,y;
-          x=y=0;
 
-          unsigned char data[3];
-          int actual_length;
-          int r = libusb_bulk_transfer(dev_handle_, usb_port_, data, sizeof(data), &actual_length, 0);
-          if (r == 0 && actual_length == sizeof(data))
-          {
-              int dx = (int)(char)data[1];
-              int dy = (int)(char)data[2];
-              x += dx;
-              y += dy;
-          }
-
+          int dx = (int)(char)async_data_[1];
+          int dy = (int)(char)async_data_[2];
 
           for(uint n = 0; n < buttons_values_.size(); n++)
           {
             bool value = 0;
-            int state_n = ((int)data[0] & (int)pow(2,n));
+            int state_n = ((int)(char)async_data_[0] & (int)pow(2,n));
             if (state_n!=value)
                 value = 1;
               if( value != buttons_values_[n])
@@ -178,11 +168,11 @@ SampleBlock<double> Mouse::getAsyncData()
             }
           }
 
-          if(x!=0 || y!=0)
+          if(dx!=0 || dy!=0)
           {
               dirty = 1;
-              axes_values_[0]+=x;
-              axes_values_[1]+=y;
+              axes_values_[0]+=dx;
+              axes_values_[1]+=dy;
 
           }
 
@@ -212,13 +202,15 @@ SampleBlock<double> Mouse::getAsyncData()
 //-----------------------------------------------------------------------------
 
 void Mouse::run()  {
-
+    if(mode_ == APERIODIC)
+            async_acqu_thread_ = new boost::thread( boost::bind(&Mouse::acquireData, this) );
+    running_ = true;
 }
 
 //-----------------------------------------------------------------------------
 
 void Mouse::stop() {
-
+   running_ =false;
 }
 
 //-----------------------------------------------------------------------------
@@ -235,6 +227,9 @@ void Mouse::initMouse()
 
   axes_values_[0] = 0;
   axes_values_[1] = 0;
+  async_data_[0] = 0;
+  async_data_[1] = 0;
+  async_data_[2] = 0;
 
   ctx_ = NULL; //a libusb session
   user_interrupt_ = false;
@@ -277,6 +272,20 @@ int Mouse::freeKernelDriver()
     libusb_close(dev_handle_);
     libusb_exit(ctx_);
     return 0;
+}
+
+//-----------------------------------------------------------------------------
+
+
+void Mouse::acquireData()
+{
+  while(running_)
+  {
+    boost::unique_lock<boost::shared_mutex> lock(rw_);
+    int actual_length;
+    int r = libusb_interrupt_transfer(dev_handle_, usb_port_, async_data_, sizeof(async_data_), &actual_length, 0);
+    lock.unlock();
+  }
 }
 
 //-----------------------------------------------------------------------------

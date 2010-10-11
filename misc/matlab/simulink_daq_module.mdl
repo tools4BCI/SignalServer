@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.292"
+    ComputedModelVersion    "1.294"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -37,9 +37,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "kaltner"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Mon Sep 27 14:23:16 2010"
-  RTWModifiedTimeStamp	  207498195
-  ModelVersionFormat	  "1.%<AutoIncrement:292>"
+  LastModifiedDate	  "Mon Oct 11 11:06:47 2010"
+  RTWModifiedTimeStamp	  208693941
+  ModelVersionFormat	  "1.%<AutoIncrement:294>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -594,8 +594,8 @@ Model {
       }
       Name		      "Configuration"
       ExtraOptions	      "-aGenerateTraceInfo=0 -aIgnoreTestpoints=0 "
-      CurrentDlgPage	      "Solver"
-      ConfigPrmDlgPosition    " [ 210, 122, 1185, 789 ] "
+      CurrentDlgPage	      "Optimization"
+      ConfigPrmDlgPosition    " [ 1, 27, 976, 694 ] "
     }
     PropName		    "ConfigurationSets"
   }
@@ -662,7 +662,7 @@ Model {
   }
   System {
     Name		    "simulink_daq_module"
-    Location		    [377, 163, 1049, 401]
+    Location		    [496, 279, 1221, 666]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -676,13 +676,13 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "24"
+    SIDHighWatermark	    "26"
     Block {
       BlockType		      "S-Function"
       Name		      "S-Function"
       SID		      "8"
       Ports		      [0, 7]
-      Position		      [25, 18, 195, 212]
+      Position		      [25, 16, 195, 254]
       Priority		      "1"
       FunctionName	      "simulink_get_data"
       Parameters	      "master_info, sig_info, ch_info, server_info"
@@ -720,22 +720,63 @@ Model {
     }
     Block {
       BlockType		      Scope
-      Name		      "Scope2"
-      SID		      "24"
+      Name		      "Scope1"
+      SID		      "25"
       Ports		      [1]
-      Position		      [510, 74, 540, 106]
+      Position		      [310, 224, 340, 256]
       Floating		      off
       Location		      [5, 390, 1283, 899]
-      Open		      on
+      Open		      off
       NumInputPorts	      "1"
       List {
 	ListType		AxesTitles
 	axes1			"%<SignalLabel>"
       }
       TimeRange		      "1"
-      YMin		      "-1"
-      YMax		      "0.7"
+      YMin		      "-1500"
+      YMax		      "6500"
+      DataFormat	      "StructureWithTime"
+      SampleTime	      "0"
+    }
+    Block {
+      BlockType		      Scope
+      Name		      "Scope2"
+      SID		      "24"
+      Ports		      [1]
+      Position		      [370, 84, 400, 116]
+      Floating		      off
+      Location		      [5, 390, 1283, 899]
+      Open		      off
+      NumInputPorts	      "1"
+      List {
+	ListType		AxesTitles
+	axes1			"%<SignalLabel>"
+      }
+      TimeRange		      "1"
+      YMin		      "-22500"
+      YMax		      "30000"
       SaveName		      "ScopeData2"
+      DataFormat	      "StructureWithTime"
+      SampleTime	      "0"
+    }
+    Block {
+      BlockType		      Scope
+      Name		      "Scope3"
+      SID		      "26"
+      Ports		      [1]
+      Position		      [345, 34, 375, 66]
+      Floating		      off
+      Location		      [5, 390, 1283, 899]
+      Open		      off
+      NumInputPorts	      "1"
+      List {
+	ListType		AxesTitles
+	axes1			"%<SignalLabel>"
+      }
+      TimeRange		      "1"
+      YMin		      "-1500"
+      YMax		      "6500"
+      SaveName		      "ScopeData1"
       DataFormat	      "StructureWithTime"
       SampleTime	      "0"
     }
@@ -743,6 +784,19 @@ Model {
       SrcBlock		      "S-Function"
       SrcPort		      3
       DstBlock		      "Scope2"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "S-Function"
+      SrcPort		      7
+      DstBlock		      "Scope1"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "S-Function"
+      SrcPort		      2
+      Points		      [130, 0]
+      DstBlock		      "Scope3"
       DstPort		      1
     }
   }
