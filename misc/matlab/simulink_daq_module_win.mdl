@@ -1177,7 +1177,7 @@ Model {
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
     SIDHighWatermark	    "13"
-    Block {
+   Block {
       BlockType		      Reference
       Name		      "Delay"
       SID		      "1"
@@ -1283,9 +1283,10 @@ Model {
       "te');\nset_param(gcs, 'FixedStep', [ num2str(1) '/' num2str(fs)])\n\n% set_param(gcs, 'SolverMode', 'Auto');\n% "
       "set_param(gcs, 'FixedStep', '1');\n"
       MaskDisplay	      "disp('TOBI Signal\\nClient')\nport_label('output', 1, num2str(cell2mat(sig_info(1,2))) );\npo"
-      "rt_label('output', size(sig_info,1)+1, 'events' );\nport_label('output', size(sig_info,1)+2, 'sample nr' );\npor"
-      "t_label('output', size(sig_info,1)+3, 'timestamp' );\nport_label('output', size(sig_info,1)+4, 'sys/sim time' );"
-      "\n\n\n"
+      "rt_label('output', 2, num2str(cell2mat(sig_info(2,2))) );\nport_label('output', 3, num2str(cell2mat(sig_info(3,2"
+      "))) );\n\nport_label('output', size(sig_info,1)+1, 'events' );\nport_label('output', size(sig_info,1)+2, 'sample"
+      " nr' );\nport_label('output', size(sig_info,1)+3, 'timestamp' );\nport_label('output', size(sig_info,1)+4, 'sys/"
+      "sim time' );\n\n\n"
       MaskIconFrame	      on
       MaskIconOpaque	      on
       MaskIconRotate	      "none"
@@ -1295,10 +1296,49 @@ Model {
     }
     Block {
       BlockType		      Scope
+      Name		      "Scope1"
+      SID		      14
+      Ports		      [1]
+      Position		      [330, 99, 360, 131]
+      Floating		      off
+      Location		      [406, 233, 1152, 841]
+      Open		      on
+      NumInputPorts	      "1"
+      List {
+	ListType		AxesTitles
+	axes1			"%<SignalLabel>"
+      }
+      YMin		      "-15000"
+      YMax		      "27500"
+      DataFormat	      "StructureWithTime"
+      SampleTime	      "0"
+    }
+    Block {
+      BlockType		      Scope
+      Name		      "Scope2"
+      SID		      15
+      Ports		      [1]
+      Position		      [440, 384, 470, 416]
+      Floating		      off
+      Location		      [450, 654, 1003, 893]
+      Open		      on
+      NumInputPorts	      "1"
+      List {
+	ListType		AxesTitles
+	axes1			"%<SignalLabel>"
+      }
+      YMin		      "-0.075"
+      YMax		      "0.125"
+      SaveName		      "ScopeData1"
+      DataFormat	      "StructureWithTime"
+      SampleTime	      "0"
+    }
+    Block {
+      BlockType		      Scope
       Name		      "Scope3"
       SID		      "13"
       Ports		      [1]
-      Position		      [440, 309, 470, 341]
+      Position		      [440, 274, 470, 306]
       Floating		      off
       Location		      [951, 201, 1275, 440]
       Open		      on
@@ -1314,7 +1354,27 @@ Model {
       SampleTime	      "0"
     }
     Block {
-      BlockType		      Unbuffer
+      BlockType		      Scope
+      Name		      "Scope4"
+      SID		      16
+      Ports		      [1]
+      Position		      [330, 44, 360, 76]
+      Floating		      off
+      Location		      [1155, 531, 1479, 770]
+      Open		      on
+      NumInputPorts	      "1"
+      List {
+	ListType		AxesTitles
+	axes1			"%<SignalLabel>"
+      }
+      YMin		      "-1"
+      YMax		      "1"
+      SaveName		      "ScopeData2"
+      DataFormat	      "StructureWithTime"
+      SampleTime	      "0"
+    }
+    Block {
+      BlockType		      Reference
       Name		      "Unbuffer"
       SID		      "10"
       Ports		      [1, 1]
@@ -1383,5 +1443,6 @@ MatData {
     Tag			    DataTag0
     Data		    "  %)30     .    B     8    (     @         %    \"     $    !     0         %  0 $P    $    3    :&%S26"
     "YH97)I=&5D3W!T:6]N        #@   #     &    \"     D\"        !0    @    !     0    $          @ !  $    "
+
   }
 }
