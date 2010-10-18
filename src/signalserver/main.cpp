@@ -1,5 +1,5 @@
 
-/*! \mainpage TOBI SignalServer v0.1
+/*! \mainpage TOBI SignalServer v0.2
 *
 * \section sec_intro Introduction
 * The TOBI SignalServer implements the data acquisition section from the TOBI hybrid BCI (hBCI).
@@ -48,6 +48,7 @@ using namespace tobiss;
 const string DEFAULT_XML_CONFIG = "server_config.xml";
 const string XML_FILE_ARGUMENT = "-f";
 const string DEAMON_ARGUMENT = "-d";
+const int KEEP_ALIVE_TIMER = 50;
 
 class DataPacketReader
 {
@@ -112,7 +113,7 @@ int main(int argc, const char* argv[])
 
     XMLParser config(config_file);
     XMLParser temp_config;
-//    HWAccess* hw_access = 0;
+
     SSMethods* ss_methods = 0;
 
     while(running)
@@ -120,7 +121,7 @@ int main(int argc, const char* argv[])
       boost::asio::io_service io_service;
 
       SignalServer server(io_service);
-      server.setTimeoutKeepAlive(10);
+//      server.setTimeoutKeepAlive(KEEP_ALIVE_TIMER);
       if(argc == 2 && argv[1] == DEAMON_ARGUMENT)
         server.setDeamonMode();
 
@@ -133,13 +134,10 @@ int main(int argc, const char* argv[])
         first_run = false;
       }
 
-//      hw_access = new HWAccess(io_service, config);
-
       DataFileHandler data_file_handler(io_service, config.getFileReaderMap());
 
       HWAccess hw_access(io_service, config);
 
-//      HWAccess* hw_access = ss_helper.getHWAccess();
       DataPacketReader reader(hw_access, server);
 
       boost::thread* io_thread_ptr = 0;
@@ -212,6 +210,11 @@ int main(int argc, const char* argv[])
         cout << endl;
         server.getConfig(temp_config);
         boost::this_thread::sleep(boost::posix_time::seconds(1));
+      }
+      else
+      {
+        // TODO: Notify all clients that server stops now
+        cout << "Server stopped!" << endl;
       }
     }
   }

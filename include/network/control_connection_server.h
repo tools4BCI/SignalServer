@@ -84,7 +84,8 @@ public:
   void setClientConfigOk(bool configOk) {first_client_config_ok_ = configOk;}
   bool getClientConfigOk() {return first_client_config_ok_;}
 
-  ControlConnection::pointer getFirstClient() {return first_client_;}
+  void setFirstClient(ControlConnection* client) {first_client_ = client;}
+  ControlConnection* getFirstClient() {return first_client_;}
   SignalServer& getServer() {return server_;}
 
 protected:
@@ -112,8 +113,8 @@ private:
   SubjectInfo*                            subject_info_; ///< reference to the subject meta data
   SignalInfo*                             signal_info_;  ///< reference to the signal meta data
   Constants                               cst_;
-  ControlConnection::pointer              first_client_;
   bool                                    first_client_config_ok_;
+  ControlConnection*                      first_client_;
 };
 
 } // Namespace tobiss

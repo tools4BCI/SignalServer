@@ -186,6 +186,47 @@ class SignalInfo
     SignalMap signals_;
 };
 
+class HardwareInfo
+{
+  public:
+    enum OperatingMode {
+      Master = 0,
+      Slave,
+      Aperiodic
+    };
+
+  public:
+    std::string hwName() const { return hw_name_; }
+    void setHwName(const std::string& name) { hw_name_ = name; }
+
+    std::string serial() const { return serial_; }
+    void setSerial(const std::string& serial) { serial_ = serial; }
+
+    boost::uint16_t numberOfChannels() const { return number_of_channels_; }
+    void setNumberOfChannels(boost::uint16_t number) { number_of_channels_ = number; }
+
+    int physicalRange() const { return physical_range_; }
+    void setPhysicalRange(int number) { physical_range_ = number; }
+
+    boost::uint16_t dataType() const { return data_type_; }
+    void setDataType(boost::uint16_t number) { data_type_ = number; }
+
+    boost::uint16_t samplingRate() const { return sampling_rate_; }
+    void setSamplingRate(boost::uint16_t number) { sampling_rate_ = number; }
+
+    OperatingMode operatingMode() const { return operating_mode_; }
+    void setOperatingMode(OperatingMode mode) { operating_mode_ = mode; }
+
+  private:
+    std::string       hw_name_;
+    std::string       serial_;
+    boost::uint16_t   number_of_channels_;
+    int               physical_range_;
+    boost::uint16_t   data_type_;
+    boost::uint16_t   sampling_rate_;
+    OperatingMode     operating_mode_;
+};
+
 } // Namespace tobiss
 
 //-----------------------------------------------------------------------------

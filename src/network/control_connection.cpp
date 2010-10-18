@@ -76,11 +76,6 @@ void ControlConnection::start()
       boost::bind(&ControlConnection::handle_read, shared_from_this(),
         boost::asio::placeholders::error,
         boost::asio::placeholders::bytes_transferred));
-//  boost::asio::async_read(tcp_connection_->socket(),
-//      input_buffer_->prepare(MAX_DATA_SIZE),
-//      boost::bind(&ControlConnection::handle_read, shared_from_this(),
-//        boost::asio::placeholders::error,
-//        boost::asio::placeholders::bytes_transferred));
 }
 
 //-----------------------------------------------------------------------------
@@ -102,39 +97,6 @@ void ControlConnection::handle_read(const boost::system::error_code& error,
   istream instream(input_buffer_);
 
   msg_decoder_->setInputStream(&instream);
-
-//  instream.exceptions(istream::eofbit | istream::failbit | istream::badbit);
-
-////  try
-////  {
-//    while(!(instream.eof()))
-//    {
-//  //    cout << "Hab noch nicht fertiggelesen!" << endl;
-//  //    if(instream.eof()) continue;
-//  //    if(instream.good()) cout << "Fehler" << instream.rdstate() << endl;
-////      cerr << "Error: failbit = " << instream.fail() << endl;
-////      cerr << "Error: eofbit  = " << instream.eof() << endl;
-////      instream.get();
-//      cout << (char) instream.get();// << endl;
-////      if(instream.fail())
-//        instream.clear();
-////      cerr << "Exception opening/reading file" << endl;
-////      cerr << "Error: Flags   = " << instream.flags() << endl;
-////      cerr << "Error: good    = " << instream.good() << endl;
-////      cerr << "Error: failbit = " << instream.fail() << endl;
-////      cerr << "Error: eofbit  = " << instream.eof() << endl;
-////      cerr << "Error: badbit  = " << instream.bad() << endl;
-//    }
-////  }
-////  catch (istream::failure e) {
-////    cerr << "Exception opening/reading file" << endl;
-////    cerr << "Error: Flags   = " << instream.flags() << endl;
-////    cerr << "Error: good    = " << instream.good() << endl;
-////    cerr << "Error: failbit = " << instream.fail() << endl;
-////    cerr << "Error: eofbit  = " << instream.eof() << endl;
-////    cerr << "Error: badbit  = " << instream.bad() << endl;
-////  }
-
 
   boost::shared_ptr<ControlMsg> msg(msg_decoder_->decodeMsg());
 
@@ -176,7 +138,8 @@ void ControlConnection::handle_read(const boost::system::error_code& error,
             if(configOk)
             {
               ctl_conn_server_.getConfig(*config_msg_);
-              sendMsg(ReplyMsg::ok());
+              sendMsg(ReplyMsg::configOk());
+              ctl_conn_server_.setFirstClient(this);
             }
             else
             {
@@ -303,11 +266,6 @@ void ControlConnection::handle_read(const boost::system::error_code& error,
         boost::bind(&ControlConnection::handle_read, shared_from_this(),
           boost::asio::placeholders::error,
           boost::asio::placeholders::bytes_transferred));
-//    async_read(tcp_connection_->socket(),
-//        input_buffer_->prepare(MAX_DATA_SIZE),
-//        boost::bind(&ControlConnection::handle_read, shared_from_this(),
-//          boost::asio::placeholders::error,
-//          boost::asio::placeholders::bytes_transferred));
   }
 }
 
@@ -383,7 +341,7 @@ void ControlConnection::checkKeepAlive()
   {
     std::stringstream ex_str;
     ex_str << "SSClient: Cannot decode message";
-    this->close();
+    close();
 //    throw std::ios_base::failure(ex_str.str());
   }
   else
@@ -402,15 +360,13 @@ void ControlConnection::checkKeepAlive()
       case ControlMsg::ErrorReply:
       {
         std::stringstream ex_str;
-        ex_str << "SSClient: Stop receiving failed due to a server error.";
-//        throw std::ios_base::failure(ex_str.str());
+        ex_str << "SSClient: No keepalive but error !?";
       }
 
       default:
       {
         std::stringstream ex_str;
-        ex_str << "SSClient: Got unexpected reply of type '" << reply->msgType() << "'";
-//        throw std::ios_base::failure(ex_str.str());
+        ex_str << "SSClient: No keepalive but got unexpected reply of type '" << reply->msgType() << "'";
       }
     }
   }

@@ -46,6 +46,7 @@ ControlMsgDecoderXML::ControlMsgDecoderXML() :
   prototypes_["config"]                   = ControlMsgHandle(new ConfigMsg());
   prototypes_["sendConfig"]               = ControlMsgHandle(new SendConfigMsg());
   prototypes_["okReply"]                  = ControlMsgHandle(ReplyMsg::ok().clone());
+  prototypes_["configOkReply"]            = ControlMsgHandle(ReplyMsg::configOk().clone());
   prototypes_["errorReply"]               = ControlMsgHandle(ReplyMsg::error().clone());
   prototypes_["configErrorReply"]         = ControlMsgHandle(ReplyMsg::configError().clone());
   prototypes_["aliveReply"]               = ControlMsgHandle(ReplyMsg::alive().clone());
@@ -87,9 +88,11 @@ ControlMsg* ControlMsgDecoderXML::decodeMsgInternal()
     return 0;
   }
 
+  cout << "INCOMING XML message:" << endl;
   cout << ">>> XML message " << endl;
   tixml_doc_->Print();
   cout << "<<< XML message " << endl;
+  cout << "INCOMING XML message - EOF" << endl;
 
   ticpp::Element* message = xml_doc_->FirstChildElement("message", false);
   if (message == 0)
@@ -176,7 +179,6 @@ void ControlMsgDecoderXML::decodeMsg(KeepAliveMsg& msg)
     cerr << "Error decoding KeepAliveMsg" << endl;
     return;
   }
-  // TODO: parse message body
 }
 
 //-----------------------------------------------------------------------------
@@ -714,6 +716,17 @@ void ControlMsgDecoderXML::decodeMsg(ReplyMsg& msg)
       {
         // TODO: do a proper error handling
         cerr << "Missing element 'okReply' in ReplyMsg" << endl;
+        return;
+      }
+      break;
+    }
+    case ControlMsg::ConfigOkReply:
+    {
+      ticpp::Element* reply_element = xml_msg_header_->NextSiblingElement();
+      if (reply_element == 0 || reply_element->Value() != "configOkReply")
+      {
+        // TODO: do a proper error handling
+        cerr << "Missing element 'configOkReply' in ReplyMsg" << endl;
         return;
       }
       break;

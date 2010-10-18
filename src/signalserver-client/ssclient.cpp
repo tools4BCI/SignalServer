@@ -13,10 +13,10 @@ namespace tobiss
 {
 //-----------------------------------------------------------------------------
 
-SSClient::SSClient() :
+SSClient::SSClient(boost::asio::io_service& io_service) :
   impl_(0)
 {
-  impl_ = new SSClientImpl;
+  impl_ = new SSClientImpl(io_service);
 }
 
 //-----------------------------------------------------------------------------
