@@ -26,6 +26,7 @@
 #define USBAMP    2
 #define MOBILAB   3
 #define JOYSTICK  4
+#define BSAMP     5
 
 /*! @} */
 

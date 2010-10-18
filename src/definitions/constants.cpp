@@ -63,6 +63,7 @@ const string Constants::hw_fil_type("type");
 const string Constants::hw_fil_order("order");
 const string Constants::hw_fil_low("f_low");
 const string Constants::hw_fil_high("f_high");
+const string Constants::hw_fil_sense("sense");
 
 const string Constants::hw_notch("notch");
 const string Constants::hw_notch_center("f_center");
@@ -102,6 +103,9 @@ Constants::Constants()
 {
   supported_hardware.insert(pair <string,int>("sinegenerator", SINEGEN));
   supported_hardware.insert(pair <string,int>("sinegen", SINEGEN));
+
+  supported_hardware.insert(pair <string,int>("bsamp", BSAMP));
+  supported_hardware.insert(pair <string,int>("g.bsamp", BSAMP));
 
   supported_hardware.insert(pair <string,int>("usbamp", USBAMP));
   supported_hardware.insert(pair <string,int>("g.usbamp", USBAMP));
@@ -216,6 +220,19 @@ bool Constants::isJoystick(const string& s)
   if( !(hw_nr = isSupportedHardware(s)) )
     return(0);
   if(hw_nr == JOYSTICK)
+    return(1);
+
+  return(0);
+}
+
+//-----------------------------------------------------------------------------
+
+bool Constants::isBSamp(const string& s)
+{
+  unsigned int hw_nr = 0;
+  if( !(hw_nr = isSupportedHardware(s)) )
+    return(0);
+  if(hw_nr == BSAMP)
     return(1);
 
   return(0);

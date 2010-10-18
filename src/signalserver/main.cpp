@@ -159,10 +159,10 @@ int main(int argc, const char* argv[])
         data_reader_thread_ptr = new boost::thread(boost::bind(&DataPacketReader::readPacket, &reader));
 
         #ifdef WIN32
-          SetPriorityClass(io_thread.native_handle(), REALTIME_PRIORITY_CLASS);
-          SetThreadPriority(io_thread.native_handle(), THREAD_PRIORITY_TIME_CRITICAL );
-          SetPriorityClass(data_reader_thread.native_handle(), REALTIME_PRIORITY_CLASS);
-          SetThreadPriority(data_reader_thread.native_handle(), THREAD_PRIORITY_TIME_CRITICAL );
+          SetPriorityClass(io_thread_ptr->native_handle(), REALTIME_PRIORITY_CLASS);
+          SetThreadPriority(io_thread_ptr->native_handle(), THREAD_PRIORITY_TIME_CRITICAL );
+          SetPriorityClass(data_reader_thread_ptr->native_handle(), REALTIME_PRIORITY_CLASS);
+          SetThreadPriority(data_reader_thread_ptr->native_handle(), THREAD_PRIORITY_TIME_CRITICAL );
         #endif
       }
 

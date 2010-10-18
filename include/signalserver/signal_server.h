@@ -128,9 +128,9 @@ class SignalServer : boost::noncopyable
     void setChannelNames(const std::map<boost::uint32_t, std::vector<std::string> >& channels_per_sig_type)
       { channels_per_sig_type_ = channels_per_sig_type; }
 
-    void setPhysicalRange(const std::vector<int>& physical_range)
+    void setPhysicalRange(const std::vector<boost::int32_t>& physical_range)
       { physical_range_ = physical_range; }
-    void setDigitalRange(const std::vector<int>& digital_range)
+    void setDigitalRange(const std::vector<boost::int32_t>& digital_range)
       { digital_range_ = digital_range; }
     void setDataType(const std::vector<Constants::DataType>& data_type)
       { data_type_ = data_type; }
@@ -223,8 +223,8 @@ class SignalServer : boost::noncopyable
 
     std::vector<boost::uint32_t>            device_id_;
     std::vector<std::string>                description_;
-    std::vector<int>                        physical_range_;
-    std::vector<int>                        digital_range_;
+    std::vector<boost::int32_t>             physical_range_;
+    std::vector<boost::int32_t>             digital_range_;
     std::vector<std::pair<float, float> >   bandpass_filter_;
     std::vector<std::pair<float, float> >   notch_filter_;
     std::vector<Constants::DataType>        data_type_;

@@ -35,6 +35,7 @@ HEADERS +=  include/signalserver/signal_server.h \
             include/hardware/event_listener.h\
             include/hardware/jstick.h\
             include/hardware/usbamp.h\
+            include/hardware/gbsamp.h\
             include/filereading/data_file_handler.h\
             include/filereading/file_reader_factory.h\
             include/filereading/file_reader.h\
@@ -64,6 +65,7 @@ SOURCES +=  src/signalserver/main.cpp \
             src/hardware/event_listener.cpp\
             src/hardware/jstick.cpp\
             src/hardware/usbamp.cpp\
+            src/hardware/gbsamp.cpp\
             src/filereading/data_file_handler.cpp\
             src/filereading/file_reader_factory.cpp\
             src/filereading/file_reader.cpp\
