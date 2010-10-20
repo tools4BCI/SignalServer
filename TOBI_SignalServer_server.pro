@@ -64,6 +64,8 @@ HEADERS += include/signalserver/signal_server.h \
     include/network/tcp_server.h \
     include/network/udp_data_server.h \
     extern/include/LptTools/LptTools.h
+unix:HEADERS  += include/hardware/mouse_linux.h
+win32:HEADERS += include/hardware/mouse_.h
 SOURCES += src/signalserver/main.cpp \
     src/signalserver/signal_server.cpp \
     src/definitions/constants.cpp \
@@ -92,6 +94,8 @@ SOURCES += src/signalserver/main.cpp \
     src/network/tcp_data_server.cpp \
     src/network/tcp_server.cpp \
     src/network/udp_data_server.cpp
+unix:SOURCES  += src/hardware/mouse_linux.cpp
+win32:SOURCES += src/hardware/mouse_.cpp
 unix:SOURCES += extern/include/LptTools/LptToolsLinux.cpp
 win32:SOURCES += extern/include/LptTools/LptTools_.cpp
 
@@ -99,7 +103,8 @@ win32:SOURCES += extern/include/LptTools/LptTools_.cpp
 unix {
     LIBS += -lboost_thread \
         -lboost_system \
-        -lSDL
+        -lSDL \
+        -Lextern/lib/libusb/linux/libusb-1.0.8/libusb/.libs -lusb-1.0
     HARDWARE_PLATFORM = $$system(uname -m)
     contains( HARDWARE_PLATFORM, x86_64 )::{
         message(Building 64 bit )
@@ -129,3 +134,4 @@ win32:LIBS += extern\lib\sdl\win\SDL.lib \
 
 # Note: It is assumed that the boost libraries can be automatically detected by the linker
 # through #pragma comment(lib, xxx) declarations in boost.
+
