@@ -23,7 +23,9 @@
 #include "ticpp/ticpp.h"
 
 // LibGdf
+#ifdef WRITE_GDF
 #include "libgdf/gdfwriter.h"
+#endif
 
 // local
 #include "config/xml_parser.h"
@@ -57,8 +59,10 @@ SignalServer::SignalServer(boost::asio::io_service& io_service)
   tcp_data_server_(0),
   udp_data_server_(0),
   control_connection_server_(0),
-  write_file(0),
-  gdf_writer_(0)
+  write_file(0)
+#ifdef WRITE_GDF
+  ,gdf_writer_(0)
+#endif
 {
   #ifdef TIMING_TEST
     timestamp_ = boost::posix_time::microsec_clock::local_time();
@@ -88,11 +92,14 @@ SignalServer::~SignalServer()
   delete tcp_data_server_;
   delete udp_data_server_;
   delete control_connection_server_;
+
+#ifdef WRITE_GDF
   if(gdf_writer_)
   {
     gdf_writer_->close();
     delete gdf_writer_;
   }
+#endif
 
   #ifdef TIMING_TEST
     LptExit();
@@ -124,9 +131,10 @@ void SignalServer::initialize(XMLParser* config)
   udp_data_server_->setDestination(server_settings_[Constants::ss_udp_bc_addr], port);
   control_connection_server_->listen();
 
+#ifdef WRITE_GDF
   try
   {
-    if(server_settings_[Constants::ss_filetype] == "gdf")
+	if(server_settings_[Constants::ss_filetype] == "gdf")
     {
       gdf_writer_ =
         new GDFWriter( server_settings_[Constants::ss_filename] + ".gdf" );
@@ -138,6 +146,7 @@ void SignalServer::initialize(XMLParser* config)
   {
     cout << "Exception: " << e.msg << endl;
   }
+#endif
 
 }
 
@@ -148,6 +157,7 @@ void SignalServer::sendDataPacket(DataPacket& packet)
   tcp_data_server_->sendDataPacket(packet);
   udp_data_server_->sendDataPacket(packet);
 
+#ifdef WRITE_GDF
   if(write_file)
   {
     uint32_t nr_values = 0;
@@ -192,6 +202,7 @@ void SignalServer::sendDataPacket(DataPacket& packet)
       ch_start += it->second.size();
     }
   }
+#endif
 
 
   #ifdef TIMING_TEST
@@ -228,7 +239,7 @@ void SignalServer::sendDataPacket(DataPacket& packet)
 }
 
 //-----------------------------------------------------------------------------
-
+#ifdef WRITE_GDF
 void SignalServer::initGdf()
 {
 
@@ -270,7 +281,7 @@ void SignalServer::initGdf()
   gdf_writer_->open();
 
 }
-
+#endif
 //-----------------------------------------------------------------------------
 
 
