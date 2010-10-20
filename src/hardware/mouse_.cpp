@@ -281,8 +281,8 @@ int Mouse::blockKernelDriver()
 	char command[100];
 	strcpy_s(command," disable -r ");
 	strcat_s(command,hw_id_);
-
-    CreateProcess("C:\\WinDDK\\7600.16385.1\\tools\\devcon\\i386\\devcon.exe",     // Application name
+	cout<<endl<<endl<<"command: "<<command<<endl<<endl;
+    CreateProcess("F:\\WinDDK\\7600.16385.1\\tools\\devcon\\i386\\devcon.exe",     // Application name
                      (char*)command,                 // Application arguments
                      0,
                      0,
@@ -368,7 +368,7 @@ STARTUPINFO         siStartupInfo;
                      &piProcessInfo);
     
     WaitForSingleObject(piProcessInfo.hProcess, 10000);
-	WinExec("\"C:\\WinDDK\\7600.16385.1\\tools\\devcon\\i386\\devcon.exe\" rescan", 1);
+	WinExec("\"F:\\WinDDK\\7600.16385.1\\tools\\devcon\\i386\\devcon.exe\" rescan", 1);
 	
 	cout<< "MouseDevice disconnected"<<endl;
 	return 0;
