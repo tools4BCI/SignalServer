@@ -26,7 +26,8 @@
 #include "libgdf/gdfwriter.h"
 
 // local
-#include "hardware/hw_access.h"
+#include "config/xml_parser.h"
+#include "datapacket/data_packet.h"
 #include "network/control_connection_server.h"
 #include "signalserver/signal_server.h"
 #include "network/tcp_data_server.h"
@@ -46,6 +47,7 @@ using boost::uint16_t;
 using boost::int16_t;
 using boost::int64_t;
 using boost::lexical_cast;
+using namespace std;
 
 //-----------------------------------------------------------------------------
 
