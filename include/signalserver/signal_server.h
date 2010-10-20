@@ -25,7 +25,9 @@
 #include "definitions/constants.h"
 
 // forward declarations
+#ifdef WRITE_GDF
 class GDFWriter;
+#endif
 
 namespace tobiss
 {
@@ -151,7 +153,9 @@ class SignalServer : boost::noncopyable
     Constants                           cst_; ///<
 
     bool                                write_file; ///<
-    GDFWriter*                          gdf_writer_; ///<
+#ifdef WRITE_GDF
+	GDFWriter*                          gdf_writer_; ///<
+#endif
 
 #ifdef TIMING_TEST
     boost::posix_time::ptime timestamp_;
