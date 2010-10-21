@@ -1,11 +1,7 @@
+#ifdef WIN32
+
 #include "hardware/gBSamp.h"
-
-#include <comedilib.h>
-
-#include <math.h>
-
-#include <boost/lexical_cast.hpp>
-#include <boost/bind.hpp>
+#include "extern/include/nidaqmx/nidaqmx.h"
 
 namespace tobiss
 {
@@ -22,31 +18,54 @@ using std::string;
 using std::cout;
 using std::endl;
 
+#define DAQmxErrChk(functionCall)\
+  if( DAQmxFailed(error=(functionCall)) )\
+   {stopDAQ(error, taskHandle, errBuff); return(-1);}\
+  else
+
 //-----------------------------------------------------------------------------
 
-gBSamp::gBSamp(boost::asio::io_service& io, XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
-: HWThread(parser), acquiring_(0), current_block_(0), td_(0)
+gBSamp::gBSamp(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
+: HWThread(parser), acquiring_(0), current_block_(0)
 {
   #ifdef DEBUG
-    cout << "DAQCard-6024E: Constructor" << endl;
+    cout << "gBSamp: Constructor" << endl;
   #endif
 
+  #pragma comment(lib,"NIDAQmx.lib")
+  
   setHardware(hw);
 
-  step_ = 1/static_cast<float>(fs_);
-  cycle_dur_ = 1/static_cast<float>(fs_);
-  boost::posix_time::microseconds period(1000000/fs_);
-  td_ += period;
+  expected_values_ = nr_ch_ * blocks_;
+  
+  DWORD driver_buffer_size_ = expected_values_ * sizeof(float);
+  
+  data_buffer.resize(driver_buffer_size_,0);
 
   buffer_.init(blocks_ , nr_ch_ , channel_types_);
-  data_.init(blocks_ , nr_ch_ , channel_types_);
+  data_.init(blocks_, nr_ch_, channel_types_);
+  samples_.resize(expected_values_, 0);
 
-  samples_.resize(nr_ch_ ,0);
-  t_ = new boost::asio::deadline_timer(io, td_);
-
-  card = comedi_open("/dev/comedi0");
-  cout << " * DAQCard-6024E sucessfully initialized" << endl;
+  initCard();
+  
+  cout << " * gBSamp sucessfully initialized" << endl;
   cout << "    fs: " << fs_ << "Hz, nr of channels: " << nr_ch_  << ", blocksize: " << blocks_  << endl;
+
+}
+
+//-----------------------------------------------------------------------------
+
+gBSamp::~gBSamp()
+{
+  #ifdef DEBUG
+    cout << "gBSamp: Destructor" << endl;
+  #endif
+  
+	if( taskHandle!=0 )
+	{
+		DAQmxStopTask(taskHandle);
+		DAQmxClearTask(taskHandle);
+	}
 
 }
 
@@ -55,26 +74,42 @@ gBSamp::gBSamp(boost::asio::io_service& io, XMLParser& parser, ticpp::Iterator<t
 void gBSamp::run()
 {
   #ifdef DEBUG
-    cout << "DAQCard-6024E: run" << endl;
+    cout << "gBSamp: run" << endl;
   #endif
 
   running_ = 1;
-  genSine();
-  cout << " * DAQCard-6024E sucessfully started" << endl;
-}
+  
+  if(readFromDAQCard() != 0)
+    DAQmxGetExtendedErrorInfo(errBuff,2048);
 
+  cout << " * gBSamp sucessfully started" << endl;
+}
 
 //-----------------------------------------------------------------------------
 
 void gBSamp::stop()
 {
   #ifdef DEBUG
-    cout << "DAQCard-6024E: stop" << endl;
+    cout << "gBSamp: stop" << endl;
   #endif
 
   running_ = 0;
+
   cond_.notify_all();
-  cout << " * DAQCard-6024E sucessfully stopped" << endl;
+  cout << " * gBSamp sucessfully stopped" << endl;
+}
+
+//-----------------------------------------------------------------------------
+
+int gBSamp::readFromDAQCard()
+{
+	DAQmxErrChk (DAQmxStartTask(taskHandle));
+	//DAQmxErrChk (DAQmxReadAnalogF64(taskHandle,blocks_,0,DAQmx_Val_GroupByChannel,data,10000,&read,NULL));
+
+  //TODO: pass data to SampleBlock
+	cout << "Data read: " << data << endl;
+	
+  return error;
 }
 
 //-----------------------------------------------------------------------------
@@ -82,20 +117,43 @@ void gBSamp::stop()
 SampleBlock<double> gBSamp::getSyncData()
 {
   #ifdef DEBUG
-    cout << "DAQCard-6024E: getSyncData" << endl;
+    cout << "gBSamp: getSyncData" << endl;
   #endif
 
+  if(!running_)
+  {
+    cout << "Not running!" << endl;
+    return(data_);
+  }
+
+  //cout << "gBSamp: getSyncData" << endl;
+  
   if(!acquiring_)
     acquiring_ = 1;
 
-  boost::unique_lock<boost::mutex> syn(sync_mut_);
-  while(!samples_available_ && running_)
-    cond_.wait(syn);
+  //boost::unique_lock<boost::mutex> syn(sync_mut_);
+  //while(!samples_available_ && running_)
+  //  cond_.wait(syn);
   boost::shared_lock<boost::shared_mutex> lock(rw_);
+  
+  DAQmxReadAnalogF64(taskHandle,blocks_,-1,DAQmx_Val_GroupByChannel,data,10000,&read,NULL);
+
+  for(int i=0; i < expected_values_/blocks_; i++)
+    for(int j=0; j < blocks_; j++)
+      samples_[i+j] =data[i+j];
+      
+  //cout << "gBSamp: getSyncData -- samples.size() " << samples_.size() << endl;
+  //cout << "sampleblock size: " << data_.getNrOfSamples() << endl;
+      
+  data_.setSamples(samples_);
+
+  //cout << "gBSamp: getSyncData" << endl;
   samples_available_ = false;
   lock.unlock();
-  cond_.notify_all();
-  syn.unlock();
+  //cond_.notify_all();
+  //syn.unlock();
+  
+  //cout << "getSyncData called" << endl; 
   return(data_);
 }
 
@@ -104,7 +162,7 @@ SampleBlock<double> gBSamp::getSyncData()
 SampleBlock<double> gBSamp::getAsyncData()
 {
   #ifdef DEBUG
-    cout << "DAQCard-6024E: getAsyncData" << endl;
+    cout << "gBSamp: getAsyncData" << endl;
   #endif
   boost::shared_lock<boost::shared_mutex> lock(rw_);
   samples_available_ = false;
@@ -114,62 +172,38 @@ SampleBlock<double> gBSamp::getAsyncData()
 
 //-----------------------------------------------------------------------------
 
-void gBSamp::genSine()
+void gBSamp::stopDAQ(boost::int32_t error, TaskHandle taskHandle, char errBuff[2048])
 {
-  #ifdef DEBUG
-    cout << "DAQCard-6024E: genSine" << endl;
-  #endif
+	if( DAQmxFailed(error) )
+		DAQmxGetExtendedErrorInfo(errBuff,2048);
+	if( taskHandle!=0 )
+	{
+		DAQmxStopTask(taskHandle);
+		DAQmxClearTask(taskHandle);
+	}
+	if( DAQmxFailed(error) )
+		cout << "DAQmx Error: " << errBuff << endl;
+}
 
-  for(uint8_t n = 0; n < nr_ch_ ; n++)
-    samples_[n] = sin(step_ * 2 * PI + n);
+//-----------------------------------------------------------------------------
 
-  (step_ < 1-cycle_dur_ ? step_ += cycle_dur_ : step_ = 0);
-  t_->expires_at(t_->expires_at() + td_);
+int gBSamp::initCard()
+{
+	error=0;
+	taskHandle=0;
+	read = 0;
+	errBuff[0]='\0';
 
-  if(blocks_  == 1)
-  {
-    boost::unique_lock<boost::shared_mutex> lock(rw_);
-    boost::unique_lock<boost::mutex> syn(sync_mut_);
-    samples_available_ = true;
-    data_.setSamples(samples_);
-    lock.unlock();
-    cond_.notify_all();
-    if(isMaster() && acquiring_)
-    {
-      cond_.wait(sync_mut_);
-      // if( !cond_.timed_wait(sync_mut_, td_))
-      //   cerr << "Warning: New data was not fetched fast enough!" << endl;
-      //   throw std::runtime_error("SineGenerator::genSine() -- Timeout; New data was not fetched fast enough!");
-    }
-    syn.unlock();
-  }
-  else
-  {
-    buffer_.appendBlock(samples_);
-    current_block_++;
+  //TODO: make a list with needed channels
+  // now just uses all 16 channels
+  const char channel_list[] = "Dev1/ai0";
+  
+	// DAQmx Configure Code
+	DAQmxErrChk (DAQmxCreateTask("",&taskHandle));
+	DAQmxErrChk (DAQmxCreateAIVoltageChan(taskHandle,channel_list,"",DAQmx_Val_RSE,-10.0,10.0,DAQmx_Val_Volts,NULL));
+	DAQmxErrChk (DAQmxCfgSampClkTiming(taskHandle,NULL,fs_,DAQmx_Val_Rising,DAQmx_Val_ContSamps,1));
 
-    if(current_block_ == blocks_ )
-    {
-      boost::unique_lock<boost::shared_mutex> lock(rw_);
-      boost::unique_lock<boost::mutex> syn(sync_mut_);
-      samples_available_ = true;
-      data_ = buffer_;
-      lock.unlock();
-      cond_.notify_all();
-      buffer_.reset();
-      current_block_ = 0;
-      if(isMaster() && acquiring_)
-      {
-        cond_.wait(sync_mut_);
-        // if( !cond_.timed_wait(sync_mut_, td_))
-        //   cerr << "Warning: New data was not fetched fast enough!" << endl;
-        //   throw std::runtime_error("SineGenerator::genSine() -- Timeout; New data was not fetched fast enough!");
-      }
-      syn.unlock();
-    }
-  }
-  if(running_)
-    t_->async_wait(boost::bind(&gBSamp::genSine, this));
+  return error;
 }
 
 //-----------------------------------------------------------------------------
@@ -177,7 +211,7 @@ void gBSamp::genSine()
 void gBSamp::setHardware(ticpp::Iterator<ticpp::Element>const &hw)
 {
   #ifdef DEBUG
-    cout << "DAQCard-6024E: setHardware" << endl;
+    cout << "gBSamp: setHardware" << endl;
   #endif
 
   checkMandatoryHardwareTags(hw);
@@ -198,6 +232,9 @@ void gBSamp::setHardware(ticpp::Iterator<ticpp::Element>const &hw)
       }
       setChannelSettings(cs);
   }
+  
+  //TODO: set extra filtersettings per channel if wanted
+  
 }
 
 //-----------------------------------------------------------------------------
@@ -205,7 +242,7 @@ void gBSamp::setHardware(ticpp::Iterator<ticpp::Element>const &hw)
 void gBSamp::setDeviceSettings(ticpp::Iterator<ticpp::Element>const &father)
 {
   #ifdef DEBUG
-    cout << "DAQCard-6024E: setDeviceSettings" << endl;
+    cout << "gBSamp: setDeviceSettings" << endl;
   #endif
 
   ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(cst_.hw_fs,true));
@@ -218,6 +255,338 @@ void gBSamp::setDeviceSettings(ticpp::Iterator<ticpp::Element>const &father)
   elem = father->FirstChildElement(cst_.hw_buffer,false);
   if(elem != elem.end())
     setBlocks(elem);
+    
+  ticpp::Iterator<ticpp::Element> filter(father->FirstChildElement(cst_.hw_fil, false));
+  if (filter != filter.end())
+  {
+    for(ticpp::Iterator<ticpp::Element> it(filter); ++it != it.end(); )
+      if(it->Value() == cst_.hw_cs)
+        setDeviceFilterSettings(filter);
+  }
+  
+}
+
+//---------------------------------------------------------------------------------------
+
+void gBSamp::setDeviceFilterSettings(ticpp::Iterator<ticpp::Element>const &elem)
+{
+  #ifdef DEBUG
+    cout << "gBSamp: setDeviceFilterSettings" << endl;
+  #endif
+
+  checkFilterAttributes(elem);
+
+  unsigned int type = 0;
+  bool notch = 0;
+  float f_low = 0;
+  float f_high = 0;
+  float sense = 0;
+
+  getFilterParams(elem, type, notch, f_low, f_high, sense);
+
+  cout << " * g.BSamp -- filters per type set to:" << endl;
+  cout << "    ...  type: " << type << ", f_low: " << f_low << ", f_high: " << f_high << ", sense: " << sense << ", notch: " << notch << endl;
+  cout << endl;
+
+}
+
+//---------------------------------------------------------------------------------------
+
+void gBSamp::checkFilterAttributes(ticpp::Iterator<ticpp::Element>const &elem)
+{
+  #ifdef DEBUG
+    cout << "USBamp: checkFilterAttributes" << endl;
+  #endif
+
+  if(!elem.Get()->HasAttribute(cst_.hw_fil_type))
+  {
+    string ex_str;
+    ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+    ex_str += "Tag <"+cst_.hw_fil+"> given, filter type ("+cst_.hw_fil_type+") not given!";
+    throw(ticpp::Exception(ex_str));
+  }
+  if(!elem.Get()->HasAttribute(cst_.hw_notch))
+  {
+    string ex_str;
+    ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+    ex_str += "Tag <"+cst_.hw_fil+"> given, filter order ("+cst_.hw_notch+") not given!";
+    throw(ticpp::Exception(ex_str));
+  }
+  if(!elem.Get()->HasAttribute(cst_.hw_fil_low))
+  {
+    string ex_str;
+    ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+    ex_str += "Tag <"+cst_.hw_fil+"> given, lower cutoff frequency ("+cst_.hw_fil_low+") not given!";
+    throw(ticpp::Exception(ex_str));
+  }
+  if(!elem.Get()->HasAttribute(cst_.hw_fil_high))
+  {
+    string ex_str;
+    ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+    ex_str += "Tag <"+cst_.hw_fil+"> given, upper cutoff frequency ("+cst_.hw_fil_high+") not given!";
+    throw(ticpp::Exception(ex_str));
+  }
+  if(!elem.Get()->HasAttribute(cst_.hw_fil_sense))
+  {
+    string ex_str;
+    ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+    ex_str += "Tag <"+cst_.hw_fil+"> given, parameter ("+cst_.hw_fil_sense+") not given!";
+    throw(ticpp::Exception(ex_str));
+  }
+}
+
+//---------------------------------------------------------------------------------------
+
+void gBSamp::getFilterParams(ticpp::Iterator<ticpp::Element>const &elem,\
+  unsigned int &type, bool &notch, float &f_low, float &f_high, float &sense)
+{
+  #ifdef DEBUG
+    cout << "gBSamp: getFilterParams" << endl;
+  #endif
+
+  type = cst_.getSignalFlag(elem.Get()->GetAttribute(cst_.hw_fil_type));
+  try
+  {
+    notch = cst_.equalsOnOrOff(elem.Get()->GetAttribute(cst_.hw_notch));
+  }
+  catch(bad_lexical_cast &)
+  {
+    string ex_str;
+    ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+    ex_str += "Tag <"+cst_.hw_fil+"> given, but notch is not 'on' or 'off'";
+    throw(ticpp::Exception(ex_str));
+  }
+  if(type == SIG_EEG)
+  {
+    try
+    {
+      f_low  = lexical_cast<float>(elem.Get()->GetAttribute(cst_.hw_fil_low));
+      if((f_low != .5) || (f_low != 2))
+      {
+        string ex_str;
+        ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+        ex_str += "Tag <"+cst_.hw_fil+"> given, but lower filter is not '0.5' or '2'";
+        throw(ticpp::Exception(ex_str));
+      }
+    }
+    catch(bad_lexical_cast &)
+    {
+      string ex_str;
+      ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+      ex_str += "Tag <"+cst_.hw_fil+"> given, but lower filter is not given";
+      throw(ticpp::Exception(ex_str));
+    }
+    try
+    {
+      f_high = lexical_cast<float>(elem.Get()->GetAttribute(cst_.hw_fil_high));
+      if((f_high != 30) || (f_high != 100))
+      {
+        string ex_str;
+        ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+        ex_str += "Tag <"+cst_.hw_fil+"> given, but lower filter is not '30' or '100'";
+        throw(ticpp::Exception(ex_str));
+      }
+    }
+    catch(bad_lexical_cast &)
+    {
+      string ex_str;
+      ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+      ex_str += "Tag <"+cst_.hw_fil+"> given, but lower filter is not given";
+      throw(ticpp::Exception(ex_str));
+    }
+    try
+    {
+      sense = lexical_cast<float>(elem.Get()->GetAttribute(cst_.hw_fil_sense));
+      if((f_low != .05) || (f_low != .1))
+      {
+        string ex_str;
+        ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+        ex_str += "Tag <"+cst_.hw_fil+"> given, but lower filter is not '0.05' or '.1'";
+        throw(ticpp::Exception(ex_str));
+      }
+    }
+    catch(bad_lexical_cast &)
+    {
+      string ex_str;
+      ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+      ex_str += "Tag <"+cst_.hw_fil+"> given, but lower filter is not given";
+      throw(ticpp::Exception(ex_str));
+    }
+  }
+
+  if(type == SIG_EOG)
+  {
+    try
+    {
+      f_low  = lexical_cast<float>(elem.Get()->GetAttribute(cst_.hw_fil_low));
+      if((f_low != .5) || (f_low != 2))
+      {
+        string ex_str;
+        ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+        ex_str += "Tag <"+cst_.hw_fil+"> given, but lower filter is not '0.5' or '2'";
+        throw(ticpp::Exception(ex_str));
+      }
+    }
+    catch(bad_lexical_cast &)
+    {
+      string ex_str;
+      ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+      ex_str += "Tag <"+cst_.hw_fil+"> given, but lower filter is not given";
+      throw(ticpp::Exception(ex_str));
+    }
+    try
+    {
+      f_high = lexical_cast<float>(elem.Get()->GetAttribute(cst_.hw_fil_high));
+      if((f_high != 30) || (f_high != 100))
+      {
+        string ex_str;
+        ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+        ex_str += "Tag <"+cst_.hw_fil+"> given, but lower filter is not '30' or '100'";
+        throw(ticpp::Exception(ex_str));
+      }
+    }
+    catch(bad_lexical_cast &)
+    {
+      string ex_str;
+      ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+      ex_str += "Tag <"+cst_.hw_fil+"> given, but lower filter is not given";
+      throw(ticpp::Exception(ex_str));
+    }
+    try
+    {
+      sense = lexical_cast<float>(elem.Get()->GetAttribute(cst_.hw_fil_sense));
+      if((f_low != .1) || (f_low != 1))
+      {
+        string ex_str;
+        ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+        ex_str += "Tag <"+cst_.hw_fil+"> given, but lower filter is not '0.1' or '1'";
+        throw(ticpp::Exception(ex_str));
+      }
+    }
+    catch(bad_lexical_cast &)
+    {
+      string ex_str;
+      ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+      ex_str += "Tag <"+cst_.hw_fil+"> given, but lower filter is not given";
+      throw(ticpp::Exception(ex_str));
+    }
+  }
+
+  if(type == SIG_EMG)
+  {
+    try
+    {
+      f_low  = lexical_cast<float>(elem.Get()->GetAttribute(cst_.hw_fil_low));
+      if((f_low != .01) || (f_low != 2))
+      {
+        string ex_str;
+        ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+        ex_str += "Tag <"+cst_.hw_fil+"> given, but lower filter is not '0.01' or '2'";
+        throw(ticpp::Exception(ex_str));
+      }
+    }
+    catch(bad_lexical_cast &)
+    {
+      string ex_str;
+      ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+      ex_str += "Tag <"+cst_.hw_fil+"> given, but lower filter is not given";
+      throw(ticpp::Exception(ex_str));
+    }
+    try
+    {
+      f_high = lexical_cast<float>(elem.Get()->GetAttribute(cst_.hw_fil_high));
+      if((f_high != 60) || (f_high != 100))
+      {
+        string ex_str;
+        ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+        ex_str += "Tag <"+cst_.hw_fil+"> given, but lower filter is not '60' or '100'";
+        throw(ticpp::Exception(ex_str));
+      }
+    }
+    catch(bad_lexical_cast &)
+    {
+      string ex_str;
+      ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+      ex_str += "Tag <"+cst_.hw_fil+"> given, but lower filter is not given";
+      throw(ticpp::Exception(ex_str));
+    }
+    try
+    {
+      sense = lexical_cast<float>(elem.Get()->GetAttribute(cst_.hw_fil_sense));
+      if((f_low != 1) || (f_low != 5))
+      {
+        string ex_str;
+        ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+        ex_str += "Tag <"+cst_.hw_fil+"> given, but lower filter is not '1' or '5'";
+        throw(ticpp::Exception(ex_str));
+      }
+    }
+    catch(bad_lexical_cast &)
+    {
+      string ex_str;
+      ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+      ex_str += "Tag <"+cst_.hw_fil+"> given, but lower filter is not given";
+      throw(ticpp::Exception(ex_str));
+    }
+  }
+
+  if(type == SIG_ECG)
+  {
+    try
+    {
+      f_low  = lexical_cast<float>(elem.Get()->GetAttribute(cst_.hw_fil_low));
+      if((f_low != .01) || (f_low != 2))
+      {
+        string ex_str;
+        ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+        ex_str += "Tag <"+cst_.hw_fil+"> given, but lower filter is not '0.01' or '2'";
+        throw(ticpp::Exception(ex_str));
+      }
+    }
+    catch(bad_lexical_cast &)
+    {
+      string ex_str;
+      ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+      ex_str += "Tag <"+cst_.hw_fil+"> given, but lower filter is not given";
+      throw(ticpp::Exception(ex_str));
+    }
+    try
+    {
+      f_high = lexical_cast<float>(elem.Get()->GetAttribute(cst_.hw_fil_high));
+      if((f_high != 60) || (f_high != 100))
+      {
+        string ex_str;
+        ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+        ex_str += "Tag <"+cst_.hw_fil+"> given, but lower filter is not '60' or '100'";
+        throw(ticpp::Exception(ex_str));
+      }
+    }
+    catch(bad_lexical_cast &)
+    {
+      string ex_str;
+      ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+      ex_str += "Tag <"+cst_.hw_fil+"> given, but lower filter is not given";
+      throw(ticpp::Exception(ex_str));
+    }
+    try
+    {
+      sense = lexical_cast<float>(elem.Get()->GetAttribute(cst_.hw_fil_sense));
+      if((f_low != 2) || (f_low != 5))
+      {
+        string ex_str;
+        ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+        ex_str += "Tag <"+cst_.hw_fil+"> given, but lower filter is not '2' or '5'";
+        throw(ticpp::Exception(ex_str));
+      }
+    }
+    catch(bad_lexical_cast &)
+    {
+      string ex_str;
+      ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+      ex_str += "Tag <"+cst_.hw_fil+"> given, but lower filter is not given";
+      throw(ticpp::Exception(ex_str));
+    }
+  }
 }
 
 //---------------------------------------------------------------------------------------
@@ -225,7 +594,7 @@ void gBSamp::setDeviceSettings(ticpp::Iterator<ticpp::Element>const &father)
 void gBSamp::setChannelSettings(ticpp::Iterator<ticpp::Element>const &father)
 {
   #ifdef DEBUG
-    cout << "DAQCard-6024E: setChannelSettings" << endl;
+    cout << "gBSamp: setChannelSettings" << endl;
   #endif
 
   ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(cst_.hw_sel,false));
@@ -236,3 +605,5 @@ void gBSamp::setChannelSettings(ticpp::Iterator<ticpp::Element>const &father)
 //---------------------------------------------------------------------------------------
 
 } // Namespace tobiss
+
+#endif // WIN32

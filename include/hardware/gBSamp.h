@@ -1,8 +1,4 @@
-
-/**
-* @file gBSamp.h
-*
-**/
+#ifdef WIN32
 
 #ifndef GBSAMP_H
 #define GBSAMP_H
@@ -15,7 +11,7 @@
 #include <boost/thread/shared_mutex.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/cstdint.hpp>
-#include <comedilib.h>
+#include "extern/include/nidaqmx/nidaqmx.h"
 
 #include "hw_thread.h"
 
@@ -23,46 +19,24 @@ namespace tobiss
 {
 //-----------------------------------------------------------------------------
 /**
-* @class SineGenerator
+* @class gBSamp
 *
-* @brief A dummy hardware device for simulation and testing purposes.
-*
-* SineGenerator provides a fully functional and equivalent dummy hardware device for testing
-* purposes without any external data acquisition device.
-* It supports synchronous and asynchronous data acquisition. Data can be produced with freely
-* selectable frequencies in a block-based or non-block based way.
-* To achive a consistent access to hardware devices, this class is a derived class.
 */
+
 class gBSamp : public HWThread
 {
   public:
     /**
-    * @brief Constructor for direct initialization
-    *
-    * @param[in] io boost::asio::io_service to create a proper timing
-    * @param[in] sampling_rate
-    * @param[in] nr_ch  Number of channels to be simulated by the SineGen.
-    * @param[in] blocks  The blocksize, to create the data with.
-    */
-    gBSamp(boost::asio::io_service& io, XMLParser& parser, const int sampling_rate, const int nr_ch, const int blocks)
-      : HWThread(parser, sampling_rate, nr_ch, blocks), step_(1/static_cast<float>(fs_)),   \
-        cycle_dur_(1/static_cast<float>(fs_)), current_block_(0), td_(1000000/fs_), samples_(1,0)
-    {
-      t_ = new boost::asio::deadline_timer(io, td_);
-      genSine();
-    }
-    /**
     * @brief Constructor for initialization with an XML object
-    * @param[in] io_service boost::asio::io_service to create a proper timing
     * @param[in] parser Reference to XMLParser object
     * @param[in] hw ticpp::Element pointing to an \<hardware\> tag in the config file
     */
-    gBSamp(boost::asio::io_service& io, XMLParser& parser, ticpp::Iterator<ticpp::Element> hw);
+    gBSamp(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw);
 
     /**
     * @brief Destructor
     */
-    virtual ~gBSamp()    {  delete t_;  }
+    virtual ~gBSamp();
 
     /**
     * @brief Method to achieve synchronous data acquisition (method is blocking).
@@ -97,24 +71,27 @@ class gBSamp : public HWThread
 //-----------------------------------------------
   private:
     /**
-    * @brief Set the configuration of the SineGenerator with a XML object
+    * @brief Set the configuration of the device with a XML object
     * @param[in] hw ticpp::Element pointing to an \<hardware\> tag in the config file
     * @throw ticpp::exception if \<channel_settings\> is defined multiple times.
     */
     void setHardware(ticpp::Iterator<ticpp::Element>const &hw);
+    
     /**
-    * @brief Generate a sine curve and store it into the objects data vector.
-    *
-    * This method is used to gnerate a sine with 1Hz on eligible channels wether in
-    * block oriented mode or not. Settings have to be given by initialization of the
-    * object.
-    * In non block oriented mode (buffersize = 1) data will be directly stored in the
-    * "data" SampleBlock. Using block oriented data creation (buffersize > 1) data is
-    * stored in the buffer first and if the desired number of blocks to store is achieved,
-    * the buffer is copied into "data".
-    * If new data is set, "samples_available" is set to true.
+    * @brief Initialize device
     */
-    void genSine();
+    int initCard();
+
+    /**
+    * @brief Stops the device if an error occurs
+    */
+    void stopDAQ(boost::int32_t error, TaskHandle taskHandle, char errBuff[2048]);
+
+    /**
+    * @brief Starts reading from device
+    */
+    int readFromDAQCard();
+
     /**
     * @brief Set configuration listed in the \<device_settings\> section in the XML file.
     * @param[in] hw ticpp::Element pointing to an \<device_settings\> tag in the config file
@@ -128,18 +105,19 @@ class gBSamp : public HWThread
     */
     virtual void setChannelSettings(ticpp::Iterator<ticpp::Element>const &father);
 
+    void setDeviceFilterSettings(ticpp::Iterator<ticpp::Element>const &elem);
+    void checkFilterAttributes(ticpp::Iterator<ticpp::Element>const &elem);
+    void getFilterParams(ticpp::Iterator<ticpp::Element>const &elem,\
+      unsigned int &type, bool &notch, float &f_low, float &f_high, float &sense);
+
 //-----------------------------------------------
 
   private:
-    comedi_t* card;
     bool acquiring_;   ///< to check, if data acquisition has started (needed if used as master)
-    boost::asio::deadline_timer* t_;   ///< timer object for accurate timing
-    double step_;        ///< needed for sine generation
-    double cycle_dur_;   ///< needed for sine generation
     boost::uint16_t current_block_;     ///< counter variable -- only used if blocks >1
-    boost::posix_time::microseconds td_;   ///< time period for the timer
+    boost::uint32_t expected_values_;
 
-    boost::mutex sync_mut_;  ///< mutex neede for synchronisation
+    boost::mutex sync_mut_;  ///< mutex needed for synchronisation
     boost::condition_variable_any cond_;   ///< condition variable to wake up getSyncData()
 
     std::vector<double> samples_; ///< temporary vector holding recent samples of the sine (1 element per channel)
@@ -152,6 +130,13 @@ class gBSamp : public HWThread
     * For more information, read the SampleBlock documentation.
     */
     SampleBlock<double> buffer_;
+    
+ 	  boost::int32_t error;
+	  TaskHandle taskHandle;
+	  boost::int32_t read;
+	  float64 data[1000];
+	  char errBuff[2048];
+	  std::vector<float64> data_buffer;
 
 };
 
@@ -159,4 +144,4 @@ class gBSamp : public HWThread
 
 #endif // GBSAMP_H
 
-//-----------------------------------------------------------------------------
+#endif // WIN32

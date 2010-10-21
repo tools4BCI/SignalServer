@@ -14,6 +14,11 @@
 
 namespace tobiss
 {
+using boost::int32_t;
+using boost::uint32_t;
+
+using std::vector;
+
 const string CLIENT_XML_CONFIG = "new_client_config.xml";
 
 //-----------------------------------------------------------------------------

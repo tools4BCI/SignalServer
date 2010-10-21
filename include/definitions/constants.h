@@ -116,6 +116,14 @@ namespace tobiss
       bool isJoystick(const string& s);
 
       /**
+      * @brief Checks, if the given string represents a g.BSamp
+      * @param[in] s String to be checked.
+      * @return Bool
+      *
+      */
+      bool isBSamp(const string& s);
+
+      /**
       * @brief Maps given strings "on" or "off" to boolean values 0 or 1.
       * @param[in] s String to be checked.
       * @return Bool
@@ -251,6 +259,9 @@ namespace tobiss
           static const string hw_fil_order;   ///< xml-tag hardware: filter order
           static const string hw_fil_low;   ///< xml-tag hardware: filter lower cutoff freq.
           static const string hw_fil_high;   ///< xml-tag hardware: filter upper cutoff freq.
+
+        //BSamp specific
+          static const string hw_fil_sense;   ///< xml-tag hardware: mV for gBSamp
 
           static const string hw_notch;   ///< xml-tag hardware: notch_filter
           static const string hw_notch_center;    ///< xml-tag hardware: notch center freq.

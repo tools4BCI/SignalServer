@@ -49,12 +49,12 @@ class SSClientDataReader
     {
       unsigned int counter = 0;
 
-      uint16_t nr_values = 0;
-      uint64_t sample_nr = 0;
-      uint64_t packet_nr = 0;
+      boost::uint16_t nr_values = 0;
+      boost::uint64_t sample_nr = 0;
+      boost::uint64_t packet_nr = 0;
 
-      uint64_t sample_nr_old = 0;
-      uint64_t packet_nr_old = 0;
+      boost::uint64_t sample_nr_old = 0;
+      boost::uint64_t packet_nr_old = 0;
 
       while(running_)
       {
@@ -74,6 +74,7 @@ class SSClientDataReader
             try {
               client_.getDataPacket(packet);
 
+              cout << "got Packet" << boost::posix_time::microsec_clock::local_time() <<  endl;
 
               v = packet.getSingleDataBlock(1);
               nr_values = packet.getNrOfValues(1);
@@ -225,8 +226,8 @@ int main(int argc, const char* argv[])
       SetPriorityClass(GetCurrentProcess(), ABOVE_NORMAL_PRIORITY_CLASS);
       SetPriorityClass(reader_thread.native_handle(), REALTIME_PRIORITY_CLASS);
       SetThreadPriority(reader_thread.native_handle(), THREAD_PRIORITY_TIME_CRITICAL );
-      SetPriorityClass(ka_reader_thread.native_handle(), REALTIME_PRIORITY_CLASS);
-      SetThreadPriority(ka_reader_thread.native_handle(), THREAD_PRIORITY_TIME_CRITICAL );
+//      SetPriorityClass(ka_reader_thread.native_handle(), REALTIME_PRIORITY_CLASS);
+//      SetThreadPriority(ka_reader_thread.native_handle(), THREAD_PRIORITY_TIME_CRITICAL );
     #endif
 
   map<string, string> known_commands;

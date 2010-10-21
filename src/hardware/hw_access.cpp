@@ -9,6 +9,7 @@
 
 #ifdef WIN32
   #include "hardware/usbamp.h"
+  #include "hardware/gBSamp.h"
 #endif
 
 #ifdef TIMING_TEST
@@ -39,6 +40,8 @@ HWAccess::HWAccess(boost::asio::io_service& io, XMLParser& parser)
   #ifdef WIN32
     if( cst_.isUSBamp(parser.getHardwareElementName(n)) )
       slaves_.push_back(new USBamp(parser, parser.getHardwareElement(n)));
+    if( cst_.isBSamp(parser.getHardwareElementName(n)) )
+      slaves_.push_back(new gBSamp(parser, parser.getHardwareElement(n)));
   #endif
     if( cst_.isMobilab(parser.getHardwareElementName(n)) )
       { }
