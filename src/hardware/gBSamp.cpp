@@ -104,7 +104,7 @@ void gBSamp::stop()
 int gBSamp::readFromDAQCard()
 {
 	DAQmxErrChk (DAQmxStartTask(taskHandle));
-	DAQmxErrChk (DAQmxReadAnalogF64(taskHandle,blocks_,-1,DAQmx_Val_GroupByChannel,data,10000,&read,NULL));
+	//DAQmxErrChk (DAQmxReadAnalogF64(taskHandle,blocks_,0,DAQmx_Val_GroupByChannel,data,10000,&read,NULL));
 
   //TODO: pass data to SampleBlock
 	cout << "Data read: " << data << endl;
@@ -126,17 +126,34 @@ SampleBlock<double> gBSamp::getSyncData()
     return(data_);
   }
 
+  //cout << "gBSamp: getSyncData" << endl;
+  
   if(!acquiring_)
     acquiring_ = 1;
 
-  boost::unique_lock<boost::mutex> syn(sync_mut_);
-  while(!samples_available_ && running_)
-    cond_.wait(syn);
+  //boost::unique_lock<boost::mutex> syn(sync_mut_);
+  //while(!samples_available_ && running_)
+  //  cond_.wait(syn);
   boost::shared_lock<boost::shared_mutex> lock(rw_);
+  
+  DAQmxReadAnalogF64(taskHandle,blocks_,-1,DAQmx_Val_GroupByChannel,data,10000,&read,NULL);
+
+  for(int i=0; i < expected_values_/blocks_; i++)
+    for(int j=0; j < blocks_; j++)
+      samples_[i+j] =data[i+j];
+      
+  //cout << "gBSamp: getSyncData -- samples.size() " << samples_.size() << endl;
+  //cout << "sampleblock size: " << data_.getNrOfSamples() << endl;
+      
+  data_.setSamples(samples_);
+
+  //cout << "gBSamp: getSyncData" << endl;
   samples_available_ = false;
   lock.unlock();
-  cond_.notify_all();
-  syn.unlock();
+  //cond_.notify_all();
+  //syn.unlock();
+  
+  //cout << "getSyncData called" << endl; 
   return(data_);
 }
 
@@ -179,12 +196,12 @@ int gBSamp::initCard()
 
   //TODO: make a list with needed channels
   // now just uses all 16 channels
-  const char channel_list[] = "Dev1/ai0:15";
+  const char channel_list[] = "Dev1/ai0";
   
 	// DAQmx Configure Code
 	DAQmxErrChk (DAQmxCreateTask("",&taskHandle));
-	DAQmxErrChk (DAQmxCreateAIVoltageChan(taskHandle,channel_list,"",DAQmx_Val_Cfg_Default,-10.0,10.0,DAQmx_Val_Volts,NULL));
-	DAQmxErrChk (DAQmxCfgSampClkTiming(taskHandle,"",fs_,DAQmx_Val_Rising,DAQmx_Val_FiniteSamps,2));
+	DAQmxErrChk (DAQmxCreateAIVoltageChan(taskHandle,channel_list,"",DAQmx_Val_RSE,-10.0,10.0,DAQmx_Val_Volts,NULL));
+	DAQmxErrChk (DAQmxCfgSampClkTiming(taskHandle,NULL,fs_,DAQmx_Val_Rising,DAQmx_Val_ContSamps,1));
 
   return error;
 }

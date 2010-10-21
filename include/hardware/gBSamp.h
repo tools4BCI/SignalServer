@@ -110,7 +110,6 @@ class gBSamp : public HWThread
     void getFilterParams(ticpp::Iterator<ticpp::Element>const &elem,\
       unsigned int &type, bool &notch, float &f_low, float &f_high, float &sense);
 
-
 //-----------------------------------------------
 
   private:

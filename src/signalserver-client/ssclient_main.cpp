@@ -74,6 +74,7 @@ class SSClientDataReader
             try {
               client_.getDataPacket(packet);
 
+              cout << "got Packet" << boost::posix_time::microsec_clock::local_time() <<  endl;
 
               v = packet.getSingleDataBlock(1);
               nr_values = packet.getNrOfValues(1);
