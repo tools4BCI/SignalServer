@@ -79,7 +79,7 @@ unix {
     LIBS += -lboost_thread \
         -lboost_system \
         -lSDL \
-        -Lextern/lib/libusb/linux/libusb-1.0.8/libusb/.libs -lusb-1.0
+        -Lbin -lusb-1.0
     HARDWARE_PLATFORM = $$system(uname -m)
     contains( HARDWARE_PLATFORM, x86_64 )::{
         message(Building 64 bit )
