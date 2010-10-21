@@ -97,6 +97,11 @@ const string Constants::hw_bip_with("with");
 const string Constants::hw_drl("driven_right_leg");
 const string Constants::hw_drl_value("value");
 
+//Mouse specific start
+const string Constants::hw_vid("vendorid");
+const string Constants::hw_pid("productid");
+const string Constants::usb_port("usb_port");
+//Mouse specific end
 
 //g.Mobilab specific start
 const string Constants::hw_mobilab_serial_port("serial_port");
@@ -122,6 +127,9 @@ Constants::Constants()
   supported_hardware.insert(pair <string,int>("jstick", JOYSTICK));
   supported_hardware.insert(pair <string,int>("joystick", JOYSTICK));
   supported_hardware.insert(pair <string,int>("joycable", JOYSTICK));
+
+  supported_hardware.insert(pair <string,int>("mouse", MOUSE));
+  signaltypes.insert(pair <string,uint32_t>("mouse", SIG_MOUSE));
 
   signaltypes.insert(pair <string,uint32_t>("eeg", SIG_EEG));
   signaltypes.insert(pair <string,uint32_t>("emg", SIG_EMG));
@@ -228,6 +236,20 @@ bool Constants::isJoystick(const string& s)
 
   return(0);
 }
+
+//-----------------------------------------------------------------------------
+
+bool Constants::isMouse(const string& s)
+{
+  unsigned int hw_nr = 0;
+  if( !(hw_nr = isSupportedHardware(s)) )
+    return(0);
+  if(hw_nr == MOUSE)
+    return(1);
+
+  return(0);
+}
+
 
 //-----------------------------------------------------------------------------
 

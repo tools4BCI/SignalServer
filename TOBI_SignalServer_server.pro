@@ -36,9 +36,7 @@ QMAKE_EXTRA_TARGETS += versiontarget
 QMAKE_CXXFLAGS_WARN_ON = -Wall -pedantic
 
 # -----------------------------------------------------------------------
-HEADERS += include/signalserver/signal_server.h \
-    include/definitions/constants.h \
-    include/hardware/hw_access.h \
+HEADERS += include/hardware/hw_access.h \
     include/hardware/hw_thread.h \
     include/hardware/sine_generator.h \
     include/hardware/event_listener.h \
@@ -51,22 +49,10 @@ HEADERS += include/signalserver/signal_server.h \
     include/filereading/file_reader.h \
     include/filereading/gdf_file_reader.h \
     include/sampleblock/sample_block.h \
-    include/config/control_message_decoder.h \
-    include/config/control_message_encoder.h \
-    include/config/control_messages.h \
-    include/config/ss_meta_info.h \
-    include/config/xml_parser.h \
-    include/datapacket/data_packet.h \
-    include/datapacket/raw_mem.h \
-    include/network/control_connection.h \
-    include/network/control_connection_server.h \
-    include/network/tcp_data_server.h \
-    include/network/tcp_server.h \
-    include/network/udp_data_server.h \
     extern/include/LptTools/LptTools.h
+unix:HEADERS  += include/hardware/mouse_linux.h
+win32:HEADERS += include/hardware/mouse_.h
 SOURCES += src/signalserver/main.cpp \
-    src/signalserver/signal_server.cpp \
-    src/definitions/constants.cpp \
     src/hardware/hw_access.cpp \
     src/hardware/hw_thread.cpp \
     src/hardware/sine_generator.cpp \
@@ -79,27 +65,21 @@ SOURCES += src/signalserver/main.cpp \
     src/filereading/file_reader_factory.cpp \
     src/filereading/file_reader.cpp \
     src/filereading/gdf_file_reader.cpp \
-    src/sampleblock/sample_block.cpp \
-    src/config/control_message_decoder.cpp \
-    src/config/control_message_encoder.cpp \
-    src/config/control_messages.cpp \
-    src/config/ss_meta_info.cpp \
-    src/config/xml_parser.cpp \
-    src/datapacket/data_packet.cpp \
-    src/datapacket/raw_mem.cpp \
-    src/network/control_connection.cpp \
-    src/network/control_connection_server.cpp \
-    src/network/tcp_data_server.cpp \
-    src/network/tcp_server.cpp \
-    src/network/udp_data_server.cpp
+    src/sampleblock/sample_block.cpp
+unix:SOURCES  += src/hardware/mouse_linux.cpp
+win32:SOURCES += src/hardware/mouse_.cpp
 unix:SOURCES += extern/include/LptTools/LptToolsLinux.cpp
 win32:SOURCES += extern/include/LptTools/LptTools_.cpp
+
+
+LIBS += -L./lib -ltia
 
 # -----------------------------------------------------------------------
 unix {
     LIBS += -lboost_thread \
         -lboost_system \
-        -lSDL
+        -lSDL \
+        -Lextern/lib/libusb/linux -lusb-1.0
     HARDWARE_PLATFORM = $$system(uname -m)
     contains( HARDWARE_PLATFORM, x86_64 )::{
         message(Building 64 bit )
@@ -129,3 +109,4 @@ win32:LIBS += extern\lib\sdl\win\SDL.lib \
 
 # Note: It is assumed that the boost libraries can be automatically detected by the linker
 # through #pragma comment(lib, xxx) declarations in boost.
+
