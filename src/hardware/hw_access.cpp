@@ -3,7 +3,7 @@
 #include <fstream>
 
 #include "hardware/hw_access.h"
-#include "hardware/sine_generator.h"
+#include "hardware/hw_thread_factory.h"
 #include "hardware/event_listener.h"
 #include "hardware/jstick.h"
 #include "hardware/g_mobilab.h"
@@ -41,9 +41,9 @@ HWAccess::HWAccess(boost::asio::io_service& io, XMLParser& parser)
 
   for(unsigned int n = 0; n < parser.getNrOfHardwareElements(); n++)
   {
-
-    if( cst_.isSineGen(parser.getHardwareElementName(n)) )
-      slaves_.push_back(new SineGenerator(io, parser, parser.getHardwareElement(n)));
+      HWThread* thread = HWThreadFactory::instance().createHWThread (parser.getHardwareElementName(n), io, parser, parser.getHardwareElement(n));
+      if (thread)
+        slaves_.push_back (thread);
 
   #ifdef WIN32
     if( cst_.isUSBamp(parser.getHardwareElementName(n)) )
