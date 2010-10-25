@@ -5,6 +5,11 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/bind.hpp>
 
+//-----------------------------------------------------------------------------
+#include "hardware/hw_thread_builder.h"
+HW_THREAD_FACTORY_REGISTRATION(sinegen, SineGenerator)
+HW_THREAD_FACTORY_REGISTRATION(sinegenerator, SineGenerator)
+
 namespace tobiss
 {
 using boost::uint8_t;
