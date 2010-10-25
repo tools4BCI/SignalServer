@@ -44,6 +44,8 @@ HEADERS += include/hardware/hw_access.h \
     include/hardware/serial_port_base.h \
     include/hardware/usbamp.h \
     include/hardware/g_mobilab.h \
+    include/hardware/hw_thread_factory.h \
+    include/hardware/hw_thread_builder.h \
     include/filereading/data_file_handler.h \
     include/filereading/file_reader_factory.h \
     include/filereading/file_reader.h \
@@ -61,6 +63,7 @@ SOURCES += src/signalserver/main.cpp \
     src/hardware/serial_port_base.cpp \
     src/hardware/usbamp.cpp \
     src/hardware/g_mobilab.cpp \
+    src/hardware/hw_thread_factory.cpp \
     src/filereading/data_file_handler.cpp \
     src/filereading/file_reader_factory.cpp \
     src/filereading/file_reader.cpp \
