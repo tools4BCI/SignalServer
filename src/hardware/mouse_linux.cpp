@@ -284,6 +284,8 @@ void Mouse::acquireData()
     boost::unique_lock<boost::shared_mutex> lock(rw_);
     int actual_length;
     int r = libusb_interrupt_transfer(dev_handle_, usb_port_, async_data_, sizeof(async_data_), &actual_length, 0);
+    if(r)
+      throw(std::runtime_error("Mouse::Mouse -- Mouse device could not be connected! Check usb-port!"));
     lock.unlock();
   }
 }
