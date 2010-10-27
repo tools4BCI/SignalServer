@@ -26,6 +26,7 @@
 //#pragma comment(lib,"gUSBamp.lib")
 
 #include "hw_thread.h"
+#include "hw_thread_builder.h"
 
 namespace tobiss
 {
@@ -197,6 +198,8 @@ class USBamp : public HWThread
     std::string mode_;
 
     Constants cst_;
+
+	static const HWThreadBuilderTemplateRegistratorWithoutIOService<USBamp> FACTORY_REGISTRATOR_;
 };
 
 } // Namespace tobiss

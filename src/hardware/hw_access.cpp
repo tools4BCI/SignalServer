@@ -6,11 +6,6 @@
 #include "hardware/hw_thread_factory.h"
 #include "hardware/event_listener.h"
 
-#ifdef WIN32
-  #include "hardware/mouse_.h"
-  #include "hardware/usbamp.h"
-#endif
-
 #ifdef TIMING_TEST
   #include "LptTools/LptTools.h"
   #define LPT1  0
@@ -37,11 +32,6 @@ HWAccess::HWAccess(boost::asio::io_service& io, XMLParser& parser)
       HWThread* thread = HWThreadFactory::instance().createHWThread (parser.getHardwareElementName(n), io, parser, parser.getHardwareElement(n));
       if (thread)
         slaves_.push_back (thread);
-
-  #ifdef WIN32
-    if( cst_.isUSBamp(parser.getHardwareElementName(n)) )
-      slaves_.push_back(new USBamp(parser, parser.getHardwareElement(n)));
-  #endif
   }
 
 
