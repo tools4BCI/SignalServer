@@ -1,6 +1,7 @@
 
 #ifdef WIN32
 
+#include "winsock2.h"
 #include "hardware/usbamp.h"
 
 #include <boost/bind.hpp>
@@ -39,6 +40,8 @@ static const unsigned int USBAMP_NOTCH_HALF_WIDTH = 2;   // to one side  ...  e.
 static const unsigned int USBAMP_ERROR_MSG_SIZE = 256;
 static const unsigned int USBAMP_NR_OF_OVERLAPPED = 3;
 
+
+const HWThreadBuilderTemplateRegistratorWithoutIOService<USBamp> USBamp::FACTORY_REGISTRATOR_ ("usbamp", "g.usbamp");
 
 //-----------------------------------------------------------------------------
 

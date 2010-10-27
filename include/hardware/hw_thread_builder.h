@@ -157,7 +157,7 @@ public:
         registerKey (key_6);
     }
 
-    virtual HWThread* createInstance (boost::asio::io_service& io, XMLParser& parser, ticpp::Iterator<ticpp::Element> hw) const
+    virtual HWThread* createInstance (boost::asio::io_service&, XMLParser& parser, ticpp::Iterator<ticpp::Element> hw) const
     {
         return new T (parser, hw);
     }
