@@ -1,5 +1,6 @@
 
 #include "hardware/g_mobilab.h"
+#include "hardware/hw_thread_builder.h"
 
 #include <vector>
 #include <boost/bind.hpp>
@@ -93,8 +94,9 @@ static const std::string  MOBILAB_PARITY       = "none";
 
 #endif
 
-//-----------------------------------------------------------------------------
+const HWThreadBuilderTemplateRegistrator<GMobilab> GMobilab::factory_registrator_ ("mobilab", "mobilab+", "g.mobilab", "g.mobilab+");
 
+//-----------------------------------------------------------------------------  
 GMobilab::GMobilab(boost::asio::io_service& io, XMLParser& parser,
          ticpp::Iterator<ticpp::Element> hw)
   : SerialPortBase(io), HWThread(parser), type_(EEG), async_acqu_thread_(0)
