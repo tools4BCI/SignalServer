@@ -50,9 +50,6 @@ HWAccess::HWAccess(boost::asio::io_service& io, XMLParser& parser)
       slaves_.push_back(new USBamp(parser, parser.getHardwareElement(n)));
   #endif
 
-    if( cst_.isMobilab(parser.getHardwareElementName(n)) )
-      slaves_.push_back(new GMobilab(io, parser, parser.getHardwareElement(n)));
-
     if( cst_.isJoystick(parser.getHardwareElementName(n)) )
       slaves_.push_back(new JStick(parser, parser.getHardwareElement(n)));
     if( cst_.isMouse(parser.getHardwareElementName(n)) )

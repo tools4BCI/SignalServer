@@ -4,19 +4,6 @@
 #include "hw_thread.h"
 #include "hw_thread_factory.h"
 
-namespace tobiss { namespace registrators {
-class HWThreadFactoryRegistrator;
-} }
-
-#define HW_THREAD_FACTORY_REGISTRATION(key, hw_thread_class) \
-    namespace tobiss { \
-    class hw_thread_class ## key ## Builder : public HWThreadBuilder { public: \
-        virtual HWThread* createInstance (boost::asio::io_service& io, XMLParser& parser, ticpp::Iterator<ticpp::Element> hw) const \
-        { return new hw_thread_class (io, parser, hw);}}; \
-    namespace registrators { \
-    HWThreadFactoryRegistrator hw_thread_registrator ## hw_thread_class ## key (#key, new hw_thread_class ## key ## Builder); \
-    } }
-
 namespace tobiss
 {
 
@@ -26,6 +13,8 @@ namespace tobiss
 *
 * @brief Builder base class for HWThreads... it provides a factory method
 *
+* instances of subclasses of this class should be registered in the HWThreadFactory;
+* this factory calls the createInstance method to create concrete instances of HWThread
 */
 class HWThreadBuilder
 {
@@ -36,20 +25,78 @@ protected:
 };
 
 
-
-namespace registrators
-{
-
-class HWThreadFactoryRegistrator
+//-----------------------------------------------------------------------------
+/**
+* @class HWThreadBuilderTemplateRegistrator
+*
+* @brief A template for the HWThreadBuilder which also registrates concrete builders
+*        in the HWThreadFactory
+*
+* usage: create an instance of this class (static class member or a global variable)
+*        HWThreadBuilderTemplateRegistrator<ConcreteHWThread> my_concrete_hw_thread_builder ("blub", "bla", ...);
+*/
+template<typename T>
+class HWThreadBuilderTemplateRegistrator : public HWThreadBuilder
 {
 public:
-    HWThreadFactoryRegistrator (std::string const& key, HWThreadBuilder* builder)
+    /**
+      * as far as C++ doesn't support initializer lists, for any number of
+      * keys a constructor is necessary
+      */
+    HWThreadBuilderTemplateRegistrator (std::string key)
     {
-        HWThreadFactory::instance().registerBuilder (key, builder);
+        registerKey (key);
+    }
+
+    HWThreadBuilderTemplateRegistrator (std::string key_1, std::string key_2)
+    {
+        registerKey (key_1);
+        registerKey (key_2);
+    }
+    HWThreadBuilderTemplateRegistrator (std::string key_1, std::string key_2, std::string key_3)
+    {
+        registerKey (key_1);
+        registerKey (key_2);
+        registerKey (key_3);
+    }
+    HWThreadBuilderTemplateRegistrator (std::string key_1, std::string key_2, std::string key_3, std::string key_4)
+    {
+        registerKey (key_1);
+        registerKey (key_2);
+        registerKey (key_3);
+        registerKey (key_4);
+    }
+    HWThreadBuilderTemplateRegistrator (std::string key_1, std::string key_2, std::string key_3, std::string key_4, std::string key_5)
+    {
+        registerKey (key_1);
+        registerKey (key_2);
+        registerKey (key_3);
+        registerKey (key_4);
+        registerKey (key_5);
+    }
+    HWThreadBuilderTemplateRegistrator (std::string key_1, std::string key_2, std::string key_3, std::string key_4, std::string key_5, std::string key_6)
+    {
+        registerKey (key_1);
+        registerKey (key_2);
+        registerKey (key_3);
+        registerKey (key_4);
+        registerKey (key_5);
+        registerKey (key_6);
+    }
+
+    virtual HWThread* createInstance (boost::asio::io_service& io, XMLParser& parser, ticpp::Iterator<ticpp::Element> hw) const
+    {
+        return new T (io, parser, hw);
+    }
+
+private:
+    HWThreadBuilderTemplateRegistrator () {}
+
+    void registerKey (std::string const& key)
+    {
+        HWThreadFactory::instance().registerBuilder (key, new HWThreadBuilderTemplateRegistrator<T>);
     }
 };
-
-} // namespace registrators
 
 
 } // namespace tobiss
