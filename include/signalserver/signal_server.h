@@ -161,6 +161,11 @@ class SignalServer : boost::noncopyable
     boost::posix_time::ptime timestamp_;
     boost::posix_time::time_duration diff_;
     boost::posix_time::time_duration t_mean_;
+    boost::posix_time::time_duration t_min_total_;
+    boost::posix_time::time_duration t_max_total_;
+    boost::posix_time::time_duration t_min_last_;
+    boost::posix_time::time_duration t_max_last_;
+    std::vector<boost::posix_time::time_duration> t_diffs_;
     boost::int64_t t_var_;
     boost::uint64_t counter_;
 

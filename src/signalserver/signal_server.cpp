@@ -11,6 +11,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <algorithm>
 
 // Boost
 #include "boost/date_time/posix_time/posix_time.hpp"
@@ -67,6 +68,10 @@ SignalServer::SignalServer(boost::asio::io_service& io_service)
   #ifdef TIMING_TEST
     timestamp_ = boost::posix_time::microsec_clock::local_time();
     counter_ = 0;
+    t_max_last_ = boost::posix_time::time_duration (0, 0, 0);
+    t_max_total_ = boost::posix_time::time_duration (0, 0, 0);
+    t_min_last_ = boost::posix_time::time_duration (10, 0, 0);
+    t_min_total_ = boost::posix_time::time_duration (10, 0, 0);
     t_var_ = 0;
     lpt_flag_ = 0;
 
@@ -221,6 +226,12 @@ void SignalServer::sendDataPacket(DataPacket& packet)
     counter_++;
 
     diff_ = timestamp_ - packet.getTimestamp();
+    t_diffs_.push_back (diff_);
+    t_min_total_ = min (t_min_total_, diff_);
+    t_max_total_ = max (t_max_total_, diff_);
+    t_min_last_ = min (t_min_last_, diff_);
+    t_max_last_ = max (t_max_last_, diff_);
+
     t_mean_ = (t_mean_ + diff_)/2;
     t_var_  = (t_var_ +
     ( (diff_.total_microseconds() - t_mean_.total_microseconds() )*
@@ -229,9 +240,17 @@ void SignalServer::sendDataPacket(DataPacket& packet)
     if( (master_samplingrate_/master_blocksize_ < 1) ||
        (counter_%((master_samplingrate_/master_blocksize_) *2) == 0) )
     {
+      sort (t_diffs_.begin(), t_diffs_.end());
+
       cout << "Packet Nr.: " << counter_ << ";  ";
-      cout << "Timing -- mean: " << t_mean_.total_microseconds() << " microsecs,  ";
-      cout << "variance: " << t_var_ << " microsecs"<< endl;
+      cout << "Timing (microsecs) -- mean: " << t_mean_.total_microseconds() << ", ";
+      cout << "variance: " << t_var_;
+      cout << ", min: " << t_min_last_.total_microseconds() << " (total: "<<  t_min_total_.total_microseconds() <<"), ";
+      cout << "max: "<< t_max_last_.total_microseconds() << " (total: "<< t_max_total_.total_microseconds() << "), ";
+      cout << "median: " << t_diffs_[t_diffs_.size() / 2].total_microseconds () << endl;
+      t_diffs_.clear();
+      t_min_last_ = boost::posix_time::time_duration (10, 0, 0);
+      t_max_last_ = boost::posix_time::time_duration (0, 0, 0);
     }
 
   #endif
