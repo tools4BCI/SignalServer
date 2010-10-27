@@ -13,24 +13,6 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
-//-----------------------------------------------------------------------------
-/*! \addtogroup hardware_device_indentifiers
-*  Every hardware device is is identified by it's own identifier (unsigned int).
-*  Those identifiers have to be declared here.
-*  If new supported hardware is included into the signalserver, this section has to be
-*  extended. Just increase the running number by 1. (an identifier must not occur multiple times!)
-*  @{
-*/
-
-#define SINEGEN   1
-#define USBAMP    2
-#define MOBILAB   3
-#define JOYSTICK  4
-#define MOUSE     5
-
-/*! @} */
-
-
 /*! \addtogroup data_packet_definitions
 *  Definitions concerning the DataPacket have to be done here!
 *  This section is especially built for flags, used in the DataPacket.
