@@ -19,6 +19,7 @@
 #include <set>
 
 #include "hw_thread.h"
+#include "hw_thread_builder.h"
 
 using namespace std;
 
@@ -29,7 +30,7 @@ namespace tobiss
 class JStick : public HWThread
 {
   public:
-    JStick(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw);
+    JStick (XMLParser& parser, ticpp::Iterator<ticpp::Element> hw);
 
     /**
     * @brief Destructor
@@ -90,6 +91,8 @@ class JStick : public HWThread
     string name_;
 
     SampleBlock<double> empty_block_;
+
+    static const HWThreadBuilderTemplateRegistratorWithoutIOService<JStick> FACTORY_REGISTRATOR_;
 
 };
 
