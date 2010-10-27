@@ -7,6 +7,7 @@
 
 // STL
 #include <iostream>
+#include <algorithm>
 
 // Boost
 #include <boost/asio.hpp>
@@ -17,6 +18,7 @@
 // local
 #include "datapacket/data_packet.h"
 #include "signalserver-client/ssclient.h"
+#include "signalserver-client/ssconfig.h"
 
 using namespace std;
 using namespace tobiss;
@@ -32,6 +34,10 @@ class SSClientDataReader
         cond_(cond),
         running_(1),
         timestamp_(boost::posix_time::microsec_clock::local_time()),
+        t_min_total_ (10, 0, 0),
+        t_max_total_ (0, 0, 0),
+        t_min_last_ (10, 0, 0),
+        t_max_last_ (0, 0, 0),
         t_var_(0)
     {}
 
@@ -113,6 +119,13 @@ class SSClientDataReader
             #ifdef TIMING_TEST
               timestamp_ = boost::posix_time::microsec_clock::local_time();
               diff_ = timestamp_ - packet.getTimestamp();
+
+              t_diffs_.push_back (diff_);
+              t_min_total_ = min (t_min_total_, diff_);
+              t_max_total_ = max (t_max_total_, diff_);
+              t_min_last_ = min (t_min_last_, diff_);
+              t_max_last_ = max (t_max_last_, diff_);
+
               t_mean_ = (t_mean_ + diff_)/2;
               t_var_  = (t_var_ +
               ( (diff_.total_microseconds() - t_mean_.total_microseconds() )*
@@ -128,9 +141,16 @@ class SSClientDataReader
               (counter%(
               (client_.config().signal_info.masterSamplingRate()/client_.config().signal_info.masterBlockSize()) *2 ) == 0) )
             {
+              sort (t_diffs_.begin(), t_diffs_.end());
               cout << "Packet Nr.: " << counter << ";  ";
-              cout << "Timing -- mean: " << t_mean_.total_microseconds() << " microsecs,  ";
-              cout << "variance: " << t_var_ << " microsecs"<< endl;
+              cout << "Timing (microsecs) -- mean: " << t_mean_.total_microseconds() << ", ";
+              cout << "variance: " << t_var_;
+              cout << ", min: " << t_min_last_.total_microseconds() << " (total: "<<  t_min_total_.total_microseconds() <<"), ";
+              cout << "max: "<< t_max_last_.total_microseconds() << " (total: "<< t_max_total_.total_microseconds() << "), ";
+              cout << "median: " << t_diffs_[t_diffs_.size() / 2].total_microseconds () << endl;
+              t_diffs_.clear();
+              t_min_last_ = boost::posix_time::time_duration (10, 0, 0);
+              t_max_last_ = boost::posix_time::time_duration (0, 0, 0);
             }
           #endif
         }
@@ -144,6 +164,11 @@ class SSClientDataReader
     boost::posix_time::ptime timestamp_;
     boost::posix_time::time_duration diff_;
     boost::posix_time::time_duration t_mean_;
+    boost::posix_time::time_duration t_min_total_;
+    boost::posix_time::time_duration t_max_total_;
+    boost::posix_time::time_duration t_min_last_;
+    boost::posix_time::time_duration t_max_last_;
+    vector<boost::posix_time::time_duration> t_diffs_;
     boost::int64_t t_var_;
 //     boost::posix_time::time_duration t_var_;
 };
