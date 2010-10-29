@@ -113,22 +113,6 @@ const string Constants::hw_mobilab_multi("multi");
 
 Constants::Constants()
 {
-  supported_hardware.insert(pair <string,int>("sinegenerator", SINEGEN));
-  supported_hardware.insert(pair <string,int>("sinegen", SINEGEN));
-
-  supported_hardware.insert(pair <string,int>("usbamp", USBAMP));
-  supported_hardware.insert(pair <string,int>("g.usbamp", USBAMP));
-
-  supported_hardware.insert(pair <string,int>("mobilab", MOBILAB));
-  supported_hardware.insert(pair <string,int>("mobilab+", MOBILAB));
-  supported_hardware.insert(pair <string,int>("g.mobilab", MOBILAB));
-  supported_hardware.insert(pair <string,int>("g.mobilab+", MOBILAB));
-
-  supported_hardware.insert(pair <string,int>("jstick", JOYSTICK));
-  supported_hardware.insert(pair <string,int>("joystick", JOYSTICK));
-  supported_hardware.insert(pair <string,int>("joycable", JOYSTICK));
-
-  supported_hardware.insert(pair <string,int>("mouse", MOUSE));
   signaltypes.insert(pair <string,uint32_t>("mouse", SIG_MOUSE));
 
   signaltypes.insert(pair <string,uint32_t>("eeg", SIG_EEG));
@@ -170,86 +154,6 @@ Constants::Constants()
   usbamp_blockNames.insert(pair <string,int>("c", 2));
   usbamp_blockNames.insert(pair <string,int>("d", 3));
 }
-
-//-----------------------------------------------------------------------------
-
-int Constants::isSupportedHardware(const string& s)
-{
-  map<string, unsigned int>::iterator it;
-  it = supported_hardware.find(to_lower_copy(s));
-  if(it == supported_hardware.end())
-  {
-    string e = "Hardware \"" + s + "\" not supported -- please also check spelling!";
-    throw ticpp::Exception(e);
-  }
-  return(it->second);
-}
-
-//-----------------------------------------------------------------------------
-
-bool Constants::isSineGen(const string& s)
-{
-  unsigned int hw_nr = 0;
-  if( !(hw_nr = isSupportedHardware(s)) )
-    return(0);
-  if(hw_nr == SINEGEN)
-    return(1);
-
-  return(0);
-}
-
-//-----------------------------------------------------------------------------
-
-bool Constants::isUSBamp(const string& s)
-{
-  unsigned int hw_nr = 0;
-  if( !(hw_nr = isSupportedHardware(s)) )
-    return(0);
-  if(hw_nr == USBAMP)
-    return(1);
-
-  return(0);
-}
-
-//-----------------------------------------------------------------------------
-
-bool Constants::isMobilab(const string& s)
-{
-  unsigned int hw_nr = 0;
-  if( !(hw_nr = isSupportedHardware(s)) )
-    return(0);
-  if(hw_nr == MOBILAB)
-    return(1);
-
-  return(0);
-}
-
-//-----------------------------------------------------------------------------
-
-bool Constants::isJoystick(const string& s)
-{
-  unsigned int hw_nr = 0;
-  if( !(hw_nr = isSupportedHardware(s)) )
-    return(0);
-  if(hw_nr == JOYSTICK)
-    return(1);
-
-  return(0);
-}
-
-//-----------------------------------------------------------------------------
-
-bool Constants::isMouse(const string& s)
-{
-  unsigned int hw_nr = 0;
-  if( !(hw_nr = isSupportedHardware(s)) )
-    return(0);
-  if(hw_nr == MOUSE)
-    return(1);
-
-  return(0);
-}
-
 
 //-----------------------------------------------------------------------------
 

@@ -27,6 +27,7 @@
 #include <boost/cstdint.hpp>
 
 #include "hw_thread.h"
+#include "hardware/hw_thread_builder.h"
 
 namespace tobiss
 {
@@ -161,6 +162,7 @@ class SineGenerator : public HWThread
     */
     SampleBlock<double> buffer_;
 
+    static const HWThreadBuilderTemplateRegistrator<SineGenerator> factory_registrator_;
 };
 
 } // Namespace tobiss

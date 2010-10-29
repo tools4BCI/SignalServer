@@ -5,18 +5,6 @@
 #include "hardware/hw_access.h"
 #include "hardware/hw_thread_factory.h"
 #include "hardware/event_listener.h"
-#include "hardware/jstick.h"
-#include "hardware/g_mobilab.h"
-
-#ifdef __linux__
-  #include "hardware/mouse_linux.h"
-#endif
-
-
-#ifdef WIN32
-  #include "hardware/mouse_.h"
-  #include "hardware/usbamp.h"
-#endif
 
 #ifdef TIMING_TEST
   #include "LptTools/LptTools.h"
@@ -44,19 +32,6 @@ HWAccess::HWAccess(boost::asio::io_service& io, XMLParser& parser)
       HWThread* thread = HWThreadFactory::instance().createHWThread (parser.getHardwareElementName(n), io, parser, parser.getHardwareElement(n));
       if (thread)
         slaves_.push_back (thread);
-
-  #ifdef WIN32
-    if( cst_.isUSBamp(parser.getHardwareElementName(n)) )
-      slaves_.push_back(new USBamp(parser, parser.getHardwareElement(n)));
-  #endif
-
-    if( cst_.isMobilab(parser.getHardwareElementName(n)) )
-      slaves_.push_back(new GMobilab(io, parser, parser.getHardwareElement(n)));
-
-    if( cst_.isJoystick(parser.getHardwareElementName(n)) )
-      slaves_.push_back(new JStick(parser, parser.getHardwareElement(n)));
-    if( cst_.isMouse(parser.getHardwareElementName(n)) )
-      slaves_.push_back(new Mouse(parser, parser.getHardwareElement(n)));
   }
 
 

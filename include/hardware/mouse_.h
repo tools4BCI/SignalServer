@@ -20,6 +20,7 @@
 #include <cmath>
 
 #include "hw_thread.h"
+#include "hw_thread_builder.h"
 #include "extern\lib\libusb\win\usb.h"
 
 using namespace std;
@@ -101,6 +102,8 @@ class Mouse : public HWThread
       std::vector<boost::int16_t>  raw_data_;
 	  char async_data_[10];
 	  bool dirty_;
+
+	  static const HWThreadBuilderTemplateRegistratorWithoutIOService<Mouse> FACTORY_REGISTRATOR_;
   };
 
 

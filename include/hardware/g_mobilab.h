@@ -14,10 +14,10 @@
 
 #include "serial_port_base.h"
 #include "hardware/hw_thread.h"
+#include "hardware/hw_thread_builder.h"
 
 namespace tobiss
 {
-
 //-----------------------------------------------------------------------------
 
 /**
@@ -73,6 +73,7 @@ class GMobilab : private SerialPortBase, public HWThread
 
     boost::thread*  async_acqu_thread_;
 
+    static const HWThreadBuilderTemplateRegistrator<GMobilab> factory_registrator_;
 
 };
 
