@@ -19,7 +19,6 @@
 #include <boost/cstdint.hpp>
 
 #include "defines.h"
-#include "ticpp/ticpp.h"
 
 namespace tobiss
 {
@@ -56,56 +55,6 @@ namespace tobiss
       *
       */
       virtual ~Constants()  { }
-
-      /**
-      * @brief Checks, if the given std::string represents supported hardware.
-      * @param[in] s std::string to be checked.
-      * @return Unique identifier representing the given std::string.
-      * @throw ticpp::Exception thrown if std::string representing hardware not found!
-      *
-      */
-      int isSupportedHardware(const std::string& s);
-
-      /**
-      * @brief Checks, if the given std::string represents the Sine Generator.
-      * @param[in] s std::string to be checked.
-      * @return Bool
-      *
-      */
-      bool isSineGen(const std::string& s);
-
-      /**
-      * @brief Checks, if the given std::string represents the g.tec g.USBamp.
-      * @param[in] s std::string to be checked.
-      * @return Bool
-      *
-      */
-      bool isUSBamp(const std::string& s);
-
-      /**
-      * @brief Checks, if the given std::string represents the g.tec g.Mobilab+.
-      * @param[in] s std::string to be checked.
-      * @return Bool
-      *
-      */
-      bool isMobilab(const std::string& s);
-
-      /**
-      * @brief Checks, if the given std::string represents a Joystick device.
-      * @param[in] s std::string to be checked.
-      * @return Bool
-      *
-      */
-      bool isJoystick(const std::string& s);
-
-      /**
-
-      * @brief Checks, if the given string represents a Mouse device.
-      * @param[in] s String to be checked.
-      * @return Bool
-      *
-      */
-      bool isMouse(const std::string& s);
 
       /**
       * @brief Maps given strings "on" or "off" to boolean values 0 or 1.
@@ -290,12 +239,6 @@ namespace tobiss
           static const std::string hw_mobilab_multi;
 
     private:
-      /**
-      * @brief Mapping std::strings, representing hardware, and identifiers together.
-      *
-      */
-      std::map<std::string, unsigned int> supported_hardware;
-
       /**
       * @brief Mapping std::strings, representing signaltypes, and identifiers together.
       *

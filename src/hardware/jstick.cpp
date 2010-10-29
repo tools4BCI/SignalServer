@@ -8,8 +8,10 @@ namespace tobiss
 
 set<boost::uint16_t> JStick::used_ids_;
 
-//-----------------------------------------------------------------------------
 
+const HWThreadBuilderTemplateRegistratorWithoutIOService<JStick> JStick::FACTORY_REGISTRATOR_ ("jstick", "joystick", "joycable");
+
+//-----------------------------------------------------------------------------
 JStick::JStick(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
   : HWThread(parser)
 {

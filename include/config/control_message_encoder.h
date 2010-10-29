@@ -15,6 +15,9 @@
 // boost
 #include <boost/cstdint.hpp>
 
+// local external
+#include "ticpp/tinyxml.h"
+
 // local
 #include "config/control_messages.h"
 

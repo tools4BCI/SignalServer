@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="signalserver"
-	ProjectGUID="{0A4BE492-F0C7-4FA0-9997-35AD041A7519}"
+	Name="signalserver_wo_usbamp"
+	ProjectGUID="{70036793-F661-4642-9684-77DECCE5025A}"
 	RootNamespace="signalserver_backup"
 	Keyword="Qt4VSv1.0"
 	TargetFrameworkVersion="0"
@@ -151,7 +151,7 @@
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories=".;include;extern\include;&quot;extern\include\SDL-1.2.14-VC8&quot;;C:\Programme\boost\boost_1_42;&quot;..\..\Qt\2009.05\qt\mkspecs\win32-msvc2008&quot;"
+				AdditionalIncludeDirectories=".;include;extern\include;&quot;extern\include\SDL-1.2.14-VC8&quot;"
 				PreprocessorDefinitions="WIN32;TIXML_USE_TICPP;_WIN32_WINNT=0x0501;_CONSOLE"
 				GeneratePreprocessedFile="0"
 				BasicRuntimeChecks="0"
@@ -179,12 +179,13 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				LinkLibraryDependencies="true"
+				UseUnicodeResponseFiles="false"
 				AdditionalOptions="/NODEFAULTLIB:MSVCRT &quot;/MANIFESTDEPENDENCY:type=&apos;win32&apos; name=&apos;Microsoft.Windows.Common-Controls&apos; version=&apos;6.0.0.0&apos; publicKeyToken=&apos;6595b64144ccf1df&apos; language=&apos;*&apos; processorArchitecture=&apos;*&apos;&quot;"
-				AdditionalDependencies="ticpp.lib SDL.lib SDLmain.lib gUSBamp.lib libusb0.lib"
-				OutputFile="bin\signalserver.exe"
+				AdditionalDependencies="ticpp.lib SDL.lib SDLmain.lib libusb0.lib tia.lib"
+				OutputFile="bin\signalserver_wo_usbamp.exe"
 				LinkIncremental="0"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="extern\lib\g.usbamp\win;extern\lib\sdl\win;extern\lib\ticpp\win;extern\lib\libgdf\win;extern\lib\libusb\win"
+				AdditionalLibraryDirectories="extern\lib\sdl\win;extern\lib\ticpp\win;extern\lib\libgdf\win;extern\lib\libusb\win;lib"
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="true"
@@ -270,10 +271,6 @@
 					RelativePath=".\src\hardware\sine_generator.cpp"
 					>
 				</File>
-				<File
-					RelativePath=".\src\hardware\usbamp.cpp"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="sampleblock"
@@ -350,10 +347,6 @@
 				</File>
 				<File
 					RelativePath=".\include\hardware\sine_generator.h"
-					>
-				</File>
-				<File
-					RelativePath=".\include\hardware\usbamp.h"
 					>
 				</File>
 			</Filter>
