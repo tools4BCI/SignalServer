@@ -72,6 +72,7 @@ win32:SOURCES += extern/include/LptTools/LptTools_.cpp
 # -----------------------------------------------------------------------
 unix {
     LIBS += -lboost_thread \
+        -lboost_signals \
         -lboost_system \
         -lSDL
     HARDWARE_PLATFORM = $$system(uname -m)
