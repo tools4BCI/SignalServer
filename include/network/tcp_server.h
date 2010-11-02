@@ -47,6 +47,8 @@ public:
     return pointer(new TCPConnection(io_service));
   }
 
+  static std::string endpointToString(const boost::asio::ip::tcp::endpoint& endpoint);
+
 public:
   /**
    * @brief The socket associated with this connection

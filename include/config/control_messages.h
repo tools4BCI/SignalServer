@@ -46,6 +46,7 @@ class ControlMsg
     virtual ~ControlMsg(){}
     ///
     MsgType msgType() const { return msg_type_; }
+
     ///
     void setSender(const std::string& sender) { sender_ = sender; }
     ///

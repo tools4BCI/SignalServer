@@ -81,6 +81,7 @@ LIBS += -L./lib -ltia
 unix {
     LIBS += -lboost_thread \
         -lboost_system \
+        -lboost_system \
         -lSDL \
         -Lextern/lib/libusb/linux -lusb-1.0
     HARDWARE_PLATFORM = $$system(uname -m)
