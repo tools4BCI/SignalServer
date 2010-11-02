@@ -133,6 +133,7 @@ void ControlConnectionServer::createSignalInfo()
 
   cout << endl;
   cout << "Sent Signal Types: (ordered)" << endl;
+
   for (vector<uint32_t>::size_type index = 0; index < sig_types.size(); ++index)
   {
     Signal signal;
@@ -183,14 +184,38 @@ void ControlConnectionServer::handleAccept(const TCPConnection::pointer& new_con
     return;
   }
 
-  ControlConnection::pointer connection = ControlConnection::create(io_service_, *this, new_connection);
-  connection->start();
+  int local_port = new_connection->socket().local_endpoint().port();
+
+  ControlConnection::ConnectionID id = make_pair(local_port, TCPConnection::endpointToString(
+                              new_connection->socket().remote_endpoint()));
+
+  ControlConnection::pointer connection = ControlConnection::create(io_service_, id,
+                                                                    *this, new_connection);
+
+  cout << "Client @" << id.second << " has connected." <<  endl;
 
   // lock the connection list
   boost::unique_lock<boost::mutex> lock(mutex_);
-  connections_.push_back(connection);
+
+  CtrlConnHandlers::iterator it = connections_.insert(make_pair(id, connection)).first;
+
+  cout << "# Connected clients: " << connections_.size() << endl;
+
+  connection->start();
 
   startAccept();
+}
+
+//-----------------------------------------------------------------------------
+
+void ControlConnectionServer::clientHasDisconnected(const ControlConnection::ConnectionID& id)
+{
+  boost::unique_lock<boost::mutex> lock(mutex_);
+
+  cout << "Connection to client @" << id.second << " has been closed." << endl;
+  connections_.erase(id);
+
+  cout << "# Connected clients: " << connections_.size() << endl;
 }
 
 //-----------------------------------------------------------------------------

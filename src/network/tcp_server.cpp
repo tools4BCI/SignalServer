@@ -21,6 +21,17 @@ using boost::uint32_t;
 
 //-----------------------------------------------------------------------------
 
+std::string TCPConnection::endpointToString(const boost::asio::ip::tcp::endpoint& endpoint)
+{
+  std::ostringstream ss;
+  ss << endpoint.address().to_string();
+  ss << ":";
+  ss << endpoint.port();
+  return ss.str();
+}
+
+//-----------------------------------------------------------------------------
+
 TCPServer::TCPServer(boost::asio::io_service& io_service)
   : io_service_(io_service),
     acceptor_(io_service)

@@ -35,14 +35,16 @@ using boost::uint32_t;
 //-----------------------------------------------------------------------------
 
 ControlConnection::ControlConnection(boost::asio::io_service& io_service,
+    const ConnectionID& id,
     ControlConnectionServer& ctl_conn_server,
     const TCPConnection::pointer& tcp_conn)
       : io_service_(io_service),
+      connection_id_(id),
       ctl_conn_server_(ctl_conn_server),
       tcp_connection_(tcp_conn),
       msg_encoder_(0),
       msg_decoder_(0),
-      transmission_started_(false),
+      state_(State_Connected),
       connection_type_(GetDataConnectionMsg::Tcp)
 {
   input_buffer_   = new boost::asio::streambuf;
@@ -82,9 +84,13 @@ void ControlConnection::handle_read(const boost::system::error_code& error,
 {
   if (error)
   {
-    // TODO:
     if (error != boost::asio::error::eof)
-      cerr << error.message() << endl;
+    {
+      cerr << "ControlConnection::handle_read [Client @" << connection_id_.second << "]: "
+           << "closing connection -- Error: "
+           << "--> " << error.message() << endl;
+    }
+
     close();
     return;
   }
@@ -97,7 +103,6 @@ void ControlConnection::handle_read(const boost::system::error_code& error,
 
   boost::shared_ptr<ControlMsg> msg(msg_decoder_->decodeMsg());
 
-  // TODO: do proper error handling
   if (msg != 0)
   {
     switch (msg->msgType())
@@ -110,14 +115,36 @@ void ControlConnection::handle_read(const boost::system::error_code& error,
 
       case ControlMsg::GetConfig:
       {
-        cout << "Got Config Request" << endl;
+        cout << "Client @" << connection_id_.second
+             << " requests config" << endl;
+
         sendMsg(*config_msg_);
+
         break;
       }
 
       case ControlMsg::GetDataConnection:
       {
-        cout << "Got GetDataConnection Request" << endl;
+        #ifdef DEBUG
+          cout << "ControlConnection::handle_read [Client @" << connection_id_.second << "]: "
+               << "Got Request 'GetDataConnection'" << endl;
+        #endif
+
+        if (state_ == State_TransmissionStarted)
+        {
+          cout << "ControlConnection::handle_read [Client @" << connection_id_.second << "]: "
+               << "request 'GetDataConnection' failed - "
+                  "not allowed while transmission is running" << endl;
+          sendMsg(ReplyMsg::error());
+          break;
+        }
+
+        if (connection_type_ == GetDataConnectionMsg::Tcp &&
+            (state_ == State_AllocatedDataConnection ||
+             state_ == State_TransmissionStopped       ))
+        {
+          ctl_conn_server_.tcpDataServer()->removeConnection(tcp_data_server_local_endpoint_);
+        }
 
         boost::shared_ptr<GetDataConnectionMsg> get_data_conn_msg =
             boost::static_pointer_cast<GetDataConnectionMsg>(msg);
@@ -130,29 +157,60 @@ void ControlConnection::handle_read(const boost::system::error_code& error,
         {
           case GetDataConnectionMsg::Udp:
           {
-            boost::asio::ip::udp::endpoint endpoint = ctl_conn_server_.udpDataServer()->destination();
+            boost::asio::ip::udp::endpoint endpoint =
+                ctl_conn_server_.udpDataServer()->destination();
+
             data_conn_msg.setPort(endpoint.port());
+
+            cout << "Client @" << connection_id_.second
+                 << " requests UDP data broadcast - allocating port "
+                 << endpoint.port() << endl;
             break;
           }
           case GetDataConnectionMsg::Tcp:
           {
-            // FIXME: may have already been requested
-            tcp_data_server_endpoint_ = ctl_conn_server_.tcpDataServer()->addConnection();
-            data_conn_msg.setPort(tcp_data_server_endpoint_.port());
+            tcp_data_server_local_endpoint_ = ctl_conn_server_.tcpDataServer()->addConnection();
+
+            data_conn_msg.setPort(tcp_data_server_local_endpoint_.port());
+
+            cout << "Client @" << connection_id_.second
+                 << " requests TCP data connection - allocating port "
+                 << tcp_data_server_local_endpoint_.port() << endl;
+
             break;
           }
         }
+
+        if (state_ == State_Connected)
+        {
+          state_ = State_AllocatedDataConnection;
+        }
+
         sendMsg(data_conn_msg);
+
         break;
       }
 
       case ControlMsg::StartTransmission:
       {
-        cout << "Got Start Transmission Request" << endl;
+        cout << "Client @" << connection_id_.second
+             << " requests data transmission start." << endl;
 
-        if (transmission_started_)
+        if (state_ == State_Connected)
         {
-          cerr << "Transmission already started" << endl;
+          cout << "ControlConnection::handle_read [Client @" << connection_id_.second << "]: "
+               << "request 'StartTransmission' failed - cannot start transmission before "
+               << "data connection has been requested." << endl;
+
+          sendMsg(ReplyMsg::error());
+          break;
+        }
+
+        if (state_ == State_TransmissionStarted)
+        {
+          cout << "ControlConnection::handle_read [Client @" << connection_id_.second << "]: "
+               << "request 'StartTransmission' failed - transmission is already running." << endl;
+
           sendMsg(ReplyMsg::error());
           break;
         }
@@ -166,25 +224,39 @@ void ControlConnection::handle_read(const boost::system::error_code& error,
           }
           case GetDataConnectionMsg::Tcp:
           {
-            ctl_conn_server_.tcpDataServer()->enableTransmission(tcp_data_server_endpoint_, true);
+            ctl_conn_server_.tcpDataServer()->enableTransmission(
+                tcp_data_server_local_endpoint_, true);
             break;
           }
         }
 
         sendMsg(ReplyMsg::ok());
 
-        transmission_started_ = true;
+        state_ = State_TransmissionStarted;
 
         break;
       }
 
       case ControlMsg::StopTransmission:
       {
-        cout << "Got Stop Transmission Request" << endl;
+        cout << "Client @" << connection_id_.second
+             << " requests data transmission stop." << endl;
 
-        if (!transmission_started_)
+        if (state_ == State_Connected)
         {
-          cerr << "Cannot stop transmission - no transmission running." << endl;
+          cout << "ControlConnection::handle_read [Client @" << connection_id_.second << "]: "
+               << "request 'StopTransmission' failed - cannot stop transmission if  "
+               << "data connection has never been requested." << endl;
+
+          sendMsg(ReplyMsg::error());
+          break;
+        }
+
+        if (state_ == State_TransmissionStopped)
+        {
+          cout << "ControlConnection::handle_read [Client @" << connection_id_.second << "]: "
+               << "request 'StopTransmission' failed - transmission is not running."
+               << endl;
           sendMsg(ReplyMsg::error());
           break;
         }
@@ -198,19 +270,24 @@ void ControlConnection::handle_read(const boost::system::error_code& error,
           }
           case GetDataConnectionMsg::Tcp:
           {
-            ctl_conn_server_.tcpDataServer()->enableTransmission(tcp_data_server_endpoint_, false);
+            ctl_conn_server_.tcpDataServer()->enableTransmission(
+                tcp_data_server_local_endpoint_, false);
             break;
           }
         }
 
         sendMsg(ReplyMsg::ok());
-        transmission_started_ = false;
+
+        state_ = State_TransmissionStopped;
+
         break;
       }
 
       default:
       {
-        //TODO: logging
+        cout << "ControlConnection::handle_read [Client @" << connection_id_.second << "]: "
+             << "unsupported request type (" << msg->msgType() << ") - ignoring request."
+             << endl;
         break;
       }
     }
@@ -227,8 +304,26 @@ void ControlConnection::handle_read(const boost::system::error_code& error,
 
 void ControlConnection::sendMsg(const ControlMsg& msg)
 {
+#ifdef DEBUG
+  cout << "ControlConnection::sendMsg [Client @" << connection_id_.second << "]" << endl;
+#endif
+
   std::ostream ostream(output_buffer_);
   msg.writeMsg(*msg_encoder_, ostream);
+
+#ifdef DEBUG
+  {
+    cout << "ControlConnection::sendMsg [Client @" << connection_id_.second << "]" << endl;
+    cout << "-----------" << endl;
+
+    std::stringstream sstream;
+    msg.writeMsg(*msg_encoder_, sstream);
+
+    cout << sstream.str() << endl;
+
+    cout << "-----------" << endl;
+  }
+#endif
 
   boost::asio::async_write(tcp_connection_->socket(), output_buffer_->data(),
       boost::bind(&ControlConnection::handle_write, shared_from_this(),
@@ -239,7 +334,10 @@ void ControlConnection::sendMsg(const ControlMsg& msg)
 
 void ControlConnection::close()
 {
-  cerr << "Closing control connection" << endl;
+
+#ifdef DEBUG
+  cout << "ControlConnection::close [Client @" << connection_id_.second << "]" << endl;
+#endif
 
   // Initiate graceful connection closure.
   boost::system::error_code ignored_ec;
@@ -251,38 +349,52 @@ void ControlConnection::close()
   {
     case GetDataConnectionMsg::Udp:
     {
-      if (transmission_started_) ctl_conn_server_.udpDataServer()->decClientCount();
+      if (state_ == State_TransmissionStarted) ctl_conn_server_.udpDataServer()->decClientCount();
       break;
     }
     case GetDataConnectionMsg::Tcp:
     {
-      ctl_conn_server_.tcpDataServer()->removeConnection(tcp_data_server_endpoint_);
+      if (state_ == State_AllocatedDataConnection ||
+          state_ == State_TransmissionStarted     ||
+          state_ == State_TransmissionStopped)
+      {
+        ctl_conn_server_.tcpDataServer()->removeConnection(tcp_data_server_local_endpoint_);
+      }
+
       break;
     }
   }
+
+  state_ = State_ConnectionClosed;
+
+  ctl_conn_server_.clientHasDisconnected(connection_id_);
 }
 
 //-----------------------------------------------------------------------------
 
-void ControlConnection::handle_write(const boost::system::error_code& e, std::size_t bytes_transferred)
+void ControlConnection::handle_write(const boost::system::error_code& error,
+                                     std::size_t bytes_transferred)
 {
-  // TODO: do proper error handling
+#ifdef DEBUG
+  cout << "ControlConnection::handle_write [Client @" << connection_id_.second << "]" << endl;
+#endif
 
-  if (e)
+  if (error)
   {
-    // TODO: logging ...
-    cerr << "Error: " << e.message() << endl;
+    cerr << "ControlConnection::handle_write [Client@" << connection_id_.second << "]: "
+         << "error during write - closing connection."
+         << "--> " << error.message() << endl;
     close();
+
+    // No new asynchronous operations are started. This means that all shared_ptr
+    // references to the connection object will disappear and the object will be
+    // destroyed automatically after this handler returns. The connection class's
+    // destructor closes the socket.
     return;
   }
 
   // Consume whole input sequence
   output_buffer_->consume(bytes_transferred);
-
-  // No new asynchronous operations are started. This means that all shared_ptr
-  // references to the connection object will disappear and the object will be
-  // destroyed automatically after this handler returns. The connection class's
-  // destructor closes the socket.
 }
 
 //-----------------------------------------------------------------------------
