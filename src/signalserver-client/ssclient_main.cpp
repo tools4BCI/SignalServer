@@ -251,30 +251,33 @@ int main(int argc, const char* argv[])
 
     if(command == "q")
     {
-      client.stopReceiving();
-      reader.stop();
-      cond.notify_all();
-
-      reader_thread.join();
-      if (client.receiving())
-      {
-        cerr << "Cannot Stop Receiving!" << endl;
-      }
       break;
     }
+
     if (command == "config")
     {
-      client.requestConfig();
+      try {
+        client.requestConfig();
+      }
+      catch (std::exception& e)
+      {
+        cerr << "Requesting config failed -- Error:"
+             << "--> " << e.what() << endl;
+      }
     }
     else if (command == "starttcp" || command == "startudp")
     {
       bool udp =  command == "startudp";
-      cout << "Start Receiving ..." << endl;
-      client.startReceiving(udp);
 
-      if (!client.receiving())
+      cout << "Start Receiving ..." << endl;
+
+      try {
+        client.startReceiving(udp);
+      }
+      catch (std::exception& e)
       {
-        cerr << "Start Receiving failed" << endl;
+        cerr << "Start Receiving failed -- Error:" << endl
+             << "--> " << e.what() << endl;
       }
 
       cond.notify_one();
@@ -282,11 +285,16 @@ int main(int argc, const char* argv[])
     else if (command == "stop")
     {
       cout << "Stop Receiving ..." << endl;
-      client.stopReceiving();
 
-      if (client.receiving())
+      boost::unique_lock<boost::mutex> lock(mutex);
+
+      try {
+        client.stopReceiving();
+      }
+      catch (std::exception& e)
       {
-        cerr << "Cannot Stop Receiving!" << endl;
+        cerr << "Stop Receiving failed -- Error:" << endl
+             << "--> " << e.what() << endl;
       }
     }
     else if (command == "help")
@@ -304,6 +312,20 @@ int main(int argc, const char* argv[])
 
     cond.notify_one();
     cout << endl << ">>";
+  }
+
+  cout << "Terminating ..." << endl;
+  reader.stop();
+  cond.notify_all();
+  reader_thread.join();
+
+  try {
+    client.stopReceiving();
+  }
+  catch (std::exception& e)
+  {
+    cerr << "Stop Receiving failed -- Error:"
+         << "--> " << e.what() << endl;
   }
 
  return(0);

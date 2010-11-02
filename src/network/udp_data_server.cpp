@@ -63,8 +63,8 @@ void UDPDataServer::sendDataPacket(DataPacket& packet)
   assert(data != 0);
   assert(size != 0);
   #ifdef DEBUG
-    std::cout << "UDP - Sending data packet (size " << size << ") to "
-              << target_.address().to_string() << ":" << target_.port() << std::endl;
+    cout << "UDPDataServer::sendDataPacket: broadcasting data packet at "
+         << target_.address().to_string() << ":" << target_.port() << endl;
   #endif
   socket_.async_send_to(boost::asio::buffer(data, size),
                         target_,
@@ -77,11 +77,12 @@ void UDPDataServer::sendDataPacket(DataPacket& packet)
 //-----------------------------------------------------------------------------
 
 void UDPDataServer::handleWrite(const boost::system::error_code& error,
-    std::size_t /*bytes_transferred*/)
+    size_t /*bytes_transferred*/)
 {
   if (error)
   {
-    std::cerr << "Couldn't send packet via UDP" << endl;
+    cerr << "UDPDataServer::handleWrite: broadcasting data packet failed -- Error:" << endl;
+    cerr << "--> " << error.message() << endl;
     return;
   }
 }
