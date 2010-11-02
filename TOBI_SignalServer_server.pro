@@ -81,8 +81,9 @@ LIBS += -L./lib -ltia
 unix {
     LIBS += -lboost_thread \
         -lboost_system \
-        -lSDL \ 
-        -L/usr/lib64/ -lusb-1.0
+        -lboost_system \
+        -lSDL \
+        -Lextern/lib/libusb/linux -lusb-1.0
     HARDWARE_PLATFORM = $$system(uname -m)
     contains( HARDWARE_PLATFORM, x86_64 )::{
         message(Building 64 bit )
