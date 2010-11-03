@@ -3,6 +3,8 @@
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "TOBI SignalServer"
 !define PRODUCT_VERSION "0.1"
+!define PRODUCT_PUBLISHER "Institute for Knowledge Discovery, TU Graz, Austria"
+!define PRODUCT_WEB_SITE "http://www.tobi-project.org"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\signalserver.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
@@ -17,6 +19,8 @@
 
 ; Welcome page
 !insertmacro MUI_PAGE_WELCOME
+; License page
+!insertmacro MUI_PAGE_LICENSE "licence\gpl.txt"
 ; Directory page
 !insertmacro MUI_PAGE_DIRECTORY
 ; Instfiles page
@@ -49,6 +53,8 @@ Section "Hauptgruppe" SEC01
   File "bin\SDL.dll"
   File "bin\libusb0.dll"
   File "bin\server_config_sample.xml"
+  File "bin\server_config.xml"
+  File "licence\gpl.txt"
 SectionEnd
 
 Section -AdditionalIcons
@@ -78,7 +84,9 @@ FunctionEnd
 Section Uninstall
   Delete "$INSTDIR\uninst.exe"
   Delete "$INSTDIR\server_config_sample.xml"
+  Delete "$INSTDIR\server_config.xml"
   Delete "$INSTDIR\libusb0.dll"
+  Delete "$INSTDIR\gpl.txt"
   Delete "$INSTDIR\SDL.dll"
   Delete "$INSTDIR\signalserver.exe"
 
