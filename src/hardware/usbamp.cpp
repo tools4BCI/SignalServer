@@ -50,6 +50,7 @@ USBamp::USBamp(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
     sample_count_(0), error_count_(0) ,error_code_(0), expected_values_(0),
     first_run_(1), current_overlapped_(0)
 {
+	cout << "Driver Version" << usb_amp_.getDriverVersion () << endl;
   #ifdef DEBUG
     cout << "USBamp: Constructor" << endl;
   #endif
@@ -275,7 +276,7 @@ inline void USBamp::callGT_GetData()
     // return;
   // }
 
-  if( !GT_GetData(h_, driver_buffer_[current_overlapped_], driver_buffer_size_, &ov_[current_overlapped_]))
+  if( !usb_amp_.getData(h_, driver_buffer_[current_overlapped_], driver_buffer_size_, &ov_[current_overlapped_]))
     throw(std::runtime_error("USBamp::getSyncData -- Error getting data!"));
 
   // GT_GetData(h_, driver_buffer_[current_overlapped_], driver_buffer_size_, &ov_[current_overlapped_]);
@@ -286,7 +287,7 @@ inline void USBamp::callGT_GetData()
 
 void USBamp::callGT_ResetTransfer()
 {
-  if( !GT_ResetTransfer(h_))
+  if( !usb_amp_.resetTransfer (h_))
     throw(std::runtime_error("USBamp::run -- Error resetting transfer!"));
 
   for(unsigned int n = 0; n < ov_.size(); n++)
@@ -297,7 +298,7 @@ void USBamp::callGT_ResetTransfer()
 
 inline void USBamp::callGT_Start()
 {
-  if( !GT_Start(h_))
+  if( !usb_amp_.start (h_))
     throw(std::runtime_error("USBamp::run -- Error starting g.USBamp!"));
 
 }
@@ -316,7 +317,7 @@ void USBamp::fillSyncBuffer()
   if(timeout_ == WAIT_TIMEOUT)
   {
     cerr << "Timeout!" << endl;
-    if( !GT_ResetTransfer(h_))
+	if( !usb_amp_.resetTransfer(h_))
       throw(std::runtime_error("USBamp::getSyncData -- Error resetting transfer!"));
     return;
   }
@@ -360,7 +361,7 @@ void USBamp::check4USBampError()
   error_code_ = 0;
   CHAR* error_ptr = error_msg_;
 
-  if( !GT_GetLastError(&error_code_, error_ptr))
+  if( !usb_amp_.getLastError(&error_code_, error_ptr))
     throw(std::runtime_error("USBamp::getSyncData -- Error getting last error message!"));
 
   if(error_code_)
@@ -386,7 +387,7 @@ void USBamp::getHandles()
   serial = m_.find(cst_.hardware_serial)->second;
 
   HANDLE h_tmp;
-  h_tmp = GT_OpenDeviceEx( const_cast<LPSTR>(  m_.find(cst_.hardware_serial)->second.c_str() ));
+  h_tmp = usb_amp_.openDeviceEx( const_cast<LPSTR>(  m_.find(cst_.hardware_serial)->second.c_str() ));
   if(h_tmp != 0)
   {
     h_ = (h_tmp);
@@ -414,16 +415,16 @@ void USBamp::initFilterPtrs()
     cout << "USBamp: initFilterPtrs" << endl;
   #endif
 
-  if( !GT_GetNumberOfFilter(&nr_of_bp_filters_))
+	if( !usb_amp_.getNumberOfFilter(&nr_of_bp_filters_))
     throw(std::runtime_error("USBamp::initFilterPtrs -- Error getting number of filter!"));
   bp_filters_ = new FILT[nr_of_bp_filters_];
-  if( !GT_GetFilterSpec(bp_filters_))
+  if( !usb_amp_.getFilterSpec(bp_filters_))
     throw(std::runtime_error("USBamp::initFilterPtrs -- Error getting filter specifications!"));
 
-  if( !GT_GetNumberOfNotch(&nr_of_notch_filters_))
+  if( !usb_amp_.getNumberOfNotch(&nr_of_notch_filters_))
     throw(std::runtime_error("USBamp::initFilterPtrs -- Error getting number of notch!"));
   notch_filters_ = new FILT[nr_of_notch_filters_];
-  if( !GT_GetNotchSpec(notch_filters_))
+  if( !usb_amp_.getNotchSpec(notch_filters_))
     throw(std::runtime_error("USBamp::initFilterPtrs -- Error getting notch specifications!"));
 }
 
@@ -486,13 +487,13 @@ void USBamp::stop()
   boost::unique_lock<boost::shared_mutex> lock(rw_);
   running_ = 0;
 
-  if( !GT_Stop(h_))
+  if( !usb_amp_.stop (h_))
     throw(std::runtime_error("USBamp::stop -- Error stopping the device!"));
   if(!external_sync_)
     for(uint32_t n = 0; n < slave_devices_.size(); n++)
       slave_devices_[n]->stop();
 
-  if( !GT_CloseDevice(&h_))
+  if( !usb_amp_.closeDevice (&h_))
     throw(std::runtime_error("USBamp::stop -- Error closing the device!"));
 
   h_ = 0;
@@ -1382,7 +1383,7 @@ void USBamp::setUSBampChannels()
   for(unsigned int n = 0; n < channels.size(); n++)
     uc_channels[n] = boost::numeric_cast<UCHAR>( channels[n] );
 
-  if( !GT_SetChannels(h_, uc_channels, channels.size()))
+  if( !usb_amp_.setChannels (h_, uc_channels, channels.size()))
     throw(std::runtime_error("USBamp::setUSBampChannels -- Error setting channels!"));
 
   delete[] uc_channels;
@@ -1409,7 +1410,7 @@ void USBamp::setUSBampFilter()
     if(check)
     {
       if(filter_id_[count] > 0)
-        check = GT_SetBandPass(h_, boost::numeric_cast<UCHAR>((*it).first)   , filter_id_[count]);
+		  check = usb_amp_.setBandPass (h_, boost::numeric_cast<UCHAR>((*it).first)   , filter_id_[count]);
       else
         cout << "Filter for channel " << (*it).first << " NOT set!" << endl;
 
@@ -1443,7 +1444,7 @@ void USBamp::setUSBampNotch()
     if(check)
     {
       if(notch_id_[count] > 0)
-        check = GT_SetNotch(h_, boost::numeric_cast<UCHAR>((*it).first), notch_id_[count]);
+		  check = usb_amp_.setNotch (h_, boost::numeric_cast<UCHAR>((*it).first), notch_id_[count]);
       else
         cout << "Notch for channel " << (*it).first << " NOT set!" << endl;
       count++;
@@ -1482,36 +1483,36 @@ void USBamp::initUSBamp()
     cout << "USBamp: initUSBamp" << endl;
   #endif
 
-  if( !GT_SetMode(h_, M_NORMAL) )
+  if( !usb_amp_.setMode (h_, M_NORMAL) )
     throw(std::runtime_error("USBamp::initUSBamp -- Error setting mode!"));
 
-  if( !GT_SetSampleRate(h_, boost::numeric_cast<WORD>(fs_) ))
+  if( !usb_amp_.setSampleRate(h_, boost::numeric_cast<WORD>(fs_) ))
     throw(std::runtime_error("USBamp::initUSBamp -- Error setting sampling rate!"));
 
-  if( !GT_SetBufferSize(h_, blocks_))
+  if( !usb_amp_.setBufferSize(h_, blocks_))
     throw(std::runtime_error("USBamp::initUSBamp -- Error setting buffer size!"));
 
   setUSBampChannels();
 
-  if( !GT_SetSlave(h_, external_sync_) )
+  if( !usb_amp_.setSlave (h_, external_sync_) )
     throw(std::runtime_error("USBamp::initUSBamp -- Error setting synchronization mode (master or slave)!"));
 
-  if( !GT_EnableTriggerLine(h_, trigger_line_))
+  if( !usb_amp_.enableTriggerLine(h_, trigger_line_))
     throw(std::runtime_error("USBamp::initUSBamp -- Error setting trigger line!"));
 
-  if( !GT_EnableSC(h_, enable_sc_) )
+  if( !usb_amp_.enableSC (h_, enable_sc_) )
     throw(std::runtime_error("USBamp::initUSBamp -- Error setting shortcut!"));
 
-  if( !GT_SetBipolar(h_, bipolar_channels_) )
+  if( !usb_amp_.setBipolar (h_, bipolar_channels_) )
     throw(std::runtime_error("USBamp::initUSBamp -- Error setting bipolar channels!"));
 
-  if( !GT_SetReference(h_, reference_) )
+  if( !usb_amp_.setReference (h_, reference_) )
     throw(std::runtime_error("USBamp::initUSBamp -- Error setting reference!"));
 
-  if( !GT_SetGround(h_, ground_) )
+  if( !usb_amp_.setGround (h_, ground_) )
     throw(std::runtime_error("USBamp::initUSBamp -- Error setting ground!"));
 
-  if( !GT_SetDRLChannel(h_, drl_channels_) )
+  if( !usb_amp_.setDRLChannel(h_, drl_channels_) )
     throw(std::runtime_error("USBamp::initUSBamp -- Error setting driven right leg channels!"));
 
   setUSBampFilter();
