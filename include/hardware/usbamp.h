@@ -22,7 +22,8 @@
 #include <boost/thread/shared_mutex.hpp>
 #include <windows.h>
 
-#include "extern/include/g.usbamp/gUSBamp.h"
+#include "gtec_usbamp_wrapper.h"
+//#include "extern/include/g.usbamp/gUSBamp.h"
 //#pragma comment(lib,"gUSBamp.lib")
 
 #include "hw_thread.h"
@@ -198,6 +199,7 @@ class USBamp : public HWThread
     std::string mode_;
 
     Constants cst_;
+	GTECUSBampWrapper usb_amp_;
 
 	static const HWThreadBuilderTemplateRegistratorWithoutIOService<USBamp> FACTORY_REGISTRATOR_;
 };

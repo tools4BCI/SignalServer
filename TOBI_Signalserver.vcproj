@@ -181,7 +181,7 @@
 				LinkLibraryDependencies="true"
 				UseUnicodeResponseFiles="false"
 				AdditionalOptions="/NODEFAULTLIB:MSVCRT &quot;/MANIFESTDEPENDENCY:type=&apos;win32&apos; name=&apos;Microsoft.Windows.Common-Controls&apos; version=&apos;6.0.0.0&apos; publicKeyToken=&apos;6595b64144ccf1df&apos; language=&apos;*&apos; processorArchitecture=&apos;*&apos;&quot;"
-				AdditionalDependencies="ticpp.lib SDL.lib SDLmain.lib gUSBamp.lib libusb0.lib"
+				AdditionalDependencies="ticpp.lib SDL.lib SDLmain.lib libusb0.lib"
 				OutputFile="bin\signalserver.exe"
 				LinkIncremental="0"
 				SuppressStartupBanner="true"
@@ -319,6 +319,10 @@
 				</File>
 				<File
 					RelativePath=".\include\hardware\g_mobilab.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\hardware\gtec_usbamp_wrapper.h"
 					>
 				</File>
 				<File
