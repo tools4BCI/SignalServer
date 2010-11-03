@@ -1,6 +1,24 @@
+/*
+    This file is part of the TOBI signal server.
+
+    The TOBI signal server is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    The TOBI signal server is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
+    Copyright 2010 Christian Breitwieser
+    Contact: c.breitwieser@tugraz.at
+*/
 
 #include "hardware/mouse_.h"
-
 
 namespace tobiss
 {
@@ -127,7 +145,7 @@ void Mouse::setDeviceSettings(ticpp::Iterator<ticpp::Element>const& father)
   if((pid_ & 0x1110) == 0)
   	strcat_s(hw_id_,"0");
   if((pid_ & 0x1111) == 0)
-  	strcat_s(hw_id_,"0");	
+  	strcat_s(hw_id_,"0");
   strcat_s(hw_id_,PID);
   strcat_s(hw_id_,"\"");
 
@@ -186,8 +204,8 @@ SampleBlock<double> Mouse::getAsyncData()
 	int dx = (int)async_data_[1];
 	int dy = (int)async_data_[2];
 	x += dx;
-	y += dy;			
-	
+	y += dy;
+
 	for(int n = 0; n < buttons_values_.size(); n++)
 	{
 		bool value = 0;
@@ -207,7 +225,7 @@ SampleBlock<double> Mouse::getAsyncData()
 		axes_values_[0]+=x;
 		axes_values_[1]+=y;
 	 }
-     
+
 	 if(!dirty)
 		return(empty_block_);
 
@@ -225,7 +243,7 @@ SampleBlock<double> Mouse::getAsyncData()
 		data_.setSamples(v);
 		return(data_);
     }
-    else 
+    else
         return(empty_block_);
 }
 
@@ -294,12 +312,12 @@ int Mouse::blockKernelDriver()
                      0,                              // Working directory
                      &siStartupInfo,
                      &piProcessInfo);
-    
+
     WaitForSingleObject(piProcessInfo.hProcess, 10000);
 
 	const char *inf_file = "libusb/mouse.inf";
 	int test = usb_install_driver_np(inf_file);
-    
+
 	struct usb_bus *UsbBus = NULL;
     struct usb_device *UsbDevice = NULL;
 
@@ -324,7 +342,7 @@ int Mouse::blockKernelDriver()
         if (usb_claim_interface (dev_handle_, 0) < 0) {
                 usb_close(dev_handle_);
                 return -3;
-        } 
+        }
 
 		cout<< "MouseDevice successfully connected: "<<endl;
 		return 0;
@@ -347,7 +365,7 @@ int Mouse::freeKernelDriver()
     //return 0;
 	usb_release_interface(dev_handle_,0);
 	usb_close(dev_handle_);
-    
+
 STARTUPINFO         siStartupInfo;
     PROCESS_INFORMATION piProcessInfo;
 
@@ -368,10 +386,10 @@ STARTUPINFO         siStartupInfo;
                      0,                              // Working directory
                      &siStartupInfo,
                      &piProcessInfo);
-    
+
     WaitForSingleObject(piProcessInfo.hProcess, 10000);
 	WinExec("\"F:\\WinDDK\\7600.16385.1\\tools\\devcon\\i386\\devcon.exe\" rescan", 1);
-	
+
 	cout<< "MouseDevice disconnected"<<endl;
 	return 0;
 }

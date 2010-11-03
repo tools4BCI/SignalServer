@@ -1,3 +1,23 @@
+/*
+    This file is part of the TOBI signal server.
+
+    The TOBI signal server is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    The TOBI signal server is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with the TOBI signal server.  If not, see <http://www.gnu.org/licenses/>.
+
+    Copyright 2010 Christoph Eibel
+    Contact: christoph.eibel@tugraz.at
+*/
+
 #ifndef GTEC_USBAMP_WRAPPER_H
 #define GTEC_USBAMP_WRAPPER_H
 
@@ -211,7 +231,7 @@ public:
 		setupDLLFunction (set_slave_ptr_, "GT_SetSlave");
 	}
 
-	~GTECUSBampWrapper () 
+	~GTECUSBampWrapper ()
 	{
 		FreeLibrary (dll_handle_);
 	}
@@ -310,7 +330,7 @@ public:
 	{
 		return calibrate_ptr_ (hDevice, Scaling);
 	}
-	
+
 	//------------
 	// filters
 	BOOL setScale (HANDLE hDevice, PSCALE Scaling)
@@ -399,7 +419,7 @@ private:
 			throw std::runtime_error (std::string ("gUSBamp.dll: missing function ").append (name));
 	}
 
-	HINSTANCE dll_handle_; 
+	HINSTANCE dll_handle_;
 	GT_GetDriverVersionType get_driver_verstion_ptr_;
 	GT_GetDataType get_data_ptr_;
 	GT_GetHWVersionType get_hw_version_ptr_;
