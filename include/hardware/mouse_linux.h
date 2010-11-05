@@ -35,9 +35,6 @@
 #include "hw_thread_builder.h"
 #include "extern/lib/libusb/linux/libusb-1.0.8/libusb/libusb.h"
 
-
-using namespace std;
-
 namespace tobiss
 {
 //-----------------------------------------------------------------------------
@@ -89,17 +86,17 @@ class Mouse : public HWThread
       //-----------------------------------------------
 
     private:
-    static set<boost::uint16_t> used_ids_;
+      static std::set<boost::uint16_t> used_ids_;
 
       boost::uint16_t id_;
 
       boost::uint16_t buttons_;
-      vector<bool> buttons_values_;
+      std::vector<bool> buttons_values_;
 
       boost::uint16_t axes_;
-      vector<boost::int16_t> axes_values_;
+      std::vector<boost::int16_t> axes_values_;
 
-      string name_;
+      std::string name_;
 
       bool user_interrupt_;
 

@@ -25,6 +25,14 @@
 namespace tobiss
 {
 
+using std::vector;
+using std::string;
+using std::pair;
+using std::cout;
+using std::endl;
+using std::make_pair;
+using std::set;
+
 set<boost::uint16_t> JStick::used_ids_;
 
 

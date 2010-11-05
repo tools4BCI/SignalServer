@@ -35,18 +35,13 @@
 
 #include <map>
 #include <vector>
-#include <stdexcept>
-#include <sstream>
 
 #include "boost/date_time/posix_time/posix_time.hpp"
-
 #include <boost/cstdint.hpp>
 
 #include "definitions/defines.h"
 #include "raw_mem.h"
 
-using std::vector;
-using std::map;
 
 namespace tobiss
 {
@@ -96,7 +91,7 @@ class DataPacket
     */
     virtual ~DataPacket()
     {
-      for(map<boost::uint32_t, RawMem*>::iterator it(raw_map_.begin());
+      for(std::map<boost::uint32_t, RawMem*>::iterator it(raw_map_.begin());
           it != raw_map_.end(); it++)
         delete(it->second);
     }
@@ -116,7 +111,7 @@ class DataPacket
       nr_values_ = src.nr_values_;
       data_ = src.data_;
 
-      map<boost::uint32_t, RawMem*> raw_map_;
+      std::map<boost::uint32_t, RawMem*> raw_map_;
     }
     /**
     * @brief Resets the whole DataPacket (samples are deleted).
@@ -143,7 +138,7 @@ class DataPacket
     * if the second device delivers a user-type signal.)
     * @todo If needed: Implementing the possibility to store the same signal type comming from different devices.
     */
-    void insertDataBlock(vector<double> v, boost::uint32_t signal_flag, boost::uint16_t blocks, bool prepend = false);
+    void insertDataBlock(std::vector<double> v, boost::uint32_t signal_flag, boost::uint16_t blocks, bool prepend = false);
 
     /**
     * @brief Set the packet number (can differ from the samplenumber -- e.g. if sending with different rates)
@@ -191,18 +186,18 @@ class DataPacket
     * @brief Get a vector containing the blocksizes for every signal type.
     * @return A vector containing the blocksizes for every signal type.
     */
-    vector<boost::uint16_t> getNrOfBlocks();
+    std::vector<boost::uint16_t> getNrOfBlocks();
     /**
     * @brief Get a vector containing the number of values (NOT channels!) for every signal type.
     * @return A vector containing the number of values (NOT channels!)for every signal type.
     */
-    vector<boost::uint16_t> getNrOfValues();
+    std::vector<boost::uint16_t> getNrOfValues();
     /**
     * @brief Get all samples stored in the DataPacket as a vector.
     * @return A vector containing the samples stored in the DataPacket.
     * @throw std::logic_error if flags are not OK.
     */
-    vector<double> getData();
+    std::vector<double> getData();
     /**
     * @brief Get a vector containing all samples for a specific signal type.
     * @param[in] flag
@@ -210,7 +205,7 @@ class DataPacket
     * @throw std::logic_error if flags are not OK.
     * @throw std::invalid_argument if flag is not set in the DataPacket
     */
-    vector<double> getSingleDataBlock(boost::uint32_t flag);
+    std::vector<double> getSingleDataBlock(boost::uint32_t flag);
 
     /**
     * @brief Get the number of values for a specific signal type.
@@ -299,7 +294,7 @@ class DataPacket
     *
     * TODO: Description
     */
-    void appendDataBlock(vector<double> &v, boost::uint32_t signal_flag, boost::uint16_t blocks);
+    void appendDataBlock(std::vector<double> &v, boost::uint32_t signal_flag, boost::uint16_t blocks);
 
     /**
     * @brief Append data (only one signal type) from a hardware device into the DataPacket (will be automatically placed correct).
@@ -310,7 +305,7 @@ class DataPacket
     *
     * TODO: Description
     */
-    void prependDataBlock(vector<double> &v, boost::uint32_t signal_flag, boost::uint16_t blocks);
+    void prependDataBlock(std::vector<double> &v, boost::uint32_t signal_flag, boost::uint16_t blocks);
 
   private:
     /**
@@ -329,11 +324,11 @@ class DataPacket
 
     boost::uint16_t  nr_of_signal_types_;   ///<  Number of different signal types stored in the DataPacket.
 
-    vector<boost::uint16_t>  nr_blocks_;  ///< Blocksize for every signal type.
-    vector<boost::uint16_t>  nr_values_;  ///< Number of values for every signal type.
-    vector<double> data_;  ///< The samples stored in the DataPacket.
+    std::vector<boost::uint16_t>  nr_blocks_;  ///< Blocksize for every signal type.
+    std::vector<boost::uint16_t>  nr_values_;  ///< Number of values for every signal type.
+    std::vector<double> data_;  ///< The samples stored in the DataPacket.
 
-    map<boost::uint32_t, RawMem*> raw_map_; ///< A map holding pointers to raw_mem objects, identified by their flags.
+    std::map<boost::uint32_t, RawMem*> raw_map_; ///< A map holding pointers to raw_mem objects, identified by their flags.
 };
 
 } // Namespace tobiss

@@ -29,6 +29,9 @@ using boost::lexical_cast;
 using boost::bad_lexical_cast;
 
 using boost::uint32_t;
+using std::vector;
+using std::cout;
+using std::endl;
 
 //-----------------------------------------------------------------------------
 
@@ -109,7 +112,7 @@ void EventListener::listen4Events(const boost::system::error_code& error,
 {
   if(error)
     throw std::runtime_error(error.message());
-  string event;
+  std::string event;
 
 //   boost::unique_lock<boost::shared_mutex> lock(rw_);
 //   boost::unique_lock<boost::mutex> syn(sync_mut_);

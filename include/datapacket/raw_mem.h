@@ -34,19 +34,15 @@
 #define RAWMEM_H
 
 // STL
-#include <iostream>
+
 #include <vector>
-#include <stdlib.h>
-#include <stdexcept>
 
 // Boost
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/cstdint.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 // Local
 #include "definitions/defines.h"
-
-using std::vector;
 
 namespace tobiss
 {
@@ -76,10 +72,12 @@ class RawMem
     * @param[in] nr_blocks  Blocksize for every signal type in flags.
     * @param[in] data   The samples to be stored.
     */
-    RawMem(boost::uint32_t flags, boost::uint64_t sample_nr, boost::uint64_t packet_nr, \
-            boost::posix_time::ptime timestamp, \
-            vector<boost::uint16_t>& nr_values, vector<boost::uint16_t>& nr_blocks,
-            vector<double>& data);
+    RawMem(boost::uint32_t flags,
+           boost::uint64_t sample_nr,
+           boost::uint64_t packet_nr, \
+           boost::posix_time::ptime timestamp, \
+           std::vector<boost::uint16_t>& nr_values, std::vector<boost::uint16_t>& nr_blocks,
+           std::vector<double>& data);
 
     /**
     * @brief Destructor

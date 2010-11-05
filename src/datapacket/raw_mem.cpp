@@ -18,14 +18,15 @@
     Contact: c.breitwieser@tugraz.at
 */
 
-#include "datapacket/raw_mem.h"
+#include <iostream>
+#include <vector>
 
 #include <boost/numeric/conversion/cast.hpp>
+#include "datapacket/raw_mem.h"
 
 namespace tobiss
 {
 
-using namespace std;
 using boost::numeric_cast;
 using boost::numeric::bad_numeric_cast;
 using boost::numeric::positive_overflow;
@@ -34,6 +35,9 @@ using boost::numeric::negative_overflow;
 using boost::uint16_t;
 using boost::uint32_t;
 using boost::uint64_t;
+
+using std::vector;
+using std::cerr;
 
 //-----------------------------------------------------------------------------
 
@@ -75,15 +79,15 @@ RawMem::RawMem(uint32_t flags, uint64_t sample_nr, uint64_t packet_nr, \
   }
   catch(negative_overflow& e)
   {
-    cout << "RawMem -- Constructor: " << e.what();
+    cerr << "RawMem -- Constructor: " << e.what();
   }
   catch(positive_overflow& e)
   {
-    cout << "RawMem -- Constructor: " <<  e.what();
+    cerr << "RawMem -- Constructor: " <<  e.what();
   }
   catch(bad_numeric_cast& e)
   {
-    cout << "RawMem -- Constructor: " <<  e.what();
+    cerr << "RawMem -- Constructor: " <<  e.what();
   }
 }
 
