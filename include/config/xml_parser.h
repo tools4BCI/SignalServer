@@ -47,9 +47,6 @@
 namespace tobiss
 {
 
-using std::cout;
-using std::endl;
-
 //---------------------------------------------------------------------------------------
 
 /**
@@ -66,7 +63,7 @@ class XMLParser
     XMLParser()
     {
       #ifdef DEBUG
-        cout << "XMLParser: Default Constructor" << endl;
+      std::cout << "XMLParser: Default Constructor" << std::endl;
       #endif
     }
     /**
@@ -81,7 +78,7 @@ class XMLParser
     virtual ~XMLParser()
     {
       #ifdef DEBUG
-        cout << "XMLParser: Destructor" << endl;
+        std::cout << "XMLParser: Destructor" << std::endl;
       #endif
     }
 

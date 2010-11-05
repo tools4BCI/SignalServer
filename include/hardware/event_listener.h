@@ -29,7 +29,6 @@
 #define EVENTLISTENER_H
 
 #include <vector>
-#include <map>
 
 #include <boost/asio.hpp>
 #include <boost/thread/condition.hpp>  // for mutex and cond. variables
@@ -37,8 +36,6 @@
 #include <boost/cstdint.hpp>
 
 #include "hw_thread.h"
-
-using namespace std;
 
 namespace tobiss
 {
@@ -91,8 +88,8 @@ class EventListener : public HWThread
     boost::mutex sync_mut_;  ///< mutex neede for synchronisation
     boost::condition_variable_any cond_;   ///< condition variable to wake up getSyncData()
 
-    vector<char> buffer_;
-    vector<double> events_; ///< temporary vector holding recent samples of the sine (1 element per channel)
+    std::vector<char> buffer_;
+    std::vector<double> events_; ///< temporary vector holding recent samples of the sine (1 element per channel)
 };
 
 } // Namespace tobiss

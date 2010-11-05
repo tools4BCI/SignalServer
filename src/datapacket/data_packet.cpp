@@ -17,17 +17,24 @@
     Copyright 2010 Christian Breitwieser
     Contact: c.breitwieser@tugraz.at
 */
+#include <sstream>
+#include <stdexcept>
 
 #include "datapacket/data_packet.h"
 
 namespace tobiss
 {
 
-using namespace std;
 using boost::uint16_t;
 using boost::uint32_t;
 using boost::uint64_t;
 using boost::int32_t;
+
+using std::vector;
+using std::map;
+using std::string;
+using std::stringstream;
+using std::make_pair;
 
 uint64_t  DataPacket::sample_nr_ = 0;
 

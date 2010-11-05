@@ -24,6 +24,15 @@
 namespace tobiss
 {
 
+using std::vector;
+using std::string;
+using std::map;
+using std::pair;
+using std::cout;
+using std::endl;
+using std::make_pair;
+using std::set;
+
 set<boost::uint16_t> Mouse::used_ids_;
 
 

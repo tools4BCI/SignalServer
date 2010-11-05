@@ -28,21 +28,14 @@
 #ifndef MOUSE_H
 #define MOUSE_H
 
-#ifdef WIN32
-    #pragma comment(lib, "SDL.lib")
-    #pragma comment(lib, "SDLmain.lib")
-#endif
-
 #include <boost/cstdint.hpp>
 #include <set>
-#include <SDL/SDL.h>
+
 #include <cmath>
 
 #include "hw_thread.h"
 #include "hw_thread_builder.h"
 #include "extern\lib\libusb\win\usb.h"
-
-using namespace std;
 
 namespace tobiss
 {
@@ -79,7 +72,7 @@ class Mouse : public HWThread
       //-----------------------------------------------
     private:
 
-  //     void setHardware(ticpp::Iterator<ticpp::Element>const &hw);
+      //     void setHardware(ticpp::Iterator<ticpp::Element>const &hw);
 
       virtual void setDeviceSettings(ticpp::Iterator<ticpp::Element>const &father);
 
@@ -90,22 +83,22 @@ class Mouse : public HWThread
       void initMouse();
       int blockKernelDriver();
       int freeKernelDriver();
-	  void acquireData();
+      void acquireData();
 
       //-----------------------------------------------
 
     private:
-    static set<boost::uint16_t> used_ids_;
+      static std::set<boost::uint16_t> used_ids_;
 
       boost::uint16_t id_;
 
       boost::uint16_t buttons_;
-      vector<bool> buttons_values_;
+      std::vector<bool> buttons_values_;
 
       boost::uint16_t axes_;
-      vector<boost::int16_t> axes_values_;
+      std::vector<boost::int16_t> axes_values_;
 
-      string name_;
+      std::string name_;
 
       bool user_interrupt_;
 
@@ -114,15 +107,15 @@ class Mouse : public HWThread
       int x_,y_;
       struct usb_device **devs_; //pointer to pointer of device, used to retrieve a list of devices
       usb_dev_handle *dev_handle_; //a device handle
-	  char hw_id_[28];
-	  //libusb_context *ctx_; //a libusb session
+      char hw_id_[28];
+      //libusb_context *ctx_; //a libusb session
 
-	  boost::thread*  async_acqu_thread_;
+      boost::thread*  async_acqu_thread_;
       std::vector<boost::int16_t>  raw_data_;
-	  char async_data_[10];
-	  bool dirty_;
+      char async_data_[10];
+      bool dirty_;
 
-	  static const HWThreadBuilderTemplateRegistratorWithoutIOService<Mouse> FACTORY_REGISTRATOR_;
+      static const HWThreadBuilderTemplateRegistratorWithoutIOService<Mouse> FACTORY_REGISTRATOR_;
   };
 
 

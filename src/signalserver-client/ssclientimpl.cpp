@@ -59,7 +59,6 @@ using std::cerr;
 using std::endl;
 using std::string;
 using std::vector;
-using std::map;
 using std::stringstream;
 using boost::uint16_t;
 using boost::uint32_t;

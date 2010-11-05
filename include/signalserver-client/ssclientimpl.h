@@ -37,8 +37,6 @@
 #include "ssconfig.h"
 #include "definitions/defines.h"
 
-using std::string;
-
 namespace tobiss
 {
 // forward declaration
@@ -186,13 +184,13 @@ protected:
 
   size_t                          buffer_size_; ///<
 
-  vector<char>                    recv_buf_; ///<
-  vector<char>                    data_buf_; ///<
+  std::vector<char>               recv_buf_; ///<
+  std::vector<char>               data_buf_; ///<
   boost::asio::ip::tcp::endpoint  tcp_target_; ///<
 
 #ifdef TIMING_TEST
-private:
-bool  lpt_flag_;
+  private:
+  bool  lpt_flag_;
 #endif
 };
 
