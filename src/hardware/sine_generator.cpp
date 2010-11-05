@@ -45,8 +45,8 @@ const HWThreadBuilderTemplateRegistrator<SineGenerator> SineGenerator::factory_r
 
 //-----------------------------------------------------------------------------
 
-SineGenerator::SineGenerator(boost::asio::io_service& io, XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
-: HWThread(parser), acquiring_(0), current_block_(0), td_(0)
+SineGenerator::SineGenerator(boost::asio::io_service& io, ticpp::Iterator<ticpp::Element> hw)
+: HWThread(), acquiring_(0), current_block_(0), td_(0)
 {
   #ifdef DEBUG
     cout << "SineGenerator: Constructor" << endl;

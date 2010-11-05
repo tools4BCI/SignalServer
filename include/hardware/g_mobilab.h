@@ -47,7 +47,7 @@ namespace tobiss
 class GMobilab : private SerialPortBase, public HWThread
 {
   public:
-    GMobilab(boost::asio::io_service& io, XMLParser& parser,
+    GMobilab(boost::asio::io_service& io,
              ticpp::Iterator<ticpp::Element> hw);
     virtual ~GMobilab()
     {
@@ -81,10 +81,10 @@ class GMobilab : private SerialPortBase, public HWThread
 
     void acquireData();
 
-    enum device_types_ { EEG, MULTI };
+    enum device_types_ { MOBILAB_EEG, MOBILAB_MULTI };
 
   private:
-    device_types_ type_;
+    device_types_ mobilab_type_;
     std::map<unsigned int, unsigned char> channel_coding_;
     std::vector<double> scaling_factors_;
     std::vector<boost::int16_t>  raw_data_;

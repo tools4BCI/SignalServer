@@ -94,8 +94,8 @@ const string USBamp::hw_drl_value_("value");
 
 //-----------------------------------------------------------------------------
 
-USBamp::USBamp(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
-  : HWThread(parser), enable_sc_(0), external_sync_(0), trigger_line_(0),
+USBamp::USBamp(ticpp::Iterator<ticpp::Element> hw)
+  : HWThread(), enable_sc_(0), external_sync_(0), trigger_line_(0),
     sample_count_(0), error_count_(0) ,error_code_(0), expected_values_(0),
     first_run_(1), current_overlapped_(0)
 {

@@ -77,7 +77,7 @@ class USBamp : public HWThread
 //     initUSBamp();
 //   }
 
-  USBamp(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw);
+  USBamp(ticpp::Iterator<ticpp::Element> hw);
 
   virtual ~USBamp();
 

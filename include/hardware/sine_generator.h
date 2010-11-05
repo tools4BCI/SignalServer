@@ -73,8 +73,8 @@ class SineGenerator : public HWThread
     * @param[in] nr_ch  Number of channels to be simulated by the SineGen.
     * @param[in] blocks  The blocksize, to create the data with.
     */
-    SineGenerator(boost::asio::io_service& io, XMLParser& parser, const int sampling_rate, const int nr_ch, const int blocks)
-      : HWThread(parser, sampling_rate, nr_ch, blocks), step_(1/static_cast<float>(fs_)),   \
+    SineGenerator(boost::asio::io_service& io, const int sampling_rate, const int nr_ch, const int blocks)
+      : HWThread(sampling_rate, nr_ch, blocks), step_(1/static_cast<float>(fs_)),   \
         cycle_dur_(1/static_cast<float>(fs_)), current_block_(0), td_(1000000/fs_), samples_(1,0)
     {
       t_ = new boost::asio::deadline_timer(io, td_);
@@ -86,7 +86,7 @@ class SineGenerator : public HWThread
     * @param[in] parser Reference to XMLParser object
     * @param[in] hw ticpp::Element pointing to an \<hardware\> tag in the config file
     */
-    SineGenerator(boost::asio::io_service& io, XMLParser& parser, ticpp::Iterator<ticpp::Element> hw);
+    SineGenerator(boost::asio::io_service& io, ticpp::Iterator<ticpp::Element> hw);
 
     /**
     * @brief Destructor

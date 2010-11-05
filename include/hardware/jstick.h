@@ -49,7 +49,7 @@ namespace tobiss
 class JStick : public HWThread
 {
   public:
-    JStick (XMLParser& parser, ticpp::Iterator<ticpp::Element> hw);
+    JStick (ticpp::Iterator<ticpp::Element> hw);
 
     /**
     * @brief Destructor

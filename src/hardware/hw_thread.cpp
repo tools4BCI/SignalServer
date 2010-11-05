@@ -503,7 +503,7 @@ void HWThread::parseChannelSelection(ticpp::Iterator<ticpp::Element>const &elem,
 void HWThread::checkMandatoryHardwareTagsXML(ticpp::Iterator<ticpp::Element> hw)
 {
   #ifdef DEBUG
-    cout << "XMLParser: checkMandatoryHardwareTags" << endl;
+    cout << "HWThread: checkMandatoryHardwareTags" << endl;
   #endif
 
   ticpp::Iterator<ticpp::Element> elem;

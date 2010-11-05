@@ -29,8 +29,8 @@ const HWThreadBuilderTemplateRegistratorWithoutIOService<Mouse> Mouse::FACTORY_R
 
 //-----------------------------------------------------------------------------
 
-Mouse::Mouse(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
-  : HWThread(parser)
+Mouse::Mouse(ticpp::Iterator<ticpp::Element> hw)
+  : HWThread()
 {
   #ifdef DEBUG
     cout << "Mouse: Constructor" << endl;

@@ -51,7 +51,7 @@ namespace tobiss
 class Mouse : public HWThread
     {
     public:
-      Mouse(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw);
+      Mouse(ticpp::Iterator<ticpp::Element> hw);
 
       /**
       * @brief Destructor
