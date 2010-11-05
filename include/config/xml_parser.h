@@ -128,15 +128,15 @@ class XMLParser
     */
     const std::string getHardwareElementName(const unsigned int n) const {  return(hardware_.at(n).first);  }
 
-    /**
-    * @brief Get the mode of the n-th  \<hardware\> node.
-    * @param[in] n  Number of the respective hardware block in the xml config file.
-    * @return string  Type (master or slave) of the respective \<hardware>
-    */
-    const std::string getHardwareElementType(const unsigned int n) const
-    {
-      return(hardware_.at(n).second->FirstChildElement(cst_.hw_mode ,false)->GetText());
-    }
+//    /**
+//    * @brief Get the mode of the n-th  \<hardware\> node.
+//    * @param[in] n  Number of the respective hardware block in the xml config file.
+//    * @return string  Type (master or slave) of the respective \<hardware>
+//    */
+//    const std::string getHardwareElementType(const unsigned int n) const
+//    {
+//      return(hardware_.at(n).second->FirstChildElement(cst_.hw_mode ,false)->GetText());
+//    }
 
     /**
     * @brief Get the nuber of hardware sections in the config file.
@@ -158,38 +158,38 @@ class XMLParser
     */
     std::map<std::string,std::string> parseServerSettings();
 
-    /**
-    * @brief Parse the \<measurement_channels\> section in the config file -- used for common channel settings.
-    * @param[in] elem   The ticpp-element to parse.
-    * @param[out] nr_ch The number of channels defined in the ticpp-element.
-    * @param[out] naming The channel-naming defined in the ticpp-element.
-    * @param[out] type The channel-types defined in the ticpp-element.
-    * @throw ticpp::Exception
-    */
-    void parseDeviceChannels(ticpp::Iterator<ticpp::Element>const &elem, boost::uint16_t& nr_ch,
-                             std::string& naming, std::string& type);
-
-    /**
-    * @brief Parse the \<selection> section in the config file -- used for individual channel settings.
-    * @param[in] elem   The ticpp-element to parse.
-    * @param[out] ch The channel number defined in the ticpp-element.
-    * @param[out] name The channel's name defined in the ticpp-element.
-    * @param[out] type The channel's type defined in the ticpp-element.
-    * @throw ticpp::Exception
-    */
-    void parseChannelSelection(ticpp::Iterator<ticpp::Element>const &elem, boost::uint16_t& ch,
-                               std::string& name, std::string& type);
-
-    /**
-    * @brief Check if all mandatory tags in \<hardware\> are given.
-    * @throw ticpp::Exception
-    */
-    void checkMandatoryHardwareTags(ticpp::Iterator<ticpp::Element> hw);
+//    /**
+//    * @brief Parse the \<measurement_channels\> section in the config file -- used for common channel settings.
+//    * @param[in] elem   The ticpp-element to parse.
+//    * @param[out] nr_ch The number of channels defined in the ticpp-element.
+//    * @param[out] naming The channel-naming defined in the ticpp-element.
+//    * @param[out] type The channel-types defined in the ticpp-element.
+//    * @throw ticpp::Exception
+//    */
+//    void parseDeviceChannels(ticpp::Iterator<ticpp::Element>const &elem, boost::uint16_t& nr_ch,
+//                             std::string& naming, std::string& type);
+//
+//    /**
+//    * @brief Parse the \<selection> section in the config file -- used for individual channel settings.
+//    * @param[in] elem   The ticpp-element to parse.
+//    * @param[out] ch The channel number defined in the ticpp-element.
+//    * @param[out] name The channel's name defined in the ticpp-element.
+//    * @param[out] type The channel's type defined in the ticpp-element.
+//    * @throw ticpp::Exception
+//    */
+//    void parseChannelSelection(ticpp::Iterator<ticpp::Element>const &elem, boost::uint16_t& ch,
+//                               std::string& name, std::string& type);
+//
+//    /**
+//    * @brief Check if all mandatory tags in \<hardware\> are given.
+//    * @throw ticpp::Exception
+//    */
+//    void checkMandatoryHardwareTags(ticpp::Iterator<ticpp::Element> hw);
 
     /**
     * @brief TODO
     */
-    void parseFileReader();
+//    void parseFileReader();
 
     /**
     * @brief TODO
@@ -197,11 +197,11 @@ class XMLParser
     bool usesDataFile()
     { return(external_data_file_); }
 
-    /**
-    * @brief TODO
-    */
-    const std::map<std::string, std::string> getFileReaderMap()
-    { return(file_reader_map_); }
+//    /**
+//    * @brief TODO
+//    */
+//    const std::map<std::string, std::string> getFileReaderMap()
+//    { return(file_reader_map_); }
 
 
 //-----------------------------------------------
@@ -225,10 +225,10 @@ class XMLParser
       return true;
     }
 
-    /**
-    * @brief TODO
-    */
-    void parseFileLocation(ticpp::Iterator<ticpp::Element> elem, std::map<std::string, std::string>& m);
+//    /**
+//    * @brief TODO
+//    */
+//    void parseFileLocation(ticpp::Iterator<ticpp::Element> elem, std::map<std::string, std::string>& m);
 
 //-----------------------------------------------
   private:
@@ -241,7 +241,7 @@ class XMLParser
 
     std::map<std::string, std::string> subject_map_;
     std::map<std::string, std::string> server_settings_map_;
-    std::map<std::string, std::string> file_reader_map_;
+//    std::map<std::string, std::string> file_reader_map_;
 
     /**
     * @brief A vector containing iterators to the respective \<hardware> tags.

@@ -62,72 +62,11 @@ const string Constants::file_reader("file-reader");
 const string Constants::fr_speedup("speedup");
 const string Constants::fr_stop("stop_at_end");
 
-
-const string Constants::hardware("hardware");
-const string Constants::hardware_name("name");
-const string Constants::hardware_version("version");
-const string Constants::hardware_serial("serial");
-
-const string Constants::hw_mode("mode");
-const string Constants::hw_ds("device_settings");
-const string Constants::hw_fs("sampling_rate");
-
-const string Constants::hw_channels("measurement_channels");
-const string Constants::hw_ch_nr("nr");
-const string Constants::hw_ch_names("names");
-const string Constants::hw_ch_type("type");
-
-const string Constants::hw_buffer("blocksize");
-
-const string Constants::hw_fil("filter");
-const string Constants::hw_fil_type("type");
-const string Constants::hw_fil_order("order");
-const string Constants::hw_fil_low("f_low");
-const string Constants::hw_fil_high("f_high");
-
-const string Constants::hw_notch("notch");
-const string Constants::hw_notch_center("f_center");
-
-//USBamp specific start
-const string Constants::hw_opmode("operation_mode");
-const string Constants::hw_sc("shortcut");
-const string Constants::hw_trigger_line("trigger_line");
-const string Constants::hw_usbampmaster("usbamp_master");
-const string Constants::hw_comgnd("common_ground");
-const string Constants::hw_gnd("gnd");
-const string Constants::hw_gnd_block("block");
-const string Constants::hw_gnd_value("value");
-
-const string Constants::hw_comref("common_reference");
-const string Constants::hw_cr("cr");
-const string Constants::hw_cr_block("block");
-const string Constants::hw_cr_value("value");
-//USBamp specific end
-
-const string Constants::hw_cs("channel_settings");
-const string Constants::hw_sel("selection");
-const string Constants::hw_cs_ch("ch");
-const string Constants::hw_cs_nr("nr");
-const string Constants::hw_cs_name("name");
-//naming of filter and others equal to global_settings
-
-//USBamp specific start
-const string Constants::hw_bip("bipolar");
-const string Constants::hw_bip_with("with");
-const string Constants::hw_drl("driven_right_leg");
-const string Constants::hw_drl_value("value");
-
 //Mouse specific start
 const string Constants::hw_vid("vendorid");
 const string Constants::hw_pid("productid");
 const string Constants::usb_port("usb_port");
 //Mouse specific end
-
-//g.Mobilab specific start
-const string Constants::hw_mobilab_serial_port("serial_port");
-const string Constants::hw_mobilab_type("mobilab_type");
-const string Constants::hw_mobilab_eeg("eeg");
-const string Constants::hw_mobilab_multi("multi");
 
 //-----------------------------------------------------------------------------
 
@@ -160,117 +99,11 @@ Constants::Constants()
   signaltypes.insert(pair <string,uint32_t>("", SIG_UNDEFINED));
   signaltypes.insert(pair <string,uint32_t>("event", SIG_EVENT));
 
-  usbamp_filterTypes.insert(pair <string,int>("chebyshev", 1));
-  usbamp_filterTypes.insert(pair <string,int>("cheby", 1));
-  usbamp_filterTypes.insert(pair <string,int>("butterworth", 2));
-  usbamp_filterTypes.insert(pair <string,int>("butter", 2));
-
-  usbamp_opModes.insert(pair <string,string>("normal", "M_NORMAL"));
-  usbamp_opModes.insert(pair <string,string>("calibrate", "M_CALIBRATE"));
-  usbamp_opModes.insert(pair <string,string>("impedance", "M_IMPEDANCE"));
-
-  usbamp_blockNames.insert(pair <string,int>("a", 0));
-  usbamp_blockNames.insert(pair <string,int>("b", 1));
-  usbamp_blockNames.insert(pair <string,int>("c", 2));
-  usbamp_blockNames.insert(pair <string,int>("d", 3));
 }
 
 //-----------------------------------------------------------------------------
 
-bool Constants::equalsOnOrOff(const string& s)
-{
-  if(to_lower_copy(s) == "on"  || s == "1")
-    return(true);
-  if(to_lower_copy(s) == "off" || s == "0")
-    return(false);
-  else
-  {
-    string e = s + " -- Value equals neiter \"on, off, 0 or 1\"!";
-    throw ticpp::Exception(e);
-  }
-}
-
-//-----------------------------------------------------------------------------
-
-bool Constants::equalsYesOrNo(const string& s)
-{
-  if(to_lower_copy(s) == "yes"  || s == "1")
-    return(true);
-  if(to_lower_copy(s) == "no" || s == "0")
-    return(false);
-  else
-  {
-    string e = s + " -- Value equals neiter \"yes, no, 0 or 1\"!";
-    throw ticpp::Exception(e);
-  }
-}
-
-//-----------------------------------------------------------------------------
-
-bool Constants::equalsMaster(const string& s)
-{
-  return(to_lower_copy(s) == "master");
-}
-
-//-----------------------------------------------------------------------------
-
-bool Constants::equalsSlave(const string& s)
-{
-  return(to_lower_copy(s) == "slave");
-}
-
-//-----------------------------------------------------------------------------
-
-bool Constants::equalsAperiodic(const string& s)
-{
-  return(to_lower_copy(s) == "aperiodic");
-}
-
-//-----------------------------------------------------------------------------
-
-int Constants::getUSBampFilterType(const string& s)
-{
-  map<string, unsigned int>::iterator it;
-  it = usbamp_filterTypes.find(to_lower_copy(s));
-  if(it == usbamp_filterTypes.end())
-  {
-    string e = "USBamp filter type \"" + s + "\" not found -- please also check spelling!";
-    throw ticpp::Exception(e);
-  }
-  return(it->second);
-}
-
-//-----------------------------------------------------------------------------
-
-string Constants::getUSBampOpMode(const string& s)
-{
-  map<string, string>::iterator it;
-  it = usbamp_opModes.find(to_lower_copy(s));
-  if(it == usbamp_opModes.end())
-  {
-    string e = "USBamp operation mode \"" + s + "\" not found -- please also check spelling!";
-    throw ticpp::Exception(e);
-  }
-  return(it->second);
-}
-
-//-----------------------------------------------------------------------------
-
-int Constants::getUSBampBlockNr(const string& s)
-{
-  map<string, unsigned int>::iterator it;
-  it = usbamp_blockNames.find(to_lower_copy(s));
-  if(it == usbamp_blockNames.end())
-  {
-    string e = "USBamp channel block \"" + s + "\" wrong -- must be \"a, b, c or d\"!";
-    throw ticpp::Exception(e);
-  }
-  return(it->second);
-}
-
-//-----------------------------------------------------------------------------
-
-uint32_t Constants::getSignalFlag(const string& s)
+uint32_t Constants::getSignalFlag(const std::string& s)
 {
   map<string, uint32_t>::iterator it;
   it = signaltypes.find(to_lower_copy(s));

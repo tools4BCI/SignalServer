@@ -146,7 +146,7 @@ int main(int argc, const char* argv[])
 
       SignalServer server(io_service);
 
-      DataFileHandler data_file_handler(io_service, config.getFileReaderMap());
+//      DataFileHandler data_file_handler(io_service, config.getFileReaderMap());
 
       HWAccess hw_access(io_service, config);
       DataPacketReader reader(hw_access, server);

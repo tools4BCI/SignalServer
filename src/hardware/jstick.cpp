@@ -41,27 +41,9 @@ JStick::JStick(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
   checkMandatoryHardwareTags(hw);
   if(mode_ != APERIODIC)
     throw(std::invalid_argument("Joystick has to be started as aperiodic device!"));
-  //ticpp::Iterator<ticpp::Element> ds(hw->FirstChildElement(cst_.hw_ds, true));
-
-
-
-//   ticpp::Iterator<ticpp::Element> cs(hw->FirstChildElement(cst_.hw_cs, false));
-//   if (cs != cs.end())
-//   {
-//     for(ticpp::Iterator<ticpp::Element> it(cs); ++it != it.end(); )
-//       if(it->Value() == cst_.hw_cs)
-//       {
-//         string ex_str;
-//         ex_str = "Error in "+ cst_.hardware_name +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-//         ex_str += "Multiple channel_settings found!";
-//         throw(ticpp::Exception(ex_str));
-//       }
-//       setChannelSettings(cs);
-//   }
 
   initJoystick();
   setDeviceSettings(0);
-
 
   data_.init(1, channel_types_.size() , channel_types_);
 
@@ -91,12 +73,6 @@ void JStick::setDeviceSettings(ticpp::Iterator<ticpp::Element>const&)
     cout << "JStick: setDeviceSettings" << endl;
   #endif
 
-//   ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(cst_.hw_fs,true));
-//   setSamplingRate(elem);
-
-  //ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(cst_.hw_channels,true));
-//   elem = father->FirstChildElement(cst_.hw_channels,true);
-
   string naming;
   string type;
 
@@ -116,17 +92,6 @@ void JStick::setDeviceSettings(ticpp::Iterator<ticpp::Element>const&)
     channel_types_.push_back(SIG_JOYSTICK);
 
   nr_ch_= channel_types_.size();
-
-  //try
-  //{
-  //  parser_.parseDeviceChannels(elem, nr_ch_, naming, type);
-  //}
-  //catch(ticpp::Exception& e)
-  //{
-  //  string ex_str;
-  //  ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-  //  throw(ticpp::Exception(ex_str + e.what()));
-  //}
 
   boost::uint16_t n = 1;
   if(buttons_)
@@ -153,9 +118,6 @@ void JStick::setChannelSettings(ticpp::Iterator<ticpp::Element>const& )
     cout << "JStick: setChannelSettings" << endl;
   #endif
 
-//   ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(cst_.hw_sel,false));
-//   if (elem != elem.end())
-//     setChannelSelection(elem);
 }
 
 //---------------------------------------------------------------------------------------

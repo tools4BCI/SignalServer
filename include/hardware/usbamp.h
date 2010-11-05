@@ -159,6 +159,10 @@ class USBamp : public HWThread
     void fillSyncBuffer();
     void fillSampleBlock();
 
+    int getUSBampFilterType(const std::string& s);
+    std::string getUSBampOpMode(const std::string& s);
+    int getUSBampBlockNr(const std::string& s);
+
     inline double roundD(double number, int digits = DIGITS_TO_ROUND)
     {
       return floor(number * pow(10., digits) + .5) / pow(10., digits);
@@ -188,9 +192,7 @@ class USBamp : public HWThread
     std::vector<DWORD> bytes_received_;
     DWORD timeout_;
 
-    //std::vector<BYTE> raw_buffer_;
     boost::uint32_t expected_values_;
-    //static bool received_enough_data_;
 
     boost::uint32_t first_run_;
     boost::uint32_t current_overlapped_;
@@ -217,10 +219,56 @@ class USBamp : public HWThread
     CHANNEL drl_channels_;
     std::string mode_;
 
-    Constants cst_;
-	GTECUSBampWrapper usb_amp_;
+    GTECUSBampWrapper usb_amp_;
 
-	static const HWThreadBuilderTemplateRegistratorWithoutIOService<USBamp> FACTORY_REGISTRATOR_;
+    //-----------------------------------------------
+    // Constants
+    static const HWThreadBuilderTemplateRegistratorWithoutIOService<USBamp> FACTORY_REGISTRATOR_;
+
+    static const std::string hw_filter_;   ///< xml-tag hardware: filter
+    static const std::string hw_filter_type_;   ///< xml-tag hardware: filter type
+    static const std::string hw_filter_order_;   ///< xml-tag hardware: filter order
+    static const std::string hw_filter_low_;   ///< xml-tag hardware: filter lower cutoff freq.
+    static const std::string hw_filter_high_;   ///< xml-tag hardware: filter upper cutoff freq.
+
+    static const std::string hw_notch_;   ///< xml-tag hardware: notch_filter
+    static const std::string hw_notch_center_;    ///< xml-tag hardware: notch center freq.
+
+
+    static const std::string hw_opmode_;       ///< USBamp specific
+    static const std::string hw_sc_;            ///< USBamp specific
+    static const std::string hw_trigger_line_;            ///< USBamp specific
+    static const std::string hw_usbampmaster_;   ///< USBamp specific
+    static const std::string hw_comgnd_;        ///< USBamp specific
+    static const std::string hw_gnd_;          ///< USBamp specific
+    static const std::string hw_gnd_block_;   ///< USBamp specific
+    static const std::string hw_gnd_value_;   ///< USBamp specific
+
+    static const std::string hw_comref_;   ///< USBamp specific
+    static const std::string hw_cr_;       ///< USBamp specific
+    static const std::string hw_cr_block_;   ///< USBamp specific
+    static const std::string hw_cr_value_;   ///< USBamp specific
+
+    static const std::string hw_bipolar_;        ///< USBamp specific
+    static const std::string hw_bipolar_with_;   ///< USBamp specific
+    static const std::string hw_drl_;        ///< USBamp specific
+    static const std::string hw_drl_value_;   ///< USBamp specific
+
+    /**
+    * @brief Mapping std::strings, representing g.USBamp filter types, and identifiers together.
+    */
+    std::map<std::string, unsigned int> usbamp_filterTypes_;
+
+    /**
+    * @brief Mapping std::strings, representing g.USBamp operation modes, and identifiers together.
+    */
+    std::map<std::string, std::string> usbamp_opModes_;
+
+    /**
+    * @brief Mapping std::strings, representing g.USBamp block namings, and identifiers together.
+    */
+    std::map<std::string, unsigned int> usbamp_blockNames_;
+
 };
 
 } // Namespace tobiss

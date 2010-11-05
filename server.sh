@@ -9,4 +9,4 @@ fi
 
 cd bin
 
-exec env LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(pwd)/../lib ./${SERVER_CMD} 
+exec env LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(pwd)/../lib ./${SERVER_CMD}  $1 $2

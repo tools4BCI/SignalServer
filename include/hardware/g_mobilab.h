@@ -94,6 +94,14 @@ class GMobilab : private SerialPortBase, public HWThread
 
     static const HWThreadBuilderTemplateRegistrator<GMobilab> factory_registrator_;
 
+    //--------------------------------------
+    // Constants:
+
+    static const std::string hw_mobilab_serial_port_;
+    static const std::string hw_mobilab_type_;
+    static const std::string hw_mobilab_eeg_;
+    static const std::string hw_mobilab_multi_;
+
 };
 
 //-----------------------------------------------------------------------------

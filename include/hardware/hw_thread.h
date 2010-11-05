@@ -185,17 +185,18 @@ class HWThread
     */
     HWThread(XMLParser& parser, boost::uint32_t sampling_rate, boost::uint16_t channels, boost::uint16_t blocks)
     : nr_ch_(channels),fs_(sampling_rate), samples_available_(0), blocks_(blocks),
-    mode_(SLAVE), running_(0), parser_(parser)
+    mode_(SLAVE), running_(0)
     {    }
+    //    , parser_(parser)
     /**
     * @brief Default constructor
     *
     * Sets the device to 0 channel, sampling_rate 0 and blocksize 1.
     */
     HWThread(XMLParser& parser)
-    : nr_ch_(0),fs_(0), samples_available_(0), blocks_(1), mode_(SLAVE),
-    running_(0), parser_(parser)
+    : nr_ch_(0),fs_(0), samples_available_(0), blocks_(1), mode_(SLAVE), running_(0)
     {    }
+    //    , parser_(parser)
 
     /**
     * @brief Set configuration listed in the \<device_settings\> section in the XML file.
@@ -290,8 +291,8 @@ class HWThread
     std::vector<boost::uint32_t> channel_types_;   ///< vector containing signal types of channels (for faster access)
     std::map<std::string, std::string> m_;   ///< map with generic hardware information  ...  mandatory
 
-    Constants cst_;  ///< A static object containing constants.
-    XMLParser& parser_;   ///< Reference pointing to the XMLParser.
+    // Constants cst_;  ///< A static object containing constants.
+    // XMLParser& parser_;   ///< Reference pointing to the XMLParser.
 
     /**
     * @brief Data object representing the last available samples from the SineGenerator.
@@ -305,6 +306,52 @@ class HWThread
     * For more information, read the SampleBlock documentation.
     */
     SampleBlock<double> data_;
+
+    //-----------------------------------------------
+    // Constant variables & methods:
+
+    static const std::string hardware_;
+    static const std::string hardware_name_;
+    static const std::string hardware_version_;
+    static const std::string hardware_serial_;
+
+    static const std::string hw_mode_;
+    static const std::string hw_devset_;        ///< xml-tag hardware: device_settings
+    static const std::string hw_fs_;            ///< xml-tag hardware: sampling_rate
+
+    static const std::string hw_channels_;      ///< xml-tag hardware: measurement_channels
+    static const std::string hw_ch_nr_;         ///< xml-tag hardware: nr
+    static const std::string hw_ch_names_;      ///< xml-tag hardware: names
+    static const std::string hw_ch_type_;       ///< xml-tag hardware: channel type
+
+    static const std::string hw_blocksize_;     ///< xml-tag hardware: blocksize
+
+    static const std::string hw_chset_;       ///< xml-tag hardware -- channel_settings
+    static const std::string hw_chset_sel_;           ///< xml-tag hardware: selection
+    static const std::string hw_chset_ch_;      ///< xml-tag hardware: ch
+    static const std::string hw_chset_nr_;     ///< xml-tag hardware: nr
+    static const std::string hw_chset_name_;   ///< xml-tag hardware: name
+
+
+    //---------------------------------------------------------------------------------------
+
+    bool equalsOnOrOff(const std::string& s);
+    bool equalsYesOrNo(const std::string& s);
+    bool equalsMaster(const std::string& s);
+    bool equalsSlave(const std::string& s);
+    bool equalsAperiodic(const std::string& s);
+//    uint32_t getSignalFlag(const std::string& s);
+//    std::string getSignalName(const boost::uint32_t& flag);
+
+    void parseDeviceChannels(ticpp::Iterator<ticpp::Element>const &elem, boost::uint16_t& nr_ch,
+                                 std::string& naming, std::string& type);
+
+    void parseChannelSelection(ticpp::Iterator<ticpp::Element>const &elem, boost::uint16_t& ch,
+                                   std::string& name, std::string& type);
+
+    void checkMandatoryHardwareTagsXML(ticpp::Iterator<ticpp::Element> hw);
+
+
 };
 
 } // Namespace tobiss
