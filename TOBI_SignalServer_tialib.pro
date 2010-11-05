@@ -42,7 +42,6 @@ HEADERS += include/signalserver/signal_server.h \
     include/config/control_message_encoder.h \
     include/config/control_messages.h \
     include/config/ss_meta_info.h \
-    include/config/xml_parser.h \
     include/datapacket/data_packet.h \
     include/datapacket/raw_mem.h \
     include/network/control_connection.h \
@@ -57,7 +56,6 @@ SOURCES += src/signalserver/signal_server.cpp \
     src/config/control_message_encoder.cpp \
     src/config/control_messages.cpp \
     src/config/ss_meta_info.cpp \
-    src/config/xml_parser.cpp \
     src/datapacket/data_packet.cpp \
     src/datapacket/raw_mem.cpp \
     src/network/control_connection.cpp \

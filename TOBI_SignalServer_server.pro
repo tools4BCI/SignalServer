@@ -33,7 +33,8 @@ QMAKE_CXXFLAGS_WARN_ON = -Wall \
     -pedantic
 
 # -----------------------------------------------------------------------
-HEADERS += include/hardware/hw_access.h \
+HEADERS += include/config/xml_parser.h \
+    include/hardware/hw_access.h \
     include/hardware/hw_thread.h \
     include/hardware/sine_generator.h \
     include/hardware/event_listener.h \
@@ -56,6 +57,7 @@ HEADERS += include/hardware/hw_access.h \
 unix:HEADERS += include/hardware/mouse_linux.h
 win32:HEADERS += include/hardware/mouse_.h
 SOURCES += src/signalserver/main.cpp \
+    src/config/xml_parser.cpp \
     src/hardware/hw_access.cpp \
     src/hardware/hw_thread.cpp \
     src/hardware/sine_generator.cpp \

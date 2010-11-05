@@ -38,6 +38,7 @@ JStick::JStick(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
     cout << "JStick: Constructor" << endl;
   #endif
 
+  setType("Joystick");
   checkMandatoryHardwareTags(hw);
   if(mode_ != APERIODIC)
     throw(std::invalid_argument("Joystick has to be started as aperiodic device!"));

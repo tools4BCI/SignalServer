@@ -176,10 +176,6 @@
 					RelativePath="src\config\ss_meta_info.cpp"
 					>
 				</File>
-				<File
-					RelativePath="src\config\xml_parser.cpp"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="signalserver"
@@ -256,10 +252,6 @@
 				</File>
 				<File
 					RelativePath="include\config\ss_meta_info.h"
-					>
-				</File>
-				<File
-					RelativePath="include\config\xml_parser.h"
 					>
 				</File>
 			</Filter>

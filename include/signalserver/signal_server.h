@@ -90,9 +90,10 @@ class SignalServer : boost::noncopyable
     virtual ~SignalServer();
 
     /**
-    * @brief Insert data (only one signal type) from a hardware device into the DataPacket (will be automatically placed correct).
+    * @brief TODO
     */
-    void initialize(XMLParser* config);
+    void initialize(std::map<std::string,std::string> subject_info,
+                    std::map<std::string,std::string> server_settings);
 
     /**
     * @brief Sends a DataPacket to the clients
@@ -157,7 +158,7 @@ class SignalServer : boost::noncopyable
 
   private:
     boost::asio::io_service&            io_service_; ///<
-    XMLParser*                          config_; ///<
+//    XMLParser*                          config_; ///<
     std::map<std::string, std::string>  server_settings_; ///<
     TCPDataServer*                      tcp_data_server_; ///<
     UDPDataServer*                      udp_data_server_; ///<

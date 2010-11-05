@@ -76,7 +76,7 @@ using namespace std;
 
 SignalServer::SignalServer(boost::asio::io_service& io_service)
   : io_service_(io_service),
-  config_(0),
+//  config_(0),
   tcp_data_server_(0),
   udp_data_server_(0),
   control_connection_server_(0),
@@ -133,11 +133,12 @@ SignalServer::~SignalServer()
 
 //-----------------------------------------------------------------------------
 
-void SignalServer::initialize(XMLParser* config)
+void SignalServer::initialize(std::map<std::string,std::string> subject_info,
+                              std::map<std::string,std::string> server_settings)
 {
-  assert(config != 0);
-  config_ = config;
-  server_settings_ = config->parseServerSettings();
+//  assert(config != 0);
+//  config_ = config;
+  server_settings_ = server_settings;
   uint16_t port = 0;
 
 //   map<string,string>::iterator it(server_settings_.begin());
@@ -147,7 +148,8 @@ void SignalServer::initialize(XMLParser* config)
 
 
   port = lexical_cast<uint16_t>(server_settings_[Constants::ss_ctl_port]);
-  control_connection_server_ = new ControlConnectionServer(io_service_, *this);
+  control_connection_server_ = new ControlConnectionServer(subject_info,
+                                                           io_service_, *this);
   control_connection_server_->bind(port);
   tcp_data_server_ = new TCPDataServer(io_service_);
 

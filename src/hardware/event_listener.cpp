@@ -39,6 +39,8 @@ EventListener::EventListener(boost::asio::io_service& io, XMLParser& parser) :
   buffer_(EVENT_BUFFER_SIZE)
 {
 
+  setType("EventListener");
+
   nr_ch_ = 0;
   blocks_ = 0;
   homogenous_signal_type_ = 1;

@@ -36,6 +36,7 @@ Mouse::Mouse(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
     cout << "Mouse: Constructor" << endl;
   #endif
 
+  setType("Mouse");
   checkMandatoryHardwareTags(hw);
   if(mode_ != APERIODIC)
     throw(std::invalid_argument("Mouse has to be started as aperiodic device!"));
@@ -59,7 +60,7 @@ Mouse::Mouse(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
 
   initMouse();
 
-  ticpp::Iterator<ticpp::Element> ds(hw->FirstChildElement(cst_.hw_ds, true));
+  ticpp::Iterator<ticpp::Element> ds(hw->FirstChildElement(hw_devset_, true));
   setDeviceSettings(ds);
 
   data_.init(1, channel_types_.size() , channel_types_);
@@ -93,20 +94,22 @@ void Mouse::setDeviceSettings(ticpp::Iterator<ticpp::Element>const& father)
     cout << "Mouse: setDeviceSettings" << endl;
   #endif
 
-//   ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(cst_.hw_fs,true));
-//   setSamplingRate(elem);
+    //   ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(cst_.hw_fs,true));
+    //   setSamplingRate(elem);
 
-  //ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(cst_.hw_channels,true));
-//   elem = father->FirstChildElement(cst_.hw_channels,true);
+    //ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(cst_.hw_channels,true));
+    //   elem = father->FirstChildElement(cst_.hw_channels,true);
 
-    ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(cst_.hw_vid,true));
-    setVendorId(elem);
+  Constants cst;
 
-    ticpp::Iterator<ticpp::Element> elem2(father->FirstChildElement(cst_.hw_pid,true));
-    setProductId(elem2);
+  ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(cst.hw_vid,true));
+  setVendorId(elem);
 
-	ticpp::Iterator<ticpp::Element> elem3(father->FirstChildElement(cst_.usb_port,true));
-    setUsbPort(elem3);
+  ticpp::Iterator<ticpp::Element> elem2(father->FirstChildElement(cst.hw_pid,true));
+  setProductId(elem2);
+
+	ticpp::Iterator<ticpp::Element> elem3(father->FirstChildElement(cst.usb_port,true));
+  setUsbPort(elem3);
 
   string naming;
   string type;

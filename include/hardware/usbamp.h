@@ -257,7 +257,7 @@ class USBamp : public HWThread
     /**
     * @brief Mapping std::strings, representing g.USBamp filter types, and identifiers together.
     */
-    std::map<std::string, unsigned int> usbamp_filterTypes_;
+    std::map<std::string, unsigned int> usbamp_filter_types_;
 
     /**
     * @brief Mapping std::strings, representing g.USBamp operation modes, and identifiers together.
@@ -267,7 +267,7 @@ class USBamp : public HWThread
     /**
     * @brief Mapping std::strings, representing g.USBamp block namings, and identifiers together.
     */
-    std::map<std::string, unsigned int> usbamp_blockNames_;
+    std::map<std::string, unsigned int> usbamp_block_names_;
 
 };
 
