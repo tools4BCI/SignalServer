@@ -183,7 +183,7 @@ class HWThread
     * @param[in] channels Number of channels the device acquires.
     * @param[in] blocks   Blocksize used by the device.
     */
-    HWThread(XMLParser& parser, boost::uint32_t sampling_rate, boost::uint16_t channels, boost::uint16_t blocks)
+    HWThread(boost::uint32_t sampling_rate, boost::uint16_t channels, boost::uint16_t blocks)
     : nr_ch_(channels),fs_(sampling_rate), samples_available_(0), blocks_(blocks),
     mode_(SLAVE), running_(0)
     {    }
@@ -193,7 +193,7 @@ class HWThread
     *
     * Sets the device to 0 channel, sampling_rate 0 and blocksize 1.
     */
-    HWThread(XMLParser& parser)
+    HWThread()  // XMLParser& parser
     : nr_ch_(0),fs_(0), samples_available_(0), blocks_(1), mode_(SLAVE), running_(0)
     {    }
     //    , parser_(parser)

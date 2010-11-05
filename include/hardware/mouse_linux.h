@@ -28,15 +28,8 @@
 #ifndef MOUSE_H
 #define MOUSE_H
 
-#ifdef WIN32
-    #pragma comment(lib, "SDL.lib")
-    #pragma comment(lib, "SDLmain.lib")
-#endif
-
 #include <boost/cstdint.hpp>
 #include <set>
-#include <SDL/SDL.h>
-#include <cmath>
 
 #include "hw_thread.h"
 #include "hw_thread_builder.h"
@@ -52,7 +45,7 @@ namespace tobiss
 class Mouse : public HWThread
     {
     public:
-      Mouse(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw);
+      Mouse(ticpp::Iterator<ticpp::Element> hw);
 
       /**
       * @brief Destructor

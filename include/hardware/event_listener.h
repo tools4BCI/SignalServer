@@ -49,7 +49,7 @@ class EventListener : public HWThread
   /**
     * @brief Constructor
     */
-    EventListener(boost::asio::io_service& io, XMLParser& parser);
+    EventListener(boost::asio::io_service& io);
 
     /**
     * @brief Destructor

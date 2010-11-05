@@ -50,11 +50,11 @@ void HWThreadFactory::registerBuilder (std::string const& key, HWThreadBuilder* 
 }
 
 //-----------------------------------------------------------------------------
-HWThread* HWThreadFactory::createHWThread (std::string const& key, boost::asio::io_service& io, XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
+HWThread* HWThreadFactory::createHWThread (std::string const& key, boost::asio::io_service& io, ticpp::Iterator<ticpp::Element> hw)
 {
     if (builders_.find (key) == builders_.end())
         return 0;
-    return builders_[key]->createInstance (io, parser, hw);
+    return builders_[key]->createInstance (io, hw);
 }
 
 

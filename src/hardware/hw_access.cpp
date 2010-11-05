@@ -50,7 +50,7 @@ HWAccess::HWAccess(boost::asio::io_service& io, XMLParser& parser)
   {
     for(unsigned int n = 0; n < parser.getNrOfHardwareElements(); n++)
     {
-      HWThread* thread = HWThreadFactory::instance().createHWThread (parser.getHardwareElementName(n), io, parser, parser.getHardwareElement(n));
+      HWThread* thread = HWThreadFactory::instance().createHWThread (parser.getHardwareElementName(n), io, parser.getHardwareElement(n));
       if (thread)
         slaves_.push_back (thread);
     }
@@ -73,7 +73,7 @@ HWAccess::HWAccess(boost::asio::io_service& io, XMLParser& parser)
   doHWSetup();
   packet_.reset();
 
-  event_listener_ = new EventListener(io, parser);
+  event_listener_ = new EventListener(io);
 
   #ifdef TIMING_TEST
     lpt_flag_ = 0;

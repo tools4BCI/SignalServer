@@ -62,7 +62,7 @@ public:
     /**
     * the caller has to care for destruction of the created HWThread
     */
-    HWThread* createHWThread (std::string const& key, boost::asio::io_service& io, XMLParser& parser, ticpp::Iterator<ticpp::Element> hw);
+    HWThread* createHWThread (std::string const& key, boost::asio::io_service& io, ticpp::Iterator<ticpp::Element> hw);
 
 private:
     std::map<std::string, HWThreadBuilder*> builders_;

@@ -128,9 +128,8 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalOptions="/NODEFAULTLIB:MSVCRT"
-				AdditionalDependencies="ticpp.lib SDL.lib SDLmain.lib"
 				OutputFile="$(OutDir)\tia.lib"
-				AdditionalLibraryDirectories="extern\lib\g.usbamp\win;extern\lib\sdl\win;extern\lib\ticpp\win"
+				AdditionalLibraryDirectories=""
 			/>
 			<Tool
 				Name="VCALinkTool"

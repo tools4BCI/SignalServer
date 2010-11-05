@@ -32,8 +32,8 @@ using boost::uint32_t;
 
 //-----------------------------------------------------------------------------
 
-EventListener::EventListener(boost::asio::io_service& io, XMLParser& parser) :
-  HWThread(parser),
+EventListener::EventListener(boost::asio::io_service& io) :
+//  HWThread(parser),
   initialized_(0),
   event_socket_udp_(io),
   buffer_(EVENT_BUFFER_SIZE)

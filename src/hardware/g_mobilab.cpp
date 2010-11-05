@@ -122,9 +122,8 @@ const string GMobilab::hw_mobilab_multi_("multi");
 const HWThreadBuilderTemplateRegistrator<GMobilab> GMobilab::factory_registrator_ ("mobilab", "mobilab+", "g.mobilab", "g.mobilab+");
 
 //-----------------------------------------------------------------------------
-GMobilab::GMobilab(boost::asio::io_service& io, XMLParser& parser,
-         ticpp::Iterator<ticpp::Element> hw)
-  : SerialPortBase(io), HWThread(parser), type_(EEG), async_acqu_thread_(0)
+GMobilab::GMobilab(boost::asio::io_service& io, ticpp::Iterator<ticpp::Element> hw)
+  : SerialPortBase(io), HWThread(), mobilab_type_(MOBILAB_EEG), async_acqu_thread_(0)
 {
   setType("g.Mobilab");
   setHardware(hw);
@@ -256,7 +255,7 @@ void GMobilab::setHardware(ticpp::Iterator<ticpp::Element>const &hw)
     for(ticpp::Iterator<ticpp::Element> it(cs); ++it != it.end(); )
       if(it->Value() == hw_chset_)
       {
-        string ex_str(type_ + " -- ");
+        string ex_str(mobilab_type_ + " -- ");
         ex_str += "Multiple channel_settings found!";
         throw(std::invalid_argument(ex_str));
       }
@@ -279,9 +278,9 @@ void GMobilab::setDeviceSettings(ticpp::Iterator<ticpp::Element>const &father)
 
   elem = father->FirstChildElement(hw_mobilab_type_,true);
   if(elem->GetText(true) == hw_mobilab_eeg_)
-    type_ = EEG;
+    mobilab_type_ = MOBILAB_EEG;
   else if(elem->GetText(true) == hw_mobilab_multi_)
-    type_ = MULTI;
+    mobilab_type_ = MOBILAB_MULTI;
   else
     throw(std::invalid_argument(
         "GMobilab::setDeviceSettings() -- type not supported or wrong:") );
@@ -314,7 +313,7 @@ void GMobilab::setScalingValues()
 {
   // use only 50% of the sensitivity to get a correct scaling
 
-  if(type_ == EEG)
+  if(mobilab_type_ == MOBILAB_EEG)
   {
     std::map<boost::uint16_t, std::pair<std::string, boost::uint32_t> >::iterator it;
     for(it = channel_info_.begin(); it != channel_info_.end(); it++)
@@ -323,7 +322,7 @@ void GMobilab::setScalingValues()
           MOBILAB_EEG_SENSITIVITY/(2.0 * pow(2.0 ,MOBILAB_DAQ_RESOLUTION_BIT) ) );
     }
   }
-  if(type_ == MULTI)
+  if(mobilab_type_ == MOBILAB_MULTI)
   {
     double scaling = 0;
     double sensitivity = 0;

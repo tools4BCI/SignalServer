@@ -39,7 +39,7 @@ namespace tobiss
 class HWThreadBuilder
 {
 public:
-    virtual HWThread* createInstance (boost::asio::io_service& io, XMLParser& parser, ticpp::Iterator<ticpp::Element> hw) const = 0;
+    virtual HWThread* createInstance (boost::asio::io_service& io, ticpp::Iterator<ticpp::Element> hw) const = 0;
 protected:
     HWThreadBuilder () {}
 };
@@ -104,9 +104,9 @@ public:
         registerKey (key_6);
     }
 
-    virtual HWThread* createInstance (boost::asio::io_service& io, XMLParser& parser, ticpp::Iterator<ticpp::Element> hw) const
+    virtual HWThread* createInstance (boost::asio::io_service& io, ticpp::Iterator<ticpp::Element> hw) const
     {
-        return new T (io, parser, hw);
+        return new T (io, hw);
     }
 
 private:
@@ -177,9 +177,9 @@ public:
         registerKey (key_6);
     }
 
-    virtual HWThread* createInstance (boost::asio::io_service&, XMLParser& parser, ticpp::Iterator<ticpp::Element> hw) const
+    virtual HWThread* createInstance (boost::asio::io_service&, ticpp::Iterator<ticpp::Element> hw) const
     {
-        return new T (parser, hw);
+        return new T (hw);
     }
 
 private:

@@ -30,8 +30,8 @@ set<boost::uint16_t> Mouse::used_ids_;
 const HWThreadBuilderTemplateRegistratorWithoutIOService<Mouse> Mouse::FACTORY_REGISTRATOR_ ("mouse");
 
 //-----------------------------------------------------------------------------
-Mouse::Mouse(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
-  : HWThread(parser)
+Mouse::Mouse(ticpp::Iterator<ticpp::Element> hw)
+  : HWThread()
 {
   #ifdef DEBUG
     cout << "Mouse: Constructor" << endl;
