@@ -32,7 +32,7 @@
 
 // local
 #include "definitions/constants.h"
-#include "config/xml_parser.h"
+//#include "config/xml_parser.h"
 #include "signalserver/signal_server.h"
 
 #include "network/control_connection.h"
@@ -54,7 +54,8 @@ using boost::uint32_t;
 
 //-----------------------------------------------------------------------------
 
-ControlConnectionServer::ControlConnectionServer(boost::asio::io_service& io_service,
+ControlConnectionServer::ControlConnectionServer(std::map<std::string,std::string> subject_info,
+                                                 boost::asio::io_service& io_service,
                                                  SignalServer& server)
   : TCPServer(io_service),
   server_(server),
@@ -64,7 +65,7 @@ ControlConnectionServer::ControlConnectionServer(boost::asio::io_service& io_ser
   signal_info_ = new SignalInfo;
   subject_info_ = new SubjectInfo;
 
-  createSubjectInfo();
+  createSubjectInfo(subject_info);
   createSignalInfo();
 }
 
@@ -100,9 +101,9 @@ void ControlConnectionServer::getConfig(ConfigMsg& config)
 
 //-----------------------------------------------------------------------------
 
-void ControlConnectionServer::createSubjectInfo()
+void ControlConnectionServer::createSubjectInfo(std::map<std::string,std::string> subject_map)
 {
-  map<string,string> subject_map = server_.config_->parseSubject();
+//  map<string,string> subject_map = server_.config_->parseSubject();
 
   subject_info_->setId(subject_map["id"]);
   subject_info_->setFirstName(subject_map["first_name"]);

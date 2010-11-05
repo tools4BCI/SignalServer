@@ -126,6 +126,7 @@ GMobilab::GMobilab(boost::asio::io_service& io, XMLParser& parser,
          ticpp::Iterator<ticpp::Element> hw)
   : SerialPortBase(io), HWThread(parser), type_(EEG), async_acqu_thread_(0)
 {
+  setType("g.Mobilab");
   setHardware(hw);
 
   checkNrOfChannels();
@@ -255,10 +256,9 @@ void GMobilab::setHardware(ticpp::Iterator<ticpp::Element>const &hw)
     for(ticpp::Iterator<ticpp::Element> it(cs); ++it != it.end(); )
       if(it->Value() == hw_chset_)
       {
-        string ex_str;
-        ex_str = "Error in "+ hardware_name_ +" - " + m_.find(hardware_name_)->second + " -- ";
+        string ex_str(type_ + " -- ");
         ex_str += "Multiple channel_settings found!";
-        throw(ticpp::Exception(ex_str));
+        throw(std::invalid_argument(ex_str));
       }
       setChannelSettings(cs);
   }

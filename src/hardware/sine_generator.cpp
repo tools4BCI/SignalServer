@@ -52,6 +52,7 @@ SineGenerator::SineGenerator(boost::asio::io_service& io, XMLParser& parser, tic
     cout << "SineGenerator: Constructor" << endl;
   #endif
 
+  setType("Sine Generator");
   setHardware(hw);
 
   step_ = 1/static_cast<float>(fs_);
@@ -140,7 +141,7 @@ void SineGenerator::genSine()
     cout << "SineGenerator: genSine" << endl;
   #endif
 
-  for(uint8_t n = 0; n < nr_ch_ ; n++)
+  for(uint16_t n = 0; n < nr_ch_ ; n++)
     samples_[n] = sin(step_ * 2 * PI + n/4);
 
   (step_ < 1-cycle_dur_ ? step_ += cycle_dur_ : step_ = 0);
@@ -211,10 +212,9 @@ void SineGenerator::setHardware(ticpp::Iterator<ticpp::Element>const &hw)
     for(ticpp::Iterator<ticpp::Element> it(cs); ++it != it.end(); )
       if(it->Value() == hw_chset_)
       {
-        string ex_str;
-        ex_str = "Error in "+ hardware_name_ +" - " + m_.find(hardware_name_)->second + " -- ";
+        string ex_str(type_ + " -- ");
         ex_str += "Multiple channel_settings found!";
-        throw(ticpp::Exception(ex_str));
+        throw(std::invalid_argument(ex_str));
       }
       setChannelSettings(cs);
   }

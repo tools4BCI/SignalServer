@@ -46,13 +46,27 @@ HWAccess::HWAccess(boost::asio::io_service& io, XMLParser& parser)
     cout << "HWAccess Constructor" << endl;
   #endif
 
-  for(unsigned int n = 0; n < parser.getNrOfHardwareElements(); n++)
+  try
   {
+    for(unsigned int n = 0; n < parser.getNrOfHardwareElements(); n++)
+    {
       HWThread* thread = HWThreadFactory::instance().createHWThread (parser.getHardwareElementName(n), io, parser, parser.getHardwareElement(n));
       if (thread)
         slaves_.push_back (thread);
+    }
   }
-
+  catch(std::invalid_argument& e)
+  {
+    string ex_str("Error in hardware - ");
+    ex_str += + e.what();
+    throw;
+  }
+  catch(ticpp::Exception& e)
+  {
+    string ex_str("Error in hardware (TICPP exception)- ");
+    ex_str += + e.what();
+    throw(std::invalid_argument(ex_str));
+  }
 
   buildDataInfoMap();
   buildFsInfoMap();

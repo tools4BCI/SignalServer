@@ -237,6 +237,14 @@
 				Name="hardware"
 				>
 				<File
+					RelativePath=".\src\hardware\artificial_signal_source.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\hardware\eeg_simulator.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\hardware\event_listener.cpp"
 					>
 				</File>
@@ -305,6 +313,14 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="config"
+				>
+				<File
+					RelativePath=".\src\config\xml_parser.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -314,6 +330,14 @@
 			<Filter
 				Name="hardware"
 				>
+				<File
+					RelativePath=".\include\hardware\artificial_signal_source.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\hardware\eeg_simulator.h"
+					>
+				</File>
 				<File
 					RelativePath=".\include\hardware\event_listener.h"
 					>
@@ -388,6 +412,14 @@
 				</File>
 				<File
 					RelativePath=".\include\filereading\gdf_file_reader.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="config"
+				>
+				<File
+					RelativePath=".\include\config\xml_parser.h"
 					>
 				</File>
 			</Filter>

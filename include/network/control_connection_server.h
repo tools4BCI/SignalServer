@@ -69,7 +69,8 @@ public:
    * @param
    * @throw
    */
-  ControlConnectionServer(boost::asio::io_service& io_service, SignalServer& server);
+  ControlConnectionServer(std::map<std::string,std::string> subject_info,
+                          boost::asio::io_service& io_service, SignalServer& server);
   /**
    * @brief Destructor
    * @param
@@ -101,7 +102,7 @@ protected:
   /**
    * @brief Creates the SubjectInfo object
    */
-  void createSubjectInfo();
+  void createSubjectInfo(std::map<std::string,std::string> subject_info);
 
   /**
    * @brief Creates the SignalInfo object

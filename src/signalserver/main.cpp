@@ -167,7 +167,7 @@ int main(int argc, const char* argv[])
         server.setSamplingRatePerSignalType(hw_access.getSamplingRatePerSignalType());
         server.setChannelNames(hw_access.getChannelNames());
 
-        server.initialize(&config);
+        server.initialize(config.parseSubject(),config.parseServerSettings());
         hw_access.startDataAcquisition();
 
         io_thread_ptr  = new boost::thread(boost::bind(&boost::asio::io_service::run, &io_service));

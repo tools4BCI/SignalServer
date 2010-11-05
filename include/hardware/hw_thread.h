@@ -271,6 +271,11 @@ class HWThread
       return true;
     }
 
+    void setType(std::string s)
+    {
+      type_ = s;
+    }
+
 //-----------------------------------------------
 
   protected:
@@ -307,11 +312,13 @@ class HWThread
     */
     SampleBlock<double> data_;
 
+    std::string   type_;
+
     //-----------------------------------------------
     // Constant variables & methods:
 
-    static const std::string hardware_;
-    static const std::string hardware_name_;
+//    static const std::string hardware_;
+//    static const std::string hardware_name_;
     static const std::string hardware_version_;
     static const std::string hardware_serial_;
 
