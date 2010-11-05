@@ -24,13 +24,6 @@ win32:INCLUDEPATH += extern/include/SDL-1.2.14-VC8
 
 unix{
 QMAKE_CXXFLAGS += -pedantic
-
-versiontarget.target = ./update-version.sh
-versiontarget.commands = ./update-version.sh
-versiontarget.depends = FORCE
-
-PRE_TARGETDEPS += ./update-version.sh
-QMAKE_EXTRA_TARGETS += versiontarget
 }
 
 QMAKE_CXXFLAGS_WARN_ON = -Wall -pedantic
@@ -70,25 +63,24 @@ win32:SOURCES += extern/include/LptTools/LptTools_.cpp
 # -----------------------------------------------------------------------
 unix {
     LIBS += -lboost_thread \
-        -lboost_system \
-        -lSDL
+        -lboost_system
     HARDWARE_PLATFORM = $$system(uname -m)
     contains( HARDWARE_PLATFORM, x86_64 )::{
         message(Building 64 bit )
     # 64-bit Linux
-    LIBS += -L \
-        extern/lib/ticpp/linux \
-        -lticpp_64 \
-        -Lextern/lib/libgdf/linux \
-                 -llibgdf_64
+    #LIBS += -L \
+        #extern/lib/ticpp/linux \
+        #-lticpp_64 \
+        #-Lextern/lib/libgdf/linux \
+        #-llibgdf_64
     }else::{
     # 32-bit Linux
         message(Building 32 bit )
 
-    LIBS += -Lextern/lib/ticpp/linux \
-        -lticpp \
-        -Lextern/lib/libgdf/linux \
-        -llibgdf
+    #LIBS += -Lextern/lib/ticpp/linux \
+        #-lticpp \
+        #-Lextern/lib/libgdf/linux \
+        #-llibgdf
     }
 }
 win32:LIBS += extern\lib\sdl\win\SDL.lib \

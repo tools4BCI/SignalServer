@@ -22,31 +22,20 @@
 
 #include <math.h>
 
-#include <boost/lexical_cast.hpp>
-#include <boost/bind.hpp>
-
 namespace tobiss
 {
-using boost::uint8_t;
 using boost::uint16_t;
-using boost::uint32_t;
 
-using boost::lexical_cast;
-using boost::bad_lexical_cast;
-
-using std::map;
-using std::vector;
 using std::string;
 using std::cout;
 using std::endl;
-
 
 const HWThreadBuilderTemplateRegistrator<SineGenerator> SineGenerator::factory_registrator_ ("sinegen", "sinegenerator");
 
 //-----------------------------------------------------------------------------
 
 SineGenerator::SineGenerator(boost::asio::io_service& io, ticpp::Iterator<ticpp::Element> hw)
-: HWThread(), acquiring_(0), current_block_(0), td_(0)
+ : ArtificialSignalSource(io, hw)
 {
   #ifdef DEBUG
     cout << "SineGenerator: Constructor" << endl;
@@ -54,83 +43,17 @@ SineGenerator::SineGenerator(boost::asio::io_service& io, ticpp::Iterator<ticpp:
 
   setType("Sine Generator");
   setHardware(hw);
-
-  step_ = 1/static_cast<float>(fs_);
-  cycle_dur_ = 1/static_cast<float>(fs_);
-  boost::posix_time::microseconds period(1000000/fs_);
-  td_ += period;
-
-  buffer_.init(blocks_ , nr_ch_ , channel_types_);
-  data_.init(blocks_ , nr_ch_ , channel_types_);
-
-  samples_.resize(nr_ch_ ,0);
-  t_ = new boost::asio::deadline_timer(io, td_);
+  init();
 
   cout << " * SineGenerator sucessfully initialized" << endl;
   cout << "    fs: " << fs_ << "Hz, nr of channels: " << nr_ch_  << ", blocksize: " << blocks_  << endl;
-
 }
 
 //-----------------------------------------------------------------------------
 
-void SineGenerator::run()
+SineGenerator::~SineGenerator()
 {
-  #ifdef DEBUG
-    cout << "SineGenerator: run" << endl;
-  #endif
 
-  running_ = 1;
-  genSine();
-  cout << " * SineGenerator sucessfully started" << endl;
-}
-
-
-//-----------------------------------------------------------------------------
-
-void SineGenerator::stop()
-{
-  #ifdef DEBUG
-    cout << "SineGenerator: stop" << endl;
-  #endif
-
-  running_ = 0;
-  cond_.notify_all();
-  cout << " * SineGenerator sucessfully stopped" << endl;
-}
-
-//-----------------------------------------------------------------------------
-
-SampleBlock<double> SineGenerator::getSyncData()
-{
-  #ifdef DEBUG
-    cout << "SineGenerator: getSyncData" << endl;
-  #endif
-
-  if(!acquiring_)
-    acquiring_ = 1;
-
-  boost::unique_lock<boost::mutex> syn(sync_mut_);
-  while(!samples_available_ && running_)
-    cond_.wait(syn);
-  boost::shared_lock<boost::shared_mutex> lock(rw_);
-  samples_available_ = false;
-  lock.unlock();
-  cond_.notify_all();
-  syn.unlock();
-  return(data_);
-}
-
-//-----------------------------------------------------------------------------
-
-SampleBlock<double> SineGenerator::getAsyncData()
-{
-  #ifdef DEBUG
-    cout << "SineGenerator: getAsyncData" << endl;
-  #endif
-  boost::shared_lock<boost::shared_mutex> lock(rw_);
-  samples_available_ = false;
-  lock.unlock();
-  return(data_);
 }
 
 //-----------------------------------------------------------------------------
