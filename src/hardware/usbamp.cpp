@@ -62,6 +62,34 @@ static const unsigned int USBAMP_NR_OF_OVERLAPPED = 3;
 
 const HWThreadBuilderTemplateRegistratorWithoutIOService<USBamp> USBamp::FACTORY_REGISTRATOR_ ("usbamp", "g.usbamp");
 
+const string USBamp::hw_filter_("filter");
+const string USBamp::hw_filter_type_("type");
+const string USBamp::hw_filter_order_("order");
+const string USBamp::hw_filter_low_("f_low");
+const string USBamp::hw_filter_high_("f_high");
+
+const string USBamp::hw_notch_("notch");
+const string USBamp::hw_notch_center_("f_center");
+
+const string USBamp::hw_opmode_("operation_mode");
+const string USBamp::hw_sc_("shortcut");
+const string USBamp::hw_trigger_line_("trigger_line");
+const string USBamp::hw_usbampmaster_("usbamp_master");
+const string USBamp::hw_comgnd_("common_ground");
+const string USBamp::hw_gnd_("gnd");
+const string USBamp::hw_gnd_block_("block");
+const string USBamp::hw_gnd_value_("value");
+
+const string USBamp::hw_comref_("common_reference");
+const string USBamp::hw_cr_("cr");
+const string USBamp::hw_cr_block_("block");
+const string USBamp::hw_cr_value_("value");
+
+const string USBamp::hw_bipolar_("bipolar");
+const string USBamp::hw_bipolar_with_("with");
+const string USBamp::hw_drl_("driven_right_leg");
+const string USBamp::hw_drl_value_("value");
+
 //-----------------------------------------------------------------------------
 
 USBamp::USBamp(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
@@ -75,6 +103,20 @@ USBamp::USBamp(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
   #endif
 
   #pragma comment(lib,"gUSBamp.lib")
+
+  usbamp_filterTypes_.insert(pair <string,int>("chebyshev", 1));
+  usbamp_filterTypes_.insert(pair <string,int>("cheby", 1));
+  usbamp_filterTypes_.insert(pair <string,int>("butterworth", 2));
+  usbamp_filterTypes_.insert(pair <string,int>("butter", 2));
+
+  usbamp_opModes_.insert(pair <string,string>("normal", "M_NORMAL"));
+  usbamp_opModes_.insert(pair <string,string>("calibrate", "M_CALIBRATE"));
+  usbamp_opModes_.insert(pair <string,string>("impedance", "M_IMPEDANCE"));
+
+  usbamp_blockNames_.insert(pair <string,int>("a", 0));
+  usbamp_blockNames_.insert(pair <string,int>("b", 1));
+  usbamp_blockNames_.insert(pair <string,int>("c", 2));
+  usbamp_blockNames_.insert(pair <string,int>("d", 3));
 
   checkMandatoryHardwareTags(hw);
 
@@ -136,14 +178,16 @@ USBamp::USBamp(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
     }
 
     GND ground;
-    GT_GetGround(h_, &ground);
+    usb_amp_.getGround(h_, &ground);
+    //    GT_GetGround(h_, &ground);
 
     cout << "Ground settings: " << endl;
     cout << ground.GND1 << ", " << ground.GND2 << ", ";
     cout << ground.GND3 << ", " << ground.GND4 << endl;
 
     REF reference;
-    GT_GetReference(h_, &reference);
+    usb_amp_.getReference(h_, &reference);
+    //    GT_GetReference(h_, &reference);
 
     cout << "Reference settings: " << endl;
     cout << reference.ref1 << ", " << reference.ref2 << ", ";
@@ -194,18 +238,18 @@ void USBamp::setHardware(ticpp::Iterator<ticpp::Element>const& hw)
     cout << "USBamp: setHardware" << endl;
   #endif
 
-  ticpp::Iterator<ticpp::Element> ds(hw->FirstChildElement(cst_.hw_ds, true));
+  ticpp::Iterator<ticpp::Element> ds(hw->FirstChildElement(hw_devset_, true));
 
   setDeviceSettings(ds);
 
-  ticpp::Iterator<ticpp::Element> cs(hw->FirstChildElement(cst_.hw_cs, false));
+  ticpp::Iterator<ticpp::Element> cs(hw->FirstChildElement(hw_chset_, false));
   if (cs != cs.end())
   {
     for(ticpp::Iterator<ticpp::Element> it(cs); ++it != it.end(); )
-      if(it->Value() == cst_.hw_cs)
+      if(it->Value() == hw_chset_)
       {
         string ex_str;
-        ex_str = "Error in "+ cst_.hardware_name +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+        ex_str = "Error in "+ hardware_name_ +" - " + m_.find(hardware_name_)->second + " -- ";
         ex_str += "Multiple channel_settings found!";
         throw(ticpp::Exception(ex_str));
       }
@@ -395,18 +439,18 @@ void USBamp::getHandles()
     cout << "USBamp: getHandles" << endl;
   #endif
 
-  if(serials_.find(m_.find(cst_.hardware_serial)->second) != serials_.end())
+  if(serials_.find(m_.find(hardware_serial_)->second) != serials_.end())
     throw(std::invalid_argument("USBamp::getHandles -- g.USBamp with serial "\
-          +m_.find(cst_.hardware_serial)->second+" already in use!"));
+          +m_.find(hardware_serial_)->second+" already in use!"));
 
-  if(m_.find(cst_.hardware_serial)->second == "")
+  if(m_.find(hardware_serial_)->second == "")
     throw(std::invalid_argument("USBamp::getHandles -- No serial number for g.USBamp given!"));
 
-  serials_.insert(m_.find(cst_.hardware_serial)->second);
-  serial = m_.find(cst_.hardware_serial)->second;
+  serials_.insert(m_.find(hardware_serial_)->second);
+  serial = m_.find(hardware_serial_)->second;
 
   HANDLE h_tmp;
-  h_tmp = usb_amp_.openDeviceEx( const_cast<LPSTR>(  m_.find(cst_.hardware_serial)->second.c_str() ));
+  h_tmp = usb_amp_.openDeviceEx( const_cast<LPSTR>(  m_.find(hardware_serial_)->second.c_str() ));
   if(h_tmp != 0)
   {
     h_ = (h_tmp);
@@ -423,7 +467,7 @@ void USBamp::getHandles()
   }
   else
     throw(std::runtime_error("USBamp::getHandles -- g.USBamp with serial "\
-          +m_.find(cst_.hardware_serial)->second+" not connected!"));
+          +m_.find(hardware_serial_)->second+" not connected!"));
 }
 
 //-----------------------------------------------------------------------------
@@ -516,14 +560,14 @@ void USBamp::stop()
     throw(std::runtime_error("USBamp::stop -- Error closing the device!"));
 
   h_ = 0;
-  serials_.erase(m_.find(cst_.hardware_serial)->second);
+  serials_.erase(m_.find(hardware_serial_)->second);
 
   for(unsigned int n = 0; n < ov_.size(); n++)
     CloseHandle(data_Ev_[n]);
   lock.unlock();
 
-  cout << " * USBamp "  << m_.find(cst_.hardware_serial)->second <<  " sucessfully stopped" << endl;
-  serials_.erase(m_.find(cst_.hardware_serial)->second);
+  cout << " * USBamp "  << m_.find(hardware_serial_)->second <<  " sucessfully stopped" << endl;
+  serials_.erase(m_.find(hardware_serial_)->second);
 }
 
 //-----------------------------------------------------------------------------
@@ -534,15 +578,15 @@ void USBamp::setDeviceSettings(ticpp::Iterator<ticpp::Element>const &father)
     cout << "USBamp: setDeviceSettings" << endl;
   #endif
 
-  ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(cst_.hw_fs,true));
+  ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(hw_fs_,true));
     setSamplingRate(elem);
 
-  elem = father->FirstChildElement(cst_.hw_channels,false);
+  elem = father->FirstChildElement(hw_channels_,false);
   if(elem != elem.end())
     setDeviceChannels(elem);
   checkNrOfChannels();
 
-  elem = father->FirstChildElement(cst_.hw_buffer,false);
+  elem = father->FirstChildElement(hw_blocksize_,false);
   if(elem != elem.end())
     setBlocks(elem);
 
@@ -550,39 +594,39 @@ void USBamp::setDeviceSettings(ticpp::Iterator<ticpp::Element>const &father)
 
   //---- optional ---
 
-  elem = father->FirstChildElement(cst_.hw_fil,false);
+  elem = father->FirstChildElement(hw_filter_,false);
   if(elem != elem.end())
     setDeviceFilterSettings(elem);
 
-  elem = father->FirstChildElement(cst_.hw_notch,false);
+  elem = father->FirstChildElement(hw_notch_,false);
   if(elem != elem.end())
     setDeviceNotchSettings(elem);
 
-  elem = father->FirstChildElement(cst_.hw_opmode,false);
+  elem = father->FirstChildElement(hw_opmode_,false);
   if(elem != elem.end())
     setOperationMode(elem);
 
-  elem = father->FirstChildElement(cst_.hw_sc,false);
+  elem = father->FirstChildElement(hw_sc_,false);
   if(elem != elem.end())
     setShortCut(elem);
 
-  elem = father->FirstChildElement(cst_.hw_trigger_line,false);
+  elem = father->FirstChildElement(hw_trigger_line_,false);
   if(elem != elem.end())
     setTriggerLine(elem);
 
-  elem = father->FirstChildElement(cst_.hw_usbampmaster,false);
+  elem = father->FirstChildElement(hw_usbampmaster_,false);
   if(elem != elem.end())
     setUSBampMasterOrSlave(elem);
 
-  elem = father->FirstChildElement(cst_.hw_comgnd,false);
+  elem = father->FirstChildElement(hw_comgnd_,false);
   if(elem != elem.end())
     setCommonGround(elem);
 
-  elem = father->FirstChildElement(cst_.hw_comref,false);
+  elem = father->FirstChildElement(hw_comref_,false);
   if(elem != elem.end())
     setCommonReference(elem);
 
-  elem = father->FirstChildElement(cst_.hw_drl,false);
+  elem = father->FirstChildElement(hw_drl_,false);
   if(elem != elem.end())
     setDrivenRightLeg(elem);
 }
@@ -595,26 +639,26 @@ void USBamp::setChannelSettings(ticpp::Iterator<ticpp::Element>const &father)
     cout << "USBamp: setChannelSettings" << endl;
   #endif
 
-  ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(cst_.hw_sel,false));
+  ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(hw_chset_sel_,false));
   if (elem != elem.end())
     setChannelSelection(elem);
   checkNrOfChannels();
 
   adjustSettingsToChannelSelection();
 
-  elem = father->FirstChildElement(cst_.hw_fil,false);
+  elem = father->FirstChildElement(hw_filter_,false);
   if(elem != elem.end())
     setChannelFilterSettings(elem);
 
-  elem = father->FirstChildElement(cst_.hw_notch,false);
+  elem = father->FirstChildElement(hw_notch_,false);
   if(elem != elem.end())
     setChannelNotchSettings(elem);
 
-  elem = father->FirstChildElement(cst_.hw_bip,false);
+  elem = father->FirstChildElement(hw_bipolar_,false);
   if(elem != elem.end())
     setBipolar(elem);
 
-  elem = father->FirstChildElement(cst_.hw_drl,false);
+  elem = father->FirstChildElement(hw_drl_,false);
   if(elem != elem.end())
     setDrivenRightLeg(elem);
 }
@@ -720,38 +764,38 @@ void USBamp::setChannelFilterSettings(ticpp::Iterator<ticpp::Element>const &fath
   #endif
 
   ticpp::Iterator<ticpp::Element> elem;
-  elem = father->FirstChildElement(cst_.hw_cs_ch,false);
+  elem = father->FirstChildElement(hw_chset__ch,false);
 
   cout << " * g.USBamp -- channels specific filters set to:" << endl;
 
   for(  ; elem != elem.end(); elem++)
-    if(elem->Value() == cst_.hw_cs_ch)
+    if(elem->Value() == hw_chset__ch)
     {
-      if(!elem.Get()->HasAttribute(cst_.hw_ch_nr))
+      if(!elem.Get()->HasAttribute(hw_ch_nr_))
       {
         string ex_str;
-        ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-        ex_str += "Tag <"+cst_.hw_fil+"> given, but channel number ("+cst_.hw_ch_nr+") not given!";
+        ex_str = "Error in "+ hardware_ +" - " + m_.find(hardware_name_)->second + " -- ";
+        ex_str += "Tag <"+hw_filter_+"> given, but channel number ("+hw_ch_nr_+") not given!";
         throw(ticpp::Exception(ex_str));
       }
       checkFilterAttributes(elem);
 
       uint16_t ch = 0;
       try{
-        ch = lexical_cast<uint16_t>( elem.Get()->GetAttribute(cst_.hw_ch_nr) );
+        ch = lexical_cast<uint16_t>( elem.Get()->GetAttribute(hw_ch_nr_) );
       }
       catch(bad_lexical_cast &)
       {
         string ex_str;
-        ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-        ex_str += "Tag <"+ cst_.hw_fil + "> : Channel is not a number!";
+        ex_str = "Error in "+ hardware_ +" - " + m_.find(hardware_name_)->second + " -- ";
+        ex_str += "Tag <"+ hw_filter_ + "> : Channel is not a number!";
         throw(ticpp::Exception(ex_str));
       }
       if( channel_info_.find(ch) ==  channel_info_.end() )
       {
         string ex_str;
-        ex_str = "Error in"+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-        ex_str += "Tag <"+ cst_.hw_fil + "> - Channel "+ lexical_cast<string>(ch) +" not set for recording!";
+        ex_str = "Error in"+ hardware_ +" - " + m_.find(hardware_name_)->second + " -- ";
+        ex_str += "Tag <"+ hw_filter_ + "> - Channel "+ lexical_cast<string>(ch) +" not set for recording!";
         throw(ticpp::Exception(ex_str));
       }
 
@@ -771,7 +815,7 @@ void USBamp::setChannelFilterSettings(ticpp::Iterator<ticpp::Element>const &fath
       cout << "  ... channel: " << ch << ", order: " << order << ", f_low: " << f_low << ", f_high: " << f_high << endl;
     }
     else
-      throw(std::invalid_argument("USBamp::setChannelFilterSettings -- Tag not equal to \""+cst_.hw_cs_ch+"\"!"));
+      throw(std::invalid_argument("USBamp::setChannelFilterSettings -- Tag not equal to \""+hw_chset__ch+"\"!"));
 }
 
 //---------------------------------------------------------------------------------------
@@ -783,19 +827,19 @@ void USBamp::getFilterParams(ticpp::Iterator<ticpp::Element>const &elem,\
     cout << "USBamp: getFilterParams" << endl;
   #endif
 
-  type = cst_.getUSBampFilterType( elem.Get()->GetAttribute(cst_.hw_fil_type) );
+  type = getUSBampFilterType( elem.Get()->GetAttribute(hw_filter__type) );
   try
   {
-    order = lexical_cast<unsigned int>( elem.Get()->GetAttribute(cst_.hw_fil_order) );
+    order = lexical_cast<unsigned int>( elem.Get()->GetAttribute(hw_filter__order) );
 
-    f_low  = lexical_cast<double>( elem.Get()->GetAttribute(cst_.hw_fil_low) );
-    f_high = lexical_cast<double>( elem.Get()->GetAttribute(cst_.hw_fil_high ));
+    f_low  = lexical_cast<double>( elem.Get()->GetAttribute(hw_filter__low) );
+    f_high = lexical_cast<double>( elem.Get()->GetAttribute(hw_filter__high ));
   }
   catch(bad_lexical_cast &)
   {
     string ex_str;
-    ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-    ex_str += "Tag <"+cst_.hw_fil+"> given, but order, lower or upper cutoff frequency is not a number!";
+    ex_str = "Error in "+ hardware_ +" - " + m_.find(hardware_name_)->second + " -- ";
+    ex_str += "Tag <"+hw_filter_+"> given, but order, lower or upper cutoff frequency is not a number!";
     throw(ticpp::Exception(ex_str));
   }
 }
@@ -808,32 +852,32 @@ void USBamp::checkFilterAttributes(ticpp::Iterator<ticpp::Element>const &elem)
     cout << "USBamp: checkFilterAttributes" << endl;
   #endif
 
-  if(!elem.Get()->HasAttribute(cst_.hw_fil_type))
+  if(!elem.Get()->HasAttribute(hw_filter__type))
   {
     string ex_str;
-    ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-    ex_str += "Tag <"+cst_.hw_fil+"> given, filter type ("+cst_.hw_fil_type+") not given!";
+    ex_str = "Error in "+ hardware_ +" - " + m_.find(hardware_name_)->second + " -- ";
+    ex_str += "Tag <"+hw_filter_+"> given, filter type ("+hw_filter__type+") not given!";
     throw(ticpp::Exception(ex_str));
   }
-  if(!elem.Get()->HasAttribute(cst_.hw_fil_order))
+  if(!elem.Get()->HasAttribute(hw_filter__order))
   {
     string ex_str;
-    ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-    ex_str += "Tag <"+cst_.hw_fil+"> given, filter order ("+cst_.hw_fil_order+") not given!";
+    ex_str = "Error in "+ hardware_ +" - " + m_.find(hardware_name_)->second + " -- ";
+    ex_str += "Tag <"+hw_filter_+"> given, filter order ("+hw_filter__order+") not given!";
     throw(ticpp::Exception(ex_str));
   }
-  if(!elem.Get()->HasAttribute(cst_.hw_fil_low))
+  if(!elem.Get()->HasAttribute(hw_filter__low))
   {
     string ex_str;
-    ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-    ex_str += "Tag <"+cst_.hw_fil+"> given, lower cutoff frequency ("+cst_.hw_fil_low+") not given!";
+    ex_str = "Error in "+ hardware_ +" - " + m_.find(hardware_name_)->second + " -- ";
+    ex_str += "Tag <"+hw_filter_+"> given, lower cutoff frequency ("+hw_filter__low+") not given!";
     throw(ticpp::Exception(ex_str));
   }
-  if(!elem.Get()->HasAttribute(cst_.hw_fil_high))
+  if(!elem.Get()->HasAttribute(hw_filter__high))
   {
     string ex_str;
-    ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-    ex_str += "Tag <"+cst_.hw_fil+"> given, upper cutoff frequency ("+cst_.hw_fil_high+") not given!";
+    ex_str = "Error in "+ hardware_ +" - " + m_.find(hardware_name_)->second + " -- ";
+    ex_str += "Tag <"+hw_filter_+"> given, upper cutoff frequency ("+hw_filter__high+") not given!";
     throw(ticpp::Exception(ex_str));
   }
 }
@@ -897,35 +941,35 @@ void USBamp::setChannelNotchSettings(ticpp::Iterator<ticpp::Element>const &fathe
   #endif
 
   ticpp::Iterator<ticpp::Element> elem;
-  elem = father->FirstChildElement(cst_.hw_cs_ch,false);
+  elem = father->FirstChildElement(hw_chset__ch,false);
   for(  ; elem != elem.end(); elem++)
-    if(elem->Value() == cst_.hw_cs_ch)
+    if(elem->Value() == hw_chset__ch)
     {
-      if(!elem.Get()->HasAttribute(cst_.hw_ch_nr))
+      if(!elem.Get()->HasAttribute(hw_ch_nr_))
       {
         string ex_str;
-        ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-        ex_str += "Tag <"+cst_.hw_notch+"> given, but channel number ("+cst_.hw_ch_nr+") not given!";
+        ex_str = "Error in "+ hardware_ +" - " + m_.find(hardware_name_)->second + " -- ";
+        ex_str += "Tag <"+hw_notch_+"> given, but channel number ("+hw_ch_nr_+") not given!";
         throw(ticpp::Exception(ex_str));
       }
       checkNotchAttributes(elem);
 
       uint16_t ch = 0;
       try{
-        ch = lexical_cast<uint16_t>( elem.Get()->GetAttribute(cst_.hw_ch_nr) );
+        ch = lexical_cast<uint16_t>( elem.Get()->GetAttribute(hw_ch_nr_) );
       }
       catch(bad_lexical_cast &)
       {
         string ex_str;
-        ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-        ex_str += "Tag <"+ cst_.hw_notch + "> : Channel is not a number!";
+        ex_str = "Error in "+ hardware_ +" - " + m_.find(hardware_name_)->second + " -- ";
+        ex_str += "Tag <"+ hw_notch_ + "> : Channel is not a number!";
         throw(ticpp::Exception(ex_str));
       }
       if( channel_info_.find(ch) ==  channel_info_.end() )
       {
         string ex_str;
-        ex_str = "Error in"+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-        ex_str += "Tag <"+ cst_.hw_notch + "> - Channel "+ lexical_cast<string>(ch) +" not set for recording!";
+        ex_str = "Error in"+ hardware_ +" - " + m_.find(hardware_name_)->second + " -- ";
+        ex_str += "Tag <"+ hw_notch_ + "> - Channel "+ lexical_cast<string>(ch) +" not set for recording!";
         throw(ticpp::Exception(ex_str));
       }
 
@@ -940,7 +984,7 @@ void USBamp::setChannelNotchSettings(ticpp::Iterator<ticpp::Element>const &fathe
       notch_id_.at(ch_pos) = search4NotchID(f_center);
     }
     else
-      throw(std::invalid_argument("USBamp::setChannelNotchSettings -- Tag not equal to \""+cst_.hw_cs_ch+"\"!"));
+      throw(std::invalid_argument("USBamp::setChannelNotchSettings -- Tag not equal to \""+hw_chset__ch+"\"!"));
 }
 
 //---------------------------------------------------------------------------------------
@@ -951,11 +995,11 @@ void USBamp::checkNotchAttributes(ticpp::Iterator<ticpp::Element>const &elem)
     cout << "USBamp: checkNotchAttributes" << endl;
   #endif
 
-  if(!elem.Get()->HasAttribute(cst_.hw_notch_center))
+  if(!elem.Get()->HasAttribute(hw_notch__center))
   {
     string ex_str;
-    ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-    ex_str += "Tag <"+cst_.hw_notch+"> given, notch center frequency ("+cst_.hw_notch_center+") not given!";
+    ex_str = "Error in "+ hardware_ +" - " + m_.find(hardware_name_)->second + " -- ";
+    ex_str += "Tag <"+hw_notch_+"> given, notch center frequency ("+hw_notch__center+") not given!";
     throw(ticpp::Exception(ex_str));
   }
 }
@@ -970,13 +1014,13 @@ void USBamp::getNotchParams(ticpp::Iterator<ticpp::Element>const &elem, float &f
 
   try
   {
-    f_center = lexical_cast<float>( elem.Get()->GetAttribute(cst_.hw_notch_center));
+    f_center = lexical_cast<float>( elem.Get()->GetAttribute(hw_notch__center));
   }
   catch(bad_lexical_cast &)
   {
     string ex_str;
-    ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-    ex_str += "Tag <"+cst_.hw_notch+"> given, but center frequency is not a number!";
+    ex_str = "Error in "+ hardware_ +" - " + m_.find(hardware_name_)->second + " -- ";
+    ex_str += "Tag <"+hw_notch_+"> given, but center frequency is not a number!";
     throw(ticpp::Exception(ex_str));
   }
 }
@@ -1017,7 +1061,7 @@ void USBamp::setOperationMode(ticpp::Iterator<ticpp::Element>const &elem)
     cout << "USBamp: setOperationMode" << endl;
   #endif
 
-  //string op_mode( cst.getUSBampOpMode( elem->GetText(true) ) );
+  //string op_mode( getUSBampOpMode( elem->GetText(true) ) );
 
   //FIXME   --  if needed, implementation of other operation modes
   if(elem->GetText(true) != "normal")
@@ -1033,7 +1077,7 @@ void USBamp::setShortCut(ticpp::Iterator<ticpp::Element>const &elem)
     cout << "USBamp: setShortCut" << endl;
   #endif
 
-  enable_sc_ = cst_.equalsOnOrOff(elem->GetText(true));
+  enable_sc_ = equalsOnOrOff(elem->GetText(true));
 }
 
 //---------------------------------------------------------------------------------------
@@ -1044,7 +1088,7 @@ void USBamp::setTriggerLine(ticpp::Iterator<ticpp::Element>const &elem)
     cout << "USBamp: setTriggerLine" << endl;
   #endif
 
-  trigger_line_ = cst_.equalsOnOrOff(elem->GetText(true));
+  trigger_line_ = equalsOnOrOff(elem->GetText(true));
 }
 
 //---------------------------------------------------------------------------------------
@@ -1055,7 +1099,7 @@ void USBamp::setUSBampMasterOrSlave(ticpp::Iterator<ticpp::Element>const &elem)
     cout << "USBamp: setUSBampMasterOrSlave" << endl;
   #endif
 
-  external_sync_ = !(cst_.equalsYesOrNo(elem->GetText(true)));
+  external_sync_ = !(equalsYesOrNo(elem->GetText(true)));
 
   if(is_usbamp_master_ && !external_sync_)
     throw(std::runtime_error("USBamp::setUSBampMasterOrSlave -- Only one USBamp master allowed!"));
@@ -1076,30 +1120,30 @@ void USBamp::setCommonGround(ticpp::Iterator<ticpp::Element>const &father)
   elem = father->FirstChildElement(false);
 
   for(  ; elem != elem.end(); elem++)
-    if(elem->Value() == cst_.hw_gnd)
+    if(elem->Value() == hw_gnd_)
     {
-      if(!elem.Get()->HasAttribute(cst_.hw_gnd_block))
+      if(!elem.Get()->HasAttribute(hw_gnd_block_))
       {
         string ex_str;
-        ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-        ex_str += "Tag <"+cst_.hw_comgnd+"> given, but block identifier ("+cst_.hw_gnd_block+") not given!";
+        ex_str = "Error in "+ hardware_ +" - " + m_.find(hardware_name_)->second + " -- ";
+        ex_str += "Tag <"+hw_comgnd_+"> given, but block identifier ("+hw_gnd_block_+") not given!";
         throw(ticpp::Exception(ex_str));
       }
-      if(!elem.Get()->HasAttribute(cst_.hw_gnd_value))
+      if(!elem.Get()->HasAttribute(hw_gnd_value_))
       {
         string ex_str;
-        ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-        ex_str += "Tag <"+cst_.hw_comgnd+"> given, but block value ("+cst_.hw_gnd_value+") not given!";
+        ex_str = "Error in "+ hardware_ +" - " + m_.find(hardware_name_)->second + " -- ";
+        ex_str += "Tag <"+hw_comgnd_+"> given, but block value ("+hw_gnd_value_+") not given!";
         throw(ticpp::Exception(ex_str));
       }
 
-      int gnd = cst_.getUSBampBlockNr( elem.Get()->GetAttribute(cst_.hw_gnd_block) );
-      bool b = cst_.equalsYesOrNo( elem.Get()->GetAttribute(cst_.hw_gnd_value) );
+      int gnd = getUSBampBlockNr( elem.Get()->GetAttribute(hw_gnd_block_) );
+      bool b = equalsYesOrNo( elem.Get()->GetAttribute(hw_gnd_value_) );
 
       v.at(gnd) = b;
     }
     else
-      throw(std::invalid_argument("USBamp::setCommonGround -- Tag not equal to \""+cst_.hw_gnd+"\"!"));
+      throw(std::invalid_argument("USBamp::setCommonGround -- Tag not equal to \""+hw_gnd_+"\"!"));
 
   //FIXME   --  hardcoded values
   ground_.GND1 = v.at(0);
@@ -1121,30 +1165,30 @@ void USBamp::setCommonReference(ticpp::Iterator<ticpp::Element>const &father)
   elem = father->FirstChildElement(false);
 
   for(  ; elem != elem.end(); elem++)
-    if(elem->Value() == cst_.hw_cr)
+    if(elem->Value() == hw_cr_)
     {
-      if(!elem.Get()->HasAttribute(cst_.hw_cr_block))
+      if(!elem.Get()->HasAttribute(hw_cr_block_))
       {
         string ex_str;
-        ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-        ex_str += "Tag <"+cst_.hw_comref+"> given, but block identifier ("+cst_.hw_cr_block+") not given!";
+        ex_str = "Error in "+ hardware_ +" - " + m_.find(hardware_name_)->second + " -- ";
+        ex_str += "Tag <"+hw_comref_+"> given, but block identifier ("+hw_cr_block_+") not given!";
         throw(ticpp::Exception(ex_str));
       }
-      if(!elem.Get()->HasAttribute(cst_.hw_cr_value))
+      if(!elem.Get()->HasAttribute(hw_cr_value_))
       {
         string ex_str;
-        ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-        ex_str += "Tag <"+cst_.hw_comref+"> given, but block value ("+cst_.hw_cr_value+") not given!";
+        ex_str = "Error in "+ hardware_ +" - " + m_.find(hardware_name_)->second + " -- ";
+        ex_str += "Tag <"+hw_comref_+"> given, but block value ("+hw_cr_value_+") not given!";
         throw(ticpp::Exception(ex_str));
       }
 
-      int ref = cst_.getUSBampBlockNr( elem.Get()->GetAttribute(cst_.hw_cr_block) );
-      bool b = cst_.equalsYesOrNo( elem.Get()->GetAttribute(cst_.hw_cr_value) );
+      int ref = getUSBampBlockNr( elem.Get()->GetAttribute(hw_cr_block_) );
+      bool b = equalsYesOrNo( elem.Get()->GetAttribute(hw_cr_value_) );
 
       v.at(ref) = b;
     }
     else
-      throw(std::invalid_argument("USBamp::setCommonReference -- Tag not equal to \""+cst_.hw_cr+"\"!"));
+      throw(std::invalid_argument("USBamp::setCommonReference -- Tag not equal to \""+hw_cr_+"\"!"));
 
   //FIXME   --  hardcoded values
   reference_.ref1 = v.at(0);
@@ -1164,23 +1208,23 @@ void USBamp::setBipolar(ticpp::Iterator<ticpp::Element>const &father)
 
   ticpp::Iterator<ticpp::Element> elem;
   vector<uint8_t> v(USBAMP_MAX_NR_OF_CHANNELS,0);
-  elem = father->FirstChildElement(cst_.hw_cs_ch,false);
+  elem = father->FirstChildElement(hw_chset__ch,false);
 
   for(  ; elem != elem.end(); elem++)
-    if(elem->Value() == cst_.hw_cs_ch)
+    if(elem->Value() == hw_chset__ch)
     {
-      if(!elem.Get()->HasAttribute(cst_.hw_ch_nr))
+      if(!elem.Get()->HasAttribute(hw_ch_nr_))
       {
         string ex_str;
-        ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-        ex_str += "Tag <"+cst_.hw_bip+"> given, but channel number ("+cst_.hw_ch_nr+") not given!";
+        ex_str = "Error in "+ hardware_ +" - " + m_.find(hardware_name_)->second + " -- ";
+        ex_str += "Tag <"+hw_bipolar_+"> given, but channel number ("+hw_ch_nr_+") not given!";
         throw(ticpp::Exception(ex_str));
       }
-      if(!elem.Get()->HasAttribute(cst_.hw_bip_with))
+      if(!elem.Get()->HasAttribute(hw_bip_with_))
       {
         string ex_str;
-        ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-        ex_str += "Tag <"+cst_.hw_bip+"> given, but bipolar combination ("+cst_.hw_drl_value+") not given!";
+        ex_str = "Error in "+ hardware_ +" - " + m_.find(hardware_name_)->second + " -- ";
+        ex_str += "Tag <"+hw_bipolar_+"> given, but bipolar combination ("+hw_bipolar_with_+") not given!";
         throw(ticpp::Exception(ex_str));
       }
 
@@ -1188,21 +1232,21 @@ void USBamp::setBipolar(ticpp::Iterator<ticpp::Element>const &father)
       uint16_t ch   = 0;
 
       try{
-        with = lexical_cast<uint16_t>( elem.Get()->GetAttribute(cst_.hw_bip_with) );
-        ch   = lexical_cast<uint16_t>( elem.Get()->GetAttribute(cst_.hw_ch_nr) );
+        with = lexical_cast<uint16_t>( elem.Get()->GetAttribute(hw_bipolar_with_) );
+        ch   = lexical_cast<uint16_t>( elem.Get()->GetAttribute(hw_ch_nr_) );
       }
       catch(bad_lexical_cast &)
       {
         string ex_str;
-        ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-        ex_str += "Tag <"+ cst_.hw_drl + "> : Channel is not a number!";
+        ex_str = "Error in "+ hardware_ +" - " + m_.find(hardware_name_)->second + " -- ";
+        ex_str += "Tag <"+ hw_bipolar_ + "> : Channel is not a number!";
         throw(ticpp::Exception(ex_str));
       }
       if( (channel_info_.find(ch) ==  channel_info_.end()) || (channel_info_.find(with) ==  channel_info_.end()) )
       {
         string ex_str;
-        ex_str = "Error in"+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-        ex_str += "Tag <"+ cst_.hw_bip + "> - Channel "+ lexical_cast<string>(ch) +" not set for recording!";
+        ex_str = "Error in"+ hardware_ +" - " + m_.find(hardware_name_)->second + " -- ";
+        ex_str += "Tag <"+ hw_bipolar + "> - Channel "+ lexical_cast<string>(ch) +" not set for recording!";
         throw(ticpp::Exception(ex_str));
       }
 
@@ -1211,7 +1255,7 @@ void USBamp::setBipolar(ticpp::Iterator<ticpp::Element>const &father)
       v.at(ch) = boost::numeric_cast<uint8_t>(with);
     }
     else
-      throw(std::invalid_argument("USBamp::setBipolar -- Tag not equal to \""+cst_.hw_cs_ch+"\"!"));
+      throw(std::invalid_argument("USBamp::setBipolar -- Tag not equal to \""+hw_chset__ch+"\"!"));
 
   //FIXME   --  hardcoded values
   bipolar_channels_.Channel1 = v.at(0);
@@ -1241,14 +1285,14 @@ void USBamp::setDrivenRightLeg(ticpp::Iterator<ticpp::Element>const &father)
   #endif
 
   ticpp::Iterator<ticpp::Element> elem;
-  elem = father->FirstChildElement(cst_.hw_cs_ch,false);
+  elem = father->FirstChildElement(hw_chset__ch,false);
   if(elem != elem.end())
   {
     setIndividualDrivenRightLeg(elem);
     return;
   }
 
-  if(cst_.equalsYesOrNo(father->GetText(true)))
+  if(equalsYesOrNo(father->GetText(true)))
   {
     drl_channels_.Channel1 = 1;
     drl_channels_.Channel2 = 1;
@@ -1280,48 +1324,48 @@ void USBamp::setIndividualDrivenRightLeg(ticpp::Iterator<ticpp::Element> &elem)
   vector<uint8_t> v(USBAMP_MAX_NR_OF_CHANNELS,0);
 
   for(  ; elem != elem.end(); elem++)
-    if(elem->Value() == cst_.hw_cs_ch)
+    if(elem->Value() == hw_chset__ch)
     {
-      if(!elem.Get()->HasAttribute(cst_.hw_ch_nr))
+      if(!elem.Get()->HasAttribute(hw_ch_nr_))
       {
         string ex_str;
-        ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-        ex_str += "Tag <"+cst_.hw_drl+"> given, but channel number ("+cst_.hw_ch_nr+") not given!";
+        ex_str = "Error in "+ hardware_ +" - " + m_.find(hardware_name_)->second + " -- ";
+        ex_str += "Tag <"+hw_drl_+"> given, but channel number ("+hw_ch_nr_+") not given!";
         throw(ticpp::Exception(ex_str));
       }
-      if(!elem.Get()->HasAttribute(cst_.hw_drl_value))
+      if(!elem.Get()->HasAttribute(hw_drl_value_))
       {
         string ex_str;
-        ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-        ex_str += "Tag <"+cst_.hw_drl+"> given, but DRL value ("+cst_.hw_drl_value+") not given!";
+        ex_str = "Error in "+ hardware_ +" - " + m_.find(hardware_name_)->second + " -- ";
+        ex_str += "Tag <"+hw_drl_+"> given, but DRL value ("+hw_drl_value_+") not given!";
         throw(ticpp::Exception(ex_str));
       }
 
-      bool b = cst_.equalsOnOrOff( elem.Get()->GetAttribute(cst_.hw_drl_value) );
+      bool b = equalsOnOrOff( elem.Get()->GetAttribute(hw_drl_value_) );
       uint16_t ch   = 0;
 
       try{
-        ch = lexical_cast<uint16_t>( elem.Get()->GetAttribute(cst_.hw_ch_nr) );
+        ch = lexical_cast<uint16_t>( elem.Get()->GetAttribute(hw_ch_nr_) );
       }
       catch(bad_lexical_cast &)
       {
         string ex_str;
-        ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-        ex_str += "Tag <"+ cst_.hw_drl + "> : Channel is not a number!";
+        ex_str = "Error in "+ hardware_ +" - " + m_.find(hardware_name_)->second + " -- ";
+        ex_str += "Tag <"+ hw_drl_ + "> : Channel is not a number!";
         throw(ticpp::Exception(ex_str));
       }
       if( channel_info_.find(ch) ==  channel_info_.end() )
       {
         string ex_str;
-        ex_str = "Error in"+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-        ex_str += "Tag <"+ cst_.hw_drl + "> - Channel "+ lexical_cast<string>(ch) +" not set for recording!";
+        ex_str = "Error in"+ hardware_ +" - " + m_.find(hardware_name_)->second + " -- ";
+        ex_str += "Tag <"+ hw_drl_ + "> - Channel "+ lexical_cast<string>(ch) +" not set for recording!";
         throw(ticpp::Exception(ex_str));
       }
 
       v.at(ch-1) = b;
     }
     else
-      throw(std::invalid_argument("USBamp::setIndividualDrivenRightLeg -- Tag not equal to \""+cst_.hw_cs_ch+"\"!"));
+      throw(std::invalid_argument("USBamp::setIndividualDrivenRightLeg -- Tag not equal to \""+hw_chset__ch+"\"!"));
 
     //FIXME   --  hardcoded values
     drl_channels_.Channel1 = v.at(0);
@@ -1487,7 +1531,7 @@ void USBamp::checkTriggerLineChannel()
 
   if(trigger_line_)
   {
-    channel_info_[channel_info_.size() + 1] = make_pair(cst_.hw_trigger_line, SIG_USER_1);
+    channel_info_[channel_info_.size() + 1] = make_pair(hw_trigger_line_, SIG_USER_1);
     nr_ch_ += 1;
     homogenous_signal_type_ = 0;
     setChannelTypes();
@@ -1536,6 +1580,48 @@ void USBamp::initUSBamp()
 
   setUSBampFilter();
   setUSBampNotch();
+}
+
+//-----------------------------------------------------------------------------
+
+int USBamp::getUSBampFilterType(const string& s)
+{
+  map<string, unsigned int>::iterator it;
+  it = usbamp_filterTypes_.find(to_lower_copy(s));
+  if(it == usbamp_filterTypes.end())
+  {
+    string e = "USBamp filter type \"" + s + "\" not found -- please also check spelling!";
+    throw(std::invalid_argument(e));
+  }
+  return(it->second);
+}
+
+//-----------------------------------------------------------------------------
+
+string USBamp::getUSBampOpMode(const string& s)
+{
+  map<string, string>::iterator it;
+  it = usbamp_opModes_.find(to_lower_copy(s));
+  if(it == usbamp_opModes.end())
+  {
+    string e = "USBamp operation mode \"" + s + "\" not found -- please also check spelling!";
+    throw(std::invalid_argument(e));
+  }
+  return(it->second);
+}
+
+//-----------------------------------------------------------------------------
+
+int USBamp::getUSBampBlockNr(const string& s)
+{
+  map<string, unsigned int>::iterator it;
+  it = usbamp_blockNames_.find(to_lower_copy(s));
+  if(it == usbamp_blockNames.end())
+  {
+    string e = "USBamp channel block \"" + s + "\" wrong -- must be \"a, b, c or d\"!";
+    throw(std::invalid_argument(e));
+  }
+  return(it->second);
 }
 
 //-----------------------------------------------------------------------------

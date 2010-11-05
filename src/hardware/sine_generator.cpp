@@ -201,18 +201,18 @@ void SineGenerator::setHardware(ticpp::Iterator<ticpp::Element>const &hw)
   #endif
 
   checkMandatoryHardwareTags(hw);
-  ticpp::Iterator<ticpp::Element> ds(hw->FirstChildElement(cst_.hw_ds, true));
+  ticpp::Iterator<ticpp::Element> ds(hw->FirstChildElement(hw_devset_, true));
 
   setDeviceSettings(ds);
 
-  ticpp::Iterator<ticpp::Element> cs(hw->FirstChildElement(cst_.hw_cs, false));
+  ticpp::Iterator<ticpp::Element> cs(hw->FirstChildElement(hw_chset_, false));
   if (cs != cs.end())
   {
     for(ticpp::Iterator<ticpp::Element> it(cs); ++it != it.end(); )
-      if(it->Value() == cst_.hw_cs)
+      if(it->Value() == hw_chset_)
       {
         string ex_str;
-        ex_str = "Error in "+ cst_.hardware_name +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+        ex_str = "Error in "+ hardware_name_ +" - " + m_.find(hardware_name_)->second + " -- ";
         ex_str += "Multiple channel_settings found!";
         throw(ticpp::Exception(ex_str));
       }
@@ -228,14 +228,14 @@ void SineGenerator::setDeviceSettings(ticpp::Iterator<ticpp::Element>const &fath
     cout << "SineGenerator: setDeviceSettings" << endl;
   #endif
 
-  ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(cst_.hw_fs,true));
+  ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(hw_fs_,true));
   setSamplingRate(elem);
 
-  elem = father->FirstChildElement(cst_.hw_channels,false);
+  elem = father->FirstChildElement(hw_channels_,false);
   if(elem != elem.end())
     setDeviceChannels(elem);
 
-  elem = father->FirstChildElement(cst_.hw_buffer,false);
+  elem = father->FirstChildElement(hw_blocksize_,false);
   if(elem != elem.end())
     setBlocks(elem);
 }
@@ -248,7 +248,7 @@ void SineGenerator::setChannelSettings(ticpp::Iterator<ticpp::Element>const &fat
     cout << "SineGenerator: setChannelSettings" << endl;
   #endif
 
-  ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(cst_.hw_sel,false));
+  ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(hw_chset_sel_,false));
   if (elem != elem.end())
     setChannelSelection(elem);
 }

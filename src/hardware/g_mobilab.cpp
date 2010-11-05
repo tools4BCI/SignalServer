@@ -61,6 +61,12 @@ static const std::string  MOBILAB_FLOW_CONTROL = "none";
 static const std::string  MOBILAB_STOP_BITS    = "1";
 static const std::string  MOBILAB_PARITY       = "none";
 
+
+const string GMobilab::hw_mobilab_serial_port_("serial_port");
+const string GMobilab::hw_mobilab_type_("mobilab_type");
+const string GMobilab::hw_mobilab_eeg_("eeg");
+const string GMobilab::hw_mobilab_multi_("multi");
+
 //-----------------------------------------------------------------------------
 
 #ifndef WIN32
@@ -239,18 +245,18 @@ void GMobilab::setHardware(ticpp::Iterator<ticpp::Element>const &hw)
   #endif
 
   checkMandatoryHardwareTags(hw);
-  ticpp::Iterator<ticpp::Element> ds(hw->FirstChildElement(cst_.hw_ds, true));
+  ticpp::Iterator<ticpp::Element> ds(hw->FirstChildElement(hw_devset_, true));
 
   setDeviceSettings(ds);
 
-  ticpp::Iterator<ticpp::Element> cs(hw->FirstChildElement(cst_.hw_cs, false));
+  ticpp::Iterator<ticpp::Element> cs(hw->FirstChildElement(hw_chset_, false));
   if (cs != cs.end())
   {
     for(ticpp::Iterator<ticpp::Element> it(cs); ++it != it.end(); )
-      if(it->Value() == cst_.hw_cs)
+      if(it->Value() == hw_chset_)
       {
         string ex_str;
-        ex_str = "Error in "+ cst_.hardware_name +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+        ex_str = "Error in "+ hardware_name_ +" - " + m_.find(hardware_name_)->second + " -- ";
         ex_str += "Multiple channel_settings found!";
         throw(ticpp::Exception(ex_str));
       }
@@ -268,23 +274,23 @@ void GMobilab::setDeviceSettings(ticpp::Iterator<ticpp::Element>const &father)
 
   fs_ = MOBILAB_SAMPLING_RATE;
 
-  ticpp::Iterator<ticpp::Element>elem = father->FirstChildElement(cst_.hw_mobilab_serial_port,true);
+  ticpp::Iterator<ticpp::Element>elem = father->FirstChildElement(hw_mobilab_serial_port_,true);
   setPortName(elem->GetText(true));
 
-  elem = father->FirstChildElement(cst_.hw_mobilab_type,true);
-  if(elem->GetText(true) == cst_.hw_mobilab_eeg)
+  elem = father->FirstChildElement(hw_mobilab_type_,true);
+  if(elem->GetText(true) == hw_mobilab_eeg_)
     type_ = EEG;
-  else if(elem->GetText(true) == cst_.hw_mobilab_multi)
+  else if(elem->GetText(true) == hw_mobilab_multi_)
     type_ = MULTI;
   else
     throw(std::invalid_argument(
         "GMobilab::setDeviceSettings() -- type not supported or wrong:") );
 
-  elem = father->FirstChildElement(cst_.hw_channels,false);
+  elem = father->FirstChildElement(hw_channels_,false);
   if(elem != elem.end())
     setDeviceChannels(elem);
 
-  elem = father->FirstChildElement(cst_.hw_buffer,false);
+  elem = father->FirstChildElement(hw_blocksize_,false);
   if(elem != elem.end())
     setBlocks(elem);
 }
@@ -297,7 +303,7 @@ void GMobilab::setChannelSettings(ticpp::Iterator<ticpp::Element>const &father)
     std::cout << "GMobilab: setChannelSettings" << std::endl;
   #endif
 
-  ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(cst_.hw_sel,false));
+  ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(hw_chset_sel_,false));
   if (elem != elem.end())
     setChannelSelection(elem);
 }
