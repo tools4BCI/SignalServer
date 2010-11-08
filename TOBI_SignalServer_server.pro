@@ -35,7 +35,6 @@ HEADERS +=  include/signalserver/signal_server.h \
             include/hardware/event_listener.h\
             include/hardware/jstick.h\
             include/hardware/usbamp.h\
-            include/hardware/gbsamp.h\
             include/filereading/data_file_handler.h\
             include/filereading/file_reader_factory.h\
             include/filereading/file_reader.h\
@@ -65,7 +64,6 @@ SOURCES +=  src/signalserver/main.cpp \
             src/hardware/event_listener.cpp\
             src/hardware/jstick.cpp\
             src/hardware/usbamp.cpp\
-            src/hardware/gbsamp.cpp\
             src/filereading/data_file_handler.cpp\
             src/filereading/file_reader_factory.cpp\
             src/filereading/file_reader.cpp\
@@ -84,15 +82,25 @@ SOURCES +=  src/signalserver/main.cpp \
             src/network/tcp_server.cpp \
             src/network/udp_data_server.cpp
 
-unix:SOURCES  += extern/include/LptTools/LptToolsLinux.cpp
-win32:SOURCES += extern/include/LptTools/LptTools_.cpp
+unix {
+    HEADERS +=  include/hardware/gbsamp_unix.h
 
+    SOURCES += extern/include/LptTools/LptToolsLinux.cpp
+    SOURCES += src/hardware/gbsamp_unix.cpp
+}
+win32 {
+    HEADERS +=  include/hardware/gbsamp.h
+
+    SOURCES += extern/include/LptTools/LptTools_.cpp
+    SOURCES += src/hardware/gbsamp.cpp
+}
 #-----------------------------------------------------------------------
 
 unix {
     LIBS  += -lboost_thread \
              -lboost_system \
-             -lSDL
+             -lSDL \
+             -lcomedi
 
     HARDWARE_PLATFORM = $$system(uname -i)
 
@@ -117,6 +125,7 @@ win32 {
             extern\lib\sdl\win\SDLmain.lib \
             extern\lib\ticpp\win\ticpp.lib \
             extern\lib\g.usbamp\win\gUSBamp.lib \
+            extern\lib\nidaqmx\win\NIDAQmx.lib \
             extern\lib\libgdf\win\libgdf.lib \
             kernel32.lib advapi32.lib
 

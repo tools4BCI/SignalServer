@@ -9,7 +9,7 @@
 #include <boost/thread/shared_mutex.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/cstdint.hpp>
-#include "extern/include/nidaqmx/nidaqmx.h"
+#include <comedilib.h>
 
 #include "hw_thread.h"
 
@@ -83,7 +83,7 @@ class gBSamp : public HWThread
     /**
     * @brief Stops the device if an error occurs
     */
-    void stopDAQ(boost::int32_t error, TaskHandle taskHandle, char errBuff[2048]);
+//    void stopDAQ(boost::int32_t error, TaskHandle taskHandle, char errBuff[2048]);
 
     /**
     * @brief Starts reading from device
@@ -129,12 +129,11 @@ class gBSamp : public HWThread
     */
     SampleBlock<double> buffer_;
     
- 	  boost::int32_t error;
-	  TaskHandle taskHandle;
-	  boost::int32_t read;
-	  float64 data[1000];
-	  char errBuff[2048];
-	  std::vector<float64> data_buffer;
+    boost::int32_t error;
+
+    comedi_t* device_;
+    sampl_t* data_buffer_[10000];
+    comedi_cmd comedi_cmd_;
 
 };
 

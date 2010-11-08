@@ -106,8 +106,7 @@ int gBSamp::readFromDAQCard()
 	DAQmxErrChk (DAQmxStartTask(taskHandle));
 	//DAQmxErrChk (DAQmxReadAnalogF64(taskHandle,blocks_,0,DAQmx_Val_GroupByChannel,data,10000,&read,NULL));
 
-  //TODO: pass data to SampleBlock
-	cout << "Data read: " << data << endl;
+//	cout << "Data read: " << data << endl;
 	
   return error;
 }

@@ -62,7 +62,7 @@
 <!-- =============================================================================== -->
 
  <hardware name="g.bsamp" version="2004" serial="BS-2004.08.02">
-  <mode> master </mode>
+  <mode>master</mode>
   <device_settings>
    <sampling_rate> 500 </sampling_rate>
    <measurement_channels nr="1" names="eeg" type="eeg" />

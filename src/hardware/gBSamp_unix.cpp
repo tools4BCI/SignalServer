@@ -1,5 +1,11 @@
-#include "hardware/gBSamp.h"
-#include "extern/include/nidaqmx/nidaqmx.h"
+#include "hardware/gBSamp_unix.h"
+#include <comedilib.h>
+#include <boost/asio.hpp>
+#include <boost/cstdint.hpp>
+#include <boost/lexical_cast.hpp>
+
+// STL
+#include <iostream>
 
 namespace tobiss
 {
@@ -16,11 +22,8 @@ using std::string;
 using std::cout;
 using std::endl;
 
-#define DAQmxErrChk(functionCall)\
-  if( DAQmxFailed(error=(functionCall)) )\
-   {stopDAQ(error, taskHandle, errBuff); return(-1);}\
-  else
-
+#define SUBDEVICE_FOR_ANALOG_INPUT 0;
+static const int aref = AREF_GROUND;
 //-----------------------------------------------------------------------------
 
 gBSamp::gBSamp(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
@@ -30,16 +33,10 @@ gBSamp::gBSamp(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
     cout << "gBSamp: Constructor" << endl;
   #endif
 
-  #pragma comment(lib,"NIDAQmx.lib")
-  
   setHardware(hw);
 
   expected_values_ = nr_ch_ * blocks_;
   
-  DWORD driver_buffer_size_ = expected_values_ * sizeof(float);
-  
-  data_buffer.resize(driver_buffer_size_,0);
-
   buffer_.init(blocks_ , nr_ch_ , channel_types_);
   data_.init(blocks_, nr_ch_, channel_types_);
   samples_.resize(expected_values_, 0);
@@ -58,13 +55,9 @@ gBSamp::~gBSamp()
   #ifdef DEBUG
     cout << "gBSamp: Destructor" << endl;
   #endif
-  
-	if( taskHandle!=0 )
-	{
-		DAQmxStopTask(taskHandle);
-		DAQmxClearTask(taskHandle);
-	}
 
+  if(device_)
+      comedi_close(device_);
 }
 
 //-----------------------------------------------------------------------------
@@ -77,8 +70,8 @@ void gBSamp::run()
 
   running_ = 1;
   
-  if(readFromDAQCard() != 0)
-    DAQmxGetExtendedErrorInfo(errBuff,2048);
+//  if(readFromDAQCard() != 0)
+//    DAQmxGetExtendedErrorInfo(errBuff,2048);
 
   cout << " * gBSamp sucessfully started" << endl;
 }
@@ -101,11 +94,10 @@ void gBSamp::stop()
 
 int gBSamp::readFromDAQCard()
 {
-	DAQmxErrChk (DAQmxStartTask(taskHandle));
+//	DAQmxErrChk (DAQmxStartTask(taskHandle));
 	//DAQmxErrChk (DAQmxReadAnalogF64(taskHandle,blocks_,0,DAQmx_Val_GroupByChannel,data,10000,&read,NULL));
 
-  //TODO: pass data to SampleBlock
-	cout << "Data read: " << data << endl;
+//	cout << "Data read: " << data << endl;
 	
   return error;
 }
@@ -134,12 +126,16 @@ SampleBlock<double> gBSamp::getSyncData()
   //  cond_.wait(syn);
   boost::shared_lock<boost::shared_mutex> lock(rw_);
   
-  DAQmxReadAnalogF64(taskHandle,blocks_,-1,DAQmx_Val_GroupByChannel,data,10000,&read,NULL);
+//  DAQmxReadAnalogF64(taskHandle,blocks_,-1,DAQmx_Val_GroupByChannel,data,10000,&read,NULL);
 
+  double buf[10000];
+  read(comedi_fileno(device_),buf,sizeof(samples_));
+
+//  cout << "gBSamp: " << buf << endl;
   for(int i=0; i < expected_values_/blocks_; i++)
     for(int j=0; j < blocks_; j++)
-      samples_[i+j] =data[i+j];
-      
+      samples_[i+j] = buf[i+j];
+
   //cout << "gBSamp: getSyncData -- samples.size() " << samples_.size() << endl;
   //cout << "sampleblock size: " << data_.getNrOfSamples() << endl;
       
@@ -170,36 +166,63 @@ SampleBlock<double> gBSamp::getAsyncData()
 
 //-----------------------------------------------------------------------------
 
-void gBSamp::stopDAQ(boost::int32_t error, TaskHandle taskHandle, char errBuff[2048])
-{
-	if( DAQmxFailed(error) )
-		DAQmxGetExtendedErrorInfo(errBuff,2048);
-	if( taskHandle!=0 )
-	{
-		DAQmxStopTask(taskHandle);
-		DAQmxClearTask(taskHandle);
-	}
-	if( DAQmxFailed(error) )
-		cout << "DAQmx Error: " << errBuff << endl;
-}
+//void gBSamp::stopDAQ(boost::int32_t error, TaskHandle taskHandle, char errBuff[2048])
+//{
+//	if( DAQmxFailed(error) )
+//		DAQmxGetExtendedErrorInfo(errBuff,2048);
+//	if( taskHandle!=0 )
+//	{
+//		DAQmxStopTask(taskHandle);
+//		DAQmxClearTask(taskHandle);
+//	}
+//	if( DAQmxFailed(error) )
+//		cout << "DAQmx Error: " << errBuff << endl;
+//}
 
 //-----------------------------------------------------------------------------
 
 int gBSamp::initCard()
 {
-	error=0;
-	taskHandle=0;
-	read = 0;
-	errBuff[0]='\0';
+  device_ = comedi_open("/dev/comedi0");
+  if(device_==0)
+      cerr << "Error: " << comedi_strerror( comedi_errno() ) << endl;
+  cout << "gBSamp: device opened!" << endl;
 
-  //TODO: make a list with needed channels
-  // now just uses all 16 channels
-  const char channel_list[] = "Dev1/ai0";
-  
-	// DAQmx Configure Code
-	DAQmxErrChk (DAQmxCreateTask("",&taskHandle));
-	DAQmxErrChk (DAQmxCreateAIVoltageChan(taskHandle,channel_list,"",DAQmx_Val_RSE,-10.0,10.0,DAQmx_Val_Volts,NULL));
-	DAQmxErrChk (DAQmxCfgSampClkTiming(taskHandle,NULL,fs_,DAQmx_Val_Rising,DAQmx_Val_ContSamps,1));
+  //TODO: channel list
+//  map<uint16_t, pair<string, uint32_t> >::iterator it = channel_info_.begin();
+//  unsigned int channel_list[nr_ch_];
+//  for(int i=0; i < nr_ch_; i++)
+//      channel_list[i] = CR_PACK(i, 0, AREF_GROUND);
+
+  unsigned int channel_list[0];
+  channel_list[0] = CR_PACK(0, 10, AREF_GROUND);
+
+  comedi_cmd_.subdev = SUBDEVICE_FOR_ANALOG_INPUT;
+//  comedi_cmd_.flags = TRIG_WAKE_EOS;
+  comedi_cmd_.start_src = TRIG_NOW;
+  comedi_cmd_.start_arg = 0;
+  comedi_cmd_.scan_begin_src = TRIG_TIMER;
+  comedi_cmd_.scan_begin_arg = fs_;
+  comedi_cmd_.convert_src = TRIG_TIMER;
+  comedi_cmd_.convert_arg = 1;
+  comedi_cmd_.scan_end_src = TRIG_COUNT;
+  comedi_cmd_.scan_end_arg = blocks_ * nr_ch_;
+  comedi_cmd_.stop_src = TRIG_NONE;
+  comedi_cmd_.stop_arg = 0;
+//  comedi_cmd_.data = data_buffer_;
+//  comedi_cmd_.data_len = blocks_;
+  comedi_cmd_.chanlist = channel_list;
+  comedi_cmd_.chanlist_len = nr_ch_;
+
+  int error;
+  error = comedi_command_test(device_, &comedi_cmd_);
+  error = comedi_command_test(device_, &comedi_cmd_);
+  if(error != 0)
+    cerr << "gBSamp: comedi_command_test - Error nr " << error  << endl;
+
+  error = comedi_command(device_, &comedi_cmd_);
+  if (error < 0)
+    comedi_perror("gBSamp: comedi_command");
 
   return error;
 }
