@@ -1,6 +1,7 @@
 #-----------------------------------------------------------------------
 
 TEMPLATE = lib
+VERSION = 0.1
 
 CONFIG   += release static thread warn_on exceptions stl
 
@@ -11,7 +12,7 @@ DEFINES  += TIXML_USE_TICPP
 win32:DEFINES += DECL_EXPORT=__declspec(dllexport)
 
 DESTDIR = lib
-TARGET = ssclient
+TARGET = tiaclient
 
 INCLUDEPATH += . include extern/include/LptTools
 

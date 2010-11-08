@@ -12,7 +12,7 @@ DEFINES += TIXML_USE_TICPP
 
 # TIMING_TEST
 TARGET = signalserver-sclient
-unix:PRE_TARGETDEPS += lib/libssclient.so
+unix:PRE_TARGETDEPS += lib/libtiaclient.so
 win32:PRE_TARGETDEPS += lib/ssclient.lib
 DESTDIR = bin
 OBJECTS_DIR = tmp

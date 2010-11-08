@@ -1,0 +1,10 @@
+Package: libtia
+Version: <version>
+Section: science
+Priority: extra
+Architecture: <architecture-via-script>
+Depends: libboost-thread1.40.0, libboost-system1.40.0, libusb-0.1-4
+Replaces: libtia (<< <version>)
+Maintainer: Christian Breitwieser <christian.breitwieser@tugraz.at>, Christoph Eibel <christoph.eibel@tugraz.at>
+Homepage: http://www.tobi-project.org
+Description: TiA. Dynamic runtime libraries of TOBI Interface A (TiA).
