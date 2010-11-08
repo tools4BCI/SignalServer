@@ -54,6 +54,7 @@
 #include <boost/asio.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/exception/all.hpp>
+#include <boost/filesystem.hpp>
 
 // local
 #include "version.h"
@@ -67,7 +68,10 @@ using namespace std;
 using namespace tobiss;
 
 const string DEFAULT_XML_CONFIG = "server_config.xml";
-const string XML_FILE_ARGUMENT = "-f";
+#ifndef WIN32
+const string DEFAULT_XML_CONFIG_HOME_SUBDIR = string("/tobi_sigserver_cfg/");
+const string TEMPLATE_XML_CONFIG = string("/usr/local/etc/signalserver/") + DEFAULT_XML_CONFIG;
+#endif
 
 class DataPacketReader
 {
@@ -102,6 +106,30 @@ class DataPacketReader
 };
 
 //-----------------------------------------------------------------------------
+string getDefaultConfigFile ()
+{
+    string default_xml_config = DEFAULT_XML_CONFIG;
+#ifdef WIN32
+    // do nothing here at the moment ;)
+    return default_xml_config;
+#else
+    default_xml_config = string (getenv("HOME")) + DEFAULT_XML_CONFIG_HOME_SUBDIR + default_xml_config;
+    boost::filesystem::path default_config_path (default_xml_config);
+    boost::filesystem::path template_config_path (TEMPLATE_XML_CONFIG);
+    if (!boost::filesystem::exists (default_config_path))
+    {
+        if (boost::filesystem::exists (template_config_path))
+        {
+            boost::filesystem::create_directory (default_config_path.parent_path());
+            boost::filesystem::copy_file (template_config_path, default_config_path);
+        }
+    }
+    return default_xml_config;
+#endif
+}
+
+
+//-----------------------------------------------------------------------------
 
 void printVersion()
 {
@@ -126,10 +154,10 @@ int main(int argc, const char* argv[])
 
     if(argc == 1)
     {
-      config_file = DEFAULT_XML_CONFIG;
-      cout << endl << " ***  Loading default XML configuration file: " << DEFAULT_XML_CONFIG << endl << endl;
+      config_file = getDefaultConfigFile ();
+      cout << endl << " ***  Loading default XML configuration file: " << config_file << endl << endl;
     }
-    else if(argc == 3 && argv[1] == XML_FILE_ARGUMENT)
+    else if(argc == 2)
     {
       cout << endl << "  ***  Loading XML configuration file: " << argv[2] << endl << endl;
       config_file = argv[2];
