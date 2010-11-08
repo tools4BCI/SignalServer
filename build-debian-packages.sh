@@ -13,6 +13,7 @@ mkdir -p $dev_dir/usr/include/tia
 mkdir -p $dev_dir/DEBIAN
 
 mkdir -p $ss_dir/usr/bin
+mkdir -p $ss_dir/usr/local/etc/signalserver
 mkdir -p $ss_dir/DEBIAN
 
 
@@ -29,7 +30,7 @@ cp -r ./include/network ./$dev_dir/usr/include/tia
 cp -r ./include/signalserver ./$dev_dir/usr/include/tia
 
 cp ./bin/signalserver ./$ss_dir/usr/bin/
-
+cp ./bin/server_config.xml ./$ss_dir/usr/local/etc/signalserver/
 
 # current version
 version=0.1

@@ -85,7 +85,7 @@ LIBS += -L./lib \
 unix {
     LIBS += -lboost_thread \
         -lboost_system \
-        -lboost_system \
+        -lboost_filesystem \
         -lSDL \
         -Lextern/lib/libusb/linux \
         -lusb-1.0
