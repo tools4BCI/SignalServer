@@ -83,7 +83,7 @@
 *  @{
 */
 
-#define PI 3.141592653589793238
+//#define PI 3.141592653589793238
 #define BUFFER_SIZE 8388608     //in bytes
 #define EVENT_BUFFER_SIZE  8192
 
