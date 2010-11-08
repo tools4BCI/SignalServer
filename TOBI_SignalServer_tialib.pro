@@ -1,5 +1,7 @@
 # -----------------------------------------------------------------------
 TEMPLATE = lib
+VERSION = 0.1
+
 CONFIG += console \
     release \
     thread \

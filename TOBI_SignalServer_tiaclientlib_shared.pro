@@ -1,6 +1,6 @@
 #-----------------------------------------------------------------------
 
-include (TOBI_SignalServer_clientlib.pro)
+include (TOBI_SignalServer_tiaclientlib.pro)
 
 CONFIG += dll
 
