@@ -20,7 +20,10 @@
 
 #include "hardware/sine_generator.h"
 
-#include <math.h>
+#define _USE_MATH_DEFINES
+#include <cmath>
+
+//#include <math.h>
 
 namespace tobiss
 {
@@ -65,7 +68,7 @@ void SineGenerator::genSine()
   #endif
 
   for(uint16_t n = 0; n < nr_ch_ ; n++)
-    samples_[n] = sin(step_ * 2 * PI + n/4);
+    samples_[n] = sin(step_ * 2 * M_PI + n/4);
 
   (step_ < 1-cycle_dur_ ? step_ += cycle_dur_ : step_ = 0);
   t_->expires_at(t_->expires_at() + td_);

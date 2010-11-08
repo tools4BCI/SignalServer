@@ -29,6 +29,8 @@
 #include <boost/random/normal_distribution.hpp>
 #include <boost/random/variate_generator.hpp>
 
+#include <map>
+
 namespace tobiss
 {
 
@@ -67,6 +69,12 @@ class EEGSimulator : public ArtificialSignalSource
     */
     virtual void setChannelSettings(ticpp::Iterator<ticpp::Element>const &father);
 
+
+
+
+    void handleAsyncRead(const boost::system::error_code& ec, std::size_t bytes_transferred );
+    void acceptHandler(const boost::system::error_code& error);
+
 //------------------------------------------
 
   private:
@@ -75,8 +83,36 @@ class EEGSimulator : public ArtificialSignalSource
     boost::normal_distribution<> eeg_dist_;
     boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > eeg_gen_;
 
+    boost::asio::ip::tcp::acceptor acceptor_;
+    boost::asio::ip::tcp::socket socket_;
+    boost::uint32_t port_;
+    bool connected_;
+
+
+    std::vector<boost::uint8_t> message_buffer_;
+
+    class EEGCfg
+    {
+      public:
+        double amplitude_;
+        double offset_;
+    };
+
+    class SineCfg
+    {
+      public:
+        double freq_;
+        double amplitude_;
+        double phase_;
+    };
+
+    std::multimap<boost::uint16_t, EEGCfg>  eeg_config_;       /// <ch_nr, EEGCfg>
+    std::multimap<boost::uint16_t, SineCfg> sine_configs_;     /// <ch_nr, SineCfg>
 };
 
 }  // tobiss
+
+
+
 
 #endif // EEG_SIMULATOR_H
