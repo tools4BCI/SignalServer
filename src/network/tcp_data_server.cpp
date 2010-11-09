@@ -1,3 +1,23 @@
+/*
+    This file is part of TOBI Interface A (TiA).
+
+    TOBI Interface A (TiA) is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    TOBI Interface A (TiA) is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TOBI Interface A (TiA).  If not, see <http://www.gnu.org/licenses/>.
+
+    Copyright 2010 Christian Breitwieser
+    Contact: c.breitwieser@tugraz.at
+*/
+
 /**
 * @tcp_data_server.cpp
 *
@@ -31,22 +51,26 @@ TCPDataConnection::TCPDataConnection(boost::asio::io_service& io_service) :
     TCPServer(io_service)
 {}
 
+
 //-----------------------------------------------------------------------------
 
-void TCPDataConnection::handleWrite(const boost::system::error_code& e,
+void TCPDataConnection::handleWrite(const boost::system::error_code& ec,
     std::size_t /*bytes_transferred*/)
 {
-  if (e)
+  if (ec)
   {
-    cerr << "Sending packet to "
-       << remote_endpoint_.address().to_string() << ":" << remote_endpoint_.port()
-       << " failed - closing connection..." << std::endl;
+    cerr << "TCPDataConnection::handleWrite: sending data packet to client @"
+              << remote_endpoint_.address().to_string() << ":" << remote_endpoint_.port()
+              << " failed - preparing for reconnect -- Error:" << endl
+              << "--> " << ec.message() << endl;
+
     // Initiate graceful connection closure.
     boost::system::error_code ignored_ec;
     connection_->socket().shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
     connection_->socket().close();
+    connection_.reset();
 
-    // TODO: remove this connection
+    startAccept();
   }
 }
 
@@ -62,10 +86,11 @@ void TCPDataConnection::sendDataPacket(DataPacket& packet)
   assert(data != 0);
   assert(size != 0);
 
-  #if 0
-      std::cout << "TCP - Sending data packet (size " << size << ") to "
-                << remote_endpoint_.address().to_string() << ":" << remote_endpoint_.port() << std::endl;
-  #endif
+#ifdef DEBUG
+  std::cout << "TCPDataConnection::sendDataPacket: sending data packet to "
+                << remote_endpoint_.address().to_string() << ":" << remote_endpoint_.port()
+                << std::endl;
+#endif
 
   connection_->socket().async_send(boost::asio::buffer(data, size),
       boost::bind(&TCPDataConnection::handleWrite,
@@ -81,7 +106,12 @@ void TCPDataConnection::handleAccept(const TCPConnection::pointer& new_connectio
 {
   if (error)
   {
-    // TODO: error handling
+    cerr << "TCPDataConnection::handleAccept: cannot accept connection on "
+         << localEndpoint().address().to_string() << ":" << localEndpoint().port()
+         << "-- Error:" << endl
+         << error.message() << endl;
+
+    startAccept();
     return;
   }
 
@@ -96,8 +126,13 @@ void TCPDataConnection::handleAccept(const TCPConnection::pointer& new_connectio
   boost::asio::socket_base::linger linger_option(false, 0);
   connection_->socket().set_option(linger_option);
 
-  cout << "Established data connection, client endpoint "
-       << remote_endpoint_.address().to_string() << ":" << remote_endpoint_.port() << std::endl;
+#ifdef DEBUG
+  cout << "TCPDataConnection::handleAccept: client @"
+       << remote_endpoint_.address().to_string() << ":" << remote_endpoint_.port()
+       << " connected on  "
+       << connection_->socket().local_endpoint().address().to_string()
+       << connection_->socket().local_endpoint().port();
+#endif
 }
 //-----------------------------------------------------------------------------
 
@@ -111,7 +146,11 @@ bool TCPDataServer::connected(const boost::asio::ip::tcp::endpoint& endpoint) co
 {
   boost::unique_lock<boost::mutex> lock(mutex_);
   ClientConnectionMap::const_iterator it = connections_.find(endpoint);
-  if (it != connections_.end()) return false;
+  if (it != connections_.end())
+  {
+    throw(std::invalid_argument("No connection with that local endpoint"));
+  }
+
   TCPDataConnection::pointer connection = (*it).second;
   return connection->connected();
 }
@@ -122,10 +161,23 @@ boost::asio::ip::tcp::endpoint TCPDataServer::addConnection()
 {
   boost::unique_lock<boost::mutex> lock(mutex_);
   TCPDataConnection::pointer connection = TCPDataConnection::create(io_service_);
-  connection->bind(0);
-  boost::asio::ip::tcp::endpoint local_endpoint = connection->localEndpoint();
-  connections_.insert(make_pair(local_endpoint, connection));
+
+  boost::asio::ip::tcp::endpoint local_endpoint;
+
+  try
+  {
+    connection->bind(0);
+    local_endpoint = connection->localEndpoint();
+  }
+  catch (boost::exception& e)
+  {
+    throw (std::runtime_error("Could not bind socket - adding new connection failed"));
+  }
+
   connection->listen();
+
+  connections_.insert(make_pair(local_endpoint, connection));
+
   return local_endpoint;
 }
 
@@ -135,29 +187,36 @@ void TCPDataServer::removeConnection(const boost::asio::ip::tcp::endpoint& endpo
 {
   boost::unique_lock<boost::mutex> lock(mutex_);
   ClientConnectionMap::iterator it = connections_.find(endpoint);
-  if (it == connections_.end()) return;
+  if (it == connections_.end())
+  {
+    throw(std::invalid_argument("No connection with that local endpoint"));
+  }
 
   connections_.erase(it);
+
+  connections_transmission_enabled_.erase(endpoint);
 }
 
 //-----------------------------------------------------------------------------
 
-void TCPDataServer::enableTransmission(const boost::asio::ip::tcp::endpoint& endpoint, bool enable)
+void TCPDataServer::enableTransmission(const boost::asio::ip::tcp::endpoint& endpoint,
+                                       bool enable)
 {
   boost::unique_lock<boost::mutex> lock(mutex_);
 
-  ClientConnectionMap::iterator it;
+  ClientConnectionMap::iterator it = connections_.find(endpoint);
+  if (it == connections_.end())
+  {
+    throw(std::invalid_argument("No connection with that local endpoint"));
+  }
+
   if (enable)
   {
-    it = connections_.find(endpoint);
-    if (it == connections_.end()) return;
     connections_transmission_enabled_[(*it).first] = (*it).second;
   }
   else
   {
-    it = connections_transmission_enabled_.find(endpoint);
-    if (it == connections_transmission_enabled_.end()) return;
-    connections_transmission_enabled_.erase(it);
+    connections_transmission_enabled_.erase((*it).first);
   }
 }
 

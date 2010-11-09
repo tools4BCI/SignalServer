@@ -1,3 +1,22 @@
+/*
+    This file is part of the TOBI signal server.
+
+    The TOBI signal server is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    The TOBI signal server is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
+    Copyright 2010 Christian Breitwieser
+    Contact: c.breitwieser@tugraz.at
+*/
 
 /**
 * @file hw_access.h
@@ -22,12 +41,10 @@
 #include "datapacket/data_packet.h"
 
 #include "hw_thread.h"
-// #include "file_reader.h"
 
 namespace tobiss
 {
 
-using namespace std;
 
 //---------------------------------------------------------------------------------------
 
@@ -86,7 +103,7 @@ class HWAccess
     * @return vector<uint32_t> The vector contains the signaltypes in ascending order. Signals are
     * stored in the DataPacket with this ordering.
     */
-    vector<boost::uint32_t> getAcquiredSignalTypes();
+    std::vector<boost::uint32_t> getAcquiredSignalTypes();
 
     /**
     * @brief Get a vector containing the blocksizes for every acquired signaltype.
@@ -94,7 +111,7 @@ class HWAccess
     * @return vector<uint32_t> The vector contains the blocksize for every acquired signaltype.
     * Use getAcquiredSignalTypes() to correctly map the blocksizes to their signaltypes!
     */
-    vector<boost::uint16_t> getBlockSizesPerSignalType();
+    std::vector<boost::uint16_t> getBlockSizesPerSignalType();
 
     /**
     * @brief Get a vector containing the amount of channels for every acquired signaltype.
@@ -102,7 +119,7 @@ class HWAccess
     * @return vector<uint32_t> The vector contains the amount of channels for every acquired signaltype.
     * Use getAcquiredSignalTypes() to correctly map the nr of channels to their signaltypes!
     */
-    vector<boost::uint16_t> getNrOfChannelsPerSignalType();
+    std::vector<boost::uint16_t> getNrOfChannelsPerSignalType();
 
     /**
     * @brief Get a vector containing the sampling rates for every acquired signaltype.
@@ -110,7 +127,7 @@ class HWAccess
     * @return vector<uint32_t> The vector contains the sampling rates for every acquired signaltype.
     * Use getAcquiredSignalTypes() to correctly map the sampling rates to their signaltypes!
     */
-    vector<boost::uint32_t> getSamplingRatePerSignalType();
+    std::vector<boost::uint32_t> getSamplingRatePerSignalType();
 
     /**
     * @brief Get the total number of acquired channels.
@@ -125,7 +142,7 @@ class HWAccess
     * @return map<uint32_t, vector<string> > Map containing a vector with the channel names for
     * every signal type.
     */
-    map<boost::uint32_t, vector<string> > getChannelNames()
+    std::map<boost::uint32_t, std::vector<std::string> > getChannelNames()
       { return(channel_naming_); }
 
     /**
@@ -221,12 +238,12 @@ class HWAccess
     /**
     * @brief A vector holding pointers to all connected slave hardware objects.
     */
-    vector< HWThread* > slaves_;
+    std::vector< HWThread* > slaves_;
 
     /**
     * @brief A vector holding pointers to all connected slave hardware objects.
     */
-    vector< HWThread* > aperiodics_;
+    std::vector< HWThread* > aperiodics_;
 
     /**
     * @brief A pointer to the master-device object.
@@ -241,16 +258,16 @@ class HWAccess
     /**
     * @brief A vector containing sampling rate rations (in unsigned int!!) compared to the master device.
     */
-    vector<unsigned int> fs_ratio_;
+    std::vector<unsigned int> fs_ratio_;
     /**
     * @brief A vector to iterate up to the desired fs_ratio.
     */
-    vector<unsigned int> sample_it_;  // iteration variable for sample-count
+    std::vector<unsigned int> sample_it_;  // iteration variable for sample-count
 
-    map<boost::uint32_t, pair<boost::uint16_t, boost::uint16_t> > data_info_;  ///< map containing ( type,  (nr_ch, blocksize) )
-    map<boost::uint32_t, boost::uint32_t > fs_info_;  ///< map containing ( type, sampling rate )
+    std::map<boost::uint32_t, std::pair<boost::uint16_t, boost::uint16_t> > data_info_;  ///< map containing ( type,  (nr_ch, blocksize) )
+    std::map<boost::uint32_t, boost::uint32_t > fs_info_;  ///< map containing ( type, sampling rate )
 
-    map<boost::uint32_t, vector<string> > channel_naming_;  ///< map containing ( type,  channel names )
+    std::map<boost::uint32_t, std::vector<std::string> > channel_naming_;  ///< map containing ( type,  channel names )
 
     Constants cst_;  ///< A static object containing constants.
 

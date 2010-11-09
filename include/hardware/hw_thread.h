@@ -1,3 +1,22 @@
+/*
+    This file is part of the TOBI signal server.
+
+    The TOBI signal server is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    The TOBI signal server is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
+    Copyright 2010 Christian Breitwieser
+    Contact: c.breitwieser@tugraz.at
+*/
 
 /**
 * @file hw_thread.h
@@ -164,19 +183,20 @@ class HWThread
     * @param[in] channels Number of channels the device acquires.
     * @param[in] blocks   Blocksize used by the device.
     */
-    HWThread(XMLParser& parser, boost::uint32_t sampling_rate, boost::uint16_t channels, boost::uint16_t blocks)
+    HWThread(boost::uint32_t sampling_rate, boost::uint16_t channels, boost::uint16_t blocks)
     : nr_ch_(channels),fs_(sampling_rate), samples_available_(0), blocks_(blocks),
-    mode_(SLAVE), running_(0), parser_(parser)
+    mode_(SLAVE), running_(0)
     {    }
+    //    , parser_(parser)
     /**
     * @brief Default constructor
     *
     * Sets the device to 0 channel, sampling_rate 0 and blocksize 1.
     */
-    HWThread(XMLParser& parser)
-    : nr_ch_(0),fs_(0), samples_available_(0), blocks_(1), mode_(SLAVE),
-    running_(0), parser_(parser)
+    HWThread()  // XMLParser& parser
+    : nr_ch_(0),fs_(0), samples_available_(0), blocks_(1), mode_(SLAVE), running_(0)
     {    }
+    //    , parser_(parser)
 
     /**
     * @brief Set configuration listed in the \<device_settings\> section in the XML file.
@@ -251,6 +271,11 @@ class HWThread
       return true;
     }
 
+    void setType(std::string s)
+    {
+      type_ = s;
+    }
+
 //-----------------------------------------------
 
   protected:
@@ -271,8 +296,8 @@ class HWThread
     std::vector<boost::uint32_t> channel_types_;   ///< vector containing signal types of channels (for faster access)
     std::map<std::string, std::string> m_;   ///< map with generic hardware information  ...  mandatory
 
-    Constants cst_;  ///< A static object containing constants.
-    XMLParser& parser_;   ///< Reference pointing to the XMLParser.
+    // Constants cst_;  ///< A static object containing constants.
+    // XMLParser& parser_;   ///< Reference pointing to the XMLParser.
 
     /**
     * @brief Data object representing the last available samples from the SineGenerator.
@@ -286,6 +311,54 @@ class HWThread
     * For more information, read the SampleBlock documentation.
     */
     SampleBlock<double> data_;
+
+    std::string   type_;
+
+    //-----------------------------------------------
+    // Constant variables & methods:
+
+//    static const std::string hardware_;
+//    static const std::string hardware_name_;
+    static const std::string hardware_version_;
+    static const std::string hardware_serial_;
+
+    static const std::string hw_mode_;
+    static const std::string hw_devset_;        ///< xml-tag hardware: device_settings
+    static const std::string hw_fs_;            ///< xml-tag hardware: sampling_rate
+
+    static const std::string hw_channels_;      ///< xml-tag hardware: measurement_channels
+    static const std::string hw_ch_nr_;         ///< xml-tag hardware: nr
+    static const std::string hw_ch_names_;      ///< xml-tag hardware: names
+    static const std::string hw_ch_type_;       ///< xml-tag hardware: channel type
+
+    static const std::string hw_blocksize_;     ///< xml-tag hardware: blocksize
+
+    static const std::string hw_chset_;       ///< xml-tag hardware -- channel_settings
+    static const std::string hw_chset_sel_;           ///< xml-tag hardware: selection
+    static const std::string hw_chset_ch_;      ///< xml-tag hardware: ch
+    static const std::string hw_chset_nr_;     ///< xml-tag hardware: nr
+    static const std::string hw_chset_name_;   ///< xml-tag hardware: name
+
+
+    //---------------------------------------------------------------------------------------
+
+    bool equalsOnOrOff(const std::string& s);
+    bool equalsYesOrNo(const std::string& s);
+    bool equalsMaster(const std::string& s);
+    bool equalsSlave(const std::string& s);
+    bool equalsAperiodic(const std::string& s);
+//    uint32_t getSignalFlag(const std::string& s);
+//    std::string getSignalName(const boost::uint32_t& flag);
+
+    void parseDeviceChannels(ticpp::Iterator<ticpp::Element>const &elem, boost::uint16_t& nr_ch,
+                                 std::string& naming, std::string& type);
+
+    void parseChannelSelection(ticpp::Iterator<ticpp::Element>const &elem, boost::uint16_t& ch,
+                                   std::string& name, std::string& type);
+
+    void checkMandatoryHardwareTagsXML(ticpp::Iterator<ticpp::Element> hw);
+
+
 };
 
 } // Namespace tobiss

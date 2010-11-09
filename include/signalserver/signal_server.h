@@ -1,3 +1,23 @@
+/*
+    This file is part of TOBI Interface A (TiA).
+
+    TOBI Interface A (TiA) is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    TOBI Interface A (TiA) is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TOBI Interface A (TiA).  If not, see <http://www.gnu.org/licenses/>.
+
+    Copyright 2010 Christian Breitwieser
+    Contact: c.breitwieser@tugraz.at
+*/
+
 /**
 * @file server_server.h
 *
@@ -70,9 +90,10 @@ class SignalServer : boost::noncopyable
     virtual ~SignalServer();
 
     /**
-    * @brief Insert data (only one signal type) from a hardware device into the DataPacket (will be automatically placed correct).
+    * @brief TODO
     */
-    void initialize(XMLParser* config);
+    void initialize(std::map<std::string,std::string> subject_info,
+                    std::map<std::string,std::string> server_settings);
 
     /**
     * @brief Sends a DataPacket to the clients
@@ -137,7 +158,7 @@ class SignalServer : boost::noncopyable
 
   private:
     boost::asio::io_service&            io_service_; ///<
-    XMLParser*                          config_; ///<
+//    XMLParser*                          config_; ///<
     std::map<std::string, std::string>  server_settings_; ///<
     TCPDataServer*                      tcp_data_server_; ///<
     UDPDataServer*                      udp_data_server_; ///<
@@ -161,6 +182,11 @@ class SignalServer : boost::noncopyable
     boost::posix_time::ptime timestamp_;
     boost::posix_time::time_duration diff_;
     boost::posix_time::time_duration t_mean_;
+    boost::posix_time::time_duration t_min_total_;
+    boost::posix_time::time_duration t_max_total_;
+    boost::posix_time::time_duration t_min_last_;
+    boost::posix_time::time_duration t_max_last_;
+    std::vector<boost::posix_time::time_duration> t_diffs_;
     boost::int64_t t_var_;
     boost::uint64_t counter_;
 

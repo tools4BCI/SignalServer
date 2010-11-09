@@ -1,3 +1,23 @@
+/*
+    This file is part of TOBI Interface A (TiA).
+
+    TOBI Interface A (TiA) is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    TOBI Interface A (TiA) is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TOBI Interface A (TiA).  If not, see <http://www.gnu.org/licenses/>.
+
+    Copyright 2010 Christian Breitwieser
+    Contact: c.breitwieser@tugraz.at
+*/
+
 /**
 * @control_message_decoder.cpp
 *
@@ -80,13 +100,19 @@ ControlMsg* ControlMsgDecoderXML::decodeMsgInternal()
   if (tixml_doc_->Error())
   {
     // TODO: do a proper error handling
-    cerr << xml_doc_->BuildDetailedErrorString() << endl;
+    cerr << "ControlMsgDecoderXML::decodeMsgInternal: "
+         << tixml_doc_->ErrorDesc()
+         << endl;
+
     return 0;
   }
 
-  cout << ">>> XML message " << endl;
+#ifdef DEBUG
+  cout << "ControlMsgDecoderXML::decodeMsgInternal: decoding XML message:" << endl;
+  cout << "-------------" << endl;
   tixml_doc_->Print();
-  cout << "<<< XML message " << endl;
+  cout << "-------------" << endl;
+#endif
 
   ticpp::Element* message = xml_doc_->FirstChildElement("message", false);
   if (message == 0)
@@ -166,7 +192,10 @@ bool ControlMsgDecoderXML::decodeHeader(ControlMsg& msg)
 
 void ControlMsgDecoderXML::decodeMsg(KeepAliveMsg& msg)
 {
-  cout << "Calling ControlMsgDecoderXML::decodeMsg KeepAliveMsg" << endl;
+#ifdef DEBUG
+  cout << "ControlMsgDecoderXML::decodeMsg: decoding KeepAliveMsg" << endl;
+#endif
+
   if (!decodeHeader(msg))
   {
     // TODO: do a proper error handling
@@ -180,7 +209,10 @@ void ControlMsgDecoderXML::decodeMsg(KeepAliveMsg& msg)
 
 void ControlMsgDecoderXML::decodeMsg(GetConfigMsg& msg)
 {
-  cout << "Calling ControlMsgDecoderXML::decodeMsg GetConfigMsg" << endl;
+#ifdef DEBUG
+  cout << "ControlMsgDecoderXML::decodeMsg: decoding GetConfigMsg" << endl;
+#endif
+
   if (!decodeHeader(msg))
   {
     // TODO: do a proper error handling
@@ -194,7 +226,9 @@ void ControlMsgDecoderXML::decodeMsg(GetConfigMsg& msg)
 
 void ControlMsgDecoderXML::decodeMsg(StopTransmissionMsg& msg)
 {
-  cout << "Calling ControlMsgDecoderXML::decodeMsg StopTransmissionMsg" << endl;
+#ifdef DEBUG
+  cout << "ControlMsgDecoderXML::decodeMsg: decoding StopTransmissionMsg" << endl;
+#endif
 
   if (!decodeHeader(msg))
   {
@@ -209,7 +243,9 @@ void ControlMsgDecoderXML::decodeMsg(StopTransmissionMsg& msg)
 
 void ControlMsgDecoderXML::decodeMsg(StartTransmissionMsg& msg)
 {
-  cout << "Calling ControlMsgDecoderXML::decodeMsg StartTransmissionMsg" << endl;
+#ifdef DEBUG
+  cout << "ControlMsgDecoderXML::decodeMsg: decoding StartTransmissionMsg" << endl;
+#endif
 
   if (!decodeHeader(msg))
   {
@@ -231,7 +267,9 @@ void ControlMsgDecoderXML::decodeMsg(StartTransmissionMsg& msg)
 
 void ControlMsgDecoderXML::decodeMsg(GetDataConnectionMsg& msg)
 {
-  cout << "Calling ControlMsgDecoderXML::decodeMsg GetDataConnectionMsg" << endl;
+#ifdef DEBUG
+  cout << "ControlMsgDecoderXML::decodeMsg: decoding GetDataConnectionMsg" << endl;
+#endif
 
   if (!decodeHeader(msg))
   {
@@ -269,7 +307,9 @@ void ControlMsgDecoderXML::decodeMsg(GetDataConnectionMsg& msg)
 
 void ControlMsgDecoderXML::decodeMsg(DataConnectionMsg& msg)
 {
-  cout << "Calling ControlMsgDecoderXML::decodeMsg DataConnectionMsg" << endl;
+#ifdef DEBUG
+  cout << "ControlMsgDecoderXML::decodeMsg: decoding DataConnectionMsg" << endl;
+#endif
 
   if (!decodeHeader(msg))
   {
@@ -316,7 +356,9 @@ void ControlMsgDecoderXML::decodeMsg(DataConnectionMsg& msg)
 
 void ControlMsgDecoderXML::decodeMsg(ConfigMsg& msg)
 {
-  cout << "Calling ControlMsgDecoderXML::decodeMsg ConfigMsg"  << endl;
+#ifdef DEBUG
+  cout << "ControlMsgDecoderXML::decodeMsg: decoding ConfigMsg" << endl;
+#endif
 
   if (!decodeHeader(msg))
   {
@@ -573,7 +615,9 @@ void ControlMsgDecoderXML::decodeMsg(ConfigMsg& msg)
 
 void ControlMsgDecoderXML::decodeMsg(ReplyMsg& msg)
 {
-  cout << "Calling ControlMsgDecoderXML::decodeMsg ReplyMsg"  << endl;
+#ifdef DEBUG
+  cout << "ControlMsgDecoderXML::decodeMsg: decoding ReplyMsg" << endl;
+#endif
 
   if (!decodeHeader(msg))
   {
