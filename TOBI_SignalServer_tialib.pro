@@ -32,6 +32,7 @@ QMAKE_CXXFLAGS_WARN_ON = -Wall -pedantic
 
 # -----------------------------------------------------------------------
 HEADERS += include/signalserver/signal_server.h \
+    include/definitions/defines.h \
     include/definitions/constants.h \
     include/config/control_message_decoder.h \
     include/config/control_message_encoder.h \

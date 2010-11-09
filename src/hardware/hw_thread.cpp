@@ -178,21 +178,24 @@ void HWThread::setBlocks(ticpp::Iterator<ticpp::Element>const &elem)
     cout << "HWThread: setBlocks" << endl;
   #endif
 
-    // FIXXXXME: What happens if blocksize is negative?
+  boost::int16_t blocks = 0;
+
   try
   {
-    blocks_ = lexical_cast<int>(elem->GetText(true));
+    blocks = lexical_cast<boost::int16_t>(elem->GetText(true));
   }
   catch(bad_lexical_cast &)
   {
-    string ex_str(type_ + " -- Buffersize: value is not a number!");
+    string ex_str(type_ + " -- Blocksize: value is not a number!");
     throw(std::invalid_argument(ex_str));
   }
-  if(blocks_ == 0)
+  if(blocks <= 0)
   {
-    string ex_str(type_ + " -- Buffersize: value is 0!");
+    string ex_str(type_ + " -- Blocksize: value is <= 0!");
     throw(std::invalid_argument(ex_str));
   }
+
+  blocks_ = blocks;
 }
 
 //---------------------------------------------------------------------------------------
