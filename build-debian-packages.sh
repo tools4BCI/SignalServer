@@ -28,6 +28,7 @@ cp -r ./include/definitions ./$dev_dir/usr/include/tia
 cp -r ./include/datapacket ./$dev_dir/usr/include/tia
 cp -r ./include/network ./$dev_dir/usr/include/tia
 cp -r ./include/signalserver ./$dev_dir/usr/include/tia
+cp -r ./include/signalserver-client ./$dev_dir/usr/include/tia
 
 cp ./bin/signalserver ./$ss_dir/usr/bin/
 cp ./bin/server_config.xml ./$ss_dir/usr/local/etc/signalserver/
