@@ -53,9 +53,9 @@ HEADERS += include/config/xml_parser.h \
     include/hardware/artificial_signal_source.h \
     include/hardware/eeg_simulator.h \
     extern/include/LptTools/LptTools.h
+#unix:HEADERS += include/hardware/mouse_linux.h
+#win32:HEADERS += include/hardware/mouse_.h
 
-unix:HEADERS += include/hardware/mouse_linux.h
-win32:HEADERS += include/hardware/mouse_.h
 SOURCES += src/signalserver/main.cpp \
     src/config/xml_parser.cpp \
     src/hardware/hw_access.cpp \
@@ -74,8 +74,8 @@ SOURCES += src/signalserver/main.cpp \
     src/sampleblock/sample_block.cpp \
     src/hardware/artificial_signal_source.cpp \
     src/hardware/eeg_simulator.cpp
-unix:SOURCES += src/hardware/mouse_linux.cpp
-win32:SOURCES += src/hardware/mouse_.cpp
+#unix:SOURCES += src/hardware/mouse_linux.cpp
+#win32:SOURCES += src/hardware/mouse_.cpp
 unix:SOURCES += extern/include/LptTools/LptToolsLinux.cpp
 win32:SOURCES += extern/include/LptTools/LptTools_.cpp
 LIBS += -L./lib \
@@ -86,9 +86,9 @@ unix {
     LIBS += -lboost_thread \
         -lboost_system \
         -lboost_filesystem \
-        -lSDL \
-        -Lextern/lib/libusb/linux \
-        -lusb-1.0
+        -lSDL #\
+        #-Lextern/lib/libusb/linux \
+        #-lusb-1.0
     HARDWARE_PLATFORM = $$system(uname -m)
     contains( HARDWARE_PLATFORM, x86_64 ):: {
         message(Building 64 bit )
