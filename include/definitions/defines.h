@@ -1,3 +1,22 @@
+/*
+    This file is part of TOBI Interface A (TiA).
+
+    TOBI Interface A (TiA) is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    TOBI Interface A (TiA) is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TOBI Interface A (TiA).  If not, see <http://www.gnu.org/licenses/>.
+
+    Copyright 2010 Christian Breitwieser
+    Contact: c.breitwieser@tugraz.at
+*/
 
 /**
 * @file defines.h
@@ -12,24 +31,6 @@
 
 #ifndef DEFINES_H
 #define DEFINES_H
-
-//-----------------------------------------------------------------------------
-/*! \addtogroup hardware_device_indentifiers
-*  Every hardware device is is identified by it's own identifier (unsigned int).
-*  Those identifiers have to be declared here.
-*  If new supported hardware is included into the signalserver, this section has to be
-*  extended. Just increase the running number by 1. (an identifier must not occur multiple times!)
-*  @{
-*/
-
-#define SINEGEN   1
-#define USBAMP    2
-#define MOBILAB   3
-#define JOYSTICK  4
-#define MOUSE     5
-
-/*! @} */
-
 
 /*! \addtogroup data_packet_definitions
 *  Definitions concerning the DataPacket have to be done here!
@@ -82,7 +83,7 @@
 *  @{
 */
 
-#define PI 3.141592653589793238
+//#define PI 3.141592653589793238
 #define BUFFER_SIZE 8388608     //in bytes
 #define EVENT_BUFFER_SIZE  8192
 

@@ -1,3 +1,22 @@
+/*
+    This file is part of the TOBI signal server.
+
+    The TOBI signal server is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    The TOBI signal server is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
+    Copyright 2010 Christian Breitwieser
+    Contact: c.breitwieser@tugraz.at
+*/
 
 /**
 * @file event_listener.h
@@ -10,7 +29,6 @@
 #define EVENTLISTENER_H
 
 #include <vector>
-#include <map>
 
 #include <boost/asio.hpp>
 #include <boost/thread/condition.hpp>  // for mutex and cond. variables
@@ -18,8 +36,6 @@
 #include <boost/cstdint.hpp>
 
 #include "hw_thread.h"
-
-using namespace std;
 
 namespace tobiss
 {
@@ -30,7 +46,7 @@ class EventListener : public HWThread
   /**
     * @brief Constructor
     */
-    EventListener(boost::asio::io_service& io, XMLParser& parser);
+    EventListener(boost::asio::io_service& io);
 
     /**
     * @brief Destructor
@@ -72,8 +88,8 @@ class EventListener : public HWThread
     boost::mutex sync_mut_;  ///< mutex neede for synchronisation
     boost::condition_variable_any cond_;   ///< condition variable to wake up getSyncData()
 
-    vector<char> buffer_;
-    vector<double> events_; ///< temporary vector holding recent samples of the sine (1 element per channel)
+    std::vector<char> buffer_;
+    std::vector<double> events_; ///< temporary vector holding recent samples of the sine (1 element per channel)
 };
 
 } // Namespace tobiss

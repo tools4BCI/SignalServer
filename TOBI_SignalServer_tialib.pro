@@ -1,5 +1,7 @@
 # -----------------------------------------------------------------------
 TEMPLATE = lib
+VERSION = 0.1
+
 CONFIG += console \
     release \
     thread \
@@ -24,13 +26,6 @@ win32:INCLUDEPATH += extern/include/SDL-1.2.14-VC8
 
 unix{
 QMAKE_CXXFLAGS += -pedantic
-
-versiontarget.target = ./update-version.sh
-versiontarget.commands = ./update-version.sh
-versiontarget.depends = FORCE
-
-PRE_TARGETDEPS += ./update-version.sh
-QMAKE_EXTRA_TARGETS += versiontarget
 }
 
 QMAKE_CXXFLAGS_WARN_ON = -Wall -pedantic
@@ -42,7 +37,6 @@ HEADERS += include/signalserver/signal_server.h \
     include/config/control_message_encoder.h \
     include/config/control_messages.h \
     include/config/ss_meta_info.h \
-    include/config/xml_parser.h \
     include/datapacket/data_packet.h \
     include/datapacket/raw_mem.h \
     include/network/control_connection.h \
@@ -57,7 +51,6 @@ SOURCES += src/signalserver/signal_server.cpp \
     src/config/control_message_encoder.cpp \
     src/config/control_messages.cpp \
     src/config/ss_meta_info.cpp \
-    src/config/xml_parser.cpp \
     src/datapacket/data_packet.cpp \
     src/datapacket/raw_mem.cpp \
     src/network/control_connection.cpp \
@@ -72,25 +65,24 @@ win32:SOURCES += extern/include/LptTools/LptTools_.cpp
 # -----------------------------------------------------------------------
 unix {
     LIBS += -lboost_thread \
-        -lboost_system \
-        -lSDL
+        -lboost_system
     HARDWARE_PLATFORM = $$system(uname -m)
     contains( HARDWARE_PLATFORM, x86_64 )::{
         message(Building 64 bit )
     # 64-bit Linux
-    LIBS += -L \
-        extern/lib/ticpp/linux \
-        -lticpp_64 \
-        -Lextern/lib/libgdf/linux \
-                 -llibgdf_64
+    #LIBS += -L \
+        #extern/lib/ticpp/linux \
+        #-lticpp_64 \
+        #-Lextern/lib/libgdf/linux \
+        #-llibgdf_64
     }else::{
     # 32-bit Linux
         message(Building 32 bit )
 
-    LIBS += -Lextern/lib/ticpp/linux \
-        -lticpp \
-        -Lextern/lib/libgdf/linux \
-        -llibgdf
+    #LIBS += -Lextern/lib/ticpp/linux \
+        #-lticpp \
+        #-Lextern/lib/libgdf/linux \
+        #-llibgdf
     }
 }
 win32:LIBS += extern\lib\sdl\win\SDL.lib \

@@ -1,8 +1,28 @@
+/*
+    This file is part of the TOBI signal server.
+
+    The TOBI signal server is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    The TOBI signal server is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
+    Copyright 2010 Christian Breitwieser
+    Contact: c.breitwieser@tugraz.at
+*/
+
 #include "hardware/hw_thread.h"
+#include "definitions/constants.h"
+#include <boost/algorithm/string.hpp>
 
 #include <boost/lexical_cast.hpp>
-
-#include "definitions/constants.h"
 
 namespace tobiss
 {
@@ -13,6 +33,8 @@ using boost::bad_lexical_cast;
 using boost::uint16_t;
 using boost::uint32_t;
 
+using boost::algorithm::to_lower_copy;
+
 using std::map;
 using std::pair;
 using std::vector;
@@ -21,6 +43,30 @@ using std::cout;
 using std::endl;
 using std::dec;
 using std::hex;
+
+//-----------------------------------------------------------------------------
+
+//const string HWThread::hardware_("hardware");
+//const string HWThread::hardware_name_("name");
+const string HWThread::hardware_version_("version");
+const string HWThread::hardware_serial_("serial");
+
+const string HWThread::hw_mode_("mode");
+const string HWThread::hw_devset_("device_settings");
+const string HWThread::hw_fs_("sampling_rate");
+
+const string HWThread::hw_channels_("measurement_channels");
+const string HWThread::hw_ch_nr_("nr");
+const string HWThread::hw_ch_names_("names");
+const string HWThread::hw_ch_type_("type");
+
+const string HWThread::hw_blocksize_("blocksize");
+
+const string HWThread::hw_chset_("channel_settings");
+const string HWThread::hw_chset_sel_("selection");
+const string HWThread::hw_chset_ch_("ch");
+const string HWThread::hw_chset_nr_("nr");
+const string HWThread::hw_chset_name_("name");
 
 //-----------------------------------------------------------------------------
 
@@ -39,20 +85,20 @@ void HWThread::checkMandatoryHardwareTags(ticpp::Iterator<ticpp::Element> hw)
 
   try
   {
-    parser_.checkMandatoryHardwareTags(hw);
+    checkMandatoryHardwareTagsXML(hw);
   }
   catch(ticpp::Exception& e)
   {
-    string ex_str("Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ");
-    throw(ticpp::Exception(ex_str + e.what()));
+    string ex_str(type_ + " -- ");
+    throw(std::invalid_argument(ex_str + e.what()));
   }
 
-  elem = hw->FirstChildElement(cst_.hw_mode, true);
-  if(cst_.equalsMaster(elem->GetText(false)))
+  elem = hw->FirstChildElement(hw_mode_, true);
+  if(equalsMaster(elem->GetText(false)))
     mode_ = MASTER;
-  if(cst_.equalsSlave(elem->GetText(false)))
+  if(equalsSlave(elem->GetText(false)))
     mode_ = SLAVE;
-  if(cst_.equalsAperiodic(elem->GetText(false)))
+  if(equalsAperiodic(elem->GetText(false)))
     mode_ = APERIODIC;
 }
 
@@ -78,23 +124,20 @@ void HWThread::setSamplingRate(ticpp::Iterator<ticpp::Element>const &elem)
     cout << "HWThread: setSamplingRate" << endl;
   #endif
 
+    // FIXXXME: Allow also float sampling rates (e.g. 0.1)
   try
   {
     fs_ = lexical_cast<int>(elem->GetText(true));
   }
   catch(bad_lexical_cast &)
   {
-    string ex_str;
-    ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-    ex_str += "Sampling Rate is not a number!";
-    throw(ticpp::Exception(ex_str));
+    string ex_str(type_ + " -- Sampling Rate is not a number!");
+    throw(std::invalid_argument(ex_str));
   }
   if(fs_ == 0)
   {
-    string ex_str;
-    ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-    ex_str += "Sampling rate is 0!";
-    throw(ticpp::Exception(ex_str));
+    string ex_str(type_ + " -- Sampling Rate is 0!");
+    throw(std::invalid_argument(ex_str));
   }
 }
 
@@ -110,17 +153,19 @@ void HWThread::setDeviceChannels(ticpp::Iterator<ticpp::Element>const &elem)
 
   try
   {
-    parser_.parseDeviceChannels(elem, nr_ch_, naming, type);
+    parseDeviceChannels(elem, nr_ch_, naming, type);
   }
   catch(ticpp::Exception& e)
   {
-    string ex_str;
-    ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-    throw(ticpp::Exception(ex_str + e.what()));
+    string ex_str(type_ + " -- ");
+    throw(std::invalid_argument(ex_str + e.what()));
   }
 
+  Constants cst;
   for(uint16_t n = 1; n <= nr_ch_; n++)
-    channel_info_.insert(pair<uint16_t, pair<string, uint32_t> >(n, pair<string, uint32_t>(naming, cst_.getSignalFlag(type))));
+    channel_info_.insert(
+        pair<uint16_t, pair<string, uint32_t> >(n, pair<string, uint32_t>(naming,
+                                                                          cst.getSignalFlag(type))));
   homogenous_signal_type_ = 1;
 
   setChannelTypes();
@@ -133,23 +178,20 @@ void HWThread::setBlocks(ticpp::Iterator<ticpp::Element>const &elem)
     cout << "HWThread: setBlocks" << endl;
   #endif
 
+    // FIXXXXME: What happens if blocksize is negative?
   try
   {
     blocks_ = lexical_cast<int>(elem->GetText(true));
   }
   catch(bad_lexical_cast &)
   {
-    string ex_str;
-    ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-    ex_str += "Buffersize: value is not a number!";
-    throw(ticpp::Exception(ex_str));
+    string ex_str(type_ + " -- Buffersize: value is not a number!");
+    throw(std::invalid_argument(ex_str));
   }
   if(blocks_ == 0)
   {
-    string ex_str;
-    ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-    ex_str += "Buffersize: value is 0!";
-    throw(ticpp::Exception(ex_str));
+    string ex_str(type_ + " -- Buffersize: value is 0!");
+    throw(std::invalid_argument(ex_str));
   }
 }
 
@@ -163,10 +205,11 @@ void HWThread::setChannelSelection(ticpp::Iterator<ticpp::Element>const &father)
   bool nr_ch_dirty = 0;
   ticpp::Iterator<ticpp::Element> elem;
   if(nr_ch_ == 0)
-    elem = father->FirstChildElement(cst_.hw_cs_ch,true);
+    elem = father->FirstChildElement(hw_chset_ch_,true);
   else
-    elem = father->FirstChildElement(cst_.hw_cs_ch,false);
+    elem = father->FirstChildElement(hw_chset_ch_,false);
 
+  Constants cst;
   if (elem != elem.end())
   {
     if(channel_info_.size() != 0)
@@ -175,22 +218,23 @@ void HWThread::setChannelSelection(ticpp::Iterator<ticpp::Element>const &father)
     channel_info_.clear();
 
     for(ticpp::Iterator<ticpp::Element> it(elem); it != it.end(); it++)
-      if(it->Value() == cst_.hw_cs_ch)
+      if(it->Value() == hw_chset_ch_)
       {
         string name;
         string type;
         uint16_t ch = 0;
         try
         {
-          parser_.parseChannelSelection(it, ch, name, type);
+          parseChannelSelection(it, ch, name, type);
         }
         catch(ticpp::Exception& e)
         {
-          string ex_str;
-          ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-          throw(ticpp::Exception(ex_str + e.what()));
+          string ex_str(type_ + " -- ");
+          throw(std::invalid_argument(ex_str + e.what()));
         }
-        channel_info_.insert(pair<uint16_t, pair<string, uint32_t> >(ch, pair<string, uint32_t>(name, cst_.getSignalFlag(type))));
+        channel_info_.insert(
+            pair<uint16_t, pair<string, uint32_t> >(ch, pair<string, uint32_t>(name,
+                                                                               cst.getSignalFlag(type))));
       }
       nr_ch_ = channel_info_.size();
   }
@@ -204,7 +248,7 @@ void HWThread::setChannelSelection(ticpp::Iterator<ticpp::Element>const &father)
     {
       cout << "    Channel: " << dec << (*m_it).first;
       cout << "  ...  Name: " << (*m_it).second.first;
-      cout << "  ...  Type: " << cst_.getSignalName((*m_it).second.second) << " (0x" << hex << (*m_it).second.second << ")" << endl;
+      cout << "  ...  Type: " << cst.getSignalName((*m_it).second.second) << " (0x" << hex << (*m_it).second.second << ")" << endl;
     }
     cout << dec << endl;
   }
@@ -233,6 +277,8 @@ void HWThread::setChannelTypes()
 }
 
 //-----------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------
 
 void HWThread::setVendorId(ticpp::Iterator<ticpp::Element>const &elem)
 {
@@ -246,17 +292,13 @@ void HWThread::setVendorId(ticpp::Iterator<ticpp::Element>const &elem)
     }
     catch(bad_lexical_cast &)
     {
-      string ex_str;
-      ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-      ex_str += "VendorId: value is not a number!";
-      throw(ticpp::Exception(ex_str));
+      string ex_str(type_ + " -- VendorId: value is not a number!");
+      throw(std::invalid_argument(ex_str));
     }
     if(blocks_ == 0)
     {
-      string ex_str;
-      ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-      ex_str += "VendorId: value is 0!";
-      throw(ticpp::Exception(ex_str));
+      string ex_str(type_ + " -- VendorId: value is 0!");
+      throw(std::invalid_argument(ex_str));
     }
 }
 //-----------------------------------------------------------------------------
@@ -273,17 +315,13 @@ void HWThread::setProductId(ticpp::Iterator<ticpp::Element>const &elem)
     }
     catch(bad_lexical_cast &)
     {
-      string ex_str;
-      ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-      ex_str += "ProductId: value is not a number!";
-      throw(ticpp::Exception(ex_str));
+      string ex_str(type_ + " -- ProductId: value is not a number!");
+      throw(std::invalid_argument(ex_str));
     }
     if(blocks_ == 0)
     {
-      string ex_str;
-      ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-      ex_str += "ProductId: value is 0!";
-      throw(ticpp::Exception(ex_str));
+      string ex_str(type_ + " -- ProductId: value is 0!");
+      throw(std::invalid_argument(ex_str));
     }
 }
 
@@ -301,17 +339,191 @@ void HWThread::setUsbPort(ticpp::Iterator<ticpp::Element>const &elem)
     }
     catch(bad_lexical_cast &)
     {
-      string ex_str;
-      ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-      ex_str += "Usb port: value is not a number!";
-      throw(ticpp::Exception(ex_str));
+      string ex_str(type_ + " -- Usb port: value is not a number!");
+      throw(std::invalid_argument(ex_str));
     }
     if(blocks_ == 0)
     {
-      string ex_str;
-      ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-      ex_str += "Usb port: value is 0!";
-      throw(ticpp::Exception(ex_str));
+      string ex_str(type_ + " -- Usb port: value is 0!");
+      throw(std::invalid_argument(ex_str));
+    }
+}
+
+//---------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------
+
+bool HWThread::equalsOnOrOff(const std::string& s)
+{
+  if(to_lower_copy(s) == "on"  || s == "1")
+    return(true);
+  if(to_lower_copy(s) == "off" || s == "0")
+    return(false);
+  else
+  {
+    string e = s + " -- Value equals neiter \"on, off, 0 or 1\"!";
+    throw std::invalid_argument(e);
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+bool HWThread::equalsYesOrNo(const std::string& s)
+{
+  if(to_lower_copy(s) == "yes"  || s == "1")
+    return(true);
+  if(to_lower_copy(s) == "no" || s == "0")
+    return(false);
+  else
+  {
+    string e = s + " -- Value equals neiter \"yes, no, 0 or 1\"!";
+    throw std::invalid_argument(e);
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+bool HWThread::equalsMaster(const std::string& s)
+{
+  return(to_lower_copy(s) == "master");
+}
+
+//-----------------------------------------------------------------------------
+
+bool HWThread::equalsSlave(const std::string& s)
+{
+  return(to_lower_copy(s) == "slave");
+}
+
+//-----------------------------------------------------------------------------
+
+bool HWThread::equalsAperiodic(const std::string& s)
+{
+  return(to_lower_copy(s) == "aperiodic");
+}
+
+//---------------------------------------------------------------------------------------
+
+void HWThread::parseDeviceChannels(ticpp::Iterator<ticpp::Element>const &elem, boost::uint16_t& nr_ch,
+                             std::string& naming, std::string& type)
+{
+  string nr_channels;
+
+  if(!elem.Get()->HasAttribute(hw_ch_nr_))
+  {
+    string ex_str(type_ + " -- ");
+    ex_str += "Tag <" + hw_channels_ +"> given, number of channels ("+hw_ch_nr_+") not given!";
+    throw(std::invalid_argument(ex_str));
+  }
+  if(!elem.Get()->HasAttribute(hw_ch_names_))
+  {
+    string ex_str(type_ + " -- ");
+    ex_str += "Tag <"+ hw_channels_ +"> given, channel names ("+hw_ch_names_ +") not given!";
+    throw(std::invalid_argument(ex_str));
+  }
+  if(!elem.Get()->HasAttribute(hw_ch_type_))
+  {
+    string ex_str(type_ + " -- ");
+    ex_str += "Tag <"+hw_channels_+"> given, channels type ("+hw_ch_type_+") not given!";
+    throw(std::invalid_argument(ex_str));
+  }
+
+  nr_channels = elem.Get()->GetAttribute(hw_ch_nr_);
+  naming      = elem.Get()->GetAttribute(hw_ch_names_);
+  type        = elem.Get()->GetAttribute(hw_ch_type_);
+
+  try
+  {
+    nr_ch = lexical_cast<int>(nr_channels);
+  }
+  catch(bad_lexical_cast &)
+  {
+    string ex_str(type_ + " -- ");
+    ex_str += "Tag <"+hw_channels_+"> given, but number of channels is not a number!";
+    throw(std::invalid_argument(ex_str));
+  }
+  if(nr_ch == 0)
+  {
+    string ex_str(type_ + " -- ");
+    ex_str += "Tag <"+hw_channels_+"> given, but number of channels (nr) is 0!";
+    throw(std::invalid_argument(ex_str));
+  }
+}
+
+//---------------------------------------------------------------------------------------
+
+void HWThread::parseChannelSelection(ticpp::Iterator<ticpp::Element>const &elem, boost::uint16_t& ch,
+                               std::string& name, std::string& type)
+{
+  string channel;
+
+  if(!elem.Get()->HasAttribute(hw_chset_nr_))
+  {
+    string ex_str(type_ + " -- ");
+    ex_str += "Tag <"+hw_channels_+"> given, channel number ("+hw_ch_nr_+") not given!";
+    throw(std::invalid_argument(ex_str));
+  }
+  if(!elem.Get()->HasAttribute(hw_chset_name_))
+  {
+    string ex_str(type_ + " -- ");
+    ex_str += "Tag <"+hw_channels_+"> given, channel name ("+hw_ch_names_+") not given!";
+    throw(std::invalid_argument(ex_str));
+  }
+  if(!elem.Get()->HasAttribute(hw_ch_type_))
+  {
+    string ex_str(type_ + " -- ");
+    ex_str += "Tag <"+hw_channels_+"> given, channel type ("+hw_ch_type_+") not given!";
+    throw(std::invalid_argument(ex_str));
+  }
+
+  channel = elem.Get()->GetAttribute(hw_chset_nr_);
+  name    = elem.Get()->GetAttribute(hw_chset_name_);
+  type    = elem.Get()->GetAttribute(hw_ch_type_);
+
+  try
+  {
+    ch = lexical_cast<int>(channel);
+  }
+  catch(bad_lexical_cast &)
+  {
+    string ex_str(type_ + " -- ");
+    ex_str += "Tag <"+ hw_chset_ + "> - "+ hw_chset_sel_ +": Channel is not a number!";
+    throw(std::invalid_argument(ex_str));
+  }
+  if(ch == 0)
+  {
+    string ex_str(type_ + " -- ");
+    ex_str += "Tag <"+ hw_chset_ + "> - "+ hw_chset_sel_ +": Channel is 0 --> First channel-nr is 1!";
+    throw(std::invalid_argument(ex_str));
+  }
+}
+
+//---------------------------------------------------------------------------------------
+
+void HWThread::checkMandatoryHardwareTagsXML(ticpp::Iterator<ticpp::Element> hw)
+{
+  #ifdef DEBUG
+    cout << "HWThread: checkMandatoryHardwareTags" << endl;
+  #endif
+
+  ticpp::Iterator<ticpp::Element> elem;
+
+  elem = hw->FirstChildElement(hw_mode_, true);
+  if( !(equalsMaster(elem->GetText(true)) || equalsSlave(elem->GetText(true))
+        || equalsAperiodic(elem->GetText(true))))
+  {
+    string ex_str(type_ + " -- ");
+    ex_str += "Mode is neither master, slave or aperiodic!";
+    throw(std::invalid_argument(ex_str));
+  }
+
+  elem = hw->FirstChildElement(hw_devset_, true);
+  for(ticpp::Iterator<ticpp::Element> it(elem); ++it != it.end(); )
+    if(it->Value() == hw_devset_)
+    {
+    string ex_str(type_ + " -- ");
+      ex_str += "Multiple device_settings found!";
+      throw(std::invalid_argument(ex_str));
     }
 }
 

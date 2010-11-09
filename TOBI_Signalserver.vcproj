@@ -77,8 +77,9 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				LinkLibraryDependencies="true"
-				AdditionalOptions="&quot;/MANIFESTDEPENDENCY:type=&apos;win32&apos; name=&apos;Microsoft.Windows.Common-Controls&apos; version=&apos;6.0.0.0&apos; publicKeyToken=&apos;6595b64144ccf1df&apos; language=&apos;*&apos; processorArchitecture=&apos;*&apos;&quot;"
-				AdditionalDependencies="ticpp.lib SDL.lib SDLmain.lib gUSBamp.lib libgdf.lib libusb0.lib"
+				UseUnicodeResponseFiles="false"
+				AdditionalOptions="&quot;/MANIFESTDEPENDENCY:type=&apos;win32&apos; name=&apos;Microsoft.Windows.Common-Controls&apos; version=&apos;6.0.0.0&apos; publicKeyToken=&apos;6595b64144ccf1df&apos; language=&apos;*&apos; processorArchitecture=&apos;*&apos;&quot;&#x0D;&#x0A;"
+				AdditionalDependencies="ticppd.lib SDL.lib SDLmain.lib libusb0.lib"
 				OutputFile="bin\signalserver_debug.exe"
 				LinkIncremental="0"
 				SuppressStartupBanner="true"
@@ -88,8 +89,8 @@
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=""
 				SubSystem="1"
-				OptimizeReferences="0"
-				EnableCOMDATFolding="0"
+				OptimizeReferences="1"
+				EnableCOMDATFolding="1"
 				OptimizeForWindows98="0"
 				LinkTimeCodeGeneration="0"
 				EntryPointSymbol=""
@@ -150,8 +151,9 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
+				EnableFiberSafeOptimizations="true"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories=".;include;extern\include;&quot;extern\include\SDL-1.2.14-VC8&quot;;C:\Programme\boost\boost_1_42;&quot;..\..\Qt\2009.05\qt\mkspecs\win32-msvc2008&quot;"
+				AdditionalIncludeDirectories=".;include;extern\include;&quot;extern\include\SDL-1.2.14-VC8&quot;"
 				PreprocessorDefinitions="WIN32;TIXML_USE_TICPP;_WIN32_WINNT=0x0501;_CONSOLE"
 				GeneratePreprocessedFile="0"
 				BasicRuntimeChecks="0"
@@ -179,8 +181,9 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				LinkLibraryDependencies="true"
+				UseUnicodeResponseFiles="false"
 				AdditionalOptions="/NODEFAULTLIB:MSVCRT &quot;/MANIFESTDEPENDENCY:type=&apos;win32&apos; name=&apos;Microsoft.Windows.Common-Controls&apos; version=&apos;6.0.0.0&apos; publicKeyToken=&apos;6595b64144ccf1df&apos; language=&apos;*&apos; processorArchitecture=&apos;*&apos;&quot;"
-				AdditionalDependencies="ticpp.lib SDL.lib SDLmain.lib gUSBamp.lib libusb0.lib"
+				AdditionalDependencies="ticpp.lib SDL.lib  libusb0.lib"
 				OutputFile="bin\signalserver.exe"
 				LinkIncremental="0"
 				SuppressStartupBanner="true"
@@ -235,6 +238,14 @@
 				Name="hardware"
 				>
 				<File
+					RelativePath=".\src\hardware\artificial_signal_source.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\hardware\eeg_simulator.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\hardware\event_listener.cpp"
 					>
 				</File>
@@ -251,11 +262,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\hardware\jstick.cpp"
+					RelativePath=".\src\hardware\hw_thread_factory.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\hardware\mouse_.cpp"
+					RelativePath=".\src\hardware\jstick.cpp"
 					>
 				</File>
 				<File
@@ -299,6 +310,14 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="config"
+				>
+				<File
+					RelativePath=".\src\config\xml_parser.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -309,11 +328,23 @@
 				Name="hardware"
 				>
 				<File
+					RelativePath=".\include\hardware\artificial_signal_source.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\hardware\eeg_simulator.h"
+					>
+				</File>
+				<File
 					RelativePath=".\include\hardware\event_listener.h"
 					>
 				</File>
 				<File
 					RelativePath=".\include\hardware\g_mobilab.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\hardware\gtec_usbamp_wrapper.h"
 					>
 				</File>
 				<File
@@ -325,11 +356,15 @@
 					>
 				</File>
 				<File
-					RelativePath=".\include\hardware\jstick.h"
+					RelativePath=".\include\hardware\hw_thread_builder.h"
 					>
 				</File>
 				<File
-					RelativePath=".\include\hardware\mouse_.h"
+					RelativePath=".\include\hardware\hw_thread_factory.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\hardware\jstick.h"
 					>
 				</File>
 				<File
@@ -370,6 +405,14 @@
 				</File>
 				<File
 					RelativePath=".\include\filereading\gdf_file_reader.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="config"
+				>
+				<File
+					RelativePath=".\include\config\xml_parser.h"
 					>
 				</File>
 			</Filter>

@@ -1,3 +1,23 @@
+/*
+    This file is part of the TOBI signal server.
+
+    The TOBI signal server is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    The TOBI signal server is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
+    Copyright 2010 Christian Breitwieser
+    Contact: c.breitwieser@tugraz.at
+*/
+
 /**
 * @ssclient_main.cpp
 *
@@ -7,6 +27,7 @@
 
 // STL
 #include <iostream>
+#include <algorithm>
 
 // Boost
 #include <boost/asio.hpp>
@@ -17,6 +38,7 @@
 // local
 #include "datapacket/data_packet.h"
 #include "signalserver-client/ssclient.h"
+#include "signalserver-client/ssconfig.h"
 
 using namespace std;
 using namespace tobiss;
@@ -32,6 +54,10 @@ class SSClientDataReader
         cond_(cond),
         running_(1),
         timestamp_(boost::posix_time::microsec_clock::local_time()),
+        t_min_total_ (10, 0, 0),
+        t_max_total_ (0, 0, 0),
+        t_min_last_ (10, 0, 0),
+        t_max_last_ (0, 0, 0),
         t_var_(0)
     {}
 
@@ -59,12 +85,12 @@ class SSClientDataReader
 
           DataPacket packet;
           vector<double> v;
-          
+
           if (!client_.receiving())
           {
             cond_.wait(lock);
           }
-           
+
           if(running_ && client_.receiving())
           {
             try {
@@ -113,6 +139,13 @@ class SSClientDataReader
             #ifdef TIMING_TEST
               timestamp_ = boost::posix_time::microsec_clock::local_time();
               diff_ = timestamp_ - packet.getTimestamp();
+
+              t_diffs_.push_back (diff_);
+              t_min_total_ = min (t_min_total_, diff_);
+              t_max_total_ = max (t_max_total_, diff_);
+              t_min_last_ = min (t_min_last_, diff_);
+              t_max_last_ = max (t_max_last_, diff_);
+
               t_mean_ = (t_mean_ + diff_)/2;
               t_var_  = (t_var_ +
               ( (diff_.total_microseconds() - t_mean_.total_microseconds() )*
@@ -128,9 +161,16 @@ class SSClientDataReader
               (counter%(
               (client_.config().signal_info.masterSamplingRate()/client_.config().signal_info.masterBlockSize()) *2 ) == 0) )
             {
+              sort (t_diffs_.begin(), t_diffs_.end());
               cout << "Packet Nr.: " << counter << ";  ";
-              cout << "Timing -- mean: " << t_mean_.total_microseconds() << " microsecs,  ";
-              cout << "variance: " << t_var_ << " microsecs"<< endl;
+              cout << "Timing (microsecs) -- mean: " << t_mean_.total_microseconds() << ", ";
+              cout << "variance: " << t_var_;
+              cout << ", min: " << t_min_last_.total_microseconds() << " (total: "<<  t_min_total_.total_microseconds() <<"), ";
+              cout << "max: "<< t_max_last_.total_microseconds() << " (total: "<< t_max_total_.total_microseconds() << "), ";
+              cout << "median: " << t_diffs_[t_diffs_.size() / 2].total_microseconds () << endl;
+              t_diffs_.clear();
+              t_min_last_ = boost::posix_time::time_duration (10, 0, 0);
+              t_max_last_ = boost::posix_time::time_duration (0, 0, 0);
             }
           #endif
         }
@@ -144,6 +184,11 @@ class SSClientDataReader
     boost::posix_time::ptime timestamp_;
     boost::posix_time::time_duration diff_;
     boost::posix_time::time_duration t_mean_;
+    boost::posix_time::time_duration t_min_total_;
+    boost::posix_time::time_duration t_max_total_;
+    boost::posix_time::time_duration t_min_last_;
+    boost::posix_time::time_duration t_max_last_;
+    vector<boost::posix_time::time_duration> t_diffs_;
     boost::int64_t t_var_;
 //     boost::posix_time::time_duration t_var_;
 };
@@ -226,30 +271,33 @@ int main(int argc, const char* argv[])
 
     if(command == "q")
     {
-      client.stopReceiving();
-      reader.stop();
-      cond.notify_all();
-
-      reader_thread.join();
-      if (client.receiving())
-      {
-        cerr << "Cannot Stop Receiving!" << endl;
-      }
       break;
     }
+
     if (command == "config")
     {
-      client.requestConfig();
+      try {
+        client.requestConfig();
+      }
+      catch (std::exception& e)
+      {
+        cerr << "Requesting config failed -- Error:"
+             << "--> " << e.what() << endl;
+      }
     }
     else if (command == "starttcp" || command == "startudp")
     {
       bool udp =  command == "startudp";
-      cout << "Start Receiving ..." << endl;
-      client.startReceiving(udp);
 
-      if (!client.receiving())
+      cout << "Start Receiving ..." << endl;
+
+      try {
+        client.startReceiving(udp);
+      }
+      catch (std::exception& e)
       {
-        cerr << "Start Receiving failed" << endl;
+        cerr << "Start Receiving failed -- Error:" << endl
+             << "--> " << e.what() << endl;
       }
 
       cond.notify_one();
@@ -257,11 +305,16 @@ int main(int argc, const char* argv[])
     else if (command == "stop")
     {
       cout << "Stop Receiving ..." << endl;
-      client.stopReceiving();
 
-      if (client.receiving())
+      boost::unique_lock<boost::mutex> lock(mutex);
+
+      try {
+        client.stopReceiving();
+      }
+      catch (std::exception& e)
       {
-        cerr << "Cannot Stop Receiving!" << endl;
+        cerr << "Stop Receiving failed -- Error:" << endl
+             << "--> " << e.what() << endl;
       }
     }
     else if (command == "help")
@@ -279,6 +332,20 @@ int main(int argc, const char* argv[])
 
     cond.notify_one();
     cout << endl << ">>";
+  }
+
+  cout << "Terminating ..." << endl;
+  reader.stop();
+  cond.notify_all();
+  reader_thread.join();
+
+  try {
+    client.stopReceiving();
+  }
+  catch (std::exception& e)
+  {
+    cerr << "Stop Receiving failed -- Error:"
+         << "--> " << e.what() << endl;
   }
 
  return(0);

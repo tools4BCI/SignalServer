@@ -1,3 +1,22 @@
+/*
+    This file is part of the TOBI signal server.
+
+    The TOBI signal server is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    The TOBI signal server is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
+    Copyright 2010 Christian Breitwieser
+    Contact: c.breitwieser@tugraz.at
+*/
 
 /**
 * @file mouse.h
@@ -9,23 +28,14 @@
 #ifndef MOUSE_H
 #define MOUSE_H
 
-#ifdef WIN32
-    #pragma comment(lib, "SDL.lib")
-    #pragma comment(lib, "SDLmain.lib")
-#endif
-
 #include <boost/cstdint.hpp>
 #include <set>
-#include <SDL/SDL.h>
-#include <cmath>
 
 #include <usb.h>
 
 #include "hw_thread.h"
-//#include "extern/lib/libusb/linux/libusb-1.0.8/libusb/libusb.h"
-
-
-using namespace std;
+#include "hw_thread_builder.h"
+#include "extern/lib/libusb/linux/libusb-1.0.8/libusb/libusb.h"
 
 namespace tobiss
 {
@@ -34,7 +44,7 @@ namespace tobiss
 class Mouse : public HWThread
     {
     public:
-      Mouse(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw);
+      Mouse(ticpp::Iterator<ticpp::Element> hw);
 
       /**
       * @brief Destructor
@@ -78,17 +88,17 @@ class Mouse : public HWThread
       //-----------------------------------------------
 
     private:
-    static set<boost::uint16_t> used_ids_;
+      static std::set<boost::uint16_t> used_ids_;
 
       boost::uint16_t id_;
 
       boost::uint16_t buttons_;
-      vector<bool> buttons_values_;
-  
-      boost::uint16_t axes_;
-      vector<boost::int16_t> axes_values_;
+      std::vector<bool> buttons_values_;
 
-      string name_;
+      boost::uint16_t axes_;
+      std::vector<boost::int16_t> axes_values_;
+
+      std::string name_;
 
       bool user_interrupt_;
 
@@ -103,6 +113,8 @@ class Mouse : public HWThread
       std::vector<boost::int16_t>  raw_data_;
       unsigned char async_data_[10];
       bool dirty_;
+
+      static const HWThreadBuilderTemplateRegistratorWithoutIOService<Mouse> FACTORY_REGISTRATOR_;
   };
 
 
