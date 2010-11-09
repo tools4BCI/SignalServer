@@ -68,6 +68,8 @@ using namespace std;
 using namespace tobiss;
 
 const string DEFAULT_XML_CONFIG = "server_config.xml";
+const string XML_CONFIG_FILE_PARAM = "-f";
+
 #ifndef WIN32
 const string DEFAULT_XML_CONFIG_HOME_SUBDIR = string("/tobi_sigserver_cfg/");
 const string TEMPLATE_XML_CONFIG = string("/usr/local/etc/signalserver/") + DEFAULT_XML_CONFIG;
@@ -159,11 +161,16 @@ int main(int argc, const char* argv[])
     }
     else if(argc == 2)
     {
+      cout << endl << "  ***  Loading XML configuration file: " << argv[1] << endl << endl;
+      config_file = argv[1];
+    }
+    else if(argc == 3 && argv[1] == XML_CONFIG_FILE_PARAM)
+    {
       cout << endl << "  ***  Loading XML configuration file: " << argv[2] << endl << endl;
       config_file = argv[2];
     }
     else
-      cout << " ERROR -- Wrong Number of input arguments!" << endl;
+      throw(std::invalid_argument(" ERROR -- Failure parsing input arguments!") );
 
     while(running)
     {
