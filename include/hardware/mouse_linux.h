@@ -19,8 +19,10 @@
 #include <SDL/SDL.h>
 #include <cmath>
 
+#include <usb.h>
+
 #include "hw_thread.h"
-#include "extern/lib/libusb/linux/libusb-1.0.8/libusb/libusb.h"
+//#include "extern/lib/libusb/linux/libusb-1.0.8/libusb/libusb.h"
 
 
 using namespace std;
