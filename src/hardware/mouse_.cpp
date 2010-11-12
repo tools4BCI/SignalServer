@@ -1,9 +1,35 @@
+/*
+    This file is part of the TOBI signal server.
+
+    The TOBI signal server is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    The TOBI signal server is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
+    Copyright 2010 Christian Breitwieser
+    Contact: c.breitwieser@tugraz.at
+*/
 
 #include "hardware/mouse_.h"
 
-
 namespace tobiss
 {
+
+using std::vector;
+using std::string;
+using std::map;
+using std::pair;
+using std::cout;
+using std::endl;
+using std::set;
 
 set<boost::uint16_t> Mouse::used_ids_;
 
@@ -11,13 +37,14 @@ const HWThreadBuilderTemplateRegistratorWithoutIOService<Mouse> Mouse::FACTORY_R
 
 //-----------------------------------------------------------------------------
 
-Mouse::Mouse(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
-  : HWThread(parser)
+Mouse::Mouse(ticpp::Iterator<ticpp::Element> hw)
+  : HWThread()
 {
   #ifdef DEBUG
     cout << "Mouse: Constructor" << endl;
   #endif
 
+  setType("Mouse");
   checkMandatoryHardwareTags(hw);
   if(mode_ != APERIODIC)
     throw(std::invalid_argument("Mouse has to be started as aperiodic device!"));
@@ -41,7 +68,7 @@ Mouse::Mouse(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
 
   initMouse();
 
-  ticpp::Iterator<ticpp::Element> ds(hw->FirstChildElement(cst_.hw_ds, true));
+  ticpp::Iterator<ticpp::Element> ds(hw->FirstChildElement(hw_devset_, true));
   setDeviceSettings(ds);
 
   data_.init(1, channel_types_.size() , channel_types_);
@@ -75,20 +102,22 @@ void Mouse::setDeviceSettings(ticpp::Iterator<ticpp::Element>const& father)
     cout << "Mouse: setDeviceSettings" << endl;
   #endif
 
-//   ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(cst_.hw_fs,true));
-//   setSamplingRate(elem);
+    //   ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(cst_.hw_fs,true));
+    //   setSamplingRate(elem);
 
-  //ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(cst_.hw_channels,true));
-//   elem = father->FirstChildElement(cst_.hw_channels,true);
+    //ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(cst_.hw_channels,true));
+    //   elem = father->FirstChildElement(cst_.hw_channels,true);
 
-    ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(cst_.hw_vid,true));
-    setVendorId(elem);
+  Constants cst;
 
-    ticpp::Iterator<ticpp::Element> elem2(father->FirstChildElement(cst_.hw_pid,true));
-    setProductId(elem2);
+  ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(cst.hw_vid,true));
+  setVendorId(elem);
 
-	ticpp::Iterator<ticpp::Element> elem3(father->FirstChildElement(cst_.usb_port,true));
-    setUsbPort(elem3);
+  ticpp::Iterator<ticpp::Element> elem2(father->FirstChildElement(cst.hw_pid,true));
+  setProductId(elem2);
+
+	ticpp::Iterator<ticpp::Element> elem3(father->FirstChildElement(cst.usb_port,true));
+  setUsbPort(elem3);
 
   string naming;
   string type;
@@ -127,7 +156,7 @@ void Mouse::setDeviceSettings(ticpp::Iterator<ticpp::Element>const& father)
   if((pid_ & 0x1110) == 0)
   	strcat_s(hw_id_,"0");
   if((pid_ & 0x1111) == 0)
-  	strcat_s(hw_id_,"0");	
+  	strcat_s(hw_id_,"0");
   strcat_s(hw_id_,PID);
   strcat_s(hw_id_,"\"");
 
@@ -186,8 +215,8 @@ SampleBlock<double> Mouse::getAsyncData()
 	int dx = (int)async_data_[1];
 	int dy = (int)async_data_[2];
 	x += dx;
-	y += dy;			
-	
+	y += dy;
+
 	for(int n = 0; n < buttons_values_.size(); n++)
 	{
 		bool value = 0;
@@ -207,7 +236,7 @@ SampleBlock<double> Mouse::getAsyncData()
 		axes_values_[0]+=x;
 		axes_values_[1]+=y;
 	 }
-     
+
 	 if(!dirty)
 		return(empty_block_);
 
@@ -225,7 +254,7 @@ SampleBlock<double> Mouse::getAsyncData()
 		data_.setSamples(v);
 		return(data_);
     }
-    else 
+    else
         return(empty_block_);
 }
 
@@ -294,12 +323,12 @@ int Mouse::blockKernelDriver()
                      0,                              // Working directory
                      &siStartupInfo,
                      &piProcessInfo);
-    
+
     WaitForSingleObject(piProcessInfo.hProcess, 10000);
 
 	const char *inf_file = "libusb/mouse.inf";
 	int test = usb_install_driver_np(inf_file);
-    
+
 	struct usb_bus *UsbBus = NULL;
     struct usb_device *UsbDevice = NULL;
 
@@ -324,7 +353,7 @@ int Mouse::blockKernelDriver()
         if (usb_claim_interface (dev_handle_, 0) < 0) {
                 usb_close(dev_handle_);
                 return -3;
-        } 
+        }
 
 		cout<< "MouseDevice successfully connected: "<<endl;
 		return 0;
@@ -347,7 +376,7 @@ int Mouse::freeKernelDriver()
     //return 0;
 	usb_release_interface(dev_handle_,0);
 	usb_close(dev_handle_);
-    
+
 STARTUPINFO         siStartupInfo;
     PROCESS_INFORMATION piProcessInfo;
 
@@ -368,10 +397,10 @@ STARTUPINFO         siStartupInfo;
                      0,                              // Working directory
                      &siStartupInfo,
                      &piProcessInfo);
-    
+
     WaitForSingleObject(piProcessInfo.hProcess, 10000);
 	WinExec("\"F:\\WinDDK\\7600.16385.1\\tools\\devcon\\i386\\devcon.exe\" rescan", 1);
-	
+
 	cout<< "MouseDevice disconnected"<<endl;
 	return 0;
 }

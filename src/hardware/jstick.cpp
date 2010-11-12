@@ -1,3 +1,22 @@
+/*
+    This file is part of the TOBI signal server.
+
+    The TOBI signal server is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    The TOBI signal server is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
+    Copyright 2010 Christian Breitwieser
+    Contact: c.breitwieser@tugraz.at
+*/
 
 #include "hardware/jstick.h"
 
@@ -6,43 +25,34 @@
 namespace tobiss
 {
 
+using std::vector;
+using std::string;
+using std::pair;
+using std::cout;
+using std::endl;
+using std::make_pair;
+using std::set;
+
 set<boost::uint16_t> JStick::used_ids_;
 
 
 const HWThreadBuilderTemplateRegistratorWithoutIOService<JStick> JStick::FACTORY_REGISTRATOR_ ("jstick", "joystick", "joycable");
 
 //-----------------------------------------------------------------------------
-JStick::JStick(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
-  : HWThread(parser)
+JStick::JStick(ticpp::Iterator<ticpp::Element> hw)
+  : HWThread()
 {
   #ifdef DEBUG
     cout << "JStick: Constructor" << endl;
   #endif
 
+  setType("Joystick");
   checkMandatoryHardwareTags(hw);
   if(mode_ != APERIODIC)
     throw(std::invalid_argument("Joystick has to be started as aperiodic device!"));
-  //ticpp::Iterator<ticpp::Element> ds(hw->FirstChildElement(cst_.hw_ds, true));
-
-
-
-//   ticpp::Iterator<ticpp::Element> cs(hw->FirstChildElement(cst_.hw_cs, false));
-//   if (cs != cs.end())
-//   {
-//     for(ticpp::Iterator<ticpp::Element> it(cs); ++it != it.end(); )
-//       if(it->Value() == cst_.hw_cs)
-//       {
-//         string ex_str;
-//         ex_str = "Error in "+ cst_.hardware_name +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-//         ex_str += "Multiple channel_settings found!";
-//         throw(ticpp::Exception(ex_str));
-//       }
-//       setChannelSettings(cs);
-//   }
 
   initJoystick();
   setDeviceSettings(0);
-
 
   data_.init(1, channel_types_.size() , channel_types_);
 
@@ -72,12 +82,6 @@ void JStick::setDeviceSettings(ticpp::Iterator<ticpp::Element>const&)
     cout << "JStick: setDeviceSettings" << endl;
   #endif
 
-//   ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(cst_.hw_fs,true));
-//   setSamplingRate(elem);
-
-  //ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(cst_.hw_channels,true));
-//   elem = father->FirstChildElement(cst_.hw_channels,true);
-
   string naming;
   string type;
 
@@ -97,17 +101,6 @@ void JStick::setDeviceSettings(ticpp::Iterator<ticpp::Element>const&)
     channel_types_.push_back(SIG_JOYSTICK);
 
   nr_ch_= channel_types_.size();
-
-  //try
-  //{
-  //  parser_.parseDeviceChannels(elem, nr_ch_, naming, type);
-  //}
-  //catch(ticpp::Exception& e)
-  //{
-  //  string ex_str;
-  //  ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-  //  throw(ticpp::Exception(ex_str + e.what()));
-  //}
 
   boost::uint16_t n = 1;
   if(buttons_)
@@ -134,9 +127,6 @@ void JStick::setChannelSettings(ticpp::Iterator<ticpp::Element>const& )
     cout << "JStick: setChannelSettings" << endl;
   #endif
 
-//   ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(cst_.hw_sel,false));
-//   if (elem != elem.end())
-//     setChannelSelection(elem);
 }
 
 //---------------------------------------------------------------------------------------

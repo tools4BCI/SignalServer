@@ -107,9 +107,13 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
+				InlineFunctionExpansion="2"
 				EnableIntrinsicFunctions="true"
+				FavorSizeOrSpeed="1"
+				OmitFramePointers="true"
+				EnableFiberSafeOptimizations="true"
 				AdditionalIncludeDirectories=".;include;extern\include;&quot;extern\include\SDL-1.2.14-VC8\include&quot;"
-				PreprocessorDefinitions="WIN32;TIXML_USE_TICPP;_WIN32_WINNT=0x0501;_CONSOLE"
+				PreprocessorDefinitions="WIN32;TIXML_USE_TICPP;_WIN32_WINNT=0x0501;_CONSOLE;$(NOINHERIT)"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -128,9 +132,8 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalOptions="/NODEFAULTLIB:MSVCRT"
-				AdditionalDependencies="ticpp.lib SDL.lib SDLmain.lib"
 				OutputFile="$(OutDir)\tia.lib"
-				AdditionalLibraryDirectories="extern\lib\g.usbamp\win;extern\lib\sdl\win;extern\lib\ticpp\win"
+				AdditionalLibraryDirectories=""
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -174,10 +177,6 @@
 				</File>
 				<File
 					RelativePath="src\config\ss_meta_info.cpp"
-					>
-				</File>
-				<File
-					RelativePath="src\config\xml_parser.cpp"
 					>
 				</File>
 			</Filter>
@@ -256,10 +255,6 @@
 				</File>
 				<File
 					RelativePath="include\config\ss_meta_info.h"
-					>
-				</File>
-				<File
-					RelativePath="include\config\xml_parser.h"
 					>
 				</File>
 			</Filter>

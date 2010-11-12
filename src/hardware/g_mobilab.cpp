@@ -1,3 +1,22 @@
+/*
+    This file is part of the TOBI signal server.
+
+    The TOBI signal server is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    The TOBI signal server is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
+    Copyright 2010 Christian Breitwieser
+    Contact: c.breitwieser@tugraz.at
+*/
 
 #include "hardware/g_mobilab.h"
 #include "hardware/hw_thread_builder.h"
@@ -41,6 +60,12 @@ static const unsigned int MOBILAB_CHAR_SIZE    = 8;
 static const std::string  MOBILAB_FLOW_CONTROL = "none";
 static const std::string  MOBILAB_STOP_BITS    = "1";
 static const std::string  MOBILAB_PARITY       = "none";
+
+
+const string GMobilab::hw_mobilab_serial_port_("serial_port");
+const string GMobilab::hw_mobilab_type_("mobilab_type");
+const string GMobilab::hw_mobilab_eeg_("eeg");
+const string GMobilab::hw_mobilab_multi_("multi");
 
 //-----------------------------------------------------------------------------
 
@@ -96,11 +121,11 @@ static const std::string  MOBILAB_PARITY       = "none";
 
 const HWThreadBuilderTemplateRegistrator<GMobilab> GMobilab::factory_registrator_ ("mobilab", "mobilab+", "g.mobilab", "g.mobilab+");
 
-//-----------------------------------------------------------------------------  
-GMobilab::GMobilab(boost::asio::io_service& io, XMLParser& parser,
-         ticpp::Iterator<ticpp::Element> hw)
-  : SerialPortBase(io), HWThread(parser), type_(EEG), async_acqu_thread_(0)
+//-----------------------------------------------------------------------------
+GMobilab::GMobilab(boost::asio::io_service& io, ticpp::Iterator<ticpp::Element> hw)
+  : SerialPortBase(io), HWThread(), mobilab_type_(MOBILAB_EEG), async_acqu_thread_(0)
 {
+  setType("g.Mobilab");
   setHardware(hw);
 
   checkNrOfChannels();
@@ -220,20 +245,19 @@ void GMobilab::setHardware(ticpp::Iterator<ticpp::Element>const &hw)
   #endif
 
   checkMandatoryHardwareTags(hw);
-  ticpp::Iterator<ticpp::Element> ds(hw->FirstChildElement(cst_.hw_ds, true));
+  ticpp::Iterator<ticpp::Element> ds(hw->FirstChildElement(hw_devset_, true));
 
   setDeviceSettings(ds);
 
-  ticpp::Iterator<ticpp::Element> cs(hw->FirstChildElement(cst_.hw_cs, false));
+  ticpp::Iterator<ticpp::Element> cs(hw->FirstChildElement(hw_chset_, false));
   if (cs != cs.end())
   {
     for(ticpp::Iterator<ticpp::Element> it(cs); ++it != it.end(); )
-      if(it->Value() == cst_.hw_cs)
+      if(it->Value() == hw_chset_)
       {
-        string ex_str;
-        ex_str = "Error in "+ cst_.hardware_name +" - " + m_.find(cst_.hardware_name)->second + " -- ";
+        string ex_str(mobilab_type_ + " -- ");
         ex_str += "Multiple channel_settings found!";
-        throw(ticpp::Exception(ex_str));
+        throw(std::invalid_argument(ex_str));
       }
       setChannelSettings(cs);
   }
@@ -249,23 +273,23 @@ void GMobilab::setDeviceSettings(ticpp::Iterator<ticpp::Element>const &father)
 
   fs_ = MOBILAB_SAMPLING_RATE;
 
-  ticpp::Iterator<ticpp::Element>elem = father->FirstChildElement(cst_.hw_mobilab_serial_port,true);
+  ticpp::Iterator<ticpp::Element>elem = father->FirstChildElement(hw_mobilab_serial_port_,true);
   setPortName(elem->GetText(true));
 
-  elem = father->FirstChildElement(cst_.hw_mobilab_type,true);
-  if(elem->GetText(true) == cst_.hw_mobilab_eeg)
-    type_ = EEG;
-  else if(elem->GetText(true) == cst_.hw_mobilab_multi)
-    type_ = MULTI;
+  elem = father->FirstChildElement(hw_mobilab_type_,true);
+  if(elem->GetText(true) == hw_mobilab_eeg_)
+    mobilab_type_ = MOBILAB_EEG;
+  else if(elem->GetText(true) == hw_mobilab_multi_)
+    mobilab_type_ = MOBILAB_MULTI;
   else
     throw(std::invalid_argument(
         "GMobilab::setDeviceSettings() -- type not supported or wrong:") );
 
-  elem = father->FirstChildElement(cst_.hw_channels,false);
+  elem = father->FirstChildElement(hw_channels_,false);
   if(elem != elem.end())
     setDeviceChannels(elem);
 
-  elem = father->FirstChildElement(cst_.hw_buffer,false);
+  elem = father->FirstChildElement(hw_blocksize_,false);
   if(elem != elem.end())
     setBlocks(elem);
 }
@@ -278,7 +302,7 @@ void GMobilab::setChannelSettings(ticpp::Iterator<ticpp::Element>const &father)
     std::cout << "GMobilab: setChannelSettings" << std::endl;
   #endif
 
-  ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(cst_.hw_sel,false));
+  ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(hw_chset_sel_,false));
   if (elem != elem.end())
     setChannelSelection(elem);
 }
@@ -289,7 +313,7 @@ void GMobilab::setScalingValues()
 {
   // use only 50% of the sensitivity to get a correct scaling
 
-  if(type_ == EEG)
+  if(mobilab_type_ == MOBILAB_EEG)
   {
     std::map<boost::uint16_t, std::pair<std::string, boost::uint32_t> >::iterator it;
     for(it = channel_info_.begin(); it != channel_info_.end(); it++)
@@ -298,7 +322,7 @@ void GMobilab::setScalingValues()
           MOBILAB_EEG_SENSITIVITY/(2.0 * pow(2.0 ,MOBILAB_DAQ_RESOLUTION_BIT) ) );
     }
   }
-  if(type_ == MULTI)
+  if(mobilab_type_ == MOBILAB_MULTI)
   {
     double scaling = 0;
     double sensitivity = 0;

@@ -1,3 +1,23 @@
+/*
+    This file is part of the TOBI signal server.
+
+    The TOBI signal server is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    The TOBI signal server is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with the TOBI signal server.  If not, see <http://www.gnu.org/licenses/>.
+
+    Copyright 2010 Christoph Eibel
+    Contact: christoph.eibel@tugraz.at
+*/
+
 #ifndef HW_THREAD_BUILDER_H
 #define HW_THREAD_BUILDER_H
 
@@ -19,7 +39,7 @@ namespace tobiss
 class HWThreadBuilder
 {
 public:
-    virtual HWThread* createInstance (boost::asio::io_service& io, XMLParser& parser, ticpp::Iterator<ticpp::Element> hw) const = 0;
+    virtual HWThread* createInstance (boost::asio::io_service& io, ticpp::Iterator<ticpp::Element> hw) const = 0;
 protected:
     HWThreadBuilder () {}
 };
@@ -84,9 +104,9 @@ public:
         registerKey (key_6);
     }
 
-    virtual HWThread* createInstance (boost::asio::io_service& io, XMLParser& parser, ticpp::Iterator<ticpp::Element> hw) const
+    virtual HWThread* createInstance (boost::asio::io_service& io, ticpp::Iterator<ticpp::Element> hw) const
     {
-        return new T (io, parser, hw);
+        return new T (io, hw);
     }
 
 private:
@@ -157,9 +177,9 @@ public:
         registerKey (key_6);
     }
 
-    virtual HWThread* createInstance (boost::asio::io_service&, XMLParser& parser, ticpp::Iterator<ticpp::Element> hw) const
+    virtual HWThread* createInstance (boost::asio::io_service&, ticpp::Iterator<ticpp::Element> hw) const
     {
-        return new T (parser, hw);
+        return new T (hw);
     }
 
 private:
