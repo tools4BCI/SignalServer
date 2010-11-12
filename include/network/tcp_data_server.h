@@ -76,6 +76,7 @@ public:
   void sendDataPacket(DataPacket& packet);
 
 protected:
+  virtual void startAccept();
 
   /**
    * @brief Handles a new client connection
@@ -99,6 +100,8 @@ private:
   TCPConnection::pointer         connection_;  ///<
 
   boost::asio::ip::tcp::endpoint remote_endpoint_;  ///<
+
+  boost::mutex                   mutex_; ///<
 };
 
 //-----------------------------------------------------------------------------

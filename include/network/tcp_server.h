@@ -107,7 +107,7 @@ protected:
   /**
    * @brief Accept a new connection
    */
-  void startAccept();
+  virtual void startAccept();
 
   /**
    * @brief Handles a new client connection
