@@ -1,3 +1,22 @@
+/*
+    This file is part of the TOBI signal server.
+
+    The TOBI signal server is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    The TOBI signal server is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
+    Copyright 2010 Christian Breitwieser
+    Contact: c.breitwieser@tugraz.at
+*/
 
 #include <iostream>
 #include <fstream>
@@ -18,6 +37,16 @@ namespace tobiss
 using boost::uint16_t;
 using boost::uint32_t;
 
+using std::vector;
+using std::string;
+using std::map;
+using std::pair;
+using std::cout;
+using std::endl;
+using std::make_pair;
+using std::hex;
+using std::dec;
+
 //-----------------------------------------------------------------------------
 
 HWAccess::HWAccess(boost::asio::io_service& io, XMLParser& parser)
@@ -27,20 +56,34 @@ HWAccess::HWAccess(boost::asio::io_service& io, XMLParser& parser)
     cout << "HWAccess Constructor" << endl;
   #endif
 
-  for(unsigned int n = 0; n < parser.getNrOfHardwareElements(); n++)
+  try
   {
-      HWThread* thread = HWThreadFactory::instance().createHWThread (parser.getHardwareElementName(n), io, parser, parser.getHardwareElement(n));
+    for(unsigned int n = 0; n < parser.getNrOfHardwareElements(); n++)
+    {
+      HWThread* thread = HWThreadFactory::instance().createHWThread (parser.getHardwareElementName(n), io, parser.getHardwareElement(n));
       if (thread)
         slaves_.push_back (thread);
+    }
   }
-
+  catch(std::invalid_argument& e)
+  {
+    string ex_str("Error in hardware - ");
+    ex_str += + e.what();
+    throw;
+  }
+  catch(ticpp::Exception& e)
+  {
+    string ex_str("Error in hardware (TICPP exception)- ");
+    ex_str += + e.what();
+    throw(std::invalid_argument(ex_str));
+  }
 
   buildDataInfoMap();
   buildFsInfoMap();
   doHWSetup();
   packet_.reset();
 
-  event_listener_ = new EventListener(io, parser);
+  event_listener_ = new EventListener(io);
 
   #ifdef TIMING_TEST
     lpt_flag_ = 0;

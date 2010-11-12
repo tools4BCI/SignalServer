@@ -1,33 +1,21 @@
 Model {
   Name			  "simulink_daq_module"
-  Version		  7.6
+  Version		  7.5
   MdlSubVersion		  0
   GraphicalInterface {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.294"
+    ComputedModelVersion    "1.295"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
   SavedCharacterEncoding  "UTF-8"
-  slprops.hdlmdlprops {
-    $PropName		    "HDLParams"
-    $ObjectID		    1
-    Array {
-      Type		      "Cell"
-      Dimension		      2
-      Cell		      "HDLSubsystem"
-      Cell		      "simulink_daq_module"
-      PropName		      "mdlProps"
-    }
-  }
   SaveDefaultBlockParams  on
   ScopeRefreshTime	  0.035000
   OverrideScopeRefreshTime on
   DisableAllScopes	  off
   DataTypeOverride	  "UseLocalSettings"
-  DataTypeOverrideAppliesTo "AllNumericTypes"
   MinMaxOverflowLogging	  "UseLocalSettings"
   MinMaxOverflowArchiveMode "Overwrite"
   MaxMDLFileLineLength	  120
@@ -35,11 +23,11 @@ Model {
   Creator		  "breidi"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "kaltner"
+  LastModifiedBy	  "breidi"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Mon Oct 11 11:06:47 2010"
-  RTWModifiedTimeStamp	  208693941
-  ModelVersionFormat	  "1.%<AutoIncrement:294>"
+  LastModifiedDate	  "Mon Nov  8 19:06:45 2010"
+  RTWModifiedTimeStamp	  211144004
+  ModelVersionFormat	  "1.%<AutoIncrement:295>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -113,18 +101,18 @@ Model {
     Type		    "Handle"
     Dimension		    1
     Simulink.ConfigSet {
-      $ObjectID		      2
+      $ObjectID		      1
       Version		      "1.10.0"
       Array {
 	Type			"Handle"
 	Dimension		9
 	Simulink.SolverCC {
-	  $ObjectID		  3
+	  $ObjectID		  2
 	  Version		  "1.10.0"
 	  StartTime		  "0.0"
 	  StopTime		  "inf"
 	  AbsTol		  "auto"
-	  FixedStep		  "1/128"
+	  FixedStep		  "1/500"
 	  InitialStep		  "auto"
 	  MaxNumMinSteps	  "-1"
 	  MaxOrder		  5
@@ -138,7 +126,6 @@ Model {
 	  MaxConsecutiveMinStep	  "1"
 	  RelTol		  "1e-3"
 	  SolverMode		  "SingleTasking"
-	  ConcurrentTasks	  off
 	  Solver		  "FixedStepDiscrete"
 	  SolverName		  "FixedStepDiscrete"
 	  SolverJacobianMethodControl "auto"
@@ -153,7 +140,7 @@ Model {
 	  InsertRTBMode		  "Never (minimum delay)"
 	}
 	Simulink.DataIOCC {
-	  $ObjectID		  4
+	  $ObjectID		  3
 	  Version		  "1.10.0"
 	  Decimation		  "1"
 	  ExternalInput		  "[t, u]"
@@ -184,7 +171,7 @@ Model {
 	  Refine		  "1"
 	}
 	Simulink.OptimizationCC {
-	  $ObjectID		  5
+	  $ObjectID		  4
 	  Version		  "1.10.0"
 	  Array {
 	    Type		    "Cell"
@@ -202,12 +189,12 @@ Model {
 	  ConditionallyExecuteInputs on
 	  InlineParams		  on
 	  UseIntDivNetSlope	  off
-	  UseSpecifiedMinMax	  off
 	  InlineInvariantSignals  on
 	  OptimizeBlockIOStorage  on
 	  BufferReuse		  on
 	  EnhancedBackFolding	  on
 	  StrengthReduction	  off
+	  EnforceIntegerDowncast  on
 	  ExpressionFolding	  on
 	  BooleansAsBitfields	  off
 	  BitfieldContainerType	  "uint_T"
@@ -236,7 +223,7 @@ Model {
 	  AccelVerboseBuild	  off
 	}
 	Simulink.DebuggingCC {
-	  $ObjectID		  6
+	  $ObjectID		  5
 	  Version		  "1.10.0"
 	  RTPrefix		  "error"
 	  ConsistencyChecking	  "none"
@@ -260,8 +247,6 @@ Model {
 	  MinStepSizeMsg	  "warning"
 	  TimeAdjustmentMsg	  "none"
 	  MaxConsecutiveZCsMsg	  "error"
-	  MaskedZcDiagnostic	  "warning"
-	  IgnoredZcDiagnostic	  "warning"
 	  SolverPrmCheckMsg	  "warning"
 	  InheritedTsInSrcMsg	  "warning"
 	  DiscreteInheritContinuousMsg "warning"
@@ -298,7 +283,6 @@ Model {
 	  AssertControl		  "UseLocalSettings"
 	  EnableOverflowDetection off
 	  ModelReferenceIOMsg	  "none"
-	  ModelReferenceMultiInstanceNormalModeStructChecksumCheck "error"
 	  ModelReferenceVersionMismatchMessage "none"
 	  ModelReferenceIOMismatchMessage "none"
 	  ModelReferenceCSMismatchMessage "none"
@@ -308,30 +292,19 @@ Model {
 	  ModelReferenceExtraNoncontSigs "error"
 	  StateNameClashWarn	  "warning"
 	  SimStateInterfaceChecksumMismatchMsg "warning"
-	  InitInArrayFormatMsg	  "warning"
 	  StrictBusMsg		  "Warning"
 	  BusNameAdapt		  "WarnAndRepair"
 	  NonBusSignalsTreatedAsBus "none"
 	  LoggingUnavailableSignals "error"
 	  BlockIODiagnostic	  "none"
-	  SFUnusedDataAndEventsDiag "warning"
-	  SFUnexpectedBacktrackingDiag "warning"
-	  SFInvalidInputDataAccessInChartInitDiag "warning"
-	  SFNoUnconditionalDefaultTransitionDiag "warning"
-	  SFTransitionOutsideNaturalParentDiag "warning"
 	}
 	Simulink.HardwareCC {
-	  $ObjectID		  7
+	  $ObjectID		  6
 	  Version		  "1.10.0"
 	  ProdBitPerChar	  8
 	  ProdBitPerShort	  16
 	  ProdBitPerInt		  32
 	  ProdBitPerLong	  32
-	  ProdBitPerFloat	  32
-	  ProdBitPerDouble	  64
-	  ProdBitPerPointer	  32
-	  ProdLargestAtomicInteger "Char"
-	  ProdLargestAtomicFloat  "None"
 	  ProdIntDivRoundTo	  "Undefined"
 	  ProdEndianess		  "Unspecified"
 	  ProdWordSize		  32
@@ -341,11 +314,6 @@ Model {
 	  TargetBitPerShort	  16
 	  TargetBitPerInt	  32
 	  TargetBitPerLong	  32
-	  TargetBitPerFloat	  32
-	  TargetBitPerDouble	  64
-	  TargetBitPerPointer	  32
-	  TargetLargestAtomicInteger "Char"
-	  TargetLargestAtomicFloat "None"
 	  TargetShiftRightIntArith on
 	  TargetIntDivRoundTo	  "Undefined"
 	  TargetEndianess	  "Unspecified"
@@ -358,12 +326,11 @@ Model {
 	  ProdEqTarget		  on
 	}
 	Simulink.ModelReferenceCC {
-	  $ObjectID		  8
+	  $ObjectID		  7
 	  Version		  "1.10.0"
 	  UpdateModelReferenceTargets "IfOutOfDateOrStructuralChange"
 	  CheckModelReferenceTargetMessage "error"
 	  EnableParallelModelReferenceBuilds off
-	  ParallelModelReferenceErrorOnInvalidPool on
 	  ParallelModelReferenceMATLABWorkerInit "None"
 	  ModelReferenceNumInstancesAllowed "Multi"
 	  PropagateVarSize	  "Infer from blocks in model"
@@ -373,7 +340,7 @@ Model {
 	  SupportModelReferenceSimTargetCustomCode off
 	}
 	Simulink.SFSimCC {
-	  $ObjectID		  9
+	  $ObjectID		  8
 	  Version		  "1.10.0"
 	  SFSimEnableDebug	  on
 	  SFSimOverflowDetection  on
@@ -383,12 +350,11 @@ Model {
 	  SimExtrinsic		  on
 	  SimIntegrity		  on
 	  SimUseLocalCustomCode	  off
-	  SimParseCustomCode	  on
 	  SimBuildMode		  "sf_incremental_build"
 	}
 	Simulink.RTWCC {
 	  $BackupClass		  "Simulink.RTWCC"
-	  $ObjectID		  10
+	  $ObjectID		  9
 	  Version		  "1.10.0"
 	  Array {
 	    Type		    "Cell"
@@ -430,7 +396,6 @@ Model {
 	  GenerateTraceReportSf	  off
 	  GenerateTraceReportEml  off
 	  GenerateCodeInfo	  off
-	  GenerateSLWebview	  off
 	  RTWCompilerOptimization "Off"
 	  CheckMdlBeforeBuild	  "Off"
 	  CustomRebuildMode	  "OnUpdate"
@@ -438,7 +403,7 @@ Model {
 	    Type		    "Handle"
 	    Dimension		    2
 	    Simulink.CodeAppCC {
-	      $ObjectID		      11
+	      $ObjectID		      10
 	      Version		      "1.10.0"
 	      Array {
 		Type			"Cell"
@@ -474,7 +439,6 @@ Model {
 	      IncAutoGenComments      off
 	      SimulinkDataObjDesc     off
 	      SFDataObjDesc	      off
-	      MATLABFcnDesc	      off
 	      IncDataTypeInIds	      off
 	      MangleLength	      1
 	      CustomSymbolStrGlobalVar "$R$N$M"
@@ -489,9 +453,7 @@ Model {
 	      ParamNamingRule	      "None"
 	      SignalNamingRule	      "None"
 	      InsertBlockDesc	      off
-	      InsertPolySpaceComments off
 	      SimulinkBlockComments   on
-	      MATLABSourceComments    off
 	      EnableCustomComments    off
 	      InlinedPrmAccess	      "Literals"
 	      ReqsInCode	      off
@@ -499,7 +461,7 @@ Model {
 	    }
 	    Simulink.GRTTargetCC {
 	      $BackupClass	      "Simulink.TargetCC"
-	      $ObjectID		      12
+	      $ObjectID		      11
 	      Version		      "1.10.0"
 	      Array {
 		Type			"Cell"
@@ -540,7 +502,6 @@ Model {
 	      IncludeMdlTerminateFcn  on
 	      GeneratePreprocessorConditionals "Disable all"
 	      CombineOutputUpdateFcns off
-	      CombineSignalStateStructs	off
 	      SuppressErrorStatus     off
 	      ERTFirstTimeCompliant   off
 	      IncludeFileDelimiter    "Auto"
@@ -578,7 +539,7 @@ Model {
 	  }
 	}
 	hdlcoderui.hdlcc {
-	  $ObjectID		  13
+	  $ObjectID		  12
 	  Version		  "1.10.0"
 	  Description		  "HDL Coder custom configuration component"
 	  Name			  "HDL Coder"
@@ -601,7 +562,7 @@ Model {
   }
   Simulink.ConfigSet {
     $PropName		    "ActiveConfigurationSet"
-    $ObjectID		    2
+    $ObjectID		    1
   }
   BlockDefaults {
     ForegroundColor	    "black"
@@ -676,11 +637,11 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "26"
+    SIDHighWatermark	    27
     Block {
       BlockType		      "S-Function"
       Name		      "S-Function"
-      SID		      "8"
+      SID		      8
       Ports		      [0, 7]
       Position		      [25, 16, 195, 254]
       Priority		      "1"
@@ -689,12 +650,12 @@ Model {
       EnableBusSupport	      off
       MaskPromptString	      "Server IP|Port|Protocol"
       MaskStyleString	      "edit,edit,edit"
-      MaskVariables	      "ip=@1;port=@2;proto=@3;"
       MaskTunableValueString  "on,on,on"
       MaskCallbackString      "||"
       MaskEnableString	      "on,on,on"
       MaskVisibilityString    "on,on,on"
       MaskToolTipString	      "on,on,on"
+      MaskVariables	      "ip=@1;port=@2;proto=@3;"
       MaskInitialization      "global master_info;\nglobal sig_info;\nglobal ch_info;\nglobal fs;\n\nfs = 0;\nbs = 0;\n"
       "\n[master_info sig_info ch_info server_info_tmp] = mex_get_config(ip, port, proto);\nserver_info{1} = proto;\nse"
       "rver_info{2} = ip;\nserver_info{3} = server_info_tmp;\n\ndisp(' ');\ndisp(' ------------------------------------"
@@ -721,7 +682,7 @@ Model {
     Block {
       BlockType		      Scope
       Name		      "Scope1"
-      SID		      "25"
+      SID		      25
       Ports		      [1]
       Position		      [310, 224, 340, 256]
       Floating		      off
@@ -741,9 +702,9 @@ Model {
     Block {
       BlockType		      Scope
       Name		      "Scope2"
-      SID		      "24"
+      SID		      24
       Ports		      [1]
-      Position		      [370, 84, 400, 116]
+      Position		      [345, 154, 375, 186]
       Floating		      off
       Location		      [5, 390, 1283, 899]
       Open		      off
@@ -762,9 +723,9 @@ Model {
     Block {
       BlockType		      Scope
       Name		      "Scope3"
-      SID		      "26"
+      SID		      26
       Ports		      [1]
-      Position		      [345, 34, 375, 66]
+      Position		      [450, 134, 480, 166]
       Floating		      off
       Location		      [5, 390, 1283, 899]
       Open		      off
@@ -780,9 +741,31 @@ Model {
       DataFormat	      "StructureWithTime"
       SampleTime	      "0"
     }
+    Block {
+      BlockType		      Scope
+      Name		      "Scope4"
+      SID		      27
+      Ports		      [1]
+      Position		      [450, 14, 480, 46]
+      Floating		      off
+      Location		      [5, 390, 1283, 899]
+      Open		      off
+      NumInputPorts	      "1"
+      List {
+	ListType		AxesTitles
+	axes1			"%<SignalLabel>"
+      }
+      TimeRange		      "1"
+      YMin		      "-1500"
+      YMax		      "6500"
+      SaveName		      "ScopeData3"
+      DataFormat	      "StructureWithTime"
+      SampleTime	      "0"
+    }
     Line {
       SrcBlock		      "S-Function"
       SrcPort		      3
+      Points		      [130, 0]
       DstBlock		      "Scope2"
       DstPort		      1
     }
@@ -795,8 +778,14 @@ Model {
     Line {
       SrcBlock		      "S-Function"
       SrcPort		      2
-      Points		      [130, 0]
+      Points		      [235, 0]
       DstBlock		      "Scope3"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "S-Function"
+      SrcPort		      1
+      DstBlock		      "Scope4"
       DstPort		      1
     }
   }
