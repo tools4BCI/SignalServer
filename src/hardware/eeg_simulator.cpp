@@ -20,14 +20,15 @@
 
 #include "hardware/eeg_simulator.h"
 
-#define _USE_MATH_DEFINES
 #include <cmath>
 
 #include <boost/lexical_cast.hpp>
+#include <boost/cstdint.hpp>
 
 namespace tobiss
 {
 
+using boost::uint16_t;
 using std::vector;
 using std::string;
 using std::cout;

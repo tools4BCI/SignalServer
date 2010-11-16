@@ -138,11 +138,15 @@ void printVersion()
   cout << endl;
   cout << "SignalServer -- Version: " << MAJOR_VERSION;
   cout << " (build " << BUILD_NUMBER << ")";
-  #ifdef WIN32
-    cout << " -- " << BUILD_STR << endl;
+  #ifndef WIN32
+    cout << " -- " << BUILD_STR;
   #else
-    cout << " -- " << __DATE__ << " " << __TIME__ << endl;
+    cout << " -- " << __DATE__ << " " << __TIME__;
   #endif
+  cout << endl << endl;
+  cout << "Laboratory of Brain-Computer Interfaces" << endl;
+  cout << "Graz University of Technology" << endl;
+  cout << "http://bci.tugraz.at" << endl;
 }
 
 int main(int argc, const char* argv[])
