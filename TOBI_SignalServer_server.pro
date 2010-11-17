@@ -78,17 +78,15 @@ SOURCES += src/signalserver/main.cpp \
 #win32:SOURCES += src/hardware/mouse_.cpp
 unix:SOURCES += extern/include/LptTools/LptToolsLinux.cpp
 win32:SOURCES += extern/include/LptTools/LptTools_.cpp
-LIBS += -L./lib \
-    -ltia
+LIBS += lib/libtia.a
 
 # -----------------------------------------------------------------------
 unix {
-    LIBS += -lboost_thread \
-        -lboost_system \
-        -lboost_filesystem \
-        -lSDL #\
-        #-Lextern/lib/libusb/linux \
-        #-lusb-1.0
+    LIBS += /usr/lib/libboost_thread.a \
+            /usr/lib/libboost_system.a \
+            /usr/lib/libboost_filesystem.a \
+            -lSDL
+
     HARDWARE_PLATFORM = $$system(uname -m)
     contains( HARDWARE_PLATFORM, x86_64 ):: {
         message(Building 64 bit )

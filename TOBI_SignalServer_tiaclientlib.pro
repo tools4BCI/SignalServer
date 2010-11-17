@@ -51,8 +51,8 @@ unix:     SOURCES += extern/include/LptTools/LptToolsLinux.cpp
 windows:  SOURCES += extern/include/LptTools/LptTools_.cpp
 
 unix {
-    LIBS  += -lboost_thread \
-             -lboost_system
+    LIBS += /usr/lib/libboost_thread.a \
+            /usr/lib/libboost_system.a
 
     HARDWARE_PLATFORM = $$system(uname -m)
 
