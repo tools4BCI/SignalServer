@@ -60,14 +60,12 @@ unix {
 
         # 64-bit Linux
         message(Building 64 bit )
-        LIBS  += -L extern/lib/ticpp/linux \
-                 -lticpp_64
+        LIBS  += extern/lib/ticpp/linux/libticpp_64.a
     }
     else {
         # 32-bit Linux
         message(Building 32 bit )
-        LIBS  += -L extern/lib/ticpp/linux \
-                 -lticpp
+        LIBS  += extern/lib/ticpp/linux/libticpp.a
     }
 }
 
