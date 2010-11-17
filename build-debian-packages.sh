@@ -6,6 +6,9 @@ ss_dir=$dir/signalserver
 
 pckdir=packages
 
+distribution_id=`lsb_release -i -s`
+distribution_release=`lsb_release -r -s` 
+
 # create temporary build directories
 mkdir -p $lib_dir/usr/lib
 mkdir -p $lib_dir/DEBIAN
@@ -50,9 +53,9 @@ sed -e '/Architecture: /s/<architecture-via-script>/'$architecture'/' ./misc/deb
 
 
 # build the SigViewer package
-dpkg -b ./$lib_dir $pckdir/libtia-$version-$architecture.deb
-dpkg -b ./$dev_dir $pckdir/libtia-$version-$architecture-dev.deb
-dpkg -b ./$ss_dir  $pckdir/signalserver-$version-$architecture.deb
+dpkg -b ./$lib_dir $pckdir/libtia-$version-$architecture-$distribution_id$distribution_release.deb
+dpkg -b ./$dev_dir $pckdir/libtia-dev-$version-$architecture-$distribution_id$distribution_release.deb
+dpkg -b ./$ss_dir  $pckdir/signalserver-$version-$architecture-$distribution_id$distribution_release.deb
 
 # delete all temporary build directories
 rm -r $dir
