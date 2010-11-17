@@ -4,6 +4,8 @@ lib_dir=$dir/libtia
 dev_dir=$dir/libtia-dev
 ss_dir=$dir/signalserver
 
+pckdir=packages
+
 # create temporary build directories
 mkdir -p $lib_dir/usr/lib
 mkdir -p $lib_dir/DEBIAN
@@ -15,6 +17,8 @@ mkdir -p $dev_dir/DEBIAN
 mkdir -p $ss_dir/usr/bin
 mkdir -p $ss_dir/usr/local/etc/signalserver
 mkdir -p $ss_dir/DEBIAN
+
+mkdir $pckdir
 
 
 # copy necessary files
@@ -46,9 +50,9 @@ sed -e '/Architecture: /s/<architecture-via-script>/'$architecture'/' ./misc/deb
 
 
 # build the SigViewer package
-dpkg -b ./$lib_dir libtia-$version-$architecture.deb
-dpkg -b ./$dev_dir libtia-$version-$architecture-dev.deb
-dpkg -b ./$ss_dir signalserver-$version-$architecture.deb
+dpkg -b ./$lib_dir $pckdir/libtia-$version-$architecture.deb
+dpkg -b ./$dev_dir $pckdir/libtia-$version-$architecture-dev.deb
+dpkg -b ./$ss_dir  $pckdir/signalserver-$version-$architecture.deb
 
 # delete all temporary build directories
-rm -r $dir 
+rm -r $dir
