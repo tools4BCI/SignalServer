@@ -132,7 +132,7 @@ string getDefaultConfigFile ()
             boost::filesystem::create_directory (default_config_path.parent_path());
             boost::filesystem::copy_file (template_config_path, default_config_path);
         }
-        if (boost::filesystem::exists (template_config_path))
+        if (boost::filesystem::exists (TEMPLATE_XML_CONFIG_COMMENTS))
           boost::filesystem::copy_file (template_comments_config_path, comments_config_path);
 
     }
