@@ -7,7 +7,7 @@ ss_dir=$dir/signalserver
 pckdir=packages
 
 distribution_id=`lsb_release -i -s`
-distribution_release=`lsb_release -r -s` 
+distribution_release=`lsb_release -r -s`
 
 # create temporary build directories
 mkdir -p $lib_dir/usr/lib
@@ -39,6 +39,7 @@ cp -r ./include/signalserver-client ./$dev_dir/usr/include/tia
 
 cp ./bin/signalserver ./$ss_dir/usr/bin/
 cp ./bin/server_config.xml ./$ss_dir/usr/local/etc/signalserver/
+cp ./bin/server_config_comments.xml ./$ss_dir/usr/local/etc/signalserver/
 
 # current version
 version=0.1

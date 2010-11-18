@@ -65,8 +65,12 @@ win32:SOURCES += extern/include/LptTools/LptTools_.cpp
 
 # -----------------------------------------------------------------------
 unix {
-    LIBS += /usr/lib/libboost_thread.a \
-            /usr/lib/libboost_system.a
+#    LIBS += /usr/lib/libboost_thread.a \
+#            /usr/lib/libboost_system.a
+
+    LIBS += -lboost_thread \
+            -lboost_system
+
     HARDWARE_PLATFORM = $$system(uname -m)
     contains( HARDWARE_PLATFORM, x86_64 )::{
         message(Building 64 bit )
