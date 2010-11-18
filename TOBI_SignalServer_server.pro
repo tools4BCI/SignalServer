@@ -82,9 +82,14 @@ LIBS += lib/libtia.a
 
 # -----------------------------------------------------------------------
 unix {
-    LIBS += /usr/lib/libboost_thread.a \
-            /usr/lib/libboost_system.a \
-            /usr/lib/libboost_filesystem.a \
+#    LIBS += /usr/lib/libboost_thread.a \
+#            /usr/lib/libboost_system.a \
+#            /usr/lib/libboost_filesystem.a \
+#            -lSDL
+
+    LIBS += -lboost_thread \
+            -lboost_system \
+            -lboost_filesystem \
             -lSDL
 
     HARDWARE_PLATFORM = $$system(uname -m)
@@ -94,17 +99,17 @@ unix {
         # 64-bit Linux
         LIBS += -L \
             extern/lib/ticpp/linux \
-            -lticpp_64 \
-            -Lextern/lib/libgdf/linux \
-            -llibgdf_64
+            -lticpp_64
+#            -Lextern/lib/libgdf/linux \
+#            -llibgdf_64
     }
     else:: {
         # 32-bit Linux
         message(Building 32 bit )
         LIBS += -Lextern/lib/ticpp/linux \
-            -lticpp \
-            -Lextern/lib/libgdf/linux \
-            -llibgdf
+            -lticpp
+#           -Lextern/lib/libgdf/linux \
+#            -llibgdf
     }
 }
 win32:LIBS += extern\lib\sdl\win\SDL.lib \

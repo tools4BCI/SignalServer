@@ -34,7 +34,6 @@ HEADERS +=  include/config/control_message_decoder.h \
             include/signalserver-client/ssclientimpl.h \
             include/signalserver-client/ssclientimpl_base.h \
             include/signalserver-client/ssconfig.h
-#include/config/xml_parser.h \
 
 SOURCES +=  src/signalserver-client/ssclientimpl.cpp \
             src/signalserver-client/ssclient.cpp \
@@ -45,14 +44,16 @@ SOURCES +=  src/signalserver-client/ssclientimpl.cpp \
             src/datapacket/data_packet.cpp \
             src/datapacket/raw_mem.cpp \
             src/definitions/constants.cpp
-#src/config/xml_parser.cpp \
 
 unix:     SOURCES += extern/include/LptTools/LptToolsLinux.cpp
 windows:  SOURCES += extern/include/LptTools/LptTools_.cpp
 
 unix {
-    LIBS += /usr/lib/libboost_thread.a \
-            /usr/lib/libboost_system.a
+#    LIBS += /usr/lib/libboost_thread.a \
+#            /usr/lib/libboost_system.a
+
+    LIBS += -lboost_thread \
+            -lboost_system
 
     HARDWARE_PLATFORM = $$system(uname -m)
 

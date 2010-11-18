@@ -68,11 +68,13 @@ using namespace std;
 using namespace tobiss;
 
 const string DEFAULT_XML_CONFIG = "server_config.xml";
+const string COMMENTS_XML_CONFIG = "server_config_comments.xml";
 const string XML_CONFIG_FILE_PARAM = "-f";
 
 #ifndef WIN32
 const string DEFAULT_XML_CONFIG_HOME_SUBDIR = string("/tobi_sigserver_cfg/");
 const string TEMPLATE_XML_CONFIG = string("/usr/local/etc/signalserver/") + DEFAULT_XML_CONFIG;
+const string TEMPLATE_XML_CONFIG_COMMENTS = string("/usr/local/etc/signalserver/") + COMMENTS_XML_CONFIG;
 #endif
 
 class DataPacketReader
@@ -118,6 +120,8 @@ string getDefaultConfigFile ()
     default_xml_config = string (getenv("HOME")) + DEFAULT_XML_CONFIG_HOME_SUBDIR + default_xml_config;
     boost::filesystem::path default_config_path (default_xml_config);
     boost::filesystem::path template_config_path (TEMPLATE_XML_CONFIG);
+    boost::filesystem::path template_comments_config_path (TEMPLATE_XML_CONFIG_COMMENTS);
+
     if (!boost::filesystem::exists (default_config_path))
     {
         if (boost::filesystem::exists (template_config_path))
@@ -125,6 +129,9 @@ string getDefaultConfigFile ()
             boost::filesystem::create_directory (default_config_path.parent_path());
             boost::filesystem::copy_file (template_config_path, default_config_path);
         }
+        if (boost::filesystem::exists (template_config_path))
+          boost::filesystem::copy_file (template_comments_config_path, default_config_path);
+
     }
     return default_xml_config;
 #endif
