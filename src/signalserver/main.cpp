@@ -118,7 +118,10 @@ string getDefaultConfigFile ()
     return default_xml_config;
 #else
     default_xml_config = string (getenv("HOME")) + DEFAULT_XML_CONFIG_HOME_SUBDIR + default_xml_config;
+    string comments_xml_config = string (getenv("HOME")) + DEFAULT_XML_CONFIG_HOME_SUBDIR + COMMENTS_XML_CONFIG;
     boost::filesystem::path default_config_path (default_xml_config);
+    boost::filesystem::path comments_config_path (comments_xml_config);
+
     boost::filesystem::path template_config_path (TEMPLATE_XML_CONFIG);
     boost::filesystem::path template_comments_config_path (TEMPLATE_XML_CONFIG_COMMENTS);
 
@@ -130,7 +133,7 @@ string getDefaultConfigFile ()
             boost::filesystem::copy_file (template_config_path, default_config_path);
         }
         if (boost::filesystem::exists (template_config_path))
-          boost::filesystem::copy_file (template_comments_config_path, default_config_path);
+          boost::filesystem::copy_file (template_comments_config_path, comments_config_path);
 
     }
     return default_xml_config;
