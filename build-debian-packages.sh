@@ -54,9 +54,9 @@ sed -e '/Architecture: /s/<architecture-via-script>/'$architecture'/' ./misc/deb
 
 
 # build the SigViewer package
-dpkg -b ./$lib_dir $pckdir/libtia-$version-$architecture-$distribution_id$distribution_release.deb
-dpkg -b ./$dev_dir $pckdir/libtia-dev-$version-$architecture-$distribution_id$distribution_release.deb
-dpkg -b ./$ss_dir  $pckdir/signalserver-$version-$architecture-$distribution_id$distribution_release.deb
+dpkg -b ./$lib_dir $pckdir/libtia-$version-$architecture-$distribution_id-$distribution_release.deb
+dpkg -b ./$dev_dir $pckdir/libtia-dev-$version-$architecture-$distribution_id-$distribution_release.deb
+dpkg -b ./$ss_dir  $pckdir/signalserver-$version-$architecture-$distribution_id-$distribution_release.deb
 
 # delete all temporary build directories
 rm -r $dir
