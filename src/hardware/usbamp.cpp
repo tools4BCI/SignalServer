@@ -99,7 +99,7 @@ USBamp::USBamp(ticpp::Iterator<ticpp::Element> hw)
     sample_count_(0), error_count_(0) ,error_code_(0), expected_values_(0),
     first_run_(1), current_overlapped_(0)
 {
-	cout << "Driver Version" << usb_amp_.getDriverVersion () << endl;
+  cout << "Driver Version" << usb_amp_.getDriverVersion () << endl;
   #ifdef DEBUG
     cout << "USBamp: Constructor" << endl;
   #endif
@@ -122,13 +122,20 @@ USBamp::USBamp(ticpp::Iterator<ticpp::Element> hw)
 
   setType("g.USBamp");
 
+  ticpp::Iterator<ticpp::Element> elem(hw);
+  ticpp::Iterator< ticpp::Attribute > attribute;
+ 
+  for(attribute = attribute.begin(elem.Get()); attribute != attribute.end();
+      attribute++)
+    m_.insert(pair<string, string>(attribute->Name(), attribute->Value()));
+
   checkMandatoryHardwareTags(hw);
 
   ov_.resize(USBAMP_NR_OF_OVERLAPPED);
   data_Ev_.resize(USBAMP_NR_OF_OVERLAPPED);
   bytes_received_.resize(USBAMP_NR_OF_OVERLAPPED);
-  getHandles();
 
+  getHandles();
   initFilterPtrs();
   setHardware(hw);
 
