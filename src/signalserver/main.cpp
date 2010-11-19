@@ -38,7 +38,7 @@
 *
 *
 * \section sec_notes Notes, to-do list etc.
-* Tests have been performed using Ubuntu 9.10 and gcc 4.4.1.
+* Tests have been performed using Ubuntu 10.04, 10.10, Debian unstable, Windows Xp and Windows 7.
 *
 * To use the g.tec g.USBamp, Microsofts Visual Studio compiler has to be used, otherwise
 * acquiering data through this device will lead the program to crash.
