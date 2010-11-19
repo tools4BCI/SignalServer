@@ -302,7 +302,7 @@
     </device_settings>
   </hardware>-->
 
-<!-- =============================================================================== 
+<!-- =============================================================================== -->
 
   <hardware name="mouse" version="1.0" serial="">
     <mode> aperiodic </mode>
@@ -311,7 +311,7 @@
       <productid> 4136 </productid>
       <usb_port>130</usb_port>
     </device_settings>
-  </hardware>  -->
+  </hardware>  
 
   
 </tobi-config>
