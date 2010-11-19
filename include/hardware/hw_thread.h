@@ -245,21 +245,6 @@ class HWThread
     void setChannelTypes();
 
     /**
-    * @brief Sets vendorId for Mousedevice.
-    */
-    void setVendorId(ticpp::Iterator<ticpp::Element>const &elem);
-
-    /**
-    * @brief Sets productId for Mousedevice.
-    */
-    void setProductId(ticpp::Iterator<ticpp::Element>const &elem);
-
-	/**
-    * @brief Sets vendorId for Mousedevice.
-    */
-    void setUsbPort(ticpp::Iterator<ticpp::Element>const &elem);
-
-    /**
     * @brief Check, if a string represents a valid number.
     * @return bool
     */
@@ -285,9 +270,6 @@ class HWThread
     boost::uint16_t blocks_;   ///< blocksize (or also called buffersize)
     boost::uint8_t mode_;       ///< master, slave or aperiodic
     bool running_;      ///< variable, to stop hardware
-    boost::uint32_t vid_;
-    boost::uint32_t pid_;
-    boost::uint32_t usb_port_;
 
     boost::shared_mutex rw_;     ///< mutex to lock data
 
