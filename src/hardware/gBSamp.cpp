@@ -134,13 +134,14 @@ SampleBlock<double> gBSamp::getSyncData()
   //boost::unique_lock<boost::mutex> syn(sync_mut_);
   //while(!samples_available_ && running_)
   //  cond_.wait(syn);
+
   boost::shared_lock<boost::shared_mutex> lock(rw_);
   
-  DAQmxReadAnalogF64(taskHandle,blocks_,-1,DAQmx_Val_GroupByChannel,data,10000,&read,NULL);
+  DAQmxReadAnalogF64(taskHandle,blocks_,-1,DAQmx_Val_GroupByChannel,data,fs_,&read,NULL);
 
   for(int i=0; i < expected_values_/blocks_; i++)
     for(int j=0; j < blocks_; j++)
-      samples_[i+j] =data[i+j];
+      samples_[i+j] = data[i+j];
       
   //cout << "gBSamp: getSyncData -- samples.size() " << samples_.size() << endl;
   //cout << "sampleblock size: " << data_.getNrOfSamples() << endl;
@@ -201,7 +202,7 @@ int gBSamp::initCard()
 	// DAQmx Configure Code
 	DAQmxErrChk (DAQmxCreateTask("",&taskHandle));
 	DAQmxErrChk (DAQmxCreateAIVoltageChan(taskHandle,channel_list,"",DAQmx_Val_RSE,-10.0,10.0,DAQmx_Val_Volts,NULL));
-	DAQmxErrChk (DAQmxCfgSampClkTiming(taskHandle,NULL,fs_,DAQmx_Val_Rising,DAQmx_Val_ContSamps,1));
+	DAQmxErrChk (DAQmxCfgSampClkTiming(taskHandle,NULL,10000.0,DAQmx_Val_Rising,DAQmx_Val_ContSamps,1000));
 
   return error;
 }
