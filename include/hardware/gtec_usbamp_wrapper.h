@@ -201,6 +201,7 @@ public:
 		setupDLLFunction (open_device_ex_ptr_, "GT_OpenDeviceEx");
 		setupDLLFunction (close_device_ptr_, "GT_CloseDevice");
 
+		setupDLLFunction (set_buffer_size_ptr_, "GT_SetBufferSize");
 		setupDLLFunction (set_sample_rate_ptr_, "GT_SetSampleRate");
 		setupDLLFunction (start_ptr_, "GT_Start");
 		setupDLLFunction (stop_ptr_, "GT_Stop");
