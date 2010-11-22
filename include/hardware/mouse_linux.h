@@ -52,12 +52,7 @@ namespace tobiss
         /**
         * @brief Destructor
         */
-//        virtual ~MouseBase();
-
-        /**
-        * @brief Method to start data acquisition.
-        */
-        virtual void run();
+        ~Mouse();
 
     protected:
         virtual int blockKernelDriver();
