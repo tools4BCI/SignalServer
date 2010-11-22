@@ -85,12 +85,16 @@ class SignalServer : boost::noncopyable
     /**
      * @brief Destructor
      * @param[in]  packet
-     * @throws
      */
     virtual ~SignalServer();
 
     /**
-    * @brief TODO
+    * @brief Initialize the server
+    * param[in] map<std::string,std::string> subject_info
+    * param[in] map<std::string,std::string> server_settings
+    *
+    * The server needs to be initializedwith subject specific information (birthday,...) and
+    * parameters for the server configuration (ctrl port, udp port, udp broadcast addr).
     */
     void initialize(std::map<std::string,std::string> subject_info,
                     std::map<std::string,std::string> server_settings);
@@ -103,63 +107,60 @@ class SignalServer : boost::noncopyable
     void sendDataPacket(DataPacket& packet);
 
     /**
-     * @brief Sends a DataPacket to the clients
-     * @param[in]  packet
-     * @throws
+     * @brief Set the sampling rate of the master
+     * @param[in]  value
      */
     void setMasterSamplingRate(boost::uint32_t value) { master_samplingrate_ = value; }
 
     /**
-     * @brief Sends a DataPacket to the clients
-     * @param[in]  packet
-     * @throws
+     * @brief Set the blocksize of the master
+     * @param[in]  value
      */
     void setMasterBlocksize(boost::uint32_t value) { master_blocksize_ = value; }
 
     /**
-     * @brief Sends a DataPacket to the clients
-     * @param[in]  packet
-     * @throws
+     * @brief Set the acquired signal types
+     * @param[in]  vector<uint32_t> types
      */
     void setAcquiredSignalTypes(const std::vector<boost::uint32_t>& sig_types)
       { sig_types_ = sig_types; }
 
     /**
-     * @brief Sends a DataPacket to the clients
-     * @param[in]  packet
-     * @throws
+     * @brief Set the blocksize for every signal type
+     * @param[in]  vector<uint16_t> bs
      */
     void setBlockSizesPerSignalType(const std::vector<boost::uint16_t>& blocksizes)
       { blocksizes_ = blocksizes; }
 
     /**
-     * @brief Sends a DataPacket to the clients
-     * @param[in]  packet
-     * @throws
+     * @brief Set the sampling rate for every signal type
+     * @param[in]  vector<uint32_t> fs
      */
     void setSamplingRatePerSignalType(const std::vector<boost::uint32_t>& fs_per_sig_type)
       { fs_per_sig_type_ = fs_per_sig_type; }
 
     /**
-     * @brief Sends a DataPacket to the clients
-     * @param[in]  packet
-     * @throws
+     * @brief Set the channel names for the channels of every signal type
+     * @param[in]  map<uint32_t, vector<string> > names
+     *
+     * Every signal type has a defined number of channels; the vector< string > holds
+     * the names for every channel assigned with the signal type.
      */
     void setChannelNames(const std::map<boost::uint32_t, std::vector<std::string> >& channels_per_sig_type)
       { channels_per_sig_type_ = channels_per_sig_type; }
 
   private:
+    #ifdef WRITE_GDF
     /**
      * @brief Sends a DataPacket to the clients
      * @param[in]  packet
-     * @throws
      */
     void initGdf();
+    #endif
 
   private:
     boost::asio::io_service&            io_service_; ///<
-//    XMLParser*                          config_; ///<
-    std::map<std::string, std::string>  server_settings_; ///<
+    std::map<std::string, std::string>  server_settings_; ///< A map holding an identifier + value (e.g. port + number)
     TCPDataServer*                      tcp_data_server_; ///<
     UDPDataServer*                      udp_data_server_; ///<
     ControlConnectionServer*            control_connection_server_; ///<

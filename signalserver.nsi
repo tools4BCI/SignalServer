@@ -51,7 +51,7 @@ Section "Hauptgruppe" SEC01
   CreateShortCut "$SMPROGRAMS\TOBI SignalServer\TOBI SignalServer.lnk" "$INSTDIR\signalserver.exe"
   CreateShortCut "$DESKTOP\TOBI SignalServer.lnk" "$INSTDIR\signalserver.exe"
   File "bin\SDL.dll"
-  File "bin\server_config_sample.xml"
+  File "bin\server_config_comments.xml"
   File "bin\server_config.xml"
   File "licence\gpl.txt"
 SectionEnd
@@ -82,7 +82,7 @@ FunctionEnd
 
 Section Uninstall
   Delete "$INSTDIR\uninst.exe"
-  Delete "$INSTDIR\server_config_sample.xml"
+  Delete "$INSTDIR\server_config_comments.xml"
   Delete "$INSTDIR\server_config.xml"
   Delete "$INSTDIR\gpl.txt"
   Delete "$INSTDIR\SDL.dll"

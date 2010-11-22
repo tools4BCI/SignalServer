@@ -20,19 +20,35 @@
 
 #include "hardware/eeg_simulator.h"
 
-#define _USE_MATH_DEFINES
 #include <cmath>
+
+#include <boost/lexical_cast.hpp>
+#include <boost/cstdint.hpp>
 
 namespace tobiss
 {
 
+using boost::uint16_t;
 using std::vector;
 using std::string;
 using std::cout;
 using std::cerr;
 using std::endl;
+using std::make_pair;
+
+using boost::lexical_cast;
+using boost::bad_lexical_cast;
 
 const HWThreadBuilderTemplateRegistrator<EEGSimulator> EEGSimulator::factory_registrator_ ("eegsim", "eegsimulator");
+
+const std::string EEGSimulator::xml_eeg_sim_port_("port");
+const std::string EEGSimulator::xml_eeg_config_("eeg_config");
+const std::string EEGSimulator::xml_sine_config_("sine_config");
+const std::string EEGSimulator::xml_scaling_("scaling");
+const std::string EEGSimulator::xml_offset_("offset");
+const std::string EEGSimulator::xml_frequ_("frequ");
+const std::string EEGSimulator::xml_amplitude_("amplitude");
+const std::string EEGSimulator::xml_phase_("phase");
 
 static const float EEG_DIST_MEAN = 0;
 static const float EEG_DIST_STD  = 11;  // lt. Martin Billinger, BCI Comp4, Graz Dataset A, 4.11.2010
@@ -53,9 +69,6 @@ EEGSimulator::EEGSimulator(boost::asio::io_service& io,
 
   setHardware(hw);
 
-
-  port_ = 12874;
-
   boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::tcp::v4(), port_);
   acceptor_.open(endpoint.protocol());
   acceptor_.set_option(boost::asio::ip::tcp::acceptor::reuse_address(false));
@@ -65,32 +78,6 @@ EEGSimulator::EEGSimulator(boost::asio::io_service& io,
   acceptor_.async_accept(socket_, boost::bind(&EEGSimulator::acceptHandler, this,
                                               boost::asio::placeholders::error));
   init();
-
-  using std::make_pair;
-
-  SineCfg sine_cfg;
-  sine_cfg.freq_ = 1;
-  sine_cfg.amplitude_ = 100;
-  sine_cfg.phase_ = 0;
-
-  SineCfg sine_cfg2;
-  sine_cfg2.freq_ = 4;
-  sine_cfg2.amplitude_ = 50;
-  sine_cfg2.phase_ = 0;
-
-  EEGCfg eeg_cfg;
-  eeg_cfg.amplitude_ = 3;
-  eeg_cfg.offset_ = 2;
-
-  boost::unique_lock<boost::shared_mutex> lock(rw_);
-
-  // modify sine- or eeg config maps
-  sine_configs_.insert(make_pair(0, sine_cfg));
-  sine_configs_.insert(make_pair(0, sine_cfg2));
-  eeg_config_.insert(  make_pair(1, eeg_cfg) );
-
-  lock.unlock();
-
   cout << " * EEGSimulator sucessfully initialized" << endl;
   cout << "    fs: " << fs_ << "Hz, nr of channels: " << nr_ch_  << ", blocksize: " << blocks_  << endl;
 }
@@ -113,17 +100,17 @@ void EEGSimulator::generateSignal()
   boost::unique_lock<boost::shared_mutex> lock(rw_);
 
   // create EEG
-  std::map<boost::uint16_t, EEGCfg>::iterator eeg_it;
+  std::map<boost::uint16_t, EEGConfig>::iterator eeg_it;
   for(boost::uint16_t n = 0; n < nr_ch_ ; n++)
   {
     if( (eeg_it = eeg_config_.find(n)) != eeg_config_.end() )
-      samples_[n] = eeg_gen_() * eeg_it->second.amplitude_ + eeg_it->second.offset_;
+      samples_[n] = eeg_gen_() * eeg_it->second.scaling_ + eeg_it->second.offset_;
     else
       samples_[n] = eeg_gen_();
   }
 
   // add sine waves
-  std::multimap<boost::uint16_t, SineCfg>::iterator sine_it;
+  std::multimap<boost::uint16_t, SineConfig>::iterator sine_it;
 
   for(boost::uint16_t n = 0; n < nr_ch_ ; n++)
   {
@@ -230,6 +217,18 @@ void EEGSimulator::setDeviceSettings(ticpp::Iterator<ticpp::Element>const &fathe
   elem = father->FirstChildElement(hw_blocksize_,false);
   if(elem != elem.end())
     setBlocks(elem);
+
+  elem = father->FirstChildElement(xml_eeg_sim_port_,true);
+  if(elem != elem.end())
+    setPort(elem);
+
+  elem = father->FirstChildElement(xml_eeg_config_,false);
+  if(elem != elem.end())
+    setDeviceEEGConfig(elem);
+
+  elem = father->FirstChildElement(xml_sine_config_,false);
+  if(elem != elem.end())
+    setDeviceSineConfig(elem);
 }
 
 //---------------------------------------------------------------------------------------
@@ -243,6 +242,226 @@ void EEGSimulator::setChannelSettings(ticpp::Iterator<ticpp::Element>const &fath
   ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(hw_chset_sel_,false));
   if (elem != elem.end())
     setChannelSelection(elem);
+
+  elem = father->FirstChildElement(xml_eeg_config_,false);
+  if(elem != elem.end())
+    setChannelEEGConfig(elem);
+
+  elem = father->FirstChildElement(xml_sine_config_,false);
+  if(elem != elem.end())
+    setChannelSineConfig(elem);
+}
+
+//-----------------------------------------------------------------------------
+
+void EEGSimulator::setPort(ticpp::Iterator<ticpp::Element>const &elem)
+{
+  boost::int16_t port = 0;
+  try
+  {
+    port = lexical_cast<boost::int16_t>(elem->GetText(true));
+  }
+  catch(bad_lexical_cast &)
+  {
+    string ex_str(type_ + " -- Port: value is not a number!");
+    throw(std::invalid_argument(ex_str));
+  }
+  if(port <= 0)
+  {
+    string ex_str(type_ + " -- Port: value is <= 0!");
+    throw(std::invalid_argument(ex_str));
+  }
+  port_ = port;
+}
+
+//-----------------------------------------------------------------------------
+
+void EEGSimulator::setDeviceEEGConfig(ticpp::Iterator<ticpp::Element>const &elem)
+{
+  EEGConfig eeg_cfg = getEEGConfig(elem);
+
+  for(unsigned int n = 0; n < channel_info_.size(); n++)
+    eeg_config_.insert(  make_pair(n, eeg_cfg) );
+}
+
+//-----------------------------------------------------------------------------
+
+void EEGSimulator::setDeviceSineConfig(ticpp::Iterator<ticpp::Element>const &elem)
+{
+  SineConfig sine_cfg = getSineConfig(elem);
+
+  for(unsigned int n = 0; n < channel_info_.size(); n++)
+    sine_configs_.insert(  make_pair(n, sine_cfg) );
+}
+
+//-----------------------------------------------------------------------------
+
+void EEGSimulator::setChannelEEGConfig(ticpp::Iterator<ticpp::Element>const &father)
+{
+  ticpp::Iterator<ticpp::Element> elem;
+  elem = father->FirstChildElement(hw_chset_ch_,false);
+  for(  ; elem != elem.end(); elem++)
+    if(elem->Value() == hw_chset_ch_)
+    {
+      if(!elem.Get()->HasAttribute(hw_ch_nr_))
+      {
+        string ex_str(type_ + " -- ");
+        ex_str += "Tag <"+xml_eeg_config_+"> given, but channel number ("+hw_ch_nr_+") not given!";
+        throw(std::invalid_argument(ex_str));
+      }
+      checkEEGConfigAttributes(elem);
+
+      uint16_t ch = 0;
+      try{
+        ch = lexical_cast<uint16_t>( elem.Get()->GetAttribute(hw_ch_nr_) );
+      }
+      catch(bad_lexical_cast &)
+      {
+        string ex_str(type_ + " -- ");
+        ex_str += "Tag <"+ xml_eeg_config_ + "> : Channel is not a number!";
+        throw(std::invalid_argument(ex_str));
+      }
+      if( channel_info_.find(ch) ==  channel_info_.end() )
+      {
+        string ex_str(type_ + " -- ");
+        ex_str += "Tag <"+ xml_eeg_config_ + "> - Channel "+ lexical_cast<string>(ch) +" not set!";
+        throw(std::invalid_argument(ex_str));
+      }
+
+      eeg_config_[ch-1] =  getEEGConfig(elem) ;
+    }
+    else
+      throw(std::invalid_argument("EEGSimulator::setChannelEEGConfig -- Tag not equal to \""+hw_chset_ch_+"\"!"));
+}
+
+//-----------------------------------------------------------------------------
+
+void EEGSimulator::setChannelSineConfig(ticpp::Iterator<ticpp::Element>const &father)
+{
+  ticpp::Iterator<ticpp::Element> elem;
+  elem = father->FirstChildElement(hw_chset_ch_,false);
+  for(  ; elem != elem.end(); elem++)
+    if(elem->Value() == hw_chset_ch_)
+    {
+      if(!elem.Get()->HasAttribute(hw_ch_nr_))
+      {
+        string ex_str(type_ + " -- ");
+        ex_str += "Tag <"+xml_sine_config_+"> given, but channel number ("+hw_ch_nr_+") not given!";
+        throw(std::invalid_argument(ex_str));
+      }
+      checkSineConfigAttributes(elem);
+
+      uint16_t ch = 0;
+      try{
+        ch = lexical_cast<uint16_t>( elem.Get()->GetAttribute(hw_ch_nr_) );
+      }
+      catch(bad_lexical_cast &)
+      {
+        string ex_str(type_ + " -- ");
+        ex_str += "Tag <"+ xml_sine_config_ + "> : Channel is not a number!";
+        throw(std::invalid_argument(ex_str));
+      }
+      if( channel_info_.find(ch) ==  channel_info_.end() )
+      {
+        string ex_str(type_ + " -- ");
+        ex_str += "Tag <"+ xml_sine_config_ + "> - Channel "+ lexical_cast<string>(ch) +" not set!";
+        throw(std::invalid_argument(ex_str));
+      }
+
+      sine_configs_.insert(  make_pair(ch-1, getSineConfig(elem) ) );
+    }
+    else
+      throw(std::invalid_argument("EEGSimulator::setChannelSineConfig -- Tag not equal to \""+hw_chset_ch_+"\"!"));
+}
+
+//---------------------------------------------------------------------------------------
+
+void EEGSimulator::checkEEGConfigAttributes(ticpp::Iterator<ticpp::Element>const &elem)
+{
+
+  if(!elem.Get()->HasAttribute(xml_scaling_))
+  {
+    string ex_str(type_ + " -- ");
+    ex_str += "Tag <"+xml_eeg_config_+"> given, EEG scaling ("+xml_scaling_+") not given!";
+    throw(std::invalid_argument(ex_str));
+  }
+  if(!elem.Get()->HasAttribute(xml_offset_))
+  {
+    string ex_str(type_ + " -- ");
+    ex_str += "Tag <"+xml_eeg_config_+"> given, EEG offset ("+xml_offset_+") not given!";
+    throw(std::invalid_argument(ex_str));
+  }
+}
+
+//---------------------------------------------------------------------------------------
+
+void EEGSimulator::checkSineConfigAttributes(ticpp::Iterator<ticpp::Element>const &elem)
+{
+
+  if(!elem.Get()->HasAttribute(xml_frequ_))
+  {
+    string ex_str(type_ + " -- ");
+    ex_str += "Tag <"+xml_sine_config_+"> given, EEG scaling ("+xml_frequ_+") not given!";
+    throw(std::invalid_argument(ex_str));
+  }
+  if(!elem.Get()->HasAttribute(xml_amplitude_))
+  {
+    string ex_str(type_ + " -- ");
+    ex_str += "Tag <"+xml_sine_config_+"> given, EEG offset ("+xml_amplitude_+") not given!";
+    throw(std::invalid_argument(ex_str));
+  }
+  if(!elem.Get()->HasAttribute(xml_phase_))
+  {
+    string ex_str(type_ + " -- ");
+    ex_str += "Tag <"+xml_sine_config_+"> given, EEG offset ("+xml_phase_+") not given!";
+    throw(std::invalid_argument(ex_str));
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+EEGSimulator::EEGConfig EEGSimulator::getEEGConfig(ticpp::Iterator<ticpp::Element>const &elem)
+{
+  checkEEGConfigAttributes(elem);
+
+  EEGConfig eeg_cfg;
+  try
+  {
+    eeg_cfg.scaling_ = lexical_cast<double>( elem.Get()->GetAttribute(xml_scaling_) );
+    eeg_cfg.offset_  = lexical_cast<double>( elem.Get()->GetAttribute(xml_offset_) );
+  }
+  catch(bad_lexical_cast &)
+  {
+    string ex_str(type_ + " -- ");
+    ex_str += "Tag <"+xml_eeg_config_+"> given, but scaling or offset is not a number!";
+    throw(std::invalid_argument(ex_str));
+  }
+
+  return(eeg_cfg);
+}
+
+//-----------------------------------------------------------------------------
+
+EEGSimulator::SineConfig EEGSimulator::getSineConfig(ticpp::Iterator<ticpp::Element>const &elem)
+{
+
+  checkSineConfigAttributes(elem);
+
+  SineConfig sine_cfg;
+  try
+  {
+    sine_cfg.freq_ = lexical_cast<double>( elem.Get()->GetAttribute(xml_frequ_) );
+    sine_cfg.amplitude_  = lexical_cast<double>( elem.Get()->GetAttribute(xml_amplitude_) );
+    sine_cfg.phase_  = lexical_cast<double>( elem.Get()->GetAttribute(xml_phase_) );
+  }
+  catch(bad_lexical_cast &)
+  {
+    string ex_str(type_ + " -- ");
+    ex_str += "Tag <"+xml_sine_config_+"> given, but frequency, amplitude or phase is not a number!";
+    throw(std::invalid_argument(ex_str));
+  }
+
+  return(sine_cfg);
 }
 
 //-----------------------------------------------------------------------------
@@ -255,30 +474,13 @@ void EEGSimulator::handleAsyncRead(const boost::system::error_code& ec,
     throw(std::runtime_error("EEGSimulator::handleAsyncRead() -- \
                              Error handling async read -- bytes transferred: " + bytes_transferred));
 
-  // check if message is complete
+  // TODO: check if message is complete
 
-  using std::make_pair;
-
-  SineCfg sine_cfg;
-  sine_cfg.freq_ = 5;
-  sine_cfg.amplitude_ = 2;
-  sine_cfg.phase_ = 180;
-
-  SineCfg sine_cfg2;
-  sine_cfg.freq_ = 10;
-  sine_cfg.amplitude_ = 4;
-  sine_cfg.phase_ = 180;
-
-  EEGCfg eeg_cfg;
-  eeg_cfg.amplitude_ = 3;
-  eeg_cfg.offset_ = 2;
 
   boost::unique_lock<boost::shared_mutex> lock(rw_);
 
-  // modify sine- or eeg config maps
-  sine_configs_.insert(make_pair(0, sine_cfg));
-  sine_configs_.insert(make_pair(0, sine_cfg2));
-  eeg_config_.insert(  make_pair(0, eeg_cfg) );
+  // TODO: modify sine- or eeg config maps
+
 
   lock.unlock();
 }
@@ -287,6 +489,8 @@ void EEGSimulator::handleAsyncRead(const boost::system::error_code& ec,
 
 void EEGSimulator::acceptHandler(const boost::system::error_code& error)
 {
+  // if already conencted with a client --> abort connection
+  // if not needed, delete connected_ member
 
   if (!error)
   {

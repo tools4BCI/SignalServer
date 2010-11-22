@@ -205,6 +205,9 @@ void ControlConnectionServer::handleAccept(const TCPConnection::pointer& new_con
     return;
   }
 
+  // lock the connection list
+  boost::unique_lock<boost::mutex> lock(mutex_);
+
   int local_port = new_connection->socket().local_endpoint().port();
 
   ControlConnection::ConnectionID id = make_pair(local_port, TCPConnection::endpointToString(
@@ -215,8 +218,6 @@ void ControlConnectionServer::handleAccept(const TCPConnection::pointer& new_con
 
   cout << "Client @" << id.second << " has connected." <<  endl;
 
-  // lock the connection list
-  boost::unique_lock<boost::mutex> lock(mutex_);
 
   CtrlConnHandlers::iterator it = connections_.insert(make_pair(id, connection)).first;
 
