@@ -2,7 +2,7 @@
 //_____________________________________________________________________________
 //
 //    g.USBamp Windows - Function Prototypes
-//    Copyright    (C) Guger Technologies 2004-2009.
+//    Copyright    (C) Guger Technologies 2004-2010.
 //
 //	  Created: Laundl 01. 05.2004
 //   
@@ -130,6 +130,11 @@ typedef struct _SCALE
 	float offset[16];
 } SCALE, *PSCALE;
 
+
+typedef struct _GT_DEVICEINFO
+{
+	char deviceInfo[256];
+} GT_DEVICEINFO, *PGT_DEVICEINFO;
 
 #ifndef GUSBAMP_EXPORTS
 

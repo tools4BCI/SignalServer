@@ -114,32 +114,32 @@ namespace tobiss
 //      */
 //      bool equalsAperiodic(const std::string& s);
 
-      /**
-      * @brief Maps a given std::string to the specific code of this filter at the the g.USBamp.
-      * @param[in] s std::string to be checked.
-      * @return FilterID
-      * @throw ticpp::Exception thrown if filter name not found!
-      *
-      */
-      int getUSBampFilterType(const std::string& s);
-
-      /**
-      * @brief Maps a given std::string to the specific OP_MODE of the g.USBamp.
-      * @param[in] s std::string to be checked.
-      * @return OP_MODE std::string
-      * @throw ticpp::Exception thrown if OP_MODE name not found!
-      *
-      */
-      std::string getUSBampOpMode(const std::string& s);
-
-      /**
-      * @brief Maps a given std::string to the specific g.USBamp channels group (naming on the front of the g.USBamp).
-      * @param[in] s std::string to be checked.
-      * @return block_id
-      * @throw ticpp::Exception thrown if channel group naming not found!
-      *
-      */
-      int getUSBampBlockNr(const std::string& s);
+//      /**
+//      * @brief Maps a given std::string to the specific code of this filter at the the g.USBamp.
+//      * @param[in] s std::string to be checked.
+//      * @return FilterID
+//      * @throw ticpp::Exception thrown if filter name not found!
+//      *
+//      */
+//      int getUSBampFilterType(const std::string& s);
+//
+//      /**
+//      * @brief Maps a given std::string to the specific OP_MODE of the g.USBamp.
+//      * @param[in] s std::string to be checked.
+//      * @return OP_MODE std::string
+//      * @throw ticpp::Exception thrown if OP_MODE name not found!
+//      *
+//      */
+//      std::string getUSBampOpMode(const std::string& s);
+//
+//      /**
+//      * @brief Maps a given std::string to the specific g.USBamp channels group (naming on the front of the g.USBamp).
+//      * @param[in] s std::string to be checked.
+//      * @return block_id
+//      * @throw ticpp::Exception thrown if channel group naming not found!
+//      *
+//      */
+//      int getUSBampBlockNr(const std::string& s);
 
       /**
       * @brief Maps a given std::string to the respective SignalType flag.

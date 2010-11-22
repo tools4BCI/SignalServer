@@ -61,16 +61,15 @@ void TCPDataConnection::handleWrite(const boost::system::error_code& ec,
   {
     cerr << "TCPDataConnection::handleWrite: sending data packet to client @"
               << remote_endpoint_.address().to_string() << ":" << remote_endpoint_.port()
-              << " failed - preparing for reconnect -- Error:" << endl
+              << " failed - closing connection -- Error:" << endl
               << "--> " << ec.message() << endl;
+
+    boost::unique_lock<boost::mutex> lock(mutex_);
 
     // Initiate graceful connection closure.
     boost::system::error_code ignored_ec;
     connection_->socket().shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
     connection_->socket().close();
-    connection_.reset();
-
-    startAccept();
   }
 }
 
@@ -78,6 +77,8 @@ void TCPDataConnection::handleWrite(const boost::system::error_code& ec,
 
 void TCPDataConnection::sendDataPacket(DataPacket& packet)
 {
+  boost::unique_lock<boost::mutex> lock(mutex_);
+
   if (!connection_ || !connection_->socket().is_open()) return;
 
   void* data = packet.getRaw();
@@ -94,9 +95,20 @@ void TCPDataConnection::sendDataPacket(DataPacket& packet)
 
   connection_->socket().async_send(boost::asio::buffer(data, size),
       boost::bind(&TCPDataConnection::handleWrite,
-          this,
+          shared_from_this(),
           boost::asio::placeholders::error,
           boost::asio::placeholders::bytes_transferred));
+}
+
+//-----------------------------------------------------------------------------
+
+void TCPDataConnection::startAccept()
+{
+  TCPConnection::pointer new_connection = TCPConnection::create(io_service_);
+
+  acceptor_.async_accept(new_connection->socket(), boost::bind(
+      &TCPDataConnection::handleAccept, shared_from_this(), new_connection,
+      boost::asio::placeholders::error));
 }
 
 //-----------------------------------------------------------------------------
@@ -114,6 +126,8 @@ void TCPDataConnection::handleAccept(const TCPConnection::pointer& new_connectio
     startAccept();
     return;
   }
+
+  boost::unique_lock<boost::mutex> lock(mutex_);
 
   connection_ = new_connection;
   remote_endpoint_ = connection_->socket().remote_endpoint();

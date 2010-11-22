@@ -73,8 +73,8 @@ void ArtificialSignalSource::init()
   samples_.resize(nr_ch_ ,0);
   t_ = new boost::asio::deadline_timer(io_, td_);
 
-  cout << " * ArtificialSignalSource sucessfully initialized" << endl;
-  cout << "    fs: " << fs_ << "Hz, nr of channels: " << nr_ch_  << ", blocksize: " << blocks_  << endl;
+//  cout << " * ArtificialSignalSource sucessfully initialized" << endl;
+//  cout << "    fs: " << fs_ << "Hz, nr of channels: " << nr_ch_  << ", blocksize: " << blocks_  << endl;
 
 }
 

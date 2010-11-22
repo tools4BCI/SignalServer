@@ -32,6 +32,7 @@ QMAKE_CXXFLAGS_WARN_ON = -Wall -pedantic
 
 # -----------------------------------------------------------------------
 HEADERS += include/signalserver/signal_server.h \
+    include/definitions/defines.h \
     include/definitions/constants.h \
     include/config/control_message_decoder.h \
     include/config/control_message_encoder.h \
@@ -64,25 +65,21 @@ win32:SOURCES += extern/include/LptTools/LptTools_.cpp
 
 # -----------------------------------------------------------------------
 unix {
+#    LIBS += /usr/lib/libboost_thread.a \
+#            /usr/lib/libboost_system.a
+
     LIBS += -lboost_thread \
-        -lboost_system
+            -lboost_system
+
     HARDWARE_PLATFORM = $$system(uname -m)
     contains( HARDWARE_PLATFORM, x86_64 )::{
         message(Building 64 bit )
-    # 64-bit Linux
-    #LIBS += -L \
-        #extern/lib/ticpp/linux \
-        #-lticpp_64 \
-        #-Lextern/lib/libgdf/linux \
-        #-llibgdf_64
+        # 64-bit Linux
+        LIBS += extern/lib/ticpp/linux/libticpp_64.a
     }else::{
-    # 32-bit Linux
+        # 32-bit Linux
         message(Building 32 bit )
-
-    #LIBS += -Lextern/lib/ticpp/linux \
-        #-lticpp \
-        #-Lextern/lib/libgdf/linux \
-        #-llibgdf
+        LIBS += extern/lib/ticpp/linux/libticpp.a
     }
 }
 win32:LIBS += extern\lib\sdl\win\SDL.lib \

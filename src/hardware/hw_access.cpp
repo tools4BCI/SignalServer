@@ -256,7 +256,7 @@ void HWAccess::reportInHomogenousDevice(HWThread* dev)
 
   if(!dev->hasHomogenousSignalType())
   {
-    cout << "    --> \"" <<  dev->getName()  << "\" delivering different signal types!" << endl;
+    cout << "    --> \"" <<  dev->getType()  << "\" delivering different signal types!" << endl;
 
     vector<uint32_t> v = dev->getChannelTypes();
 
