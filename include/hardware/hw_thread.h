@@ -243,21 +243,6 @@ class HWThread
     void setChannelTypes();
 
     /**
-    * @brief Sets vendorId for Mousedevice.
-    */
-    void setVendorId(ticpp::Iterator<ticpp::Element>const &elem);
-
-    /**
-    * @brief Sets productId for Mousedevice.
-    */
-    void setProductId(ticpp::Iterator<ticpp::Element>const &elem);
-
-	/**
-    * @brief Sets vendorId for Mousedevice.
-    */
-    void setUsbPort(ticpp::Iterator<ticpp::Element>const &elem);
-
-    /**
     * @brief Check, if a string represents a valid number.
     * @return bool
     */
