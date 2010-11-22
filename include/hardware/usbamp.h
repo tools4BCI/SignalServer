@@ -221,6 +221,8 @@ class USBamp : public HWThread
 
     GTECUSBampWrapper usb_amp_;
 
+	std::map<std::string, std::string> m_;	/// Attributes mab -- to be renamed
+
     //-----------------------------------------------
     // Constants
     static const HWThreadBuilderTemplateRegistratorWithoutIOService<USBamp> FACTORY_REGISTRATOR_;

@@ -79,10 +79,6 @@ void HWThread::checkMandatoryHardwareTags(ticpp::Iterator<ticpp::Element> hw)
   ticpp::Iterator<ticpp::Element> elem(hw);
   ticpp::Iterator< ticpp::Attribute > attribute;
 
-  for(attribute = attribute.begin(elem.Get()); attribute != attribute.end();
-      attribute++)
-  m_.insert(pair<string, string>(attribute->Name(), attribute->Value()));
-
   try
   {
     checkMandatoryHardwareTagsXML(hw);
