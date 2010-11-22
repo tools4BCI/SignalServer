@@ -419,7 +419,7 @@ public:
 
 private:
 	template<typename T>
-	void setupDLLFunction (T pointer, std::string const& name)
+	void setupDLLFunction (T& pointer, std::string const& name)
 	{
 		pointer = (T)GetProcAddress (dll_handle_, name.c_str());
 		if (pointer == NULL)
