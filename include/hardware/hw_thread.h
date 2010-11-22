@@ -1,16 +1,26 @@
+/*
+    This file is part of the TOBI signal server.
+
+    The TOBI signal server is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    The TOBI signal server is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
+    Copyright 2010 Christian Breitwieser
+    Contact: c.breitwieser@tugraz.at
+*/
 
 /**
 * @file hw_thread.h
-*
 * @brief hw_thread is a base class for all hardware objects ( -- bad naming --> object does not have to run in a thread)
-*
-* hw_thread provides a base class for all hardware objects to allow consistent access
-* to different types of hardware.
-* REMARK: The naming "hw_thread" was badly chosen, as it was planned at the beginning, to run every
-* hardware object in it's own thread. Using synchronous and asynchronous data access, this is not
-* needed all the time.
-* File and class name are planned to be renamed in the future! (e.g. hw_base)
-*
 **/
 
 #ifndef HWThread_H
@@ -45,6 +55,13 @@ namespace tobiss
 * a common interface to gather access to different types of hardware.
 * It also provides methods and members needed for every data acquisition device (channel types, ...).
 *
+* REMARK: The naming "hw_thread" was badly chosen, as it was planned at the beginning, to run every
+* hardware object in it's own thread. Using synchronous and asynchronous data access, this is not
+* needed all the time.
+* File and class name are planned to be renamed in the future! (e.g. hw_base)
+*
+* @todo Write instruction how to derive from HWThread
+* @todo Maybe rename HWTHread to HWBase
 */
 class HWThread
 {
@@ -60,7 +77,7 @@ class HWThread
     * @brief Get the name of the device.
     * @return string device name
     */
-    std::string getName()  { return(m_.find("name")->second); }
+    std::string getType()  { return(type_); }
 
     /**
     * @brief Check if device is the master.
@@ -164,19 +181,20 @@ class HWThread
     * @param[in] channels Number of channels the device acquires.
     * @param[in] blocks   Blocksize used by the device.
     */
-    HWThread(XMLParser& parser, boost::uint32_t sampling_rate, boost::uint16_t channels, boost::uint16_t blocks)
+    HWThread(boost::uint32_t sampling_rate, boost::uint16_t channels, boost::uint16_t blocks)
     : nr_ch_(channels),fs_(sampling_rate), samples_available_(0), blocks_(blocks),
-    mode_(SLAVE), running_(0), parser_(parser)
+    mode_(SLAVE), running_(0)
     {    }
+    //    , parser_(parser)
     /**
     * @brief Default constructor
     *
     * Sets the device to 0 channel, sampling_rate 0 and blocksize 1.
     */
-    HWThread(XMLParser& parser)
-    : nr_ch_(0),fs_(0), samples_available_(0), blocks_(1), mode_(SLAVE),
-    running_(0), parser_(parser)
+    HWThread()  // XMLParser& parser
+    : nr_ch_(0),fs_(0), samples_available_(0), blocks_(1), mode_(SLAVE), running_(0)
     {    }
+    //    , parser_(parser)
 
     /**
     * @brief Set configuration listed in the \<device_settings\> section in the XML file.
@@ -225,21 +243,6 @@ class HWThread
     void setChannelTypes();
 
     /**
-    * @brief Sets vendorId for Mousedevice.
-    */
-    void setVendorId(ticpp::Iterator<ticpp::Element>const &elem);
-
-    /**
-    * @brief Sets productId for Mousedevice.
-    */
-    void setProductId(ticpp::Iterator<ticpp::Element>const &elem);
-
-	/**
-    * @brief Sets vendorId for Mousedevice.
-    */
-    void setUsbPort(ticpp::Iterator<ticpp::Element>const &elem);
-
-    /**
     * @brief Check, if a string represents a valid number.
     * @return bool
     */
@@ -251,6 +254,11 @@ class HWThread
       return true;
     }
 
+    void setType(std::string s)
+    {
+      type_ = s;
+    }
+
 //-----------------------------------------------
 
   protected:
@@ -260,19 +268,15 @@ class HWThread
     boost::uint16_t blocks_;   ///< blocksize (or also called buffersize)
     boost::uint8_t mode_;       ///< master, slave or aperiodic
     bool running_;      ///< variable, to stop hardware
-    boost::uint32_t vid_;
-    boost::uint32_t pid_;
-    boost::uint32_t usb_port_;
 
     boost::shared_mutex rw_;     ///< mutex to lock data
 
     std::map<boost::uint16_t, std::pair<std::string, boost::uint32_t> > channel_info_;  ///< map containing ( ch_nr,  (name,  type) )
     bool homogenous_signal_type_;  ///< true, if device delivers different signal types -- e.g. EEG and EMG
     std::vector<boost::uint32_t> channel_types_;   ///< vector containing signal types of channels (for faster access)
-    std::map<std::string, std::string> m_;   ///< map with generic hardware information  ...  mandatory
 
-    Constants cst_;  ///< A static object containing constants.
-    XMLParser& parser_;   ///< Reference pointing to the XMLParser.
+    // Constants cst_;  ///< A static object containing constants.
+    // XMLParser& parser_;   ///< Reference pointing to the XMLParser.
 
     /**
     * @brief Data object representing the last available samples from the SineGenerator.
@@ -286,6 +290,54 @@ class HWThread
     * For more information, read the SampleBlock documentation.
     */
     SampleBlock<double> data_;
+
+    std::string   type_;
+
+    //-----------------------------------------------
+    // Constant variables & methods:
+
+//    static const std::string hardware_;
+//    static const std::string hardware_name_;
+    static const std::string hardware_version_;
+    static const std::string hardware_serial_;
+
+    static const std::string hw_mode_;
+    static const std::string hw_devset_;        ///< xml-tag hardware: device_settings
+    static const std::string hw_fs_;            ///< xml-tag hardware: sampling_rate
+
+    static const std::string hw_channels_;      ///< xml-tag hardware: measurement_channels
+    static const std::string hw_ch_nr_;         ///< xml-tag hardware: nr
+    static const std::string hw_ch_names_;      ///< xml-tag hardware: names
+    static const std::string hw_ch_type_;       ///< xml-tag hardware: channel type
+
+    static const std::string hw_blocksize_;     ///< xml-tag hardware: blocksize
+
+    static const std::string hw_chset_;       ///< xml-tag hardware -- channel_settings
+    static const std::string hw_chset_sel_;           ///< xml-tag hardware: selection
+    static const std::string hw_chset_ch_;      ///< xml-tag hardware: ch
+    static const std::string hw_chset_nr_;     ///< xml-tag hardware: nr
+    static const std::string hw_chset_name_;   ///< xml-tag hardware: name
+
+
+    //---------------------------------------------------------------------------------------
+
+    bool equalsOnOrOff(const std::string& s);
+    bool equalsYesOrNo(const std::string& s);
+    bool equalsMaster(const std::string& s);
+    bool equalsSlave(const std::string& s);
+    bool equalsAperiodic(const std::string& s);
+//    uint32_t getSignalFlag(const std::string& s);
+//    std::string getSignalName(const boost::uint32_t& flag);
+
+    void parseDeviceChannels(ticpp::Iterator<ticpp::Element>const &elem, boost::uint16_t& nr_ch,
+                                 std::string& naming, std::string& type);
+
+    void parseChannelSelection(ticpp::Iterator<ticpp::Element>const &elem, boost::uint16_t& ch,
+                                   std::string& name, std::string& type);
+
+    void checkMandatoryHardwareTagsXML(ticpp::Iterator<ticpp::Element> hw);
+
+
 };
 
 } // Namespace tobiss

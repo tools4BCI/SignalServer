@@ -1,3 +1,23 @@
+/*
+    This file is part of the TOBI signal server.
+
+    The TOBI signal server is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    The TOBI signal server is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
+    Copyright 2010 Christian Breitwieser
+    Contact: c.breitwieser@tugraz.at
+*/
+
 #include "hardware/event_listener.h"
 
 #include <boost/bind.hpp>
@@ -9,15 +29,20 @@ using boost::lexical_cast;
 using boost::bad_lexical_cast;
 
 using boost::uint32_t;
+using std::vector;
+using std::cout;
+using std::endl;
 
 //-----------------------------------------------------------------------------
 
-EventListener::EventListener(boost::asio::io_service& io, XMLParser& parser) :
-  HWThread(parser),
+EventListener::EventListener(boost::asio::io_service& io) :
+//  HWThread(parser),
   initialized_(0),
   event_socket_udp_(io),
   buffer_(EVENT_BUFFER_SIZE)
 {
+
+  setType("EventListener");
 
   nr_ch_ = 0;
   blocks_ = 0;
@@ -87,7 +112,7 @@ void EventListener::listen4Events(const boost::system::error_code& error,
 {
   if(error)
     throw std::runtime_error(error.message());
-  string event;
+  std::string event;
 
 //   boost::unique_lock<boost::shared_mutex> lock(rw_);
 //   boost::unique_lock<boost::mutex> syn(sync_mut_);
