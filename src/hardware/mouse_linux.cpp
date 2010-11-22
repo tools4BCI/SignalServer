@@ -28,14 +28,20 @@ namespace tobiss
     Mouse::Mouse(ticpp::Iterator<ticpp::Element> hw)
      : MouseBase(hw)
     {
-
+        int ret = blockKernelDriver();
+        if(ret)
+          throw(std::runtime_error("MouseBase::initMouse -- Mouse device could not be connected!"));
     }
 
 //
-//    Mouse::~Mouse()
-//    {
-//
-//    }
+    Mouse::~Mouse()
+    {
+        running_ = false;
+        async_acqu_thread_->join();
+        if(async_acqu_thread_)
+          delete async_acqu_thread_;
+        freeKernelDriver();
+    }
 
     //-----------------------------------------------------------------------------
     //-----------------------------------------------------------------------------
@@ -67,7 +73,6 @@ namespace tobiss
         int ret;
         ret = libusb_release_interface(dev_handle_, 0);
         if(ret)
-            return-1;
         ret = libusb_attach_kernel_driver(dev_handle_, 0);
         if(ret)
             return -2;
@@ -89,7 +94,7 @@ namespace tobiss
         unsigned char async_data_[10];
         int r = libusb_interrupt_transfer(dev_handle_, usb_port_, async_data_, sizeof(async_data_), &actual_length, 0);
         if(r)
-          throw(std::runtime_error("Mouse::Mouse -- Mouse device could not be connected! Check usb-port!"));
+          throw(std::runtime_error("Mouse::acquireData -- Mouse device could not be connected! Check usb-port!"));
         async_data_buttons_ = (int)(char)async_data_[0];
         async_data_x_ = (int)(char)async_data_[1];
         async_data_y_ = (int)(char)async_data_[2];
