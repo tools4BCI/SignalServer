@@ -45,6 +45,22 @@ class EEGSimulator : public ArtificialSignalSource
 //------------------------------------------
 
   private:
+
+    class EEGConfig
+    {
+      public:
+        double scaling_;
+        double offset_;
+    };
+
+    class SineConfig
+    {
+      public:
+        double freq_;
+        double amplitude_;
+        double phase_;
+    };
+
     /**
     * @brief TODO
     */
@@ -69,8 +85,18 @@ class EEGSimulator : public ArtificialSignalSource
     */
     virtual void setChannelSettings(ticpp::Iterator<ticpp::Element>const &father);
 
+    void setPort(ticpp::Iterator<ticpp::Element>const &elem);
+    void setDeviceEEGConfig(ticpp::Iterator<ticpp::Element>const &elem);
+    void setDeviceSineConfig(ticpp::Iterator<ticpp::Element>const &elem);
 
+    void setChannelEEGConfig(ticpp::Iterator<ticpp::Element>const &father);
+    void setChannelSineConfig(ticpp::Iterator<ticpp::Element>const &father);
 
+    void checkEEGConfigAttributes(ticpp::Iterator<ticpp::Element>const &elem);
+    void checkSineConfigAttributes(ticpp::Iterator<ticpp::Element>const &elem);
+
+    EEGConfig getEEGConfig(ticpp::Iterator<ticpp::Element>const &elem);
+    SineConfig getSineConfig(ticpp::Iterator<ticpp::Element>const &elem);
 
     void handleAsyncRead(const boost::system::error_code& ec, std::size_t bytes_transferred );
     void acceptHandler(const boost::system::error_code& error);
@@ -91,23 +117,21 @@ class EEGSimulator : public ArtificialSignalSource
 
     std::vector<boost::uint8_t> message_buffer_;
 
-    class EEGCfg
-    {
-      public:
-        double amplitude_;
-        double offset_;
-    };
+    std::map<boost::uint16_t, EEGConfig>  eeg_config_;       /// <ch_nr, EEGCfg>
+    std::multimap<boost::uint16_t, SineConfig> sine_configs_;     /// <ch_nr, SineCfg>
 
-    class SineCfg
-    {
-      public:
-        double freq_;
-        double amplitude_;
-        double phase_;
-    };
+    //--------------------------------------
+    // Constants:
 
-    std::multimap<boost::uint16_t, EEGCfg>  eeg_config_;       /// <ch_nr, EEGCfg>
-    std::multimap<boost::uint16_t, SineCfg> sine_configs_;     /// <ch_nr, SineCfg>
+    static const std::string xml_eeg_sim_port_;
+    static const std::string xml_eeg_config_;
+    static const std::string xml_sine_config_;
+    static const std::string xml_scaling_;
+    static const std::string xml_offset_;
+    static const std::string xml_frequ_;
+    static const std::string xml_amplitude_;
+    static const std::string xml_phase_;
+
 };
 
 }  // tobiss
