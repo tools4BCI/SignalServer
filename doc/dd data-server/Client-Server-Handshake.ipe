@@ -1,204 +1,394 @@
-<ipe version="60032" creator="Ipe 6.0 preview 32">
-<info created="D:20090527163342" modified="D:20090704191321" bbox="cropbox"/>
-<ipestyle>
+<?xml version="1.0"?>
+<!DOCTYPE ipe SYSTEM "ipe.dtd">
+<ipe version="70010" creator="Ipe 7.0.10">
+<info created="D:20090527163342" modified="D:20100917120403"/>
+<ipestyle name="ipe6">
+<symbol name="mark/circle(sx)" transformations="translations">
+<path fill="sym-stroke">
+0.6 0 0 0.6 0 0 e
+0.4 0 0 0.4 0 0 e
+</path>
+</symbol>
+<symbol name="mark/disk(sx)" transformations="translations">
+<path fill="sym-stroke">
+0.6 0 0 0.6 0 0 e
+</path>
+</symbol>
+<symbol name="mark/fdisk(sfx)" transformations="translations">
+<group>
+<path fill="sym-stroke" fillrule="eofill">
+0.6 0 0 0.6 0 0 e
+0.4 0 0 0.4 0 0 e
+</path>
+<path fill="sym-fill">
+0.4 0 0 0.4 0 0 e
+</path>
+</group>
+</symbol>
+<symbol name="mark/box(sx)" transformations="translations">
+<path fill="sym-stroke" fillrule="eofill">
+-0.6 -0.6 m
+0.6 -0.6 l
+0.6 0.6 l
+-0.6 0.6 l
+h
+-0.4 -0.4 m
+0.4 -0.4 l
+0.4 0.4 l
+-0.4 0.4 l
+h
+</path>
+</symbol>
+<symbol name="mark/square(sx)" transformations="translations">
+<path fill="sym-stroke">
+-0.6 -0.6 m
+0.6 -0.6 l
+0.6 0.6 l
+-0.6 0.6 l
+h
+</path>
+</symbol>
+<symbol name="mark/fsquare(sfx)" transformations="translations">
+<group>
+<path fill="sym-stroke" fillrule="eofill">
+-0.6 -0.6 m
+0.6 -0.6 l
+0.6 0.6 l
+-0.6 0.6 l
+0 -0.4 m
+0.4 -0.4 l
+0.4 0.4 l
+-0.4 0.4 l
+h
+</path>
+<path fill="sym-fill">
+-0.4 -0.4 m
+0.4 -0.4 l
+0.4 0.4 l
+-0.4 0.4 l
+h
+</path>
+</group>
+</symbol>
+<symbol name="mark/cross(sx)" transformations="translations">
+<group>
+<path fill="sym-stroke">
+-0.43 -0.57 m
+0.57 0.43 l
+0.43 0.57 l
+-0.57 -0.43 l
+h
+</path>
+<path fill="sym-stroke">
+-0.43 0.57 m
+0.57 -0.43 l
+0.43 -0.57 l
+-0.57 0.43 l
+h
+</path>
+</group>
+</symbol>
+<pen name="heavier" value="0.8"/>
+<pen name="fat" value="1.2"/>
+<pen name="ultrafat" value="2"/>
+<symbolsize name="large" value="5"/>
+<symbolsize name="small" value="2"/>
+<symbolsize name="tiny" value="1.1"/>
+<arrowsize name="large" value="10"/>
+<arrowsize name="small" value="5"/>
+<arrowsize name="tiny" value="3"/>
+<color name="red" value="1 0 0"/>
+<color name="green" value="0 1 0"/>
+<color name="blue" value="0 0 1"/>
+<color name="yellow" value="1 1 0"/>
+<color name="gray1" value="0.125"/>
+<color name="gray2" value="0.25"/>
+<color name="gray3" value="0.375"/>
+<color name="gray4" value="0.5"/>
+<color name="gray5" value="0.625"/>
+<color name="gray6" value="0.75"/>
+<color name="gray7" value="0.875"/>
+<dashstyle name="dashed" value="[4] 0"/>
+<dashstyle name="dotted" value="[1 3] 0"/>
+<dashstyle name="dash dotted" value="[4 2 1 2] 0"/>
+<dashstyle name="dash dot dotted" value="[4 2 1 2 1 2] 0"/>
+<textsize name="large" value="\large"/>
+<textsize name="small" value="\small"/>
+<textsize name="tiny" value="\tiny"/>
+<textsize name="Large" value="\Large"/>
+<textsize name="LARGE" value="\LARGE"/>
+<textsize name="huge" value="\huge"/>
+<textsize name="Huge" value="\Huge"/>
+<textsize name="footnote" value="\footnotesize"/>
+<textstyle name="center" begin="\begin{center}" end="\end{center}"/>
+<textstyle name="itemize" begin="\begin{itemize}" end="\end{itemize}"/>
+<textstyle name="item" begin="\begin{itemize}\item{}" end="\end{itemize}"/>
 </ipestyle>
-<ipestyle>
-</ipestyle>
-<ipestyle>
-</ipestyle>
-<ipestyle>
-</ipestyle>
-<ipestyle>
-</ipestyle>
-<ipestyle>
-</ipestyle>
-<ipestyle>
-</ipestyle>
-<ipestyle>
-</ipestyle>
-<page gridsize="4">
+<page>
 <layer name="alpha"/>
 <view layers="alpha" active="alpha"/>
-<path layer="alpha" stroke="black" matrix="0 0 0 0 13 258" pen="normal">
+<path layer="alpha" matrix="0 0 0 0 13 258" stroke="black">
 64 552 m
 176 552 l
 176 760 l
 64 760 l
 h
 </path>
-<path stroke="black" matrix="1 0 0 1 72 0" pen="normal">
+<path matrix="0.6 0 0 0.609375 244.8 264.875" stroke="black">
 352 656 m
 472 656 l
 472 760 l
 352 760 l
 h
 </path>
-<text stroke="black" pos="40 808" type="label" width="269" height="17" depth="0" valign="baseline" size="Huge">Client -- Server Handshake:</text>
-<text stroke="black" pos="64 768" type="label" width="82" height="11" depth="0" valign="baseline" size="LARGE">Data Server</text>
-<text stroke="black" pos="424 768" type="label" width="126" height="12.71" depth="4.29" valign="baseline" size="LARGE">Client (e.g. scope)</text>
-<path stroke="black" pen="normal">
+<text transformations="translations" pos="40 808" stroke="black" type="label" width="460.447" height="17.213" depth="0" valign="baseline" size="Huge">TOBI Interface A:  Client -- Server Handshake:</text>
+<text transformations="translations" pos="64 768" stroke="black" type="label" width="90.047" height="11.954" depth="3.35" valign="baseline" size="LARGE">Signal Server</text>
+<text matrix="1 0 0 1 40 0" transformations="translations" pos="424 768" stroke="black" type="label" width="41.526" height="11.955" depth="0" valign="baseline" size="LARGE">Client</text>
+<path matrix="0.6 0 0 0.609375 201.6 264.875" stroke="black">
 440 672 m
 528 672 l
 528 744 l
 440 744 l
 h
 </path>
-<path stroke="black" pen="normal">
+<path matrix="0.6 0 0 0.609375 201.6 264.875" stroke="black">
 440 656 m
 424 632 l
 544 632 l
 528 656 l
 h
 </path>
-<path stroke="black" pen="normal" arrow="normal">
+<path matrix="1 0 0 1 0 48" stroke="black" arrow="normal/normal">
 160 560 m
 20 0 0 -20 148 544 160 528 a
 </path>
-<path stroke="black" pen="normal" arrow="normal">
+<path matrix="1 0 0 1 24 48" stroke="black" arrow="normal/normal">
 408 560 m
 20 0 0 20 420 544 408 528 a
 </path>
-<text stroke="black" matrix="1 0 0 1 0 -12" pos="432 560" type="label" width="82" height="7.68" depth="2.32" valign="baseline" size="large">load config from</text>
-<text stroke="black" matrix="1 0 0 1 0 -8" pos="432 544" type="label" width="65" height="8" depth="0" valign="baseline" size="large">local xml file</text>
-<text stroke="black" matrix="1 0 0 1 -380 -12" pos="432 560" type="label" width="82" height="7.68" depth="2.32" valign="baseline" size="large">load config from</text>
-<text stroke="black" matrix="1 0 0 1 -380 -8" pos="432 544" type="label" width="65" height="8" depth="0" valign="baseline" size="large">local xml-file</text>
-<path stroke="black" pen="normal" arrow="normal">
-408 488 m
-160 488 l
-</path>
-<text stroke="black" matrix="1 0 0 1 8 0" pos="184 496" type="label" width="159" height="6.51" depth="2.49" valign="baseline" size="normal">request config from server (ctrl-msg)</text>
-<path stroke="black" pen="normal">
+<path matrix="1 0 0 1 0 48" stroke="black">
 8 0 0 8 184 560 e
 </path>
-<path stroke="black" pen="normal">
+<path matrix="1 0 0 1 24 48" stroke="black">
 8 0 0 8 384 560 e
 </path>
-<text stroke="black" matrix="1 0 0 1 -18 4" pos="200 552" type="label" width="5" height="7" depth="0" valign="baseline" size="large">1</text>
-<text stroke="black" pos="380 557" type="label" width="5" height="7" depth="0" valign="baseline" size="large">2</text>
-<path stroke="black" matrix="1 0 0 1 -8 -56" pen="normal">
-8 0 0 8 184 560 e
-</path>
-<text stroke="black" matrix="1 0 0 1 -26 -51" pos="200 552" type="label" width="5" height="7" depth="0" valign="baseline" size="large">3</text>
-<path stroke="black" pen="normal" arrow="normal">
-160 432 m
-408 432 l
-</path>
-<text stroke="black" matrix="1 0 0 1 76 -56" pos="184 496" type="label" width="126" height="6.51" depth="2.49" valign="baseline" size="normal">send configuration (ctrl-msg)</text>
-<path stroke="black" matrix="1 0 0 1 208 -112" pen="normal">
-8 0 0 8 184 560 e
-</path>
-<text stroke="black" matrix="1 0 0 1 189 -107" pos="200 552" type="label" width="5" height="7" depth="0" valign="baseline" size="large">4</text>
-<path stroke="black" pen="normal" arrow="normal">
-408 376 m
-160 376 l
-</path>
-<text stroke="black" matrix="1 0 0 1 16 -112" pos="184 496" type="label" width="180" height="5.76" depth="2.24" valign="baseline" size="small">(if TCP connection: connect to TCP socket)</text>
-<path stroke="black" matrix="1 0 0 1 -8 -168" pen="normal">
-8 0 0 8 184 560 e
-</path>
-<text stroke="black" matrix="1 0 0 1 -26 -163" pos="200 552" type="label" width="5" height="7" depth="0" valign="baseline" size="large">7</text>
-<path stroke="black" matrix="1 0 0 1 0 -112" pen="normal" arrow="normal">
-160 432 m
-408 432 l
-</path>
-<text stroke="black" matrix="1 0 0 1 -8 -168" pos="184 496" type="label" width="200" height="6.51" depth="2.49" valign="baseline" size="normal">RAW dat stream (UDP or TCP -- by request)</text>
-<path stroke="black" matrix="1 0 0 1 208 -224" pen="normal">
-8 0 0 8 184 560 e
-</path>
-<text stroke="black" matrix="1 0 0 1 189 -219" pos="200 552" type="label" width="5" height="7" depth="0" valign="baseline" size="large">8</text>
-<path stroke="black" matrix="1 0 0 1 0 112" pen="normal" arrow="normal">
-160 200 m
-408 200 l
-</path>
-<path stroke="black" matrix="1 0 0 1 0 -184" pen="normal" arrow="normal">
-408 376 m
-160 376 l
-</path>
-<text stroke="black" matrix="1 0 0 1 8 -296" pos="184 496" type="label" width="145" height="6.51" depth="2.49" valign="baseline" size="normal">stop data transmission (ctrl-msg)</text>
-<path stroke="black" matrix="1 0 0 1 -8 -352" pen="normal">
-8 0 0 8 184 560 e
-</path>
-<text stroke="black" matrix="1 0 0 1 -29 -347" pos="200 552" type="label" width="11" height="7" depth="0" valign="baseline" size="large">10</text>
-<path stroke="black" matrix="1 0 0 1 0 -396" pen="normal" arrow="normal">
+<text matrix="1 0 0 1 -18.7968 51.8406" transformations="translations" pos="200 552" stroke="black" type="label" width="5.853" height="7.704" depth="0" valign="baseline" size="large">1</text>
+<text matrix="1 0 0 1 25.4711 47.1419" transformations="translations" pos="380 557" stroke="black" type="label" width="5.853" height="7.704" depth="0" valign="baseline" size="large">2</text>
+<path matrix="1 0 0 1 0 -504" stroke="black" arrow="normal/normal">
 160 560 m
 20 0 0 -20 148 544 160 528 a
 </path>
-<path stroke="black" matrix="1 0 0 1 0 -396" pen="normal" arrow="normal">
+<path matrix="1 0 0 1 24 -504" stroke="black" arrow="normal/normal">
 408 560 m
 20 0 0 20 420 544 408 528 a
 </path>
-<text stroke="black" matrix="1 0 0 1 0 -408" pos="432 560" type="label" width="127" height="8" depth="0" valign="baseline" size="large">close network connection</text>
-<text stroke="black" matrix="1 0 0 1 0 -404" pos="432 544" type="label" width="121" height="7.68" depth="2.32" valign="baseline" size="large">client specific shutdown</text>
-<text stroke="black" matrix="1 0 0 1 -412 -408" pos="432 560" type="label" width="127" height="8" depth="0" valign="baseline" size="large">close network connection</text>
-<path stroke="black" matrix="1 0 0 1 0 -396" pen="normal">
+<path matrix="1 0 0 1 0 -504" stroke="black">
 8 0 0 8 184 560 e
 </path>
-<path stroke="black" matrix="1 0 0 1 0 -396" pen="normal">
+<path matrix="1 0 0 1 24 -504" stroke="black">
 8 0 0 8 384 560 e
 </path>
-<text stroke="black" matrix="1 0 0 1 -21 -391" pos="200 552" type="label" width="11" height="7" depth="0" valign="baseline" size="large">11</text>
-<text stroke="black" matrix="1 0 0 1 -1 -396" pos="380 557" type="label" width="11" height="7" depth="0" valign="baseline" size="large">12</text>
-<text stroke="black" matrix="1 0 0 1 -32 48" pos="52 88" type="label" width="121" height="7.68" depth="2.32" valign="baseline" size="large">server specific processes</text>
-<path stroke="black" pen="normal">
-64 592 m
-152 592 l
-152 760 l
-64 760 l
-h
-</path>
-<path stroke="black" pen="normal">
+<text matrix="1 0 0 1 -21.3772 -499.754" transformations="translations" pos="200 552" stroke="black" type="label" width="11.706" height="7.704" depth="0" valign="baseline" size="large">16</text>
+<text matrix="1 0 0 1 22.192 -504.808" transformations="translations" pos="380 557" stroke="black" type="label" width="11.706" height="7.704" depth="0" valign="baseline" size="large">17</text>
+<path matrix="0.333333 0 0 0.333333 58.6667 477.333" stroke="black">
 4 0 0 4 120 672 e
 </path>
-<path stroke="black" pen="normal">
+<path matrix="0.333333 0 0 0.333333 58.6667 477.333" stroke="black">
 4 0 0 4 132 672 e
 </path>
-<path stroke="black" pen="normal">
+<path matrix="0.333333 0 0 0.333333 58.6667 477.333" stroke="black">
 4 0 0 4 144 672 e
 </path>
-<path stroke="black" matrix="1 0 0 1 0 -8" pen="normal">
+<path matrix="0.5 0 0 1 40 24" stroke="black">
 80 640 m
 104 648
 120 636
 144 644 s
 </path>
-<path stroke="black" matrix="1 0 0 1 0 -12" pen="normal">
+<path matrix="0.5 0 0 1 40 20" stroke="black">
 80 640 m
 104 648
 120 636
 144 644 s
 </path>
-<path stroke="black" matrix="1 0 0 1 0 -16" pen="normal">
+<path matrix="0.5 0 0 1 40 16" stroke="black">
 80 640 m
 104 648
 120 636
 144 644 s
 </path>
-<text stroke="black" pos="432 504" type="minipage" width="144" height="18.82" depth="14.18" valign="top" size="normal">xml tags see\\
-communication-specification.pdf\\
-  \textit{(not available yet)}</text>
-<text stroke="black" matrix="1 0 0 1 0 -176" pos="432 504" type="minipage" width="144" height="18.1" depth="13.9" valign="top" size="normal">Data packet structure see\\
-Signal transmission design document.pdf</text>
-<text stroke="black" matrix="1 0 0 1 8 -100" pos="184 496" type="label" width="209" height="6.51" depth="2.49" valign="baseline" size="normal">start TCP or UDP data transmission (ctrl-msg)</text>
-<path stroke="black" dash="dashed" pen="normal" backarrow="normal">
-160 256 m
-408 256 l
+<text matrix="1 0 0 1 -16 48" transformations="translations" pos="48 560" stroke="black" type="minipage" width="96" height="18.866" depth="13.9" valign="top">load config from xml file or wait for remote config</text>
+<path matrix="1 0 0 1 0 32" stroke="black">
+64 592 m
+64 720 l
+128 720 l
+128 592 l
+h
 </path>
-<path stroke="black" matrix="1 0 0 1 0 -8" dash="dashed" pen="normal" backarrow="normal">
-160 256 m
-408 256 l
+<path stroke="black" dash="dashed">
+144 608 m
+144 16 l
 </path>
-<path stroke="black" matrix="1 0 0 1 -8 -288" pen="normal">
+<path matrix="1 0 0 1 304 0" stroke="black" dash="dashed">
+144 608 m
+144 16 l
+</path>
+<path matrix="1 0 0 1 -0.0309535 0.703063" stroke="black" dash="dashed">
 8 0 0 8 184 560 e
 </path>
-<text stroke="black" matrix="1 0 0 1 -26 -283" pos="200 552" type="label" width="5" height="7" depth="0" valign="baseline" size="large">9</text>
-<text stroke="black" matrix="1 0 0 1 8 -232" pos="184 496" type="label" width="197" height="6.51" depth="2.49" valign="baseline" size="normal">keep alive packet (one per minute -- ctrl-msg)</text>
-<path stroke="black" matrix="1 0 0 1 264 0" dash="dashed" pen="normal">
-152 568 m
-152 128 l
+<text matrix="1 0 0 1 -19.3059 4.5875" transformations="translations" pos="200 552" stroke="black" type="label" width="5.853" height="7.704" depth="0" valign="baseline" size="large">3</text>
+<text matrix="1 0 0 1 2.20994 15.9114" transformations="translations" pos="195.15 544" stroke="black" type="minipage" width="222.121" height="5.958" depth="0.96" valign="top">send xml-file to server</text>
+<path matrix="1 0 0 1 223.969 -31.2969" stroke="black" dash="dashed">
+8 0 0 8 184 560 e
 </path>
-<path stroke="black" dash="dashed" pen="normal">
-152 568 m
-152 128 l
+<text matrix="1 0 0 1 205.347 -27.3328" transformations="translations" pos="200 552" stroke="black" type="label" width="5.853" height="7.704" depth="0" valign="baseline" size="large">4</text>
+<text matrix="1 0 0 1 2.20994 -16.0886" transformations="translations" pos="195.15 544" stroke="black" type="minipage" width="222.121" height="7.473" depth="2.49" valign="top">set remote config response: OK/error</text>
+<path stroke="black" rarrow="normal/normal">
+160 544 m
+432 544 l
+</path>
+<path stroke="black" arrow="normal/normal">
+160 512 m
+432 512 l
+</path>
+<path stroke="black" arrow="normal/normal">
+432 480 m
+160 480 l
+</path>
+<path matrix="1 0 0 1 -0.0309535 -63.2969" stroke="black">
+8 0 0 8 184 560 e
+</path>
+<text matrix="1 0 0 1 -18.8597 -59.3328" transformations="translations" pos="200 552" stroke="black" type="label" width="5.853" height="7.704" depth="0" valign="baseline" size="large">5</text>
+<text matrix="1 0 0 1 2.20994 -48.0886" transformations="translations" pos="195.15 544" stroke="black" type="minipage" width="222.121" height="6.926" depth="1.93" valign="top">request config from server</text>
+<path matrix="1 0 0 1 223.969 -95.2969" stroke="black">
+8 0 0 8 184 560 e
+</path>
+<text matrix="1 0 0 1 205.14 -91.1256" transformations="translations" pos="200 552" stroke="black" type="label" width="5.853" height="7.704" depth="0" valign="baseline" size="large">6</text>
+<text matrix="1 0 0 1 2.20994 -80.0886" transformations="translations" pos="195.15 544" stroke="black" type="minipage" width="222.121" height="6.926" depth="1.93" valign="top">send signal server configuration</text>
+<path matrix="1 0 0 1 0 -64" stroke="black" arrow="normal/normal">
+160 512 m
+432 512 l
+</path>
+<path matrix="1 0 0 1 -0.0309535 -127.297" stroke="black" dash="dashed">
+8 0 0 8 184 560 e
+</path>
+<text matrix="1 0 0 1 -18.6525 -123.54" transformations="translations" pos="200 552" stroke="black" type="label" width="5.853" height="7.704" depth="0" valign="baseline" size="large">7</text>
+<text matrix="1 0 0 1 2.20994 -112.089" transformations="translations" pos="195.15 544" stroke="black" type="minipage" width="222.121" height="6.926" depth="1.93" valign="top">select channels, signal types, sampling rate</text>
+<path matrix="1 0 0 1 223.969 -159.297" stroke="black" dash="dashed">
+8 0 0 8 184 560 e
+</path>
+<text matrix="1 0 0 1 204.892 -155.374" transformations="translations" pos="200 552" stroke="black" type="label" width="5.853" height="7.704" depth="0" valign="baseline" size="large">8</text>
+<text matrix="1 0 0 1 2.20994 -144.089" transformations="translations" pos="195.15 544" stroke="black" type="minipage" width="222.121" height="7.473" depth="2.49" valign="top">client specific selection response: OK/error</text>
+<path matrix="1 0 0 1 0 -128" stroke="black" rarrow="normal/normal">
+160 544 m
+432 544 l
+</path>
+<path matrix="1 0 0 1 0 -128" stroke="black" arrow="normal/normal">
+160 512 m
+432 512 l
+</path>
+<path matrix="1 0 0 1 0 16" stroke="black" rarrow="normal/normal">
+160 336 m
+432 336 l
+</path>
+<path matrix="1 0 0 1 -0.0309535 -191.297" stroke="black">
+8 0 0 8 184 560 e
+</path>
+<text matrix="1 0 0 1 -18.4454 -187.126" transformations="translations" pos="200 552" stroke="black" type="label" width="5.853" height="7.704" depth="0" valign="baseline" size="large">9</text>
+<text matrix="1 0 0 1 2.20994 -176.089" transformations="translations" pos="195.15 544" stroke="black" type="minipage" width="222.121" height="5.898" depth="0.91" valign="top">use TCP or UDP transmission</text>
+<text matrix="1 0 0 1 2.20994 -208.089" transformations="translations" pos="195.15 544" stroke="black" type="minipage" width="222.121" height="6.791" depth="1.8" valign="top">transmit server port</text>
+<path matrix="1 0 0 1 0 -192" stroke="black" arrow="normal/normal">
+160 512 m
+432 512 l
+</path>
+<path matrix="1 0 0 1 0 -48" stroke="black" rarrow="normal/normal">
+160 336 m
+432 336 l
+</path>
+<text matrix="1 0 0 1 2.56007 -232.736" transformations="translations" pos="195.15 544" stroke="black" type="minipage" width="222.121" height="12.891" depth="7.92" valign="top">TCP: connect to assigned server port\\
+UDP: listen to assigned port</text>
+<path matrix="1 0 0 1 223.969 -223.297" stroke="black">
+8 0 0 8 184 560 e
+</path>
+<text matrix="1 0 0 1 202.331 -218.836" transformations="translations" pos="200 552" stroke="black" type="label" width="11.706" height="7.704" depth="0" valign="baseline" size="large">10</text>
+<path matrix="1 0 0 1 -0.0309535 -255.297" stroke="black">
+8 0 0 8 184 560 e
+</path>
+<text matrix="1 0 0 1 -21.9539 -251.033" transformations="translations" pos="200 552" stroke="black" type="label" width="11.706" height="7.704" depth="0" valign="baseline" size="large">11</text>
+<path matrix="1 0 0 1 0 -80" stroke="black" rarrow="normal/normal">
+160 336 m
+432 336 l
+</path>
+<text matrix="1 0 0 1 2.20994 -271.739" transformations="translations" pos="195.15 544" stroke="black" type="minipage" width="222.121" height="5.824" depth="0.83" valign="top">start transmission</text>
+<path matrix="1 0 0 1 -0.0309535 -287.297" stroke="black">
+8 0 0 8 184 560 e
+</path>
+<text matrix="1 0 0 1 -21.9539 -283.033" transformations="translations" pos="200 552" stroke="black" type="label" width="11.706" height="7.704" depth="0" valign="baseline" size="large">12</text>
+<path stroke="black" arrow="normal/normal">
+160 208 m
+432 208 l
+</path>
+<path stroke="black" arrow="normal/normal">
+160 216 m
+432 216 l
+</path>
+<text matrix="1 0 0 1 2.20994 -312.089" transformations="translations" pos="195.15 544" stroke="black" type="minipage" width="222.121" height="5.958" depth="0.96" valign="top">RAW data stream</text>
+<path matrix="1 0 0 1 223.969 -327.297" stroke="black">
+8 0 0 8 184 560 e
+</path>
+<text matrix="1 0 0 1 202.331 -322.836" transformations="translations" pos="200 552" stroke="black" type="label" width="11.706" height="7.704" depth="0" valign="baseline" size="large">13</text>
+<path matrix="1 0 0 1 0 -64" stroke="black" arrow="normal/normal">
+160 208 m
+432 208 l
+</path>
+<path matrix="1 0 0 1 0 -40" stroke="black" rarrow="normal/normal">
+160 216 m
+432 216 l
+</path>
+<text matrix="1 0 0 1 2.20994 -352.089" transformations="translations" pos="195.15 544" stroke="black" type="minipage" width="222.121" height="6.926" depth="1.93" valign="top">keep alive packets</text>
+<path matrix="1 0 0 1 -0.031 -367.297" stroke="black">
+8 0 0 8 184 560 e
+</path>
+<text matrix="1 0 0 1 -21.669 -362.836" transformations="translations" pos="200 552" stroke="black" type="label" width="11.706" height="7.704" depth="0" valign="baseline" size="large">14</text>
+<path matrix="1 0 0 1 0 -32" stroke="black" rarrow="normal/normal">
+160 112 m
+432 112 l
+</path>
+<text matrix="1 0 0 1 2.20994 -448.089" transformations="translations" pos="195.15 544" stroke="black" type="minipage" width="222.121" height="6.926" depth="1.93" valign="top">stop data transmission</text>
+<path matrix="1 0 0 1 -0.031 -463.297" stroke="black">
+8 0 0 8 184 560 e
+</path>
+<text matrix="1 0 0 1 -21.669 -458.836" transformations="translations" pos="200 552" stroke="black" type="label" width="11.706" height="7.704" depth="0" valign="baseline" size="large">15</text>
+<use matrix="1 0 0 1 0 -16" name="mark/disk(sx)" pos="296 152" size="normal" stroke="black"/>
+<use matrix="1 0 0 1 0 -16" name="mark/disk(sx)" pos="296 144" size="normal" stroke="black"/>
+<use matrix="1 0 0 1 0 -16" name="mark/disk(sx)" pos="296 136" size="normal" stroke="black"/>
+<text matrix="1 0 0 1 408 48" transformations="translations" pos="48 560" stroke="black" type="minipage" width="96" height="12.5" depth="7.52" valign="top">startup;\\
+if given: load xml file</text>
+<text matrix="1 0 0 1 32 -16" transformations="translations" pos="32 72" stroke="black" type="minipage" width="104" height="12.891" depth="7.92" valign="top">close connection\\
+to specific client</text>
+<text matrix="1 0 0 1 424 -16" transformations="translations" pos="32 72" stroke="black" type="minipage" width="104" height="12.891" depth="7.92" valign="top">close connection\\
+to signal server</text>
+<path matrix="1 0 0 1 24 0" stroke="red" dash="dashed" pen="ultrafat">
+272 760 m
+272 616 l
+</path>
+<text matrix="1 0 0 1 -120 -16" transformations="translations" pos="424 768" stroke="red" type="label" width="27.726" height="11.761" depth="0" valign="baseline" size="LARGE">TiA</text>
+<path stroke="black" arrow="normal/normal">
+136 696 m
+768.01 0 0 -768.01 292 -56 448 696 a
+</path>
+<path stroke="black" rarrow="normal/normal">
+136 680 m
+768.01 0 0 768.01 292 1432 448 680 a
+</path>
+<path matrix="1 0 0 1 0 -48" stroke="black" arrow="normal/normal">
+160 208 m
+432 208 l
+</path>
+<text matrix="1 0 0 1 1.85981 -372.641" transformations="translations" pos="195.15 544" stroke="black" type="minipage" width="222.121" height="6.926" depth="1.93" valign="top">keep alive response</text>
+<path matrix="1 0 0 1 0 8" stroke="black" rarrow="normal/normal">
+160 144 m
+432 144 l
 </path>
 </page>
 </ipe>

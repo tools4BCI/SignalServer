@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tobi-config version="1.0">
+  <subject>
+    <id>asdfg52</id>
+    <first_name>Nobody</name>
+    <surname>Nowhereman</name>
+    <birthday>01.01.1900</birthday>
+    <sex>m</sex>
+    <handedness>r</handedness>
+    <medication>none</medication>
+    <!-- To be extended by the user -->
+  </subject>
+
+  <server_settings>
+
+    <!-- The control connection port (TCP) clients connect to.   -->
+    <ctl_port>9000</ctl_port>
+
+    <!--  The broadcast subnet address and port UDP packets are sent too if a client requests
+          UDP data transmission. Sending UDP packets to multiple subnets is not supported yet.
+          If a single client requests UDP transmission, packets are automatically broadcasted
+          into the whole subnet!
+          IMPORTANT: Check your firewall settings especially for UDP transmission.
+          -->
+    <udp_bc_addr>127.0.0.1</udp_bc_addr>
+    <udp_port>9001</udp_port>
+
+  </server_settings>
+
+
+<!-- =============================================================================== -->
+
+  <!-- An artificial signal source generating a 1Hz sine with an arbitrary naumber of channels.
+       Signaltypes can be assigned as needed.
+       The sine generator is a dummy signal source to test basic functionallities without the
+       need to be attached to a hardware DAQ device.
+
+      The sine generator can be seen as a minimal device. Common settings also possible in
+      hardware devices are done the same way like setting the sampling rate.
+       -->
+  <hardware name="sinegenerator" version="1.0" serial="">
+    <mode> master </mode>
+
+    <!--  All settings inside device_settings are mandatory in the SineGen. Only measurement_channels
+        could be ommited if "selection" is defined in channel_settings. -->
+    <device_settings>
+      <sampling_rate> 2400 </sampling_rate>
+
+      <!--  Here 2 channels with signaltype EEG and name eeg_test are created.      -->
+      <measurement_channels nr="2" names="eeg_test" type="eeg" />
+      <blocksize> 8 </blocksize>
+    </device_settings>
+
+     <channel_settings>
+
+      <!--  The "measurement_channels" settings done in device_settings are overridden here;
+            the selected 2 EEG channels named eeg are overridden by 5 channels with different
+            signal types and names.-->
+      <selection>
+        <ch nr="01" name="eeg" type="eeg" />
+        <ch nr="02" name="emg" type="emg" />
+        <ch nr="03" name="eog" type="eog" />
+        <ch nr="04" name="ecg" type="ecg" />
+        <ch nr="05" name="hr" type="hr" />
+      </selection>
+    </channel_settings>
+  </hardware>
+
+<!-- =============================================================================== -->
+
+  <hardware name="g.usbamp" version="1.4" serial="2008.06.42">
+
+    <!-- For Calibration purposes use the demo-software delivered with the g.USBamp -->
+    <!-- Mandatory Settings:  -->
+    <!-- master or slave  ...  important if combined with different amplifiers
+            only one master device allowed -->
+    <mode> master </mode>
+    <global_settings>
+      <sampling_rate fs="512"/>
+      <!--possible rates: 32, 64, 128, 256, 512, 600, 1200, 2400, 4800, 9600 ... -->
+      <measurement_channels nr="1" names="eeg" type="eeg" />
+      <!-- optional ... if channels seperately selected, this entry is overridden -->
+
+      <blocksize> 8 </blocksize>
+      <!-- IMPORTANT: Too small blocksizesize may cause loss of data
+               blocksize = 1  only up to 128Hz recommended  -->
+      <filter type="chebyshev" order="6" f_low="0.5" f_high="100"/>
+      <notch f_center="50"/>
+      <!-- Not every filter setting with sampling rate possible - see settings.txt/.pdf,
+               notch filtering only possible up to 4800Hz, butterworth, 4th order -->
+
+      <!-- Optional Settings:  -->
+        <!-- connect grounds to common ground:  on or off  ... default: on = connected -->
+      <common_ground>
+        <gnd block="a" value="on" />
+        <gnd block="b" value="on" />
+        <gnd block="c" value="on" />
+        <gnd block="d" value="on" />
+      </common_ground>
+        <!-- connect references:  on or off  ... default: on = connected  -->
+      <common_reference>
+        <cr block="a" value="on" />
+        <cr block="b" value="on" />
+        <cr block="c" value="on" />
+        <cr block="d" value="on" />
+      </common_reference>
+
+      <operation_mode> normal </operation_mode>
+        <!-- up to now only normal mode supported-->
+
+      <trigger_line> off </trigger_line>
+      <!-- Acquire the external trigger input ports -- an additional channel with
+        signaltype user_1  is automatically added-->
+
+      <shortcut> off </shortcut>
+        <!--A TTL high impulse on the SC input socket can be used to disconnect all
+        electrode input sockets from the input amplifiers and to connect the inputs
+        to ground potential. -- see g.USBamp manual for detailed instructions-->
+
+      <usbamp_master> no </usbamp_master>
+        <!-- multiple usbamps: master or slave device  ...  important if connected with other USBamps
+        through SYNC-Plugs   ->   only one master device allowed -->
+
+    </global_settings>
+
+
+    <!--   Define indiviual settings for single channels inside this section; configuration done
+      in device_settings in overridden by channel_settings!   -->
+    <channel_settings>
+
+      <!--  Select only single channels and assign different signal types and names to those channels -->
+      <selection>
+        <ch nr="01" name="C3" type="eeg" />
+        <ch nr="02" name="Cz" type="eeg" />
+        <ch nr="03" name="C4" type="eeg" />
+        <ch nr="04" name="Pz" type="eeg" />
+        <ch nr="05" name="Fz" type="eeg" />
+        <ch nr="06" name="..." type="eeg" />
+        <ch nr="07" name="..." type="eeg" />
+        <ch nr="08" name="eog1" type="eog" />
+        <ch nr="09" name="eog2" type="eog" />
+        <ch nr="10" name="eog3" type="eog" />
+        <ch nr="11" name="eog4" type="eog" />
+        <ch nr="12" name="eog5" type="eog" />
+        <ch nr="13" name="emg1" type="emg" />
+        <ch nr="14" name="emg2" type="emg" />
+        <ch nr="15" name="emg3" type="emg" />
+        <ch nr="16" name="emg4" type="emg" />
+      </selection>
+
+      <!-- define channel specific filter and notch settings
+             ... settings defined in device_setting will be overwritten for respective channels -->
+      <filter>
+        <ch nr="15" type="chebyshev" order="6" f_low="0.5" f_high="30"/>
+        <ch nr="16" type="chebyshev" order="6" f_low="0.5" f_high="30"/>
+      </filter>
+      <notch>
+        <ch nr="15" f_center="50"/>
+        <ch nr="16" f_center="50"/>
+      </notch>
+
+      <!-- define bipolar combinations  ... default: all monopolar -->
+      <!--  ... remove this comment if needed or define no bipolar combination
+        <bipolar>
+          <ch nr="1" with="16" />
+          <ch nr="2" with="3" />
+        </bipolar>
+        -->
+      <!-- define channels for driven right leg calculation  ... default: no drl channel set -->
+      <!--  ... remove this comment if needed or define no drl calculation
+        <driven_right_leg>
+          <ch nr="1" value="0" />
+          <ch nr="2" value="1" />
+        </driven_right_leg>
+        -->
+    </channel_settings>
+  </hardware>
+
+<!-- =============================================================================== -->
+
+</tobi-config>

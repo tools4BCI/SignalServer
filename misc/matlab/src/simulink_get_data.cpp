@@ -20,6 +20,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/exception/all.hpp>
 #include <boost/numeric/conversion/cast.hpp>
+#include <boost/algorithm/string/case_conv.hpp>
 #include "boost/date_time/posix_time/posix_time.hpp"
 
 #include "definitions/defines.h"
@@ -271,6 +272,7 @@ static void mdlStart(SimStruct *S)
 
     mxGetString( mxGetCell(server_info, 0), str_tmp, 128);
     string protocol(str_tmp);
+    boost::algorithm::to_lower(protocol);
 
     mxGetString( mxGetCell(server_info, 1), str_tmp, 128);
     string ip(str_tmp);

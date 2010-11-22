@@ -1,3 +1,22 @@
+/*
+    This file is part of the TOBI signal server.
+
+    The TOBI signal server is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    The TOBI signal server is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
+    Copyright 2010 Christian Breitwieser
+    Contact: c.breitwieser@tugraz.at
+*/
 
 /*! \mainpage TOBI SignalServer v0.1
 *
@@ -12,12 +31,14 @@
 * Information concerning the installation process will be provided soon.
 * Up to now compilation of this project is based on qmake.
 * Needed libraries are:
-*   - boost-libs
-*   - ticpp (tinyXML fpr C++)
+*   - boost-libs  (recommeneded: >=1.40)
+*   - ticpp  (tinyXML fpr C++)
+*   - SDL    (Simple Directmedia lLayer)
+*   - libusb (v1.0)
 *
 *
 * \section sec_notes Notes, to-do list etc.
-* Tests have been performed using Ubuntu 9.10 and gcc 4.4.1.
+* Tests have been performed using Ubuntu 10.04, 10.10, Debian unstable, Windows Xp and Windows 7.
 *
 * To use the g.tec g.USBamp, Microsofts Visual Studio compiler has to be used, otherwise
 * acquiering data through this device will lead the program to crash.
@@ -33,6 +54,7 @@
 #include <boost/asio.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/exception/all.hpp>
+#include <boost/filesystem.hpp>
 
 // local
 #include "version.h"
@@ -46,7 +68,14 @@ using namespace std;
 using namespace tobiss;
 
 const string DEFAULT_XML_CONFIG = "server_config.xml";
-const string XML_FILE_ARGUMENT = "-f";
+const string COMMENTS_XML_CONFIG = "server_config_comments.xml";
+const string XML_CONFIG_FILE_PARAM = "-f";
+
+#ifndef WIN32
+const string DEFAULT_XML_CONFIG_HOME_SUBDIR = string("/tobi_sigserver_cfg/");
+const string TEMPLATE_XML_CONFIG = string("/usr/local/etc/signalserver/") + DEFAULT_XML_CONFIG;
+const string TEMPLATE_XML_CONFIG_COMMENTS = string("/usr/local/etc/signalserver/") + COMMENTS_XML_CONFIG;
+#endif
 
 class DataPacketReader
 {
@@ -81,17 +110,53 @@ class DataPacketReader
 };
 
 //-----------------------------------------------------------------------------
+string getDefaultConfigFile ()
+{
+    string default_xml_config = DEFAULT_XML_CONFIG;
+#ifdef WIN32
+    // do nothing here at the moment ;)
+    return default_xml_config;
+#else
+    default_xml_config = string (getenv("HOME")) + DEFAULT_XML_CONFIG_HOME_SUBDIR + default_xml_config;
+    string comments_xml_config = string (getenv("HOME")) + DEFAULT_XML_CONFIG_HOME_SUBDIR + COMMENTS_XML_CONFIG;
+    boost::filesystem::path default_config_path (default_xml_config);
+    boost::filesystem::path comments_config_path (comments_xml_config);
+
+    boost::filesystem::path template_config_path (TEMPLATE_XML_CONFIG);
+    boost::filesystem::path template_comments_config_path (TEMPLATE_XML_CONFIG_COMMENTS);
+
+    if (!boost::filesystem::exists (default_config_path))
+    {
+        if (boost::filesystem::exists (template_config_path))
+        {
+            boost::filesystem::create_directory (default_config_path.parent_path());
+            boost::filesystem::copy_file (template_config_path, default_config_path);
+        }
+        if (boost::filesystem::exists (TEMPLATE_XML_CONFIG_COMMENTS))
+          boost::filesystem::copy_file (template_comments_config_path, comments_config_path);
+
+    }
+    return default_xml_config;
+#endif
+}
+
+
+//-----------------------------------------------------------------------------
 
 void printVersion()
 {
   cout << endl;
   cout << "SignalServer -- Version: " << MAJOR_VERSION;
   cout << " (build " << BUILD_NUMBER << ")";
-  #ifdef WIN32
-    cout << " -- " << BUILD_STR << endl;
+  #ifndef WIN32
+    cout << " -- " << BUILD_STR;
   #else
-    cout << " -- " << __DATE__ << " " << __TIME__ << endl;
+    cout << " -- " << __DATE__ << " " << __TIME__;
   #endif
+  cout << endl << endl;
+  cout << "Laboratory of Brain-Computer Interfaces" << endl;
+  cout << "Graz University of Technology" << endl;
+  cout << "http://bci.tugraz.at" << endl;
 }
 
 int main(int argc, const char* argv[])
@@ -105,16 +170,21 @@ int main(int argc, const char* argv[])
 
     if(argc == 1)
     {
-      config_file = DEFAULT_XML_CONFIG;
-      cout << endl << " ***  Loading default XML configuration file: " << DEFAULT_XML_CONFIG << endl << endl;
+      config_file = getDefaultConfigFile ();
+      cout << endl << " ***  Loading default XML configuration file: " << config_file << endl << endl;
     }
-    else if(argc == 3 && argv[1] == XML_FILE_ARGUMENT)
+    else if(argc == 2)
+    {
+      cout << endl << "  ***  Loading XML configuration file: " << argv[1] << endl << endl;
+      config_file = argv[1];
+    }
+    else if(argc == 3 && argv[1] == XML_CONFIG_FILE_PARAM)
     {
       cout << endl << "  ***  Loading XML configuration file: " << argv[2] << endl << endl;
       config_file = argv[2];
     }
     else
-      cout << " ERROR -- Wrong Number of input arguments!" << endl;
+      throw(std::invalid_argument(" ERROR -- Failure parsing input arguments!") );
 
     while(running)
     {
@@ -125,7 +195,7 @@ int main(int argc, const char* argv[])
 
       SignalServer server(io_service);
 
-      DataFileHandler data_file_handler(io_service, config.getFileReaderMap());
+//      DataFileHandler data_file_handler(io_service, config.getFileReaderMap());
 
       HWAccess hw_access(io_service, config);
       DataPacketReader reader(hw_access, server);
@@ -146,7 +216,7 @@ int main(int argc, const char* argv[])
         server.setSamplingRatePerSignalType(hw_access.getSamplingRatePerSignalType());
         server.setChannelNames(hw_access.getChannelNames());
 
-        server.initialize(&config);
+        server.initialize(config.parseSubject(),config.parseServerSettings());
         hw_access.startDataAcquisition();
 
         io_thread_ptr  = new boost::thread(boost::bind(&boost::asio::io_service::run, &io_service));

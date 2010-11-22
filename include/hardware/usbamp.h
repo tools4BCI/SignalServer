@@ -1,3 +1,22 @@
+/*
+    This file is part of the TOBI signal server.
+
+    The TOBI signal server is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    The TOBI signal server is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
+    Copyright 2010 Christian Breitwieser
+    Contact: c.breitwieser@tugraz.at
+*/
 
 /**
 * @file usbamp.h
@@ -22,10 +41,12 @@
 #include <boost/thread/shared_mutex.hpp>
 #include <windows.h>
 
-#include "extern/include/g.usbamp/gUSBamp.h"
+#include "gtec_usbamp_wrapper.h"
+//#include "extern/include/g.usbamp/gUSBamp.h"
 //#pragma comment(lib,"gUSBamp.lib")
 
 #include "hw_thread.h"
+#include "hw_thread_builder.h"
 
 namespace tobiss
 {
@@ -56,7 +77,7 @@ class USBamp : public HWThread
 //     initUSBamp();
 //   }
 
-  USBamp(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw);
+  USBamp(ticpp::Iterator<ticpp::Element> hw);
 
   virtual ~USBamp();
 
@@ -138,6 +159,10 @@ class USBamp : public HWThread
     void fillSyncBuffer();
     void fillSampleBlock();
 
+    int getUSBampFilterType(const std::string& s);
+    std::string getUSBampOpMode(const std::string& s);
+    int getUSBampBlockNr(const std::string& s);
+
     inline double roundD(double number, int digits = DIGITS_TO_ROUND)
     {
       return floor(number * pow(10., digits) + .5) / pow(10., digits);
@@ -167,9 +192,7 @@ class USBamp : public HWThread
     std::vector<DWORD> bytes_received_;
     DWORD timeout_;
 
-    //std::vector<BYTE> raw_buffer_;
     boost::uint32_t expected_values_;
-    //static bool received_enough_data_;
 
     boost::uint32_t first_run_;
     boost::uint32_t current_overlapped_;
@@ -196,7 +219,58 @@ class USBamp : public HWThread
     CHANNEL drl_channels_;
     std::string mode_;
 
-    Constants cst_;
+    GTECUSBampWrapper usb_amp_;
+
+	std::map<std::string, std::string> m_;	/// Attributes mab -- to be renamed
+
+    //-----------------------------------------------
+    // Constants
+    static const HWThreadBuilderTemplateRegistratorWithoutIOService<USBamp> FACTORY_REGISTRATOR_;
+
+    static const std::string hw_filter_;   ///< xml-tag hardware: filter
+    static const std::string hw_filter_type_;   ///< xml-tag hardware: filter type
+    static const std::string hw_filter_order_;   ///< xml-tag hardware: filter order
+    static const std::string hw_filter_low_;   ///< xml-tag hardware: filter lower cutoff freq.
+    static const std::string hw_filter_high_;   ///< xml-tag hardware: filter upper cutoff freq.
+
+    static const std::string hw_notch_;   ///< xml-tag hardware: notch_filter
+    static const std::string hw_notch_center_;    ///< xml-tag hardware: notch center freq.
+
+
+    static const std::string hw_opmode_;       ///< USBamp specific
+    static const std::string hw_sc_;            ///< USBamp specific
+    static const std::string hw_trigger_line_;            ///< USBamp specific
+    static const std::string hw_usbampmaster_;   ///< USBamp specific
+    static const std::string hw_comgnd_;        ///< USBamp specific
+    static const std::string hw_gnd_;          ///< USBamp specific
+    static const std::string hw_gnd_block_;   ///< USBamp specific
+    static const std::string hw_gnd_value_;   ///< USBamp specific
+
+    static const std::string hw_comref_;   ///< USBamp specific
+    static const std::string hw_cr_;       ///< USBamp specific
+    static const std::string hw_cr_block_;   ///< USBamp specific
+    static const std::string hw_cr_value_;   ///< USBamp specific
+
+    static const std::string hw_bipolar_;        ///< USBamp specific
+    static const std::string hw_bipolar_with_;   ///< USBamp specific
+    static const std::string hw_drl_;        ///< USBamp specific
+    static const std::string hw_drl_value_;   ///< USBamp specific
+
+    /**
+    * @brief Mapping std::strings, representing g.USBamp filter types, and identifiers together.
+    */
+    std::map<std::string, unsigned int> usbamp_filter_types_;
+
+    /**
+    * @brief Mapping std::strings, representing g.USBamp operation modes, and identifiers together.
+    */
+    std::map<std::string, std::string> usbamp_opModes_;
+
+    /**
+    * @brief Mapping std::strings, representing g.USBamp block namings, and identifiers together.
+    */
+    std::map<std::string, unsigned int> usbamp_block_names_;
+
 };
 
 } // Namespace tobiss

@@ -1,3 +1,23 @@
+/*
+    This file is part of TOBI Interface A (TiA).
+
+    TOBI Interface A (TiA) is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    TOBI Interface A (TiA) is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TOBI Interface A (TiA).  If not, see <http://www.gnu.org/licenses/>.
+
+    Copyright 2010 Christian Breitwieser
+    Contact: c.breitwieser@tugraz.at
+*/
+
 /**
 * @control_connection_server.cpp
 *
@@ -12,7 +32,7 @@
 
 // local
 #include "definitions/constants.h"
-#include "config/xml_parser.h"
+//#include "config/xml_parser.h"
 #include "signalserver/signal_server.h"
 
 #include "network/control_connection.h"
@@ -34,7 +54,8 @@ using boost::uint32_t;
 
 //-----------------------------------------------------------------------------
 
-ControlConnectionServer::ControlConnectionServer(boost::asio::io_service& io_service,
+ControlConnectionServer::ControlConnectionServer(std::map<std::string,std::string> subject_info,
+                                                 boost::asio::io_service& io_service,
                                                  SignalServer& server)
   : TCPServer(io_service),
   server_(server),
@@ -44,7 +65,7 @@ ControlConnectionServer::ControlConnectionServer(boost::asio::io_service& io_ser
   signal_info_ = new SignalInfo;
   subject_info_ = new SubjectInfo;
 
-  createSubjectInfo();
+  createSubjectInfo(subject_info);
   createSignalInfo();
 }
 
@@ -80,9 +101,9 @@ void ControlConnectionServer::getConfig(ConfigMsg& config)
 
 //-----------------------------------------------------------------------------
 
-void ControlConnectionServer::createSubjectInfo()
+void ControlConnectionServer::createSubjectInfo(std::map<std::string,std::string> subject_map)
 {
-  map<string,string> subject_map = server_.config_->parseSubject();
+//  map<string,string> subject_map = server_.config_->parseSubject();
 
   subject_info_->setId(subject_map["id"]);
   subject_info_->setFirstName(subject_map["first_name"]);
@@ -133,6 +154,7 @@ void ControlConnectionServer::createSignalInfo()
 
   cout << endl;
   cout << "Sent Signal Types: (ordered)" << endl;
+
   for (vector<uint32_t>::size_type index = 0; index < sig_types.size(); ++index)
   {
     Signal signal;
@@ -183,14 +205,39 @@ void ControlConnectionServer::handleAccept(const TCPConnection::pointer& new_con
     return;
   }
 
-  ControlConnection::pointer connection = ControlConnection::create(io_service_, *this, new_connection);
-  connection->start();
-
   // lock the connection list
   boost::unique_lock<boost::mutex> lock(mutex_);
-  connections_.push_back(connection);
+
+  int local_port = new_connection->socket().local_endpoint().port();
+
+  ControlConnection::ConnectionID id = make_pair(local_port, TCPConnection::endpointToString(
+                              new_connection->socket().remote_endpoint()));
+
+  ControlConnection::pointer connection = ControlConnection::create(io_service_, id,
+                                                                    *this, new_connection);
+
+  cout << "Client @" << id.second << " has connected." <<  endl;
+
+
+  CtrlConnHandlers::iterator it = connections_.insert(make_pair(id, connection)).first;
+
+  cout << "# Connected clients: " << connections_.size() << endl;
+
+  connection->start();
 
   startAccept();
+}
+
+//-----------------------------------------------------------------------------
+
+void ControlConnectionServer::clientHasDisconnected(const ControlConnection::ConnectionID& id)
+{
+  boost::unique_lock<boost::mutex> lock(mutex_);
+
+  cout << "Connection to client @" << id.second << " has been closed." << endl;
+  connections_.erase(id);
+
+  cout << "# Connected clients: " << connections_.size() << endl;
 }
 
 //-----------------------------------------------------------------------------

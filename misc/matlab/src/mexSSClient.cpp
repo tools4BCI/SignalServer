@@ -21,6 +21,10 @@
  *  2010/04/07 - Max Sagebaum
  *               - added comments and version history
  *               - new return structure in getData
+ *  2010/10/08 - Max Sagebaum
+ *               - new error handling
+ *               - we close the old connection now if we want to connect 
+ *                 and a connection still exists.
  */
 
 #include "mex.h"
@@ -104,35 +108,43 @@ void ssc_getConfig(int nlhs, mxArray *plhs[],
                   int nrhs, const mxArray *prhs[])
 {
   uint32_t port;
+  
+  /** 
+   * first check if we already have a connection
+   */
+  
+  if(0 != client) {
+    mexWarnMsgTxt ("mexSSClient: Warning connection already open. Closing the connection.");
+    ssc_close();
+  }
 
   /* Check for the number of arguments and check if the arguments have the 
    * correct format.
    */
   if(nlhs != NUM_OUTPUTS_CONFIG) {
-    mexErrMsgTxt("4 output arguments required.");
+    mexErrMsgTxt("mexSSClient: 4 output arguments required.");
   }
 
   if ( !mxIsChar(prhs[IP_POS]) ) {
-    mexErrMsgTxt("IP must be a string.");
+    mexErrMsgTxt("mexSSClient: IP must be a string.");
   }
   if ( !mxIsNumeric(prhs[PORT_POS]) ) {
-    mexErrMsgTxt("Port must be a number.");
+    mexErrMsgTxt("mexSSClient: Port must be a number.");
   }
   if ( !mxIsChar(prhs[PROTOCOL_POS]) ) {
-    mexErrMsgTxt("Protocol must be a string.");
+    mexErrMsgTxt("mexSSClient: Protocol must be a string.");
   }
 
   if (mxGetM(prhs[IP_POS]) !=1 ) {
-    mexErrMsgTxt("IP must be a row vector.");
+    mexErrMsgTxt("mexSSClient: IP must be a row vector.");
   }
   if (mxGetM(prhs[PORT_POS]) !=1 &&  mxGetN(prhs[PORT_POS]) !=1) {
-    mexErrMsgTxt("Port must be a single number.");
+    mexErrMsgTxt("mexSSClient: Port must be a single number.");
   }
   if (mxGetM(prhs[PROTOCOL_POS]) !=1 ) {
-    mexErrMsgTxt("Protocol must be a row vector.");
+    mexErrMsgTxt("mexSSClient: Protocol must be a row vector.");
   }
-
-
+  
   try
   {
     // read the input values
@@ -143,13 +155,10 @@ void ssc_getConfig(int nlhs, mxArray *plhs[],
     Constants cst;
 
     cout << "Using server " << srv_addr << ":" << port << endl;
-    // Check if we already have a connection to the server
-    if(0 != client){
-        mexErrMsgTxt("Client already running.");
-    }else {
-        client = new SSClient();
-        sig_types_map = new std::map<uint32_t, Signal>();
-    }
+    // Connect to the server
+    client = new SSClient();
+    sig_types_map = new std::map<uint32_t, Signal>();
+    
     
     // connect to the server and get the config file
     client->connect(srv_addr, port);
@@ -224,71 +233,79 @@ void ssc_getConfig(int nlhs, mxArray *plhs[],
   }
   catch(ticpp::Exception& e)
   {
-    string ex_str(" ***** TICPP Exception caught! *****\n  -->");
+    string ex_str("mexSSClient:  ***** TICPP Exception caught! *****\n  -->");
     ex_str += e.what();
     ex_str += '\n';
     mexErrMsgTxt(ex_str.c_str());
   }
   catch(std::invalid_argument& e)
   {
-    string ex_str(" ***** STL Exception -- Invalid argument -- caught! *****\n  -->");
+    string ex_str("mexSSClient:  ***** STL Exception -- Invalid argument -- caught! *****\n  -->");
     ex_str += e.what();
     ex_str += '\n';
     mexErrMsgTxt(ex_str.c_str());
   }
   catch(std::length_error& e)
   {
-    string ex_str(" ***** STL Exception -- Length error -- caught! *****\n  -->");
+    string ex_str("mexSSClient:  ***** STL Exception -- Length error -- caught! *****\n  -->");
     ex_str += e.what();
     ex_str += '\n';
     mexErrMsgTxt(ex_str.c_str());
   }
   catch(std::logic_error& e)
   {
-    string ex_str(" ***** STL Exception -- Logic error -- caught! *****\n  -->");
+    string ex_str("mexSSClient:  ***** STL Exception -- Logic error -- caught! *****\n  -->");
     ex_str += e.what();
     ex_str += '\n';
     mexErrMsgTxt(ex_str.c_str());
   }
   catch(std::range_error& e)
   {
-    string ex_str(" ***** STL Exception -- Range error -- caught! *****\n  -->");
+    string ex_str("mexSSClient:  ***** STL Exception -- Range error -- caught! *****\n  -->");
     ex_str += e.what();
     ex_str += '\n';
     mexErrMsgTxt(ex_str.c_str());
   }
   catch(std::runtime_error& e)
   {
-    string ex_str(" ***** STL Exception -- Runtime error -- caught! *****\n  -->");
+    string ex_str("mexSSClient:  ***** STL Exception -- Runtime error -- caught! *****\n  -->");
     ex_str += e.what();
     ex_str += '\n';
     mexErrMsgTxt(ex_str.c_str());
   }
   catch(std::exception& e)
   {
-    string ex_str(" ***** STL Exception caught! *****\n  -->");
+    string ex_str("mexSSClient:  ***** STL Exception caught! *****\n  -->");
     ex_str += e.what();
     ex_str += '\n';
     mexErrMsgTxt(ex_str.c_str());
   }
   catch(boost::exception& e)
   {
-    string ex_str(" ***** Boost Exception caught! *****\n  -->");
+    string ex_str("mexSSClient:  ***** Boost Exception caught! *****\n  -->");
     ex_str += boost::diagnostic_information(e);
     ex_str += '\n';
     mexErrMsgTxt(ex_str.c_str());
   }
   catch(...)
   {
-    mexErrMsgTxt("ERROR !!  --  Unknown exception caught!");
+    mexErrMsgTxt("mexSSClient: ERROR !!  --  Unknown exception caught!");
   }
     return;
 }
 
 void ssc_getData(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
+  
+  /** 
+   * first check if we have a connection
+   */  
+  if(0 == client) {
+    mexErrMsgTxt("mexSSClient: No connection open. Open a connection first");
+    return;
+  }
 
   if(nlhs != NUM_OUTPUTS_GETDATA) {
-    mexErrMsgTxt("2 output arguments required.");
+    mexErrMsgTxt("mexSSClient:2 output arguments required.");
   }
                     
   try
@@ -299,7 +316,7 @@ void ssc_getData(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
  
     if (!client->receiving())
     {
-      mexErrMsgTxt( "Receiving failed!");
+      mexErrMsgTxt("mexSSClient: Receiving failed!");
     }
 
      // Get the data. For every signal type we generate a matrix with the data.
@@ -348,77 +365,81 @@ void ssc_getData(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   }
   catch(bad_numeric_cast& e)
   {
-    string ex_str(" ***** Boost Numeric Cast Exception caught! *****\n  -->");
+    string ex_str("mexSSClient:  ***** Boost Numeric Cast Exception caught! *****\n  -->");
     ex_str += boost::diagnostic_information(e);
     ex_str += '\n';
     mexErrMsgTxt( ex_str.c_str());
   }
   catch(ticpp::Exception& e)
   {
-    string ex_str(" ***** TICPP Exception caught! *****\n  -->");
+    string ex_str("mexSSClient:  ***** TICPP Exception caught! *****\n  -->");
     ex_str += e.what();
     ex_str += '\n';
     mexErrMsgTxt( ex_str.c_str());
   }
   catch(std::invalid_argument& e)
   {
-    string ex_str(" ***** STL Exception -- Invalid argument -- caught! *****\n  -->");
+    string ex_str("mexSSClient:  ***** STL Exception -- Invalid argument -- caught! *****\n  -->");
     ex_str += e.what();
     ex_str += '\n';
     mexErrMsgTxt( ex_str.c_str());
   }
   catch(std::length_error& e)
   {
-    string ex_str(" ***** STL Exception -- Length error -- caught! *****\n  -->");
+    string ex_str("mexSSClient:  ***** STL Exception -- Length error -- caught! *****\n  -->");
     ex_str += e.what();
     ex_str += '\n';
     mexErrMsgTxt( ex_str.c_str());
   }
   catch(std::logic_error& e)
   {
-    string ex_str(" ***** STL Exception -- Logic error -- caught! *****\n  -->");
+    string ex_str("mexSSClient:  ***** STL Exception -- Logic error -- caught! *****\n  -->");
     ex_str += e.what();
     ex_str += '\n';
     mexErrMsgTxt( ex_str.c_str());
   }
   catch(std::range_error& e)
   {
-    string ex_str(" ***** STL Exception -- Range error -- caught! *****\n  -->");
+    string ex_str("mexSSClient:  ***** STL Exception -- Range error -- caught! *****\n  -->");
     ex_str += e.what();
     ex_str += '\n';
     mexErrMsgTxt( ex_str.c_str());
   }
   catch(std::runtime_error& e)
   {
-    string ex_str(" ***** STL Exception -- Runtime error -- caught! *****\n  -->");
+    string ex_str("mexSSClient:  ***** STL Exception -- Runtime error -- caught! *****\n  -->");
     ex_str += e.what();
     ex_str += '\n';
     mexErrMsgTxt( ex_str.c_str());
   }
   catch(std::exception& e)
   {
-    string ex_str(" ***** STL Exception caught! *****\n  -->");
+    string ex_str("mexSSClient:  ***** STL Exception caught! *****\n  -->");
     ex_str += e.what();
     ex_str += '\n';
     mexErrMsgTxt( ex_str.c_str());
   }
   catch(boost::exception& e)
   {
-    string ex_str(" ***** Boost Exception caught! *****\n  -->");
+    string ex_str("mexSSClient:  ***** Boost Exception caught! *****\n  -->");
     ex_str += boost::diagnostic_information(e);
     ex_str += '\n';
     mexErrMsgTxt( ex_str.c_str());
   }
   catch(...)
   {
-    mexErrMsgTxt("ERROR: Exception caught!");
+    mexErrMsgTxt("mexSSClient: ERROR: Exception caught!");
   }
   
 }
 
-void ssc_close() {
-  client->stopReceiving();
+void ssc_close() {  
   if(0 != client) {
+    try {
+     client->stopReceiving();
+    } catch( ...) {
+      /* empty */
+    }
     delete client;
   }
   if(0 != sig_types_map) {
