@@ -74,7 +74,7 @@ class gBSamp : public HWThread
     * @throw ticpp::exception if \<channel_settings\> is defined multiple times.
     */
     void setHardware(ticpp::Iterator<ticpp::Element>const &hw);
-    
+
     /**
     * @brief Initialize device
     */
@@ -128,12 +128,18 @@ class gBSamp : public HWThread
     * For more information, read the SampleBlock documentation.
     */
     SampleBlock<double> buffer_;
-    
+
     boost::int32_t error;
+    boost::int32_t first_run_;
 
     comedi_t* device_;
     sampl_t* data_buffer_[10000];
     comedi_cmd comedi_cmd_;
+//    unsigned int channel_list[0];
+//    comedi_insn comedi_insn_;
+    comedi_insnlist insn_list_;
+    lsampl_t data_buf_[1000];
+
 
 };
 
