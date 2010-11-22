@@ -38,7 +38,7 @@
 *
 *
 * \section sec_notes Notes, to-do list etc.
-* Tests have been performed using Ubuntu 9.10 and gcc 4.4.1.
+* Tests have been performed using Ubuntu 10.04, 10.10, Debian unstable, Windows Xp and Windows 7.
 *
 * To use the g.tec g.USBamp, Microsofts Visual Studio compiler has to be used, otherwise
 * acquiering data through this device will lead the program to crash.
@@ -68,11 +68,13 @@ using namespace std;
 using namespace tobiss;
 
 const string DEFAULT_XML_CONFIG = "server_config.xml";
+const string COMMENTS_XML_CONFIG = "server_config_comments.xml";
 const string XML_CONFIG_FILE_PARAM = "-f";
 
 #ifndef WIN32
 const string DEFAULT_XML_CONFIG_HOME_SUBDIR = string("/tobi_sigserver_cfg/");
 const string TEMPLATE_XML_CONFIG = string("/usr/local/etc/signalserver/") + DEFAULT_XML_CONFIG;
+const string TEMPLATE_XML_CONFIG_COMMENTS = string("/usr/local/etc/signalserver/") + COMMENTS_XML_CONFIG;
 #endif
 
 class DataPacketReader
@@ -116,8 +118,13 @@ string getDefaultConfigFile ()
     return default_xml_config;
 #else
     default_xml_config = string (getenv("HOME")) + DEFAULT_XML_CONFIG_HOME_SUBDIR + default_xml_config;
+    string comments_xml_config = string (getenv("HOME")) + DEFAULT_XML_CONFIG_HOME_SUBDIR + COMMENTS_XML_CONFIG;
     boost::filesystem::path default_config_path (default_xml_config);
+    boost::filesystem::path comments_config_path (comments_xml_config);
+
     boost::filesystem::path template_config_path (TEMPLATE_XML_CONFIG);
+    boost::filesystem::path template_comments_config_path (TEMPLATE_XML_CONFIG_COMMENTS);
+
     if (!boost::filesystem::exists (default_config_path))
     {
         if (boost::filesystem::exists (template_config_path))
@@ -125,6 +132,9 @@ string getDefaultConfigFile ()
             boost::filesystem::create_directory (default_config_path.parent_path());
             boost::filesystem::copy_file (template_config_path, default_config_path);
         }
+        if (boost::filesystem::exists (TEMPLATE_XML_CONFIG_COMMENTS))
+          boost::filesystem::copy_file (template_comments_config_path, comments_config_path);
+
     }
     return default_xml_config;
 #endif
