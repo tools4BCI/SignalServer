@@ -20,10 +20,7 @@
 
 #include "hardware/sine_generator.h"
 
-#define _USE_MATH_DEFINES
 #include <cmath>
-
-//#include <math.h>
 
 namespace tobiss
 {

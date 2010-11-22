@@ -20,16 +20,7 @@
 
 /**
 * @file hw_thread.h
-*
 * @brief hw_thread is a base class for all hardware objects ( -- bad naming --> object does not have to run in a thread)
-*
-* hw_thread provides a base class for all hardware objects to allow consistent access
-* to different types of hardware.
-* REMARK: The naming "hw_thread" was badly chosen, as it was planned at the beginning, to run every
-* hardware object in it's own thread. Using synchronous and asynchronous data access, this is not
-* needed all the time.
-* File and class name are planned to be renamed in the future! (e.g. hw_base)
-*
 **/
 
 #ifndef HWThread_H
@@ -64,6 +55,13 @@ namespace tobiss
 * a common interface to gather access to different types of hardware.
 * It also provides methods and members needed for every data acquisition device (channel types, ...).
 *
+* REMARK: The naming "hw_thread" was badly chosen, as it was planned at the beginning, to run every
+* hardware object in it's own thread. Using synchronous and asynchronous data access, this is not
+* needed all the time.
+* File and class name are planned to be renamed in the future! (e.g. hw_base)
+*
+* @todo Write instruction how to derive from HWThread
+* @todo Maybe rename HWTHread to HWBase
 */
 class HWThread
 {
@@ -79,7 +77,7 @@ class HWThread
     * @brief Get the name of the device.
     * @return string device name
     */
-    std::string getName()  { return(m_.find("name")->second); }
+    std::string getType()  { return(type_); }
 
     /**
     * @brief Check if device is the master.
@@ -276,7 +274,6 @@ class HWThread
     std::map<boost::uint16_t, std::pair<std::string, boost::uint32_t> > channel_info_;  ///< map containing ( ch_nr,  (name,  type) )
     bool homogenous_signal_type_;  ///< true, if device delivers different signal types -- e.g. EEG and EMG
     std::vector<boost::uint32_t> channel_types_;   ///< vector containing signal types of channels (for faster access)
-    std::map<std::string, std::string> m_;   ///< map with generic hardware information  ...  mandatory
 
     // Constants cst_;  ///< A static object containing constants.
     // XMLParser& parser_;   ///< Reference pointing to the XMLParser.
