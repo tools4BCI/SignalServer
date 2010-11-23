@@ -333,7 +333,7 @@ void GMobilab::setScalingValues()
     {
       channel = (*it).first;
 
-      std::cout << "GMobilab::setScalingValues() -- channel numbers: ";
+      std::cout << " GMobilab::setScalingValues() -- channel numbers: ";
       std::cout <<  channel << std::flush << std::endl;
 
       if(channel == 1 || channel == 2)

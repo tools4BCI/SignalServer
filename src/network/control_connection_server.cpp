@@ -153,7 +153,7 @@ void ControlConnectionServer::createSignalInfo()
   assert(sig_types.size() == blocksizes.size() && sig_types.size() == fs_per_sig_type.size());
 
   cout << endl;
-  cout << "Sent Signal Types: (ordered)" << endl;
+  cout << " Sent Signal Types: (ordered)" << endl;
 
   for (vector<uint32_t>::size_type index = 0; index < sig_types.size(); ++index)
   {
@@ -162,7 +162,7 @@ void ControlConnectionServer::createSignalInfo()
     uint32_t sig_num_type = sig_types[index];
     std::string sig_str_type = Constants().getSignalName(sig_num_type);
     signal.setType(sig_str_type);
-    cout << "  ... Signal type " << sig_str_type << endl;
+    cout << "   ... Signal type " << sig_str_type << endl;
 
     uint16_t block_size = blocksizes[index];
     signal.setBlockSize(block_size);
@@ -216,12 +216,12 @@ void ControlConnectionServer::handleAccept(const TCPConnection::pointer& new_con
   ControlConnection::pointer connection = ControlConnection::create(io_service_, id,
                                                                     *this, new_connection);
 
-  cout << "Client @" << id.second << " has connected." <<  endl;
+  cout << " Client @" << id.second << " has connected." <<  endl;
 
 
   CtrlConnHandlers::iterator it = connections_.insert(make_pair(id, connection)).first;
 
-  cout << "# Connected clients: " << connections_.size() << endl;
+  cout << " # Connected clients: " << connections_.size() << endl;
 
   connection->start();
 
@@ -234,10 +234,10 @@ void ControlConnectionServer::clientHasDisconnected(const ControlConnection::Con
 {
   boost::unique_lock<boost::mutex> lock(mutex_);
 
-  cout << "Connection to client @" << id.second << " has been closed." << endl;
+  cout << " Connection to client @" << id.second << " has been closed." << endl;
   connections_.erase(id);
 
-  cout << "# Connected clients: " << connections_.size() << endl;
+  cout << " # Connected clients: " << connections_.size() << endl;
 }
 
 //-----------------------------------------------------------------------------
