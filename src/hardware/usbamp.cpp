@@ -99,7 +99,6 @@ USBamp::USBamp(ticpp::Iterator<ticpp::Element> hw)
     sample_count_(0), error_count_(0) ,error_code_(0), expected_values_(0),
     first_run_(1), current_overlapped_(0)
 {
-  cout << "Driver Version" << usb_amp_.getDriverVersion () << endl;
   #ifdef DEBUG
     cout << "USBamp: Constructor" << endl;
   #endif
@@ -163,6 +162,7 @@ USBamp::USBamp(ticpp::Iterator<ticpp::Element> hw)
 
   cout << endl;
   cout << " * g.USBamp sucessfully initialized" << endl;
+  cout << "    driver version: " << usb_amp_.getDriverVersion () << ", hardware version: " << usb_amp_.getHWVersion (h_) << endl;
   cout << "    fs: " << fs_ << "Hz, nr of channels: " << nr_ch_ << ", blocksize: " << blocks_ << endl;
   cout << endl;
   if(!homogenous_signal_type_)

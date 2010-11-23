@@ -63,7 +63,7 @@ class XMLParser
     XMLParser()
     {
       #ifdef DEBUG
-      std::cout << "XMLParser: Default Constructor" << std::endl;
+      std::cout << " XMLParser: Default Constructor" << std::endl;
       #endif
     }
     /**
