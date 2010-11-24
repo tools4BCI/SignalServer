@@ -33,8 +33,8 @@
 #include <boost/bind.hpp>
 
 // local
-#include "network/tcp_data_server.h"
-#include "datapacket/data_packet.h"
+#include "tia-private/network/tcp_data_server.h"
+#include "tia/data_packet.h"
 
 namespace tobiss
 {

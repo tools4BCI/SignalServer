@@ -42,7 +42,7 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 // Local
-#include "definitions/defines.h"
+#include "tia/defines.h"
 
 namespace tobiss
 {

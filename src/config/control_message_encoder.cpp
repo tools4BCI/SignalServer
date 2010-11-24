@@ -29,9 +29,9 @@
 #include <boost/lexical_cast.hpp>
 
 // local
-#include "definitions/constants.h"
+#include "tia/constants.h"
 
-#include "config/control_message_encoder.h"
+#include "tia-private/config/control_message_encoder.h"
 
 namespace tobiss
 {

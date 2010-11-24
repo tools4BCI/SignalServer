@@ -18,11 +18,11 @@
     Contact: c.breitwieser@tugraz.at
 */
 
-#include "definitions/constants.h"
+#include "tia/constants.h"
 
 #include <boost/algorithm/string.hpp>
 
-#include "definitions/defines.h"
+#include "tia/defines.h"
 #include "ticpp/ticpp.h"
 
 namespace tobiss

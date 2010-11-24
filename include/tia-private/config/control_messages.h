@@ -36,7 +36,7 @@
 #include <boost/cstdint.hpp>
 
 // local
-#include "config/ss_meta_info.h"
+#include "tia/ss_meta_info.h"
 
 namespace tobiss
 {

@@ -42,7 +42,7 @@
 #include <boost/utility.hpp>
 
 // local
-#include "definitions/constants.h"
+#include "tia/constants.h"
 
 // forward declarations
 #ifdef WRITE_GDF
