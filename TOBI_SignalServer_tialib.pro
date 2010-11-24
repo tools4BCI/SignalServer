@@ -60,7 +60,6 @@ SOURCES += src/tia/signal_server.cpp \
     src/tia/network/tcp_server.cpp \
     src/tia/network/udp_data_server.cpp
 
-
 unix:SOURCES += extern/include/LptTools/LptToolsLinux.cpp
 win32:SOURCES += extern/include/LptTools/LptTools_.cpp
 
