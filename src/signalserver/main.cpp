@@ -58,7 +58,7 @@
 
 // local
 #include "version.h"
-#include "signalserver/signal_server.h"
+#include "tia/signal_server.h"
 #include "config/xml_parser.h"
 #include "hardware/hw_access.h"
 #include "filereading/data_file_handler.h"
