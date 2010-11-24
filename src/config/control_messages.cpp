@@ -26,9 +26,9 @@
 **/
 
 // local
-#include "config/control_message_decoder.h"
-#include "config/control_message_encoder.h"
-#include "config/control_messages.h"
+#include "tia-private/config/control_message_decoder.h"
+#include "tia-private/config/control_message_encoder.h"
+#include "tia-private/config/control_messages.h"
 
 namespace tobiss
 {

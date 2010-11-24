@@ -32,7 +32,7 @@
 #include <boost/bind.hpp>
 
 // local
-#include "network/tcp_server.h"
+#include "tia-private/network/tcp_server.h"
 
 namespace tobiss
 {

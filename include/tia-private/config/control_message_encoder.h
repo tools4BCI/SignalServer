@@ -39,7 +39,7 @@
 #include "ticpp/tinyxml.h"
 
 // local
-#include "config/control_messages.h"
+#include "control_messages.h"
 
 namespace tobiss
 {

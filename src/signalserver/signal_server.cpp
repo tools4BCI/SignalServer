@@ -34,7 +34,7 @@
 #include <algorithm>
 
 // Boost
-#include "boost/date_time/posix_time/posix_time.hpp"
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/thread.hpp>
 #include <boost/bind.hpp>
@@ -49,12 +49,11 @@
 #endif
 
 // local
-#include "config/xml_parser.h"
-#include "datapacket/data_packet.h"
-#include "network/control_connection_server.h"
-#include "signalserver/signal_server.h"
-#include "network/tcp_data_server.h"
-#include "network/udp_data_server.h"
+#include "tia/data_packet.h"
+#include "tia-private/network/control_connection_server.h"
+#include "tia/signal_server.h"
+#include "tia-private/network/tcp_data_server.h"
+#include "tia-private/network/udp_data_server.h"
 
 #ifdef TIMING_TEST
   #include "LptTools/LptTools.h"

@@ -31,16 +31,15 @@
 #include <boost/iostreams/stream.hpp>
 
 // local
-#include "definitions/constants.h"
+#include "tia/constants.h"
 
-#include "config/control_message_decoder.h"
-#include "config/control_message_encoder.h"
-#include "config/xml_parser.h"
+#include "tia-private/config/control_message_decoder.h"
+#include "tia-private/config/control_message_encoder.h"
 
-#include "network/control_connection.h"
-#include "network/control_connection_server.h"
-#include "network/tcp_data_server.h"
-#include "network/udp_data_server.h"
+#include "tia-private/network/control_connection.h"
+#include "tia-private/network/control_connection_server.h"
+#include "tia-private/network/tcp_data_server.h"
+#include "tia-private/network/udp_data_server.h"
 
 namespace tobiss
 {

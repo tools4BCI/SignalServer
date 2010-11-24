@@ -37,8 +37,8 @@
 #include <boost/cstdint.hpp>
 
 // local
-#include "config/control_messages.h"
-#include "definitions/constants.h"
+#include "tia-private/config/control_messages.h"
+#include "tia/constants.h"
 #include "tcp_server.h"
 
 namespace tobiss

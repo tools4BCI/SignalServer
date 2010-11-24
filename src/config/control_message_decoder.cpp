@@ -33,10 +33,10 @@
 #include "ticpp/ticpp.h"
 
 // local
-#include "definitions/constants.h"
+#include "tia/constants.h"
 
-#include "config/control_message_decoder.h"
-#include "config/ss_meta_info.h"
+#include "tia-private/config/control_message_decoder.h"
+#include "tia/ss_meta_info.h"
 
 namespace tobiss
 {

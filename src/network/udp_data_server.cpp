@@ -36,8 +36,8 @@
 #include <iostream>
 
 // local
-#include "network/udp_data_server.h"
-#include "datapacket/data_packet.h"
+#include "tia-private/network/udp_data_server.h"
+#include "tia/data_packet.h"
 
 namespace tobiss
 {

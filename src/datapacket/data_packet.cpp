@@ -20,7 +20,8 @@
 #include <sstream>
 #include <stdexcept>
 
-#include "datapacket/data_packet.h"
+#include "tia/data_packet.h"
+#include "tia-private/datapacket/raw_mem.h"
 
 namespace tobiss
 {
@@ -102,6 +103,17 @@ DataPacket::DataPacket(void* mem)
       data_ptr++;
     }
 }
+
+//-----------------------------------------------------------------------------
+DataPacket::~DataPacket()
+{
+	for(std::map<boost::uint32_t, RawMem*>::iterator it(raw_map_.begin());
+		it != raw_map_.end(); it++)
+	{
+		delete(it->second);
+	}
+}
+
 
 //-----------------------------------------------------------------------------
 

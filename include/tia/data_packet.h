@@ -36,15 +36,16 @@
 #include <map>
 #include <vector>
 
-#include "boost/date_time/posix_time/posix_time.hpp"
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/cstdint.hpp>
 
-#include "definitions/defines.h"
-#include "raw_mem.h"
-
+#include "tia/defines.h"
 
 namespace tobiss
 {
+
+class RawMem;
+
 /**
 * @class DataPacket
 *
@@ -89,13 +90,9 @@ class DataPacket
     *
     * Deletes all dynamically built raw_mem objects stored in raw_map.
     */
-    virtual ~DataPacket()
-    {
-      for(std::map<boost::uint32_t, RawMem*>::iterator it(raw_map_.begin());
-          it != raw_map_.end(); it++)
-        delete(it->second);
-    }
-    /**
+    virtual ~DataPacket();
+	
+	/**
     * @brief Copy constructor  --  does NOT copy the raw memory representation.
     * @todo Check for memory leaks! (can occur, if raw_mem objects are built)
     */
