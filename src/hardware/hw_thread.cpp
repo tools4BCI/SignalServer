@@ -43,7 +43,7 @@ using std::cout;
 using std::endl;
 using std::dec;
 using std::hex;
-
+ 
 //-----------------------------------------------------------------------------
 
 //const string HWThread::hardware_("hardware");
