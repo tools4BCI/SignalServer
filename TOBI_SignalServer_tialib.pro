@@ -46,19 +46,19 @@ HEADERS += include/tia/signal_server.h \
     include/tia-private/network/tcp_server.h \
     include/tia-private/network/udp_data_server.h \
     extern/include/LptTools/LptTools.h
-SOURCES += src/signalserver/signal_server.cpp \
-    src/definitions/constants.cpp \
-    src/config/control_message_decoder.cpp \
-    src/config/control_message_encoder.cpp \
-    src/config/control_messages.cpp \
-    src/config/ss_meta_info.cpp \
-    src/datapacket/data_packet.cpp \
-    src/datapacket/raw_mem.cpp \
-    src/network/control_connection.cpp \
-    src/network/control_connection_server.cpp \
-    src/network/tcp_data_server.cpp \
-    src/network/tcp_server.cpp \
-    src/network/udp_data_server.cpp
+SOURCES += src/tia/signal_server.cpp \
+    src/tia/constants.cpp \
+    src/tia/config/control_message_decoder.cpp \
+    src/tia/config/control_message_encoder.cpp \
+    src/tia/config/control_messages.cpp \
+    src/tia/ss_meta_info.cpp \
+    src/tia/data_packet.cpp \
+    src/tia/datapacket/raw_mem.cpp \
+    src/tia/network/control_connection.cpp \
+    src/tia/network/control_connection_server.cpp \
+    src/tia/network/tcp_data_server.cpp \
+    src/tia/network/tcp_server.cpp \
+    src/tia/network/udp_data_server.cpp
 
 unix:SOURCES += extern/include/LptTools/LptToolsLinux.cpp
 win32:SOURCES += extern/include/LptTools/LptTools_.cpp
