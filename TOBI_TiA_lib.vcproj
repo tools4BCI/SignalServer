@@ -160,31 +160,43 @@
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
+			<File
+				RelativePath=".\src\tia\constants.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\tia\data_packet.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\tia\signal_server.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\tia\ss_meta_info.cpp"
+				>
+			</File>
 			<Filter
-				Name="config"
+				Name="network"
 				>
 				<File
-					RelativePath="src\config\control_message_decoder.cpp"
+					RelativePath=".\src\tia\network\control_connection.cpp"
 					>
 				</File>
 				<File
-					RelativePath="src\config\control_message_encoder.cpp"
+					RelativePath=".\src\tia\network\control_connection_server.cpp"
 					>
 				</File>
 				<File
-					RelativePath="src\config\control_messages.cpp"
+					RelativePath=".\src\tia\network\tcp_data_server.cpp"
 					>
 				</File>
 				<File
-					RelativePath="src\config\ss_meta_info.cpp"
+					RelativePath=".\src\tia\network\tcp_server.cpp"
 					>
 				</File>
-			</Filter>
-			<Filter
-				Name="signalserver"
-				>
 				<File
-					RelativePath="src\signalserver\signal_server.cpp"
+					RelativePath=".\src\tia\network\udp_data_server.cpp"
 					>
 				</File>
 			</Filter>
@@ -192,43 +204,23 @@
 				Name="datapacket"
 				>
 				<File
-					RelativePath="src\datapacket\data_packet.cpp"
-					>
-				</File>
-				<File
-					RelativePath="src\datapacket\raw_mem.cpp"
+					RelativePath=".\src\tia\datapacket\raw_mem.cpp"
 					>
 				</File>
 			</Filter>
 			<Filter
-				Name="definitions"
+				Name="config"
 				>
 				<File
-					RelativePath="src\definitions\constants.cpp"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="network"
-				>
-				<File
-					RelativePath="src\network\control_connection.cpp"
+					RelativePath=".\src\tia\config\control_message_decoder.cpp"
 					>
 				</File>
 				<File
-					RelativePath="src\network\control_connection_server.cpp"
+					RelativePath=".\src\tia\config\control_message_encoder.cpp"
 					>
 				</File>
 				<File
-					RelativePath="src\network\tcp_data_server.cpp"
-					>
-				</File>
-				<File
-					RelativePath="src\network\tcp_server.cpp"
-					>
-				</File>
-				<File
-					RelativePath="src\network\udp_data_server.cpp"
+					RelativePath=".\src\tia\config\control_messages.cpp"
 					>
 				</File>
 			</Filter>
@@ -238,6 +230,26 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\include\tia\constants.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tia\data_packet.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tia\defines.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tia\signal_server.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tia\ss_meta_info.h"
+				>
+			</File>
 			<Filter
 				Name="network"
 				>
@@ -287,30 +299,6 @@
 				</File>
 				<File
 					RelativePath=".\include\tia-private\config\control_messages.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="tia"
-				>
-				<File
-					RelativePath=".\include\tia\constants.h"
-					>
-				</File>
-				<File
-					RelativePath=".\include\tia\data_packet.h"
-					>
-				</File>
-				<File
-					RelativePath=".\include\tia\defines.h"
-					>
-				</File>
-				<File
-					RelativePath=".\include\tia\signal_server.h"
-					>
-				</File>
-				<File
-					RelativePath=".\include\tia\ss_meta_info.h"
 					>
 				</File>
 			</Filter>
