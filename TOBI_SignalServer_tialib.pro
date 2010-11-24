@@ -31,20 +31,20 @@ QMAKE_CXXFLAGS += -pedantic
 QMAKE_CXXFLAGS_WARN_ON = -Wall -pedantic
 
 # -----------------------------------------------------------------------
-HEADERS += include/signalserver/signal_server.h \
-    include/definitions/defines.h \
-    include/definitions/constants.h \
-    include/config/control_message_decoder.h \
-    include/config/control_message_encoder.h \
-    include/config/control_messages.h \
-    include/config/ss_meta_info.h \
-    include/datapacket/data_packet.h \
-    include/datapacket/raw_mem.h \
-    include/network/control_connection.h \
-    include/network/control_connection_server.h \
-    include/network/tcp_data_server.h \
-    include/network/tcp_server.h \
-    include/network/udp_data_server.h \
+HEADERS += include/tia/signal_server.h \
+    include/tia/defines.h \
+    include/tia/constants.h \
+    include/tia-private/config/control_message_decoder.h \
+    include/tia-private/config/control_message_encoder.h \
+    include/tia-private/config/control_messages.h \
+    include/tia/ss_meta_info.h \
+    include/tia/data_packet.h \
+    include/tia-private/datapacket/raw_mem.h \
+    include/tia-private/network/control_connection.h \
+    include/tia-private/network/control_connection_server.h \
+    include/tia-private/network/tcp_data_server.h \
+    include/tia-private/network/tcp_server.h \
+    include/tia-private/network/udp_data_server.h \
     extern/include/LptTools/LptTools.h
 SOURCES += src/signalserver/signal_server.cpp \
     src/definitions/constants.cpp \
