@@ -51,7 +51,7 @@
 // local
 #include "tia/data_packet.h"
 #include "tia-private/network/control_connection_server.h"
-#include "tia/signal_server.h"
+#include "tia/tia_server.h"
 #include "tia-private/network/tcp_data_server.h"
 #include "tia-private/network/udp_data_server.h"
 
@@ -73,7 +73,7 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 
-SignalServer::SignalServer(boost::asio::io_service& io_service)
+TiAServer::TiAServer(boost::asio::io_service& io_service)
   : io_service_(io_service),
 //  config_(0),
   tcp_data_server_(0),
@@ -110,7 +110,7 @@ SignalServer::SignalServer(boost::asio::io_service& io_service)
 
 //-----------------------------------------------------------------------------
 
-SignalServer::~SignalServer()
+TiAServer::~TiAServer()
 {
 //   delete config_;
   delete tcp_data_server_;
@@ -132,7 +132,7 @@ SignalServer::~SignalServer()
 
 //-----------------------------------------------------------------------------
 
-void SignalServer::initialize(std::map<std::string,std::string> subject_info,
+void TiAServer::initialize(std::map<std::string,std::string> subject_info,
                               std::map<std::string,std::string> server_settings)
 {
 //  assert(config != 0);
@@ -178,7 +178,7 @@ void SignalServer::initialize(std::map<std::string,std::string> subject_info,
 
 //-----------------------------------------------------------------------------
 
-void SignalServer::sendDataPacket(DataPacket& packet)
+void TiAServer::sendDataPacket(DataPacket& packet)
 {
   tcp_data_server_->sendDataPacket(packet);
   udp_data_server_->sendDataPacket(packet);

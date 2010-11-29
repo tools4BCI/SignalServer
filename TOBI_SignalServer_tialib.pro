@@ -31,7 +31,7 @@ QMAKE_CXXFLAGS += -pedantic
 QMAKE_CXXFLAGS_WARN_ON = -Wall -pedantic
 
 # -----------------------------------------------------------------------
-HEADERS += include/tia/signal_server.h \
+HEADERS += include/tia/tia_server.h \
     include/tia/defines.h \
     include/tia/constants.h \
     include/tia-private/config/control_message_decoder.h \
@@ -46,7 +46,7 @@ HEADERS += include/tia/signal_server.h \
     include/tia-private/network/tcp_server.h \
     include/tia-private/network/udp_data_server.h \
     extern/include/LptTools/LptTools.h
-SOURCES += src/tia/signal_server.cpp \
+SOURCES += src/tia/tia_server.cpp \
     src/tia/constants.cpp \
     src/tia/config/control_message_decoder.cpp \
     src/tia/config/control_message_encoder.cpp \

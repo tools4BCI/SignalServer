@@ -32,7 +32,7 @@
 
 // local
 #include "tia/constants.h"
-#include "tia/signal_server.h"
+#include "tia/tia_server.h"
 
 #include "tia-private/network/control_connection.h"
 #include "tia-private/network/control_connection_server.h"
@@ -55,7 +55,7 @@ using boost::uint32_t;
 
 ControlConnectionServer::ControlConnectionServer(std::map<std::string,std::string> subject_info,
                                                  boost::asio::io_service& io_service,
-                                                 SignalServer& server)
+                                                 TiAServer& server)
   : TCPServer(io_service),
   server_(server),
   subject_info_(0),

@@ -46,7 +46,7 @@
 namespace tobiss
 {
 // forward declarations
-class SignalServer;
+class TiAServer;
 class SubjectInfo;
 class TCPDataServer;
 class UDPDataServer;
@@ -70,7 +70,7 @@ public:
    * @throw
    */
   ControlConnectionServer(std::map<std::string,std::string> subject_info,
-                          boost::asio::io_service& io_service, SignalServer& server);
+                          boost::asio::io_service& io_service, TiAServer& server);
   /**
    * @brief Destructor
    * @param
@@ -121,7 +121,7 @@ protected:
 private:
   CtrlConnHandlers         connections_;  ///< list holding handlers for each connected client
   boost::mutex             mutex_;        ///< mutex needed for the connection list
-  SignalServer&            server_;       ///< reference to the signal server core
+  TiAServer&            server_;       ///< reference to the signal server core
   SubjectInfo*             subject_info_; ///< reference to the subject meta data
   SignalInfo*              signal_info_;  ///< reference to the signal meta data
   Constants                cst_;
