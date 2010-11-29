@@ -169,11 +169,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\tia\signal_server.cpp"
+				RelativePath=".\src\tia\ss_meta_info.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\tia\ss_meta_info.cpp"
+				RelativePath=".\src\tia\tia_server.cpp"
 				>
 			</File>
 			<Filter
@@ -243,11 +243,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\include\tia\signal_server.h"
+				RelativePath=".\include\tia\ss_meta_info.h"
 				>
 			</File>
 			<File
-				RelativePath=".\include\tia\ss_meta_info.h"
+				RelativePath=".\include\tia\tia_server.h"
 				>
 			</File>
 			<Filter
