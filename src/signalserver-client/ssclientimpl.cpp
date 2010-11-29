@@ -35,11 +35,11 @@
 #include <boost/numeric/conversion/cast.hpp>
 
 // local
-#include "signalserver-client/ssclientimpl.h"
-#include "config/control_message_decoder.h"
-#include "config/control_message_encoder.h"
-#include "config/control_messages.h"
-#include "datapacket/data_packet.h"
+#include "tia-private/signalserver-client/ssclientimpl.h"
+#include "tia-private/config/control_message_decoder.h"
+#include "tia-private/config/control_message_encoder.h"
+#include "tia-private/config/control_messages.h"
+#include "tia/data_packet.h"
 
 #ifdef TIMING_TEST
   #include "LptTools/LptTools.h"

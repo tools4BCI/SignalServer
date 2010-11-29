@@ -29,7 +29,7 @@
 #define SSCONFIG_BASE_H
 
 // local
-#include "config/ss_meta_info.h"
+#include "tia/ss_meta_info.h"
 
 namespace tobiss
 {
