@@ -34,8 +34,8 @@
 
 // local
 #include "ssclientimpl_base.h"
-#include "ssconfig.h"
-#include "definitions/defines.h"
+#include "tia/ssconfig.h"
+#include "tia/defines.h"
 
 namespace tobiss
 {

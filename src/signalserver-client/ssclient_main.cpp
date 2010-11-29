@@ -36,9 +36,9 @@
 #include <boost/cstdint.hpp>
 
 // local
-#include "datapacket/data_packet.h"
-#include "signalserver-client/ssclient.h"
-#include "signalserver-client/ssconfig.h"
+#include "tia/data_packet.h"
+#include "tia/ssclient.h"
+#include "tia/ssconfig.h"
 
 using namespace std;
 using namespace tobiss;

@@ -23,27 +23,27 @@ INCLUDEPATH += extern/include
 QMAKE_CXXFLAGS_WARN_ON = -Wall -pedantic
 
 # Input
-HEADERS +=  include/config/control_message_decoder.h \
-            include/config/control_message_encoder.h \
-            include/config/control_messages.h \
-            include/config/ss_meta_info.h \
-            include/datapacket/data_packet.h \
-            include/datapacket/raw_mem.h \
-            include/definitions/constants.h \
-            include/signalserver-client/ssclient.h \
-            include/signalserver-client/ssclientimpl.h \
-            include/signalserver-client/ssclientimpl_base.h \
-            include/signalserver-client/ssconfig.h
+HEADERS +=  include/tia-private/config/control_message_decoder.h \
+            include/tia-private/config/control_message_encoder.h \
+            include/tia-private/config/control_messages.h \
+            include/tia/ss_meta_info.h \
+            include/tia/data_packet.h \
+            include/tia-private/datapacket/raw_mem.h \
+            include/tia/constants.h \
+            include/tia/ssclient.h \
+            include/tia-private/signalserver-client/ssclientimpl.h \
+            include/tia-private/signalserver-client/ssclientimpl_base.h \
+            include/tia/ssconfig.h
 
 SOURCES +=  src/signalserver-client/ssclientimpl.cpp \
             src/signalserver-client/ssclient.cpp \
-            src/config/control_messages.cpp \
-            src/config/control_message_decoder.cpp \
-            src/config/control_message_encoder.cpp \
-            src/config/ss_meta_info.cpp \
-            src/datapacket/data_packet.cpp \
-            src/datapacket/raw_mem.cpp \
-            src/definitions/constants.cpp
+            src/tia/config/control_messages.cpp \
+            src/tia/config/control_message_decoder.cpp \
+            src/tia/config/control_message_encoder.cpp \
+            src/tia/ss_meta_info.cpp \
+            src/tia/data_packet.cpp \
+            src/tia/datapacket/raw_mem.cpp \
+            src/tia/constants.cpp
 
 unix:     SOURCES += extern/include/LptTools/LptToolsLinux.cpp
 windows:  SOURCES += extern/include/LptTools/LptTools_.cpp

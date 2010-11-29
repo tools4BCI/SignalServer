@@ -30,7 +30,7 @@ SOURCES += src/signalserver-client/ssclient_main.cpp
 
 # -----------------------------------------------------------------------
 unix:LIBS += -Llib -Lextern/lib/ticpp/linux \
-    -ltiaclient
+    -ltiaclient -lboost_thread
 win32:LIBS += lib/ssclient.lib
 
 # Note: It is assumed that the boost libraries can be automatically detected by the linker

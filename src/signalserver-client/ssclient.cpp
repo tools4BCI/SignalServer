@@ -26,8 +26,8 @@
 **/
 
 // local
-#include "signalserver-client/ssclient.h"
-#include "signalserver-client/ssclientimpl.h"
+#include "tia/ssclient.h"
+#include "tia-private/signalserver-client/ssclientimpl.h"
 
 namespace tobiss
 {
