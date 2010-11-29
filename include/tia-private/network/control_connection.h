@@ -47,7 +47,7 @@ namespace tobiss
 class ControlMsgEncoder;
 class ControlMsgDecoder;
 class ControlConnectionServer;
-class SignalServer;
+class TiAServer;
 class TCPDataServer;
 class UDPDataServer;
 

@@ -69,7 +69,7 @@ class DataPacket;
 *
 * @todo
 */
-class SignalServer : boost::noncopyable
+class TiAServer : boost::noncopyable
 {
   friend class ControlConnectionServer;
 
@@ -80,13 +80,13 @@ class SignalServer : boost::noncopyable
     * @brief Constructor
     * \param the boost::asio::io_service to use
     */
-    SignalServer(boost::asio::io_service& io_service);
+    TiAServer(boost::asio::io_service& io_service);
 
     /**
      * @brief Destructor
      * @param[in]  packet
      */
-    virtual ~SignalServer();
+    virtual ~TiAServer();
 
     /**
     * @brief Initialize the server
