@@ -1,0 +1,14 @@
+
+/*! \mainpage TOBI Interface A v0.1
+*
+* \section sec_intro Introduction
+* TODO
+*
+*
+* \section sec_install Dependencies
+* Needed libraries are:
+*   - boost-libs  (recommeneded: >=1.40)
+*   - ticpp  (tinyXML fpr C++)
+*
+*
+*/

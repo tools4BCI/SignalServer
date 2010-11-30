@@ -19,7 +19,7 @@
 */
 
 /**
-* @ss_meta_info.cpp
+* @file ss_meta_info.cpp
 *
 * @brief \TODO.
 *

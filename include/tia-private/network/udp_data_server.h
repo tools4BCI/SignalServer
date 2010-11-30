@@ -19,7 +19,7 @@
 */
 
 /**
-* @udp_data_server.h
+* @file udp_data_server.h
 *
 * @brief \TODO.
 *

@@ -19,7 +19,7 @@
 */
 
 /**
-* @control_message_decoder.cpp
+* @file control_message_decoder.cpp
 *
 * @brief \TODO.
 *
