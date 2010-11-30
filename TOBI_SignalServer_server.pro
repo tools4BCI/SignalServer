@@ -78,7 +78,7 @@ SOURCES += src/signalserver/main.cpp \
 #win32:SOURCES += src/hardware/mouse_.cpp
 unix:SOURCES += extern/include/LptTools/LptToolsLinux.cpp
 win32:SOURCES += extern/include/LptTools/LptTools_.cpp
-LIBS += lib/libtia.a
+LIBS += $$PWD/lib/libtia.a
 
 # -----------------------------------------------------------------------
 unix {
