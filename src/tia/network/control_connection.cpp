@@ -19,10 +19,8 @@
 */
 
 /**
-* @control_connection.cpp
-*
+* @file control_connection.cpp
 * @brief \TODO.
-*
 **/
 
 // Boost

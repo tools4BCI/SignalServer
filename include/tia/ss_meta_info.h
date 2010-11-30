@@ -18,6 +18,11 @@
     Contact: c.breitwieser@tugraz.at
 */
 
+/**
+* @file ss_meta_info.h
+* @brief TODO
+**/
+
 #ifndef SERVER_META_INFO_H
 #define SERVER_META_INFO_H
 

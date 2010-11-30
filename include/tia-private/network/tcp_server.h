@@ -19,7 +19,7 @@
 */
 
 /**
-* @tcp_server.h
+* @file tcp_server.h
 *
 * @brief \TODO.
 *

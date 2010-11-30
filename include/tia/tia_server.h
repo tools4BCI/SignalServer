@@ -19,10 +19,8 @@
 */
 
 /**
-* @file server_server.h
-*
+* @file tia_server.h
 * @brief
-*
 **/
 
 #ifndef SIGNALSERVER_H

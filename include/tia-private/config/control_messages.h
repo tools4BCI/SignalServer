@@ -19,7 +19,7 @@
 */
 
 /**
-* @control_messages.h
+* @file control_messages.h
 *
 * @brief \TODO.
 *
