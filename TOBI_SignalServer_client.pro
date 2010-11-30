@@ -12,7 +12,7 @@ DEFINES += TIXML_USE_TICPP
 
 # TIMING_TEST
 TARGET = signalserver-sclient
-unix:PRE_TARGETDEPS += lib/libtiaclient.so
+unix:PRE_TARGETDEPS += lib/libtia.so
 win32:PRE_TARGETDEPS += lib/ssclient.lib
 DESTDIR = bin
 OBJECTS_DIR = tmp
@@ -30,7 +30,7 @@ SOURCES += src/signalserver-client/ssclient_main.cpp
 
 # -----------------------------------------------------------------------
 unix:LIBS += -Llib -Lextern/lib/ticpp/linux \
-    -ltiaclient -lboost_thread
+    -ltia -lboost_thread
 win32:LIBS += lib/ssclient.lib
 
 # Note: It is assumed that the boost libraries can be automatically detected by the linker

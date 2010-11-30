@@ -45,6 +45,10 @@ HEADERS += include/tia/tia_server.h \
     include/tia-private/network/tcp_data_server.h \
     include/tia-private/network/tcp_server.h \
     include/tia-private/network/udp_data_server.h \
+    include/tia/ssclient.h \
+    include/tia-private/signalserver-client/ssclientimpl.h \
+    include/tia-private/signalserver-client/ssclientimpl_base.h \
+    include/tia/ssconfig.h \
     extern/include/LptTools/LptTools.h
 SOURCES += src/tia/tia_server.cpp \
     src/tia/constants.cpp \
@@ -58,8 +62,9 @@ SOURCES += src/tia/tia_server.cpp \
     src/tia/network/control_connection_server.cpp \
     src/tia/network/tcp_data_server.cpp \
     src/tia/network/tcp_server.cpp \
-    src/tia/network/udp_data_server.cpp
-
+    src/tia/network/udp_data_server.cpp \
+    src/signalserver-client/ssclientimpl.cpp \
+    src/signalserver-client/ssclient.cpp
 
 unix:SOURCES += extern/include/LptTools/LptToolsLinux.cpp
 win32:SOURCES += extern/include/LptTools/LptTools_.cpp
@@ -76,11 +81,11 @@ unix {
     contains( HARDWARE_PLATFORM, x86_64 )::{
         message(Building 64 bit )
         # 64-bit Linux
-        LIBS += extern/lib/ticpp/linux/libticpp_64.a
+        LIBS += $$PWD/extern/lib/ticpp/linux/libticpp_64.a
     }else::{
         # 32-bit Linux
         message(Building 32 bit )
-        LIBS += extern/lib/ticpp/linux/libticpp.a
+        LIBS += $$PWD/extern/lib/ticpp/linux/libticpp.a
     }
 }
 win32:LIBS += extern\lib\sdl\win\SDL.lib \

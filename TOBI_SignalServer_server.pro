@@ -13,7 +13,7 @@ DEFINES += TIXML_USE_TICPP
 
 # TIMING_TEST
 TARGET = signalserver
-DESTDIR = bin
+DESTDIR = $$PWD/bin
 OBJECTS_DIR = tmp
 INCLUDEPATH += . \
     include \
@@ -26,7 +26,7 @@ unix {
     versiontarget.target = ./update-version.sh
     versiontarget.commands = ./update-version.sh
     versiontarget.depends = FORCE
-    PRE_TARGETDEPS += ./update-version.sh
+    PRE_TARGETDEPS += $$PWD/update-version.sh
     QMAKE_EXTRA_TARGETS += versiontarget
 }
 QMAKE_CXXFLAGS_WARN_ON = -Wall \
@@ -98,7 +98,7 @@ unix {
 
         # 64-bit Linux
         LIBS += -L \
-            extern/lib/ticpp/linux \
+            $$PWD/extern/lib/ticpp/linux \
             -lticpp_64
 #            -Lextern/lib/libgdf/linux \
 #            -llibgdf_64
@@ -106,7 +106,7 @@ unix {
     else:: {
         # 32-bit Linux
         message(Building 32 bit )
-        LIBS += -Lextern/lib/ticpp/linux \
+        LIBS += -L$$PWD/extern/lib/ticpp/linux \
             -lticpp
 #           -Lextern/lib/libgdf/linux \
 #            -llibgdf
