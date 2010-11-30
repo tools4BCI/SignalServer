@@ -19,7 +19,7 @@
 */
 
 /**
-* @control_connection_server.h
+* @file control_connection_server.h
 *
 * @brief \TODO.
 *

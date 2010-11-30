@@ -17,6 +17,12 @@
     Copyright 2010 Christian Breitwieser
     Contact: c.breitwieser@tugraz.at
 */
+
+/**
+* @file constants.cpp
+* @brief TODO
+**/
+
 #include <sstream>
 #include <stdexcept>
 
