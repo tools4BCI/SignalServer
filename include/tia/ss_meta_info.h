@@ -20,7 +20,7 @@
 
 /**
 * @file ss_meta_info.h
-* @brief TODO
+* @brief This file includes classes used to store meta information used in TiA.
 **/
 
 #ifndef SERVER_META_INFO_H
@@ -39,6 +39,13 @@ namespace tobiss
 {
 
 //-----------------------------------------------------------------------------
+
+/**
+ * @class SubjectInfo
+ *
+ * @brief TODO
+ *
+ */
 
 class SubjectInfo
 {
@@ -117,6 +124,12 @@ class SubjectInfo
 
 //-----------------------------------------------------------------------------
 
+/**
+ * @class Channel
+ *
+ * @brief TODO
+ *
+ */
 class Channel
 {
   public:
@@ -130,6 +143,12 @@ class Channel
 
 //-----------------------------------------------------------------------------
 
+/**
+ * @class Signal
+ *
+ * @brief TODO
+ *
+ */
 class Signal
 {
   public:
@@ -158,6 +177,12 @@ class Signal
 
 //-----------------------------------------------------------------------------
 
+/**
+ * @class SignalInfo
+ *
+ * @brief TODO
+ *
+ */
 class SignalInfo
 {
   public:
