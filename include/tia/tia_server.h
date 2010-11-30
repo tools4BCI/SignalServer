@@ -20,7 +20,7 @@
 
 /**
 * @file tia_server.h
-* @brief
+* @brief This file includes the TiAServer class.
 **/
 
 #ifndef SIGNALSERVER_H
@@ -59,13 +59,16 @@ class DataPacket;
 //-----------------------------------------------------------------------------
 
 /**
-* @class SignalServer
+* @class TiAServer
 *
-* @brief The core of the Signal Server
+* @brief The core of TOBI Interface A (TiA)
 *
+* The TiAServer represents the main entry point for using the TiA library.
+* TiA consists out of a separation between meta information transmitted via xml
+* and a seperated data stream devlivering raw data.
 *
-*
-* @todo
+* It provides an interface to set this meta data and transmit acquired data using
+* TiA data packets.
 */
 class TiAServer : boost::noncopyable
 {
@@ -98,41 +101,41 @@ class TiAServer : boost::noncopyable
                     std::map<std::string,std::string> server_settings);
 
     /**
-    * @brief Sends a DataPacket to the clients
+    * @brief Sends a DataPacket to connected clients
     * @param[in]  packet
     * @throws
     */
     void sendDataPacket(DataPacket& packet);
 
     /**
-     * @brief Set the sampling rate of the master
+     * @brief Set the sampling rate of the master device
      * @param[in]  value
      */
     void setMasterSamplingRate(boost::uint32_t value) { master_samplingrate_ = value; }
 
     /**
-     * @brief Set the blocksize of the master
+     * @brief Set the blocksize of the master device
      * @param[in]  value
      */
     void setMasterBlocksize(boost::uint32_t value) { master_blocksize_ = value; }
 
     /**
      * @brief Set the acquired signal types
-     * @param[in]  vector<uint32_t> types
+     * @param[in]  vector<uint32_t> types (have to be in ascending order ... 0x01, 0x04, ...)
      */
     void setAcquiredSignalTypes(const std::vector<boost::uint32_t>& sig_types)
       { sig_types_ = sig_types; }
 
     /**
      * @brief Set the blocksize for every signal type
-     * @param[in]  vector<uint16_t> bs
+     * @param[in]  vector<uint16_t> bs (has to be aligned with the order of signal types)
      */
     void setBlockSizesPerSignalType(const std::vector<boost::uint16_t>& blocksizes)
       { blocksizes_ = blocksizes; }
 
     /**
      * @brief Set the sampling rate for every signal type
-     * @param[in]  vector<uint32_t> fs
+     * @param[in]  vector<uint32_t> fs (has to be aligned with the order of signal types)
      */
     void setSamplingRatePerSignalType(const std::vector<boost::uint32_t>& fs_per_sig_type)
       { fs_per_sig_type_ = fs_per_sig_type; }
@@ -142,7 +145,7 @@ class TiAServer : boost::noncopyable
      * @param[in]  map<uint32_t, vector<string> > names
      *
      * Every signal type has a defined number of channels; the vector< string > holds
-     * the names for every channel assigned with the signal type.
+     * the names for every channel from a signal type.
      */
     void setChannelNames(const std::map<boost::uint32_t, std::vector<std::string> >& channels_per_sig_type)
       { channels_per_sig_type_ = channels_per_sig_type; }
@@ -150,8 +153,7 @@ class TiAServer : boost::noncopyable
   private:
     #ifdef WRITE_GDF
     /**
-     * @brief Sends a DataPacket to the clients
-     * @param[in]  packet
+     * @brief Initialize writing acquired data into a .gdf file. (will be rewritten or removed in the future)
      */
     void initGdf();
     #endif
