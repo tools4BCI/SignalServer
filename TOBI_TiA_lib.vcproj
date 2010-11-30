@@ -173,6 +173,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\tia\tia_client.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\tia\tia_server.cpp"
 				>
 			</File>
@@ -221,6 +225,14 @@
 				</File>
 				<File
 					RelativePath=".\src\tia\config\control_messages.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="client"
+				>
+				<File
+					RelativePath=".\src\tia\client\tia_client_impl.cpp"
 					>
 				</File>
 			</Filter>
@@ -299,6 +311,18 @@
 				</File>
 				<File
 					RelativePath=".\include\tia-private\config\control_messages.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="client"
+				>
+				<File
+					RelativePath=".\include\tia-private\client\tia_client_impl.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\tia-private\client\tia_client_impl_base.h"
 					>
 				</File>
 			</Filter>
