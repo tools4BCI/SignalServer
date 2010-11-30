@@ -15,14 +15,14 @@ DEFINES += TIXML_USE_TICPP
 
 # TIMING_TEST
 TARGET = tia
-DESTDIR = lib
+DESTDIR = $$PWD/lib
 OBJECTS_DIR = tmp
-INCLUDEPATH += . \
-    include \
-    extern/include/LptTools
+INCLUDEPATH += $$PWD/. \
+    $$PWD/include \
+    $$PWD/extern/include/LptTools
 DEPENDPATH += $$INCLUDEPATH
-INCLUDEPATH += extern/include
-win32:INCLUDEPATH += extern/include/SDL-1.2.14-VC8
+INCLUDEPATH += $$PWD/extern/include
+win32:INCLUDEPATH += $$PWD/extern/include/SDL-1.2.14-VC8
 
 unix{
 QMAKE_CXXFLAGS += -pedantic
@@ -45,9 +45,9 @@ HEADERS += include/tia/tia_server.h \
     include/tia-private/network/tcp_data_server.h \
     include/tia-private/network/tcp_server.h \
     include/tia-private/network/udp_data_server.h \
-    include/tia/ssclient.h \
-    include/tia-private/signalserver-client/ssclientimpl.h \
-    include/tia-private/signalserver-client/ssclientimpl_base.h \
+    include/tia/tia_client.h \
+    include/tia-private/client/tia_client_impl.h \
+    include/tia-private/client/tia_client_impl_base.h \
     include/tia/ssconfig.h \
     extern/include/LptTools/LptTools.h
 SOURCES += src/tia/tia_server.cpp \
@@ -63,8 +63,8 @@ SOURCES += src/tia/tia_server.cpp \
     src/tia/network/tcp_data_server.cpp \
     src/tia/network/tcp_server.cpp \
     src/tia/network/udp_data_server.cpp \
-    src/signalserver-client/ssclientimpl.cpp \
-    src/signalserver-client/ssclient.cpp
+    src/tia/client/tia_client_impl.cpp \
+    src/tia/tia_client.cpp
 
 unix:SOURCES += extern/include/LptTools/LptToolsLinux.cpp
 win32:SOURCES += extern/include/LptTools/LptTools_.cpp

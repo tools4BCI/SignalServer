@@ -20,7 +20,7 @@
 
 
 /**
-* @file ssclientimpl.cpp
+* @file tia_client_impl.cpp
 *
 * @brief
 *
@@ -35,7 +35,7 @@
 #include <boost/numeric/conversion/cast.hpp>
 
 // local
-#include "tia-private/signalserver-client/ssclientimpl.h"
+#include "tia-private/client/tia_client_impl.h"
 #include "tia-private/config/control_message_decoder.h"
 #include "tia-private/config/control_message_encoder.h"
 #include "tia-private/config/control_messages.h"
@@ -66,7 +66,7 @@ using boost::int32_t;
 
 //-----------------------------------------------------------------------------
 
-SSClientImpl::SSClientImpl() :
+TiAClientImpl::TiAClientImpl() :
   data_socket_tcp_(io_service_),
   data_socket_udp_(io_service_),
   msg_encoder_(0),
@@ -112,7 +112,7 @@ SSClientImpl::SSClientImpl() :
 
 //-----------------------------------------------------------------------------
 
-SSClientImpl::~SSClientImpl()
+TiAClientImpl::~TiAClientImpl()
 {
   delete msg_encoder_;
   delete msg_decoder_;
@@ -124,19 +124,19 @@ SSClientImpl::~SSClientImpl()
 
 //-----------------------------------------------------------------------------
 
-SSConfig SSClientImpl::config() const
+SSConfig TiAClientImpl::config() const
 {
   return config_;
 }
 
 //-----------------------------------------------------------------------------
 
-void SSClientImpl::connect(const std::string& address,  short unsigned port)
+void TiAClientImpl::connect(const std::string& address,  short unsigned port)
 {
    if (connected())
    {
      stringstream ex_str;
-     ex_str << "SSClient: Already connected!"
+     ex_str << "TiAClient: Already connected!"
             << address << ":" << port;
      throw std::ios_base::failure(ex_str.str());
    }
@@ -148,7 +148,7 @@ void SSClientImpl::connect(const std::string& address,  short unsigned port)
    if (!ctl_conn_stream_)
    {
      stringstream ex_str;
-     ex_str << "SSClient: An error occurred while connecting to server "
+     ex_str << "TiAClient: An error occurred while connecting to server "
             << address << ":" << port;
      throw std::ios_base::failure(ex_str.str());
    }
@@ -158,14 +158,14 @@ void SSClientImpl::connect(const std::string& address,  short unsigned port)
 
 //-----------------------------------------------------------------------------
 
-bool SSClientImpl::connected() const
+bool TiAClientImpl::connected() const
 {
   return (ctl_conn_state_ & ControlConnState_Connected) != 0;
 }
 
 //-----------------------------------------------------------------------------
 
-void SSClientImpl::disconnect()
+void TiAClientImpl::disconnect()
 {
   if (!connected()) return;
 
@@ -181,12 +181,12 @@ void SSClientImpl::disconnect()
 
 //-----------------------------------------------------------------------------
 
-void SSClientImpl::requestConfig()
+void TiAClientImpl::requestConfig()
 {
   if (ctl_conn_state_ == ControlConnState_NotConnected)
   {
     stringstream ex_str;
-    ex_str << "SSClient: Not connected!";
+    ex_str << "TiAClient: Not connected!";
     throw std::ios_base::failure(ex_str.str());
   }
 
@@ -199,7 +199,7 @@ void SSClientImpl::requestConfig()
   if (reply == 0)
   {
     stringstream ex_str;
-    ex_str << "SSClient: Cannot decode message";
+    ex_str << "TiAClient: Cannot decode message";
     throw std::ios_base::failure(ex_str.str());
   }
 
@@ -211,14 +211,14 @@ void SSClientImpl::requestConfig()
     case ControlMsg::ErrorReply:
     {
       stringstream ex_str;
-      ex_str << "SSClient: Getting the config failed due to a server error.";
+      ex_str << "TiAClient: Getting the config failed due to a server error.";
       throw std::ios_base::failure(ex_str.str());
     }
 
     default:
     {
       stringstream ex_str;
-      ex_str << "SSClient: Got unexpected reply of type '" << reply->msgType() << "'";
+      ex_str << "TiAClient: Got unexpected reply of type '" << reply->msgType() << "'";
       throw std::ios_base::failure(ex_str.str());
     }
   }
@@ -232,7 +232,7 @@ void SSClientImpl::requestConfig()
 
 //-----------------------------------------------------------------------------
 
-void SSClientImpl::establishDataConnection(bool use_udp_bc)
+void TiAClientImpl::establishDataConnection(bool use_udp_bc)
 {
   GetDataConnectionMsg msg;
   if (use_udp_bc)
@@ -247,14 +247,14 @@ void SSClientImpl::establishDataConnection(bool use_udp_bc)
   // TODO: check for connection loss
   msg_encoder_->encodeMsg(msg, ctl_conn_stream_);
 
-  cout << "SSClient: Waiting on reply" << endl;
+  cout << "TiAClient: Waiting on reply" << endl;
 
   boost::shared_ptr<ControlMsg> reply(msg_decoder_->decodeMsg());
 
   if (reply == 0)
   {
     stringstream ex_str;
-    ex_str << "SSClient: Cannot decode message";
+    ex_str << "TiAClient: Cannot decode message";
     throw std::ios_base::failure(ex_str.str());
   }
 
@@ -266,14 +266,14 @@ void SSClientImpl::establishDataConnection(bool use_udp_bc)
     case ControlMsg::ErrorReply:
     {
       stringstream ex_str;
-      ex_str << "SSClient: Establishing data connection failed due to a server error.";
+      ex_str << "TiAClient: Establishing data connection failed due to a server error.";
       throw std::ios_base::failure(ex_str.str());
     }
 
     default:
     {
       stringstream ex_str;
-      ex_str << "SSClient: Got unexpected reply of type '" << reply->msgType() << "'";
+      ex_str << "TiAClient: Got unexpected reply of type '" << reply->msgType() << "'";
       throw std::ios_base::failure(ex_str.str());
     }
   }
@@ -310,7 +310,7 @@ void SSClientImpl::establishDataConnection(bool use_udp_bc)
   {
     data_input_state_ = DataInputState_NotConnected;
     stringstream ex_str;
-    ex_str << "SSClient: Could not connect to signal server:";
+    ex_str << "TiAClient: Could not connect to signal server:";
     ex_str << "-->" << ec.message();
     throw std::ios_base::failure(ex_str.str());
   }
@@ -320,7 +320,7 @@ void SSClientImpl::establishDataConnection(bool use_udp_bc)
 
 //-----------------------------------------------------------------------------
 
-void SSClientImpl::closeDataConnection()
+void TiAClientImpl::closeDataConnection()
 {
     boost::system::error_code ec;
 
@@ -338,7 +338,7 @@ void SSClientImpl::closeDataConnection()
     if (ec)
     {
       stringstream ex_str;
-      ex_str << "SSClient: An error occurred while closing data connection:" << endl;
+      ex_str << "TiAClient: An error occurred while closing data connection:" << endl;
       ex_str << "-->" << ec.message();
       throw std::ios_base::failure(ex_str.str());
     }
@@ -348,19 +348,19 @@ void SSClientImpl::closeDataConnection()
 
 //-----------------------------------------------------------------------------
 
-void SSClientImpl::startReceiving(bool use_udp_bc)
+void TiAClientImpl::startReceiving(bool use_udp_bc)
 {
   if (ctl_conn_state_ == ControlConnState_NotConnected)
   {
     stringstream ex_str;
-    ex_str << "SSClient: Not connected!";
+    ex_str << "TiAClient: Not connected!";
     throw std::ios_base::failure(ex_str.str());
   }
 
   if (receiving())
   {
     stringstream ex_str;
-    ex_str << "SSClient: Client already in receiving state!";
+    ex_str << "TiAClient: Client already in receiving state!";
     throw std::ios_base::failure(ex_str.str());
   }
 
@@ -381,14 +381,14 @@ void SSClientImpl::startReceiving(bool use_udp_bc)
   // TODO: check for connection loss
   msg_encoder_->encodeMsg(msg, ctl_conn_stream_);
 
-  cout << "SSClient: Waiting on reply" << endl;
+  cout << "TiAClient: Waiting on reply" << endl;
 
   boost::shared_ptr<ControlMsg> reply(msg_decoder_->decodeMsg());
 
   if (reply == 0)
   {
     stringstream ex_str;
-    ex_str << "SSClient: Cannot decode message";
+    ex_str << "TiAClient: Cannot decode message";
     throw std::ios_base::failure(ex_str.str());
   }
 
@@ -400,14 +400,14 @@ void SSClientImpl::startReceiving(bool use_udp_bc)
     case ControlMsg::ErrorReply:
     {
       stringstream ex_str;
-      ex_str << "SSClient: Stop receiving failed due to a server error.";
+      ex_str << "TiAClient: Stop receiving failed due to a server error.";
       throw std::ios_base::failure(ex_str.str());
     }
 
     default:
     {
       stringstream ex_str;
-      ex_str << "SSClient: Got unexpected reply of type '" << reply->msgType() << "'";
+      ex_str << "TiAClient: Got unexpected reply of type '" << reply->msgType() << "'";
       throw std::ios_base::failure(ex_str.str());
     }
   }
@@ -416,19 +416,19 @@ void SSClientImpl::startReceiving(bool use_udp_bc)
 }
 //-----------------------------------------------------------------------------
 
-bool SSClientImpl::receiving() const
+bool TiAClientImpl::receiving() const
 {
   return (data_input_state_ & DataInputState_Receiving) != 0;
 }
 
 //-----------------------------------------------------------------------------
 
-void SSClientImpl::stopReceiving()
+void TiAClientImpl::stopReceiving()
 {
   if (ctl_conn_state_ == ControlConnState_NotConnected)
   {
     stringstream ex_str;
-    ex_str << "SSClient: Not connected!";
+    ex_str << "TiAClient: Not connected!";
     throw std::ios_base::failure(ex_str.str());
   }
 
@@ -439,7 +439,7 @@ void SSClientImpl::stopReceiving()
   // TODO: check for connection loss
   msg_encoder_->encodeMsg(msg, ctl_conn_stream_);
 
-  cout << "SSClient: Waiting on reply" << endl;
+  cout << "TiAClient: Waiting on reply" << endl;
 
   boost::shared_ptr<ControlMsg> reply(msg_decoder_->decodeMsg());
 
@@ -451,14 +451,14 @@ void SSClientImpl::stopReceiving()
     case ControlMsg::ErrorReply:
     {
       stringstream ex_str;
-      ex_str << "SSClient: Stop receiving failed due to a server error.";
+      ex_str << "TiAClient: Stop receiving failed due to a server error.";
       throw std::ios_base::failure(ex_str.str());
     }
 
     default:
     {
       stringstream ex_str;
-      ex_str << "SSClient: Got unexpected reply of type '" << reply->msgType() << "'";
+      ex_str << "TiAClient: Got unexpected reply of type '" << reply->msgType() << "'";
       throw std::ios_base::failure(ex_str.str());
     }
   }
@@ -468,19 +468,19 @@ void SSClientImpl::stopReceiving()
 
 //-----------------------------------------------------------------------------
 
-void SSClientImpl::getDataPacket(DataPacket& packet)
+void TiAClientImpl::getDataPacket(DataPacket& packet)
 {
   if ((ctl_conn_state_ == ControlConnState_NotConnected))
   {
     stringstream ex_str;
-    ex_str << "SSClient: Not connected!";
+    ex_str << "TiAClient: Not connected!";
     throw std::ios_base::failure(ex_str.str());
   }
 
   if (!receiving())
   {
     stringstream ex_str;
-    ex_str << "SSClient: Client not in receiving state!";
+    ex_str << "TiAClient: Client not in receiving state!";
     throw std::ios_base::failure(ex_str.str());
   }
 
@@ -499,7 +499,7 @@ void SSClientImpl::getDataPacket(DataPacket& packet)
         {
           // TODO: try to sent stop cmd to server?
           closeDataConnection();
-          std::string ex_str("SSClient: Data connection broken\n -->");
+          std::string ex_str("TiAClient: Data connection broken\n -->");
           ex_str += error.message();
 
           throw std::ios_base::failure(ex_str);
@@ -513,7 +513,7 @@ void SSClientImpl::getDataPacket(DataPacket& packet)
         {
           // TODO: try to sent stop cmd to server?
           closeDataConnection();
-          std::string ex_str("SSClient: Data connection broken\n -->");
+          std::string ex_str("TiAClient: Data connection broken\n -->");
           ex_str += error.message();
 
           throw std::ios_base::failure(ex_str);
@@ -541,8 +541,8 @@ void SSClientImpl::getDataPacket(DataPacket& packet)
 
     if(use_udp_bc_)
     {
-      cerr << "SSClient: ERROR -- Packet fragmentation not possible in UDP!"<< endl;
-      throw (std::ios_base::failure("SSClientImpl::getDataPacket() --  Can not decode packet"));
+      cerr << "TiAClient: ERROR -- Packet fragmentation not possible in UDP!"<< endl;
+      throw (std::ios_base::failure("TiAClientImpl::getDataPacket() --  Can not decode packet"));
     }
     else
     {
@@ -554,7 +554,7 @@ void SSClientImpl::getDataPacket(DataPacket& packet)
     {
       // TODO: try to sent stop cmd to server?
       closeDataConnection();
-      std::string ex_str("SSClient: Data connection broken\n -->");
+      std::string ex_str("TiAClient: Data connection broken\n -->");
       ex_str += error.message();
 
       throw std::ios_base::failure(ex_str);
@@ -572,7 +572,7 @@ void SSClientImpl::getDataPacket(DataPacket& packet)
   }
   catch(std::runtime_error& e)
   {
-    string ex_str("SSClient: ***** STL Exception -- Runtime error -- caught! *****\n  -->");
+    string ex_str("TiAClient: ***** STL Exception -- Runtime error -- caught! *****\n  -->");
     ex_str += e.what();
     cerr << ex_str << endl;
 
@@ -580,7 +580,7 @@ void SSClientImpl::getDataPacket(DataPacket& packet)
     data_buf_.clear();
     buffer_offset_ = 0;
 
-    throw (std::ios_base::failure("SSClientImpl::getDataPacket() --  Can not decode packet"));
+    throw (std::ios_base::failure("TiAClientImpl::getDataPacket() --  Can not decode packet"));
   }
 
   packet_size = p.getRequiredRawMemorySize();
@@ -614,23 +614,23 @@ void SSClientImpl::getDataPacket(DataPacket& packet)
 
     if(p.getSampleNr() > (last_packet_nr_ +1) )
     {
-      cerr << "SSClient: Warning @packet: " << numeric_cast<uint32_t>(p.getSampleNr());
+      cerr << "TiAClient: Warning @packet: " << numeric_cast<uint32_t>(p.getSampleNr());
       cerr << " -- lost " << numeric_cast<uint32_t>(p.getSampleNr() - (last_packet_nr_ +1))  << " sample(s)!" << endl;
     }
     if(p.getSampleNr() < (last_packet_nr_) )
     {
-      cerr << "SSClient: Warning @packet: " << numeric_cast<uint32_t>(p.getSampleNr());
+      cerr << "TiAClient: Warning @packet: " << numeric_cast<uint32_t>(p.getSampleNr());
       cerr << " -- previous sample nr: " << numeric_cast<uint32_t>(last_packet_nr_) << " -- got packet twice!" << endl;
 //       return;
     }
   }
   catch(positive_overflow& e)
   {
-    string ex_str(" SSClient: ***** SampleNumber overflow detected! *****\n  -->");
+    string ex_str(" TiAClient: ***** SampleNumber overflow detected! *****\n  -->");
     ex_str += boost::diagnostic_information(e);
     cerr << ex_str;
 
-    cerr << "SSClient: *** New packet nr: " << (uint32_t)(p.getSampleNr());
+    cerr << "TiAClient: *** New packet nr: " << (uint32_t)(p.getSampleNr());
     cerr << " -- previous packet nr: " << (uint32_t)(last_packet_nr_) << "!" << endl;
 
     throw(std::overflow_error(ex_str));
@@ -656,7 +656,7 @@ void SSClientImpl::getDataPacket(DataPacket& packet)
 
 //-----------------------------------------------------------------------------
 
-void SSClientImpl::setBufferSize(size_t size)
+void TiAClientImpl::setBufferSize(size_t size)
 {
 	recv_buf_.resize(size);
 	buffer_size_ = size;

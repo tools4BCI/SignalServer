@@ -19,29 +19,29 @@
 */
 
 /**
-* @ssclient.cpp
+* @file tia_client.cpp
 *
 * @brief \TODO.
 *
 **/
 
 // local
-#include "tia/ssclient.h"
-#include "tia-private/signalserver-client/ssclientimpl.h"
+#include "tia/tia_client.h"
+#include "tia-private/client/tia_client_impl.h"
 
 namespace tobiss
 {
 //-----------------------------------------------------------------------------
 
-SSClient::SSClient() :
+TiAClient::TiAClient() :
   impl_(0)
 {
-  impl_ = new SSClientImpl;
+  impl_ = new TiAClientImpl;
 }
 
 //-----------------------------------------------------------------------------
 
-SSClient::~SSClient()
+TiAClient::~TiAClient()
 {
   if(impl_)
     delete impl_;
@@ -49,70 +49,70 @@ SSClient::~SSClient()
 
 //-----------------------------------------------------------------------------
 
-void SSClient::connect(const std::string& address, short unsigned port)
+void TiAClient::connect(const std::string& address, short unsigned port)
 {
   impl_->connect(address, port);
 }
 
 //-----------------------------------------------------------------------------
 
-bool SSClient::connected() const
+bool TiAClient::connected() const
 {
   return impl_->connected();
 }
 
 //-----------------------------------------------------------------------------
 
-void SSClient::disconnect()
+void TiAClient::disconnect()
 {
   impl_->disconnect();
 }
 
 //-----------------------------------------------------------------------------
 
-void SSClient::requestConfig()
+void TiAClient::requestConfig()
 {
   impl_->requestConfig();
 }
 
 //-----------------------------------------------------------------------------
 
-SSConfig SSClient::config() const
+SSConfig TiAClient::config() const
 {
   return impl_->config();
 }
 
 //-----------------------------------------------------------------------------
 
-void SSClient::startReceiving(bool use_udp_bc)
+void TiAClient::startReceiving(bool use_udp_bc)
 {
   impl_->startReceiving(use_udp_bc);
 }
 
 //-----------------------------------------------------------------------------
 
-bool SSClient::receiving() const
+bool TiAClient::receiving() const
 {
   return impl_->receiving();
 }
 
 //-----------------------------------------------------------------------------
 
-void SSClient::stopReceiving()
+void TiAClient::stopReceiving()
 {
   impl_->stopReceiving();
 }
 
 //-----------------------------------------------------------------------------
 
-void SSClient::getDataPacket(DataPacket& packet)
+void TiAClient::getDataPacket(DataPacket& packet)
 {
   impl_->getDataPacket(packet);
 }
 
 //-----------------------------------------------------------------------------
 
-void SSClient::setBufferSize(size_t size)
+void TiAClient::setBufferSize(size_t size)
 {
   impl_->setBufferSize(size);
 }

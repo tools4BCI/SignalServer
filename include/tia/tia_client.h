@@ -19,13 +19,13 @@
 */
 
 /**
-* @file ssclient.h
-* @brief Declaration of the SSClient class
+* @file tia_client.h
+* @brief Declaration of the TiAClient class
 *
 **/
 
-#ifndef SSCLIENT_H
-#define SSCLIENT_H
+#ifndef TIA_CLIENT_H
+#define TIA_CLIENT_H
 
 // STL
 #include <string>
@@ -38,12 +38,12 @@ namespace tobiss
 {
 // forward declarations
 class DataPacket;
-class SSClientImplBase;
+class TiAClientImplBase;
 class SSConfig;
 
 /**
-* @class SSClient
-* @brief The SSClient class implements a client for the SignalServer
+* @class TiAClient
+* @brief The TiAClient class implements a client for the SignalServer
 * The client does not need much of configuration - the only thing that a user has to know is
 * the server address and the control connection port of the TOBI SignalServer.
 *
@@ -57,7 +57,7 @@ class SSConfig;
 * Code Example:
 *
 * @code
-*  SSClient client;
+*  TiAClient client;
 *
 *  try
 *  {
@@ -85,7 +85,7 @@ class SSConfig;
 *
 * @endcode
 */
-class DECL_EXPORT SSClient
+class DECL_EXPORT TiAClient
 {
 public:
   /**
@@ -93,11 +93,11 @@ public:
    * Call connect() to establish a connection to a TOBI SignalServer.
    * @throws
    */
-  SSClient();
+  TiAClient();
   /**
    * @brief Destructor
    */
-  virtual ~SSClient();
+  virtual ~TiAClient();
   /**
    * @brief Establish a connection to a TOBI SignalServer
    * The caller will be blocked until the connection has been made or an error has occurred.
@@ -172,11 +172,11 @@ public:
   virtual void setBufferSize(size_t size);
 
 protected:
-  SSClientImplBase* impl_; ///< Pointer to implementation
+  TiAClientImplBase* impl_; ///< Pointer to implementation
 };
 
 } // Namespace tobiss
 
 //-----------------------------------------------------------------------------
 
-#endif // SSCLIENT_H
+#endif // TIA_CLIENT_H

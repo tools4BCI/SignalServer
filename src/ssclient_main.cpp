@@ -37,7 +37,7 @@
 
 // local
 #include "tia/data_packet.h"
-#include "tia/ssclient.h"
+#include "tia/tia_client.h"
 #include "tia/ssconfig.h"
 
 using namespace std;
@@ -48,7 +48,7 @@ using namespace tobiss;
 class SSClientDataReader
 {
   public:
-    SSClientDataReader(SSClient& client, boost::mutex& mutex, boost::condition_variable& cond) :
+    SSClientDataReader(TiAClient& client, boost::mutex& mutex, boost::condition_variable& cond) :
         client_(client),
         mutex_(mutex),
         cond_(cond),
@@ -177,7 +177,7 @@ class SSClientDataReader
       }
     }
   private:
-    SSClient&                   client_;
+    TiAClient&                   client_;
     boost::mutex&               mutex_;
     boost::condition_variable&  cond_;
     bool                        running_;
@@ -219,7 +219,7 @@ int main(int argc, const char* argv[])
     return(-1);
   }
 
-  SSClient client;
+  TiAClient client;
 
   try
   {

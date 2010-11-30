@@ -21,19 +21,19 @@
 /**
 * @file server_server.h
 *
-* @brief Declaration of the base implementation of the SSClientImplBase interface
+* @brief Declaration of the base implementation of the TiAClientImplBase interface
 *
 **/
 
-#ifndef SSCLIENTIMPL_H
-#define SSCLIENTIMPL_H
+#ifndef TIA_CLIENT_IMPL_H
+#define TIA_CLIENT_IMPL_H
 
 // Boost
 #include <boost/asio.hpp>
 #include <boost/cstdint.hpp>
 
 // local
-#include "ssclientimpl_base.h"
+#include "tia_client_impl_base.h"
 #include "tia/ssconfig.h"
 #include "tia/defines.h"
 
@@ -47,22 +47,22 @@ class SSConfig;
 
 //-----------------------------------------------------------------------------
 /**
-* @class SSClientImpl
+* @class TiAClientImpl
 *
-* @brief Base implementation of the SSClient
+* @brief Base implementation of the TiAClient
 *
 */
-class SSClientImpl : public SSClientImplBase
+class TiAClientImpl : public TiAClientImplBase
 {
 public:
   /**
   * @brief Default Constructor
   */
-  SSClientImpl();
+  TiAClientImpl();
   /**
   * @brief Destructor
   */
-  virtual ~SSClientImpl();
+  virtual ~TiAClientImpl();
   /**
   *  @brief Establish a connection to a TOBI SignalServer
   * The caller will be blocked until the connection has been made or an error has occurred.
@@ -197,4 +197,4 @@ protected:
 } // Namespace tobiss
 //-----------------------------------------------------------------------------
 
-#endif // SSCLIENTIMPL_H
+#endif // TIA_CLIENT_IMPL_H

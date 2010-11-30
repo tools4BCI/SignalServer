@@ -21,12 +21,12 @@
 /**
 * @file server_server.h
 *
-* @brief Declaration of the abstract base class of the SSClient implementation
+* @brief Declaration of the abstract base class of the TiAClient implementation
 *
 **/
 
-#ifndef SSCLIENTIMPL_BASE_H
-#define SSCLIENTIMPL_BASE_H
+#ifndef TIA_CLIENT_IMPL_BASE_H
+#define TIA_CLIENT_IMPL_BASE_H
 
 // local
 
@@ -40,21 +40,21 @@ class DataPacket;
 
 //-----------------------------------------------------------------------------
 /**
-* @class SSClientImplBase
+* @class TiAClientImplBase
 *
-* @brief Abstract Base of the SSClient Implementation
+* @brief Abstract Base of the TiAClient Implementation
 */
-class SSClientImplBase
+class TiAClientImplBase
 {
 public:
   /**
    * @brief Constructor
    */
-  SSClientImplBase(){}
+  TiAClientImplBase(){}
   /**
    * @brief Destructor
    */
-  virtual ~SSClientImplBase(){}
+  virtual ~TiAClientImplBase(){}
   /**
    * @brief Establish a connection to a TOBI SignalServer
    * \sa connected(), disconnect()
@@ -110,4 +110,4 @@ public:
 
 //-----------------------------------------------------------------------------
 
-#endif // SSCLIENTIMPL_BASE_H
+#endif // TIA_CLIENT_IMPL_BASE_H
