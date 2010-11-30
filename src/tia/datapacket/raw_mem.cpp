@@ -18,6 +18,11 @@
     Contact: c.breitwieser@tugraz.at
 */
 
+/**
+* @file constants.cpp
+* @brief TODO
+**/
+
 #include <iostream>
 #include <vector>
 

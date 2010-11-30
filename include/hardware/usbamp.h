@@ -147,6 +147,8 @@ class USBamp : public HWThread
     void setUSBampChannels();
     int search4FilterID(unsigned int type, unsigned int order, double f_low, double f_high);
     int search4NotchID(float f_center);
+    void printPossibleBandPassFilters();
+    void printPossibleNotchFilters();
     void setUSBampFilter();
     void setUSBampNotch();
 

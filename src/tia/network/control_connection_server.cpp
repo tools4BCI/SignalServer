@@ -19,7 +19,7 @@
 */
 
 /**
-* @control_connection_server.cpp
+* @file control_connection_server.cpp
 *
 * @brief \TODO.
 *

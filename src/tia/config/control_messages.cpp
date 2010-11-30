@@ -19,7 +19,7 @@
 */
 
 /**
-* @control_messages.cpp
+* @file control_messages.cpp
 *
 * @brief \TODO.
 *
