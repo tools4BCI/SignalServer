@@ -2,6 +2,11 @@
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual C++ Express 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "signalserver", "TOBI_Signalserver.vcproj", "{0A4BE492-F0C7-4FA0-9997-35AD041A7519}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C9DFDA24-4646-4913-B064-45EECCAFB3D9} = {C9DFDA24-4646-4913-B064-45EECCAFB3D9}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TiA_library", "TOBI_TiA_lib.vcproj", "{C9DFDA24-4646-4913-B064-45EECCAFB3D9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,6 +18,10 @@ Global
 		{0A4BE492-F0C7-4FA0-9997-35AD041A7519}.Debug|Win32.Build.0 = Debug|Win32
 		{0A4BE492-F0C7-4FA0-9997-35AD041A7519}.Release|Win32.ActiveCfg = Release|Win32
 		{0A4BE492-F0C7-4FA0-9997-35AD041A7519}.Release|Win32.Build.0 = Release|Win32
+		{C9DFDA24-4646-4913-B064-45EECCAFB3D9}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C9DFDA24-4646-4913-B064-45EECCAFB3D9}.Debug|Win32.Build.0 = Debug|Win32
+		{C9DFDA24-4646-4913-B064-45EECCAFB3D9}.Release|Win32.ActiveCfg = Release|Win32
+		{C9DFDA24-4646-4913-B064-45EECCAFB3D9}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
