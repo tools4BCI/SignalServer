@@ -26,16 +26,9 @@ mkdir $pckdir
 
 # copy necessary files
 cp ./lib/libtia.so* ./$lib_dir/usr/lib/
-cp ./lib/libtiaclient.so* ./$lib_dir/usr/lib/
 
 cp ./lib/libtia.a ./$dev_dir/usr/lib/
-cp ./lib/libtiaclient.a ./$dev_dir/usr/lib/
-cp -r ./include/config ./$dev_dir/usr/include/tia
-cp -r ./include/definitions ./$dev_dir/usr/include/tia
-cp -r ./include/datapacket ./$dev_dir/usr/include/tia
-cp -r ./include/network ./$dev_dir/usr/include/tia
-cp -r ./include/signalserver ./$dev_dir/usr/include/tia
-cp -r ./include/signalserver-client ./$dev_dir/usr/include/tia
+cp -r ./include/tia ./$dev_dir/usr/include
 
 cp ./bin/signalserver ./$ss_dir/usr/bin/
 cp ./bin/server_config.xml ./$ss_dir/usr/local/etc/signalserver/

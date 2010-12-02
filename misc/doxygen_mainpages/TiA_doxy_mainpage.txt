@@ -1,0 +1,52 @@
+
+/*! \mainpage TOBI Interface A v0.1
+*
+* \section sec_intro Introduction
+* TOBI Interface A (TiA) is a platform independent interface to
+* transmit raw biosignals. This implementation is done using C++.
+*
+* TiA has the intention to allow multirate data acquisition from multiple
+* sources (EEG amplifiers, EMG amplifiers, assistive devices) at the same
+* time and facilitate an easy distinction afterwards. TiA provides an
+* additional abstraction mechanism to mask attached hardware and reduce the
+* clients burden to exactly know connected hardware.
+* An (theoretically) infinite number of clients is able to connect to a TiA
+* server at runtime.
+*
+* This library is designed to be platform independent and has already been
+* ported and tested at various Linux distributions, Windows XP and Windows 7
+* and also the iPhone and the iPod.
+*
+* Meta Information exchange is done using XML messages via a TCP connection.
+* Raw data transmission is done electively using assured transmission via a
+* TCP connection or unreliable transmission using broadcast UDP.
+*
+* Up to now TiA is used in the TOBI Signal Server. Client applications
+* for Matlab or scope applications will be provided soon.
+*
+* \section Dependencies
+* Needed libraries are:
+*   - boost-libs: asio, system, date_time  (recommeneded: >=1.40)
+*       (www.boost.org)
+*   - ticpp  (tinyXML fpr C++)
+*       (http://code.google.com/p/ticpp/)
+*
+* \section Recommendations
+*   - Ethernet min. 100 MBit (1 GBit sugggested)
+*       (needed network connection varying by the sampling rate and
+*        the number of channels acquired)
+*   - Run TiA with highest process priority possible
+*   PC requirements:
+*   - CPU: at least 200 MHz (already tested on embedded systems)
+*   - RAM: 32 MB
+*
+*  (More detailed hardware requirements are hard to be provided, as
+*    this is highly linked with the data acquisition settings)
+*
+* \section License
+*   TiA is licensed under the LGPL.
+*     http://www.gnu.org/licenses/lgpl.html
+*
+* \section Contact
+*   TiA@tobi-project.org
+*/

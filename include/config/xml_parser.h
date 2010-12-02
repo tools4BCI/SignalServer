@@ -42,7 +42,7 @@
 // boost
 #include <boost/lexical_cast.hpp>
 
-#include "definitions/constants.h"
+#include "tia/constants.h"
 
 namespace tobiss
 {
@@ -63,7 +63,7 @@ class XMLParser
     XMLParser()
     {
       #ifdef DEBUG
-      std::cout << "XMLParser: Default Constructor" << std::endl;
+      std::cout << " XMLParser: Default Constructor" << std::endl;
       #endif
     }
     /**

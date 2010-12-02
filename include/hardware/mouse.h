@@ -31,11 +31,8 @@
 #include <boost/cstdint.hpp>
 #include <set>
 
-#include <usb.h>
-
 #include "hw_thread.h"
 #include "hw_thread_builder.h"
-#include "extern/include/libusb/libusb.h"
 
 namespace tobiss
 {
@@ -75,6 +72,11 @@ class MouseBase : public HWThread
       boost::uint32_t vid_;
       boost::uint32_t pid_;
       boost::uint32_t usb_port_;
+	  ticpp::Iterator<ticpp::Element> DS;
+
+      static const std::string hw_vid;
+      static const std::string hw_pid;
+      static const std::string usb_port;
 
       /**
       * @brief Sets vendorId for Mousedevice.

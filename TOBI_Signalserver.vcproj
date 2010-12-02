@@ -270,6 +270,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\hardware\mouse.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\hardware\mouse_win.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\hardware\serial_port_base.cpp"
 					>
 				</File>
@@ -365,6 +373,14 @@
 				</File>
 				<File
 					RelativePath=".\include\hardware\jstick.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\hardware\mouse.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\hardware\mouse_win.h"
 					>
 				</File>
 				<File

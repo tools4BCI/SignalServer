@@ -26,18 +26,13 @@
 **/
 
 
+#ifndef _WIN32
 
 #ifndef MOUSE_LINUX_H
 #define MOUSE_LINUX_H
 
-#include <boost/cstdint.hpp>
-#include <set>
-
 #include <usb.h>
-
-#include "hw_thread.h"
 #include "mouse.h"
-#include "hw_thread_builder.h"
 #include "extern/include/libusb/libusb.h"
 
 namespace tobiss
@@ -71,3 +66,4 @@ namespace tobiss
 
 }
 #endif // MOUSE_LINUX_H
+#endif // __linux__
