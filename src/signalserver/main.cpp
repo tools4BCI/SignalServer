@@ -18,33 +18,6 @@
     Contact: c.breitwieser@tugraz.at
 */
 
-/*! \mainpage TOBI SignalServer v0.1
-*
-* \section sec_intro Introduction
-* The TOBI SignalServer implements the data acquisition section from the TOBI hybrid BCI (hBCI).
-* It also implements the so called TOBI Interface A within the class DataPacket.
-*
-* Up to now this project is in a very early stage of development and several errors might occur.
-*
-*
-* \section sec_install Installation
-* Information concerning the installation process will be provided soon.
-* Up to now compilation of this project is based on qmake.
-* Needed libraries are:
-*   - boost-libs  (recommeneded: >=1.40)
-*   - ticpp  (tinyXML fpr C++)
-*   - SDL    (Simple Directmedia lLayer)
-*   - libusb (v1.0)
-*
-*
-* \section sec_notes Notes, to-do list etc.
-* Tests have been performed using Ubuntu 10.04, 10.10, Debian unstable, Windows Xp and Windows 7.
-*
-* To use the g.tec g.USBamp, Microsofts Visual Studio compiler has to be used, otherwise
-* acquiering data through this device will lead the program to crash.
-*
-*/
-
 //-----------------------------------------------------------------------------
 
 // STL
@@ -58,7 +31,7 @@
 
 // local
 #include "version.h"
-#include "signalserver/signal_server.h"
+#include "tia/tia_server.h"
 #include "config/xml_parser.h"
 #include "hardware/hw_access.h"
 #include "filereading/data_file_handler.h"
@@ -80,7 +53,7 @@ const string TEMPLATE_XML_CONFIG_COMMENTS = string("/usr/local/etc/signalserver/
 class DataPacketReader
 {
   public:
-    DataPacketReader(HWAccess& hw_access, SignalServer& server) :
+    DataPacketReader(HWAccess& hw_access, TiAServer& server) :
         hw_access_(hw_access),
         server_(server),
         stop_reading_(false)
@@ -105,7 +78,7 @@ class DataPacketReader
     }
   private:
     HWAccess&                   hw_access_;
-    SignalServer&               server_;
+    TiAServer&               server_;
     bool                        stop_reading_;
 };
 
@@ -193,7 +166,7 @@ int main(int argc, const char* argv[])
 
       boost::asio::io_service io_service;
 
-      SignalServer server(io_service);
+      TiAServer server(io_service);
 
 //      DataFileHandler data_file_handler(io_service, config.getFileReaderMap());
 
