@@ -310,6 +310,7 @@
       <vendorid> 1351 </vendorid>
       <productid> 4136 </productid>
       <usb_port>130</usb_port>
+      <devcon_path>C:\WinDDK\7600.16385.1\tools\devcon\i386\devcon.exe</devcon_path> <-- FOR WIN!!! -->
     </device_settings>
   </hardware>  
 

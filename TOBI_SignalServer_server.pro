@@ -55,7 +55,7 @@ HEADERS += include/config/xml_parser.h \
     extern/include/LptTools/LptTools.h \
     include/hardware/mouse.h
 unix:HEADERS += include/hardware/mouse_linux.h
-win32:HEADERS += include/hardware/mouse_.h
+win32:HEADERS += include/hardware/mouse_win.h
 SOURCES += src/signalserver/main.cpp \
     src/config/xml_parser.cpp \
     src/hardware/hw_access.cpp \
@@ -76,7 +76,7 @@ SOURCES += src/signalserver/main.cpp \
     src/hardware/eeg_simulator.cpp \
     src/hardware/mouse.cpp
 unix:SOURCES += src/hardware/mouse_linux.cpp
-win32:SOURCES += src/hardware/mouse_.cpp
+win32:SOURCES += src/hardware/mouse_win.cpp
 unix:SOURCES += extern/include/LptTools/LptToolsLinux.cpp
 win32:SOURCES += extern/include/LptTools/LptTools_.cpp
 LIBS += lib/libtia.a

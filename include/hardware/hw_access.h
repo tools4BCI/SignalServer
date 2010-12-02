@@ -38,7 +38,7 @@
 #include <boost/cstdint.hpp>
 
 #include "config/xml_parser.h"
-#include "datapacket/data_packet.h"
+#include "tia/data_packet.h"
 
 #include "hw_thread.h"
 

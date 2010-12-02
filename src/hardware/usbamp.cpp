@@ -39,6 +39,8 @@ using boost::uint32_t;
 using std::cout;
 using std::cerr;
 using std::endl;
+using std::left;
+using std::right;
 using std::string;
 using std::vector;
 using std::map;
@@ -99,7 +101,6 @@ USBamp::USBamp(ticpp::Iterator<ticpp::Element> hw)
     sample_count_(0), error_count_(0) ,error_code_(0), expected_values_(0),
     first_run_(1), current_overlapped_(0)
 {
-  cout << "Driver Version" << usb_amp_.getDriverVersion () << endl;
   #ifdef DEBUG
     cout << "USBamp: Constructor" << endl;
   #endif
@@ -124,7 +125,7 @@ USBamp::USBamp(ticpp::Iterator<ticpp::Element> hw)
 
   ticpp::Iterator<ticpp::Element> elem(hw);
   ticpp::Iterator< ticpp::Attribute > attribute;
- 
+
   for(attribute = attribute.begin(elem.Get()); attribute != attribute.end();
       attribute++)
     m_.insert(pair<string, string>(attribute->Name(), attribute->Value()));
@@ -163,6 +164,7 @@ USBamp::USBamp(ticpp::Iterator<ticpp::Element> hw)
 
   cout << endl;
   cout << " * g.USBamp sucessfully initialized" << endl;
+  cout << "    driver version: " << usb_amp_.getDriverVersion () << ", hardware version: " << usb_amp_.getHWVersion (h_) << endl;
   cout << "    fs: " << fs_ << "Hz, nr of channels: " << nr_ch_ << ", blocksize: " << blocks_ << endl;
   cout << endl;
   if(!homogenous_signal_type_)
@@ -915,6 +917,119 @@ int USBamp::search4FilterID(unsigned int type, unsigned int order, double f_low,
   }
 
   return(id);
+}
+
+//---------------------------------------------------------------------------------------
+
+void USBamp::printPossibleBandPassFilters()
+{
+  if(!bp_filters_)
+    return;
+
+  cout << left;
+  cout << endl;
+  cout.width(12);
+  cout << "Filter ID: "<< "|  ";
+
+  cout.width(5);
+  cout << "Fs: "<< " | ";
+
+
+  cout << "Type: "<< "|  ";
+  cout << "Order: "<< "|  ";
+
+  cout.width(6);
+  cout << " f_low: "<< "| ";
+
+
+  cout << "f_high: ";
+
+  cout << endl;
+  cout << endl;
+
+
+  for(int n = 0; n < nr_of_bp_filters_; n++)
+    if(fs_ == bp_filters_[n].fs)
+    {
+    cout << right;
+
+    cout.width(11);
+    cout << n << " | ";
+
+    cout.width(6);
+    cout << bp_filters_[n].fs << " | ";
+
+    cout.width(5);
+    cout <<  bp_filters_[n].type  << " | ";
+    cout.width(7);
+    cout <<  bp_filters_[n].order << " | ";
+
+    cout.width(8);
+    cout << roundD(bp_filters_[n].fu) << " | ";
+
+    cout << left;
+    cout.width(8);
+    cout << roundD(bp_filters_[n].fo);
+    cout << endl;
+  }
+
+  cout << endl;
+  cout << endl;
+}
+
+//---------------------------------------------------------------------------------------
+
+void USBamp::printPossibleNotchFilters()
+{
+  if(!notch_filters_)
+    return;
+
+  cout << left;
+  cout << endl;
+  cout.width(12);
+  cout << "Notch ID: "<< "|  ";
+
+  cout.width(5);
+  cout << "Fs: "<< " | ";
+
+
+  cout << "Type: "<< "|  ";
+  cout << "Order: "<< "|  ";
+
+  cout.width(6);
+  cout << " f_low: "<< "| ";
+
+
+  cout << "f_high: ";
+
+  cout << endl;
+  cout << endl;
+
+  for(int n = 0; n < nr_of_notch_filters_; n++)
+    if(fs_ == notch_filters_[n].fs)
+    {
+      cout << right;
+
+      cout.width(11);
+      cout << n << " | ";
+
+      cout.width(6);
+      cout << notch_filters_[n].fs << " | ";
+
+      cout.width(5);
+      cout <<  notch_filters_[n].type  << " | ";
+      cout.width(7);
+      cout <<  notch_filters_[n].order << " | ";
+
+      cout.width(8);
+      cout << roundD(notch_filters_[n].fu) << " | ";
+
+      cout << left;
+      cout.width(8);
+      cout << roundD(notch_filters_[n].fo);
+      cout << endl;
+    }
+
 }
 
 //---------------------------------------------------------------------------------------

@@ -18,6 +18,8 @@
     Contact: c.breitwieser@tugraz.at
 */
 
+#ifndef _WIN32
+
 #include "hardware/mouse_linux.h"
 
 namespace tobiss
@@ -106,3 +108,4 @@ namespace tobiss
 
 
 }
+#endif //__linux__

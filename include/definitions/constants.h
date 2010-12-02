@@ -190,12 +190,6 @@ namespace tobiss
       static const std::string fr_speedup;
       static const std::string fr_stop;
 
-        //Mouse specific start
-          static const std::string hw_vid;
-          static const std::string hw_pid;
-          static const std::string usb_port;
-        //Mouse specific end
-
     private:
       /**
       * @brief Mapping std::strings, representing signaltypes, and identifiers together.

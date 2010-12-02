@@ -106,7 +106,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="2"
+				Optimization="3"
 				InlineFunctionExpansion="2"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
@@ -160,31 +160,47 @@
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
+			<File
+				RelativePath=".\src\tia\constants.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\tia\data_packet.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\tia\ss_meta_info.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\tia\tia_client.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\tia\tia_server.cpp"
+				>
+			</File>
 			<Filter
-				Name="config"
+				Name="network"
 				>
 				<File
-					RelativePath="src\config\control_message_decoder.cpp"
+					RelativePath=".\src\tia\network\control_connection.cpp"
 					>
 				</File>
 				<File
-					RelativePath="src\config\control_message_encoder.cpp"
+					RelativePath=".\src\tia\network\control_connection_server.cpp"
 					>
 				</File>
 				<File
-					RelativePath="src\config\control_messages.cpp"
+					RelativePath=".\src\tia\network\tcp_data_server.cpp"
 					>
 				</File>
 				<File
-					RelativePath="src\config\ss_meta_info.cpp"
+					RelativePath=".\src\tia\network\tcp_server.cpp"
 					>
 				</File>
-			</Filter>
-			<Filter
-				Name="signalserver"
-				>
 				<File
-					RelativePath="src\signalserver\signal_server.cpp"
+					RelativePath=".\src\tia\network\udp_data_server.cpp"
 					>
 				</File>
 			</Filter>
@@ -192,43 +208,31 @@
 				Name="datapacket"
 				>
 				<File
-					RelativePath="src\datapacket\data_packet.cpp"
-					>
-				</File>
-				<File
-					RelativePath="src\datapacket\raw_mem.cpp"
+					RelativePath=".\src\tia\datapacket\raw_mem.cpp"
 					>
 				</File>
 			</Filter>
 			<Filter
-				Name="definitions"
+				Name="config"
 				>
 				<File
-					RelativePath="src\definitions\constants.cpp"
+					RelativePath=".\src\tia\config\control_message_decoder.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\tia\config\control_message_encoder.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\tia\config\control_messages.cpp"
 					>
 				</File>
 			</Filter>
 			<Filter
-				Name="network"
+				Name="client"
 				>
 				<File
-					RelativePath="src\network\control_connection.cpp"
-					>
-				</File>
-				<File
-					RelativePath="src\network\control_connection_server.cpp"
-					>
-				</File>
-				<File
-					RelativePath="src\network\tcp_data_server.cpp"
-					>
-				</File>
-				<File
-					RelativePath="src\network\tcp_server.cpp"
-					>
-				</File>
-				<File
-					RelativePath="src\network\udp_data_server.cpp"
+					RelativePath=".\src\tia\client\tia_client_impl.cpp"
 					>
 				</File>
 			</Filter>
@@ -238,31 +242,51 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\include\tia\constants.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tia\data_packet.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tia\defines.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tia\ss_meta_info.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\tia\tia_server.h"
+				>
+			</File>
 			<Filter
-				Name="config"
+				Name="network"
 				>
 				<File
-					RelativePath="include\config\control_message_decoder.h"
+					RelativePath=".\include\tia-private\network\control_connection.h"
 					>
 				</File>
 				<File
-					RelativePath="include\config\control_message_encoder.h"
+					RelativePath=".\include\tia-private\network\control_connection_server.h"
 					>
 				</File>
 				<File
-					RelativePath="include\config\control_messages.h"
+					RelativePath=".\include\tia-private\network\tcp_data_server.h"
 					>
 				</File>
 				<File
-					RelativePath="include\config\ss_meta_info.h"
+					RelativePath=".\include\tia-private\network\tcp_server.h"
 					>
 				</File>
-			</Filter>
-			<Filter
-				Name="signalserver"
-				>
 				<File
-					RelativePath="include\signalserver\signal_server.h"
+					RelativePath=".\include\tia-private\network\udp_data_server.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\tia-private\network\udp_server.h"
 					>
 				</File>
 			</Filter>
@@ -270,51 +294,35 @@
 				Name="datapacket"
 				>
 				<File
-					RelativePath="include\datapacket\data_packet.h"
-					>
-				</File>
-				<File
-					RelativePath="include\datapacket\raw_mem.h"
+					RelativePath=".\include\tia-private\datapacket\raw_mem.h"
 					>
 				</File>
 			</Filter>
 			<Filter
-				Name="definitions"
+				Name="config"
 				>
 				<File
-					RelativePath="include\definitions\constants.h"
+					RelativePath=".\include\tia-private\config\control_message_decoder.h"
 					>
 				</File>
 				<File
-					RelativePath="include\definitions\defines.h"
+					RelativePath=".\include\tia-private\config\control_message_encoder.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\tia-private\config\control_messages.h"
 					>
 				</File>
 			</Filter>
 			<Filter
-				Name="network"
+				Name="client"
 				>
 				<File
-					RelativePath="include\network\control_connection.h"
+					RelativePath=".\include\tia-private\client\tia_client_impl.h"
 					>
 				</File>
 				<File
-					RelativePath="include\network\control_connection_server.h"
-					>
-				</File>
-				<File
-					RelativePath="include\network\tcp_data_server.h"
-					>
-				</File>
-				<File
-					RelativePath="include\network\tcp_server.h"
-					>
-				</File>
-				<File
-					RelativePath="include\network\udp_data_server.h"
-					>
-				</File>
-				<File
-					RelativePath="include\network\udp_server.h"
+					RelativePath=".\include\tia-private\client\tia_client_impl_base.h"
 					>
 				</File>
 			</Filter>

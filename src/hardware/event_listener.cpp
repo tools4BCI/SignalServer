@@ -140,9 +140,9 @@ void EventListener::listen4Events(const boost::system::error_code& error,
 //   cond_.notify_all();
 //   syn.unlock();
 
-  cout << "Event Codes: " << endl;
+  cout << " Event Codes: " << endl;
   for(uint32_t n = 0; n < events_.size(); n++)
-    cout << events_[n] << endl;
+    cout << "   " << events_[n] << endl;
 
   cout << endl;
   run();

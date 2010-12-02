@@ -33,8 +33,8 @@
 
 #include <boost/cstdint.hpp>
 
-#include "definitions/defines.h"
-#include "datapacket/data_packet.h"
+#include "tia/defines.h"
+#include "tia/data_packet.h"
 
 namespace tobiss
 {
