@@ -19,8 +19,7 @@
 */
 
 /**
-* @file constants.cpp
-* @brief TODO
+* @file raw_mem.cpp
 **/
 
 #include <iostream>

@@ -20,7 +20,6 @@
 
 /**
 * @file tia_server.cpp
-* @brief TODO
 **/
 
 // STL

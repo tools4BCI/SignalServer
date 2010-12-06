@@ -69,9 +69,23 @@ class DataPacket;
 *
 * It provides an interface to set this meta data and transmit acquired data using
 * TiA data packets.
+*
+* @todo Implement mechanisms to detect "impossible" configurations.
+* @todo Define "invisible magic constants" like fs = 0 for aperiodic devices.
+* @todo Implement mechanisms to ensure that aperiodics are used correctly (e.g. blocksize)
 */
 class TiAServer : boost::noncopyable
 {
+  /** \example tia-simple-example.cpp
+   * This is an example how to use the TiA server.
+   * Parameters to configure the TiA server have to be provided by the
+   * data acquisition system. Variables introduced in this example are
+   * only for demonstration purposes and should demonstrate how to
+   * configure the TiA server.
+   *
+   * The TiA server needs boost::asio installed on the system.
+   */
+
   friend class ControlConnectionServer;
 
     // Methods
@@ -96,6 +110,9 @@ class TiAServer : boost::noncopyable
     *
     * The server needs to be initializedwith subject specific information (birthday,...) and
     * parameters for the server configuration (ctrl port, udp port, udp broadcast addr).
+    *
+    * @todo Check if wrong configuration is checked within this code.
+    * @todo Is it a good idea to use maps for configuration (especially server config)?
     */
     void initialize(std::map<std::string,std::string> subject_info,
                     std::map<std::string,std::string> server_settings);

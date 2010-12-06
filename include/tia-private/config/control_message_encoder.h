@@ -19,10 +19,9 @@
 */
 
 /**
-* @file control_connection_server.h
+* @file control_message_encoder.h
 *
-* @brief \TODO.
-*
+* @brief This class includes an interface and a concrete class to encode control messages.
 **/
 
 #ifndef CONTROLMESSAGEENCODER_H
@@ -45,32 +44,53 @@ namespace tobiss
 {
 //-----------------------------------------------------------------------------
 
+/**
+* @class ControlMsgEncoder
+* @brief Interface to encode control message
+*/
 class ControlMsgEncoder
 {
 public:
+  /**
+  * @brief Constuctor
+  */
   ControlMsgEncoder() {}
+  /**
+  * @brief Destuctor
+  */
   virtual ~ControlMsgEncoder(){}
 
-  ///
+  ///< Write a KeepAlive message to the ostream
   virtual void encodeMsg(const KeepAliveMsg& msg, std::ostream& stream) = 0;
-  ///
+
+  ///< Write a GetConfig message to the ostream
   virtual void encodeMsg(const GetConfigMsg& msg, std::ostream& stream) = 0;
-  ///
+
+  ///< Write a GetDataConnection message to the ostream
   virtual void encodeMsg(const GetDataConnectionMsg& msg, std::ostream& stream) = 0;
-  ///
+
+  ///< Write a DataCnnection message to the ostream
   virtual void encodeMsg(const DataConnectionMsg& msg, std::ostream& stream) = 0;
-  ///
+
+  ///< Write a StartTransmission message to the ostream
   virtual void encodeMsg(const StartTransmissionMsg& msg, std::ostream& stream) = 0;
-  ///
+
+  ///< Write a StopTransmission message to the ostream
   virtual void encodeMsg(const StopTransmissionMsg& msg, std::ostream& stream) = 0;
-  ///
+
+  ///< Write a Config message to the ostream
   virtual void encodeMsg(const ConfigMsg& msg, std::ostream& stream) = 0;
-  ///
+
+  ///< Write a Reply message to the ostream
   virtual void encodeMsg(const ReplyMsg& msg, std::ostream& stream) = 0;
 };
 
 //-----------------------------------------------------------------------------
 
+/**
+* @class ControlMsgEncoderXML
+* @brief Concrete class to encode XML control message
+*/
 class ControlMsgEncoderXML : public ControlMsgEncoder
 {
 public:
@@ -92,9 +112,11 @@ public:
   virtual void encodeMsg(const ReplyMsg& msg, std::ostream& stream);
 
 protected:
+  /// Encode a base control message
   void encodeBaseMsg(const ControlMsg& msg, const std::string& xml_msg_type,
       TiXmlDocument& doc, TiXmlElement*& xml_msg);
 
+  /// Write the XML control message to the ostream
   void writeXMLMsg(TiXmlDocument& doc, std::ostream& stream);
 };
 

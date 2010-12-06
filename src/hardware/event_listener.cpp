@@ -18,6 +18,10 @@
     Contact: c.breitwieser@tugraz.at
 */
 
+/**
+* @file event_listener.cpp
+**/
+
 #include "hardware/event_listener.h"
 
 #include <boost/bind.hpp>
