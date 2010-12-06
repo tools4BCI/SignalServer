@@ -20,9 +20,6 @@
 
 /**
 * @file control_message_encoder.cpp
-*
-* @brief \TODO.
-*
 **/
 
 // Boost

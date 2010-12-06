@@ -19,10 +19,8 @@
 */
 
 /**
-* @ssclient_main.cpp
-*
-* @brief \TODO.
-*
+* @file ssclient_main.cpp
+* @brief This file includes a demo implementation of a very simple console TiA client.
 **/
 
 // STL

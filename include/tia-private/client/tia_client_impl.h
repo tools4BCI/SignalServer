@@ -19,7 +19,7 @@
 */
 
 /**
-* @file server_server.h
+* @file tia_client_impl.h
 *
 * @brief Declaration of the base implementation of the TiAClientImplBase interface
 *

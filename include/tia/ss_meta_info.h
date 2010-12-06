@@ -21,6 +21,7 @@
 /**
 * @file ss_meta_info.h
 * @brief This file includes classes used to store meta information used in TiA.
+* @todo Rename file to TiA_meta_information
 **/
 
 #ifndef SERVER_META_INFO_H
@@ -33,8 +34,6 @@
 #include <map>
 #include <vector>
 
-#include <boost/cstdint.hpp>
-
 namespace tobiss
 {
 
@@ -43,8 +42,11 @@ namespace tobiss
 /**
  * @class SubjectInfo
  *
- * @brief TODO
+ * @brief This class is used to store subject specific information.
  *
+ * Subjects with obvious functionality are not documented.
+ * @todo Adjust class to use enums properly (e.g. sex).
+ * @todo Check if mandatory settings are done (now done in XML parser).
  */
 
 class SubjectInfo
@@ -60,6 +62,9 @@ class SubjectInfo
       LeftHanded = 2
     };
 
+    /**
+    * @brief Enum for binary information.
+    */
     enum ShortInfoType{
       Glasses = 1,
       Smoking
@@ -74,7 +79,13 @@ class SubjectInfo
     typedef std::map<ShortInfoType, ShortInfoValue> ShortInfoMap;
 
   public:
+    /**
+    * @brief Get the subjects identification code.
+    */
     std::string id() const { return id_; }
+    /**
+    * @brief Set the subjects identification code.
+    */
     void setId(const std::string& id) { id_ = id; }
 
     std::string firstName() const { return firstname_; }
@@ -95,11 +106,17 @@ class SubjectInfo
     void setMedication(std::string& medication) { medication_ =  medication; }
     std::string medication() const { return medication_; }
 
+    /**
+     * @brief Set a single short info.
+     */
     void setShortInfo(ShortInfoType info, ShortInfoValue value)
     {
       short_infos_[info] = value;
     }
 
+    /**
+     * @brief Get a specific short info value.
+     */
     ShortInfoValue shortInfo(ShortInfoType info) const
     {
       ShortInfoMap::const_iterator it = short_infos_.find(info);
@@ -112,14 +129,14 @@ class SubjectInfo
     const ShortInfoMap& shortInfoMap() const { return short_infos_; }
 
   private:
-    std::string  id_;
-    std::string  firstname_;
-    std::string  surname_;
-    std::string  birthday_;
-    std::string  medication_;
-    int          handedness_;
-    int          sex_;
-    ShortInfoMap short_infos_;
+    std::string  id_;           ///< The subjects identification code.
+    std::string  firstname_;    ///< Voluntary.
+    std::string  surname_;      ///< Voluntary.
+    std::string  birthday_;     ///< Mandatory
+    std::string  medication_;   ///< Mandatory
+    int handedness_;            ///< Mandatory
+    int sex_;                   ///< Mandatory
+    ShortInfoMap short_infos_;  ///<
 };
 
 //-----------------------------------------------------------------------------
@@ -127,18 +144,28 @@ class SubjectInfo
 /**
  * @class Channel
  *
- * @brief TODO
+ * @brief Information for a channel.
  *
+ * This class is available to store channel specific information. Up to now
+ * only the channel name is supported. It will be extended in near future with
+ * physical and digital range, impedance and related hardware ID.
+ *
+ * @todo Write (or rename to) more appropriate method-names(e.g. id_--> name_)
  */
 class Channel
 {
   public:
+    /**
+     * @brief Get the channel name (e.g. C3).
+     */
     std::string id() const { return id_; }
-
+    /**
+     * @brief Set the channel name.
+     */
     void setId(const std::string& id) { id_ = id; }
 
   private:
-    std::string id_;
+    std::string id_;    ///<
 };
 
 //-----------------------------------------------------------------------------
@@ -146,24 +173,49 @@ class Channel
 /**
  * @class Signal
  *
- * @brief TODO
+ * @brief This class is written to store information for a specific signal type.
  *
+ * This class is designed to hold information which is consistent
+ * within a single signal type like sampling rate or block size.
+ *
+ * @todo Find a way to be consistent with signal types and signal type names within TiA.
  */
 class Signal
 {
   public:
+      /**
+       * @brief Set the name of the signal type.
+       */
       void setType(const std::string& type) { type_ = type; }
 
+      /**
+       * @brief Get the name of the stored signal type.
+       */
       std::string type() const { return type_; }
 
+      /**
+       * @brief Get the blocksize of the stored signal type.
+       */
       boost::uint16_t blockSize() const { return block_size_; }
 
+      /**
+       * @brief Set the blocksize of the stored signal type.
+       */
       void setBlockSize(boost::uint16_t block_size) { block_size_ = block_size; }
 
+      /**
+       * @brief Get the sampling rate of the stored signal type.
+       */
       boost::uint16_t samplingRate() const { return sampling_rate_; }
 
+      /**
+       * @brief Set the sampling rate of the stored signal type.
+       */
       void setSamplingRate(boost::uint16_t sampling_rate) { sampling_rate_ = sampling_rate; }
 
+      /**
+       * @brief Get a vector holding specific information for every channel of this signal type.
+       */
       const std::vector<Channel>& channels() const { return channels_; }
 
       std::vector<Channel>& channels() { return channels_; }
@@ -180,8 +232,11 @@ class Signal
 /**
  * @class SignalInfo
  *
- * @brief TODO
+ * @brief This class stores information for all transmitted signals.
  *
+ * This class stores information for all signal transmitted via TiA.
+ * It also stores information concerning the master device, as this
+ * device is responsible for the rate, data packets are delivered with.
  */
 class SignalInfo
 {
@@ -189,8 +244,14 @@ class SignalInfo
     typedef std::map<std::string, Signal> SignalMap;
 
   public:
+    /**
+     * @brief Get the sampling rate of the device defined as master.
+     */
     boost::uint16_t masterSamplingRate() const { return master_sampling_rate_; }
 
+    /**
+     * @brief Set the sampling rate of the device defined as master.
+     */
     void setMasterSamplingRate(boost::uint16_t rate) { master_sampling_rate_ = rate; }
 
     boost::uint16_t masterBlockSize() const { return master_block_size_; }
@@ -202,9 +263,9 @@ class SignalInfo
     SignalMap& signals() { return signals_; }
 
   private:
-    boost::uint16_t  master_block_size_;
-    boost::uint16_t  master_sampling_rate_;
-    SignalMap signals_;
+    boost::uint16_t  master_block_size_;      ///<
+    boost::uint16_t  master_sampling_rate_;   ///<
+    SignalMap signals_;                       ///<
 };
 
 } // Namespace tobiss

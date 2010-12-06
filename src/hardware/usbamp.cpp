@@ -18,6 +18,10 @@
     Contact: c.breitwieser@tugraz.at
 */
 
+/**
+* @file usbamp.cpp
+**/
+
 #ifdef WIN32
 
 #include "winsock2.h"

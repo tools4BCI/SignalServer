@@ -17,3 +17,6 @@
     Copyright 2010 Christian Breitwieser
     Contact: c.breitwieser@tugraz.at
 */
+/**
+* @file gdf_file_reader.cpp
+**/

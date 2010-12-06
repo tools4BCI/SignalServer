@@ -20,9 +20,7 @@
 
 /**
 * @file control_connection.h
-*
-* @brief \TODO.
-*
+* @brief This file includes the class used to handle the TCP control connection.
 **/
 
 #ifndef CONTROLCONNECTION_H
@@ -56,8 +54,8 @@ class UDPDataServer;
 /**
 * @class ControlConnection
 *
-* @brief Represents a single connection from a client.
-*
+* @brief ControlConnection handles a single TCP control connection to one client.
+* @todo  Improve documentation of this class.
 */
 class ControlConnection : public boost::enable_shared_from_this<ControlConnection>
 {

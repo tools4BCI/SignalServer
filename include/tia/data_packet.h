@@ -62,6 +62,11 @@ class RawMem;
 */
 class DataPacket
 {
+  /** \example datapacket-usage-example.cpp
+  *   This is an example how to build an fill a TiA data packet with
+  *   raw samples and set needed parameters.
+  */
+
   public:
     /**
     * @brief Default constructor -- building an empty DataPacket.
@@ -91,7 +96,7 @@ class DataPacket
     * Deletes all dynamically built raw_mem objects stored in raw_map.
     */
     virtual ~DataPacket();
-	
+
 	/**
     * @brief Copy constructor  --  does NOT copy the raw memory representation.
     * @todo Check for memory leaks! (can occur, if raw_mem objects are built)

@@ -39,7 +39,14 @@
 
 namespace tobiss
 {
+
 //-----------------------------------------------------------------------------
+
+/**
+* @class EventListener
+* @brief A temporary class used to inject events into the signal server.
+* @warning This class is planned to be replaced by TOBI Interface D (TiD) and will be removed.
+*/
 class EventListener : public HWThread
 {
   public:

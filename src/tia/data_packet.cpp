@@ -19,8 +19,7 @@
 */
 
 /**
-* @file constants.cpp
-* @brief TODO
+* @file data_packet.cpp
 **/
 
 #include <sstream>
@@ -242,14 +241,14 @@ void DataPacket::setTimestamp()
 
 //-----------------------------------------------------------------------------
 
-bool DataPacket::hasFlag(uint32_t f)
+bool DataPacket::hasFlag(boost::uint32_t f)
 {
   return( (f & flags_) == f);
 }
 
 //-----------------------------------------------------------------------------
 
-uint32_t DataPacket::getFlags()
+boost::uint32_t DataPacket::getFlags()
 {
   if(!flagsOK())
     throw(std::logic_error("DataPacket::getFlags() -- Flags differ from Amount of Signals in DataPacket!"));
@@ -258,14 +257,14 @@ uint32_t DataPacket::getFlags()
 
 //-----------------------------------------------------------------------------
 
-uint64_t DataPacket::getSampleNr()
+boost::uint64_t DataPacket::getSampleNr()
 {
   return(sample_nr_);
 }
 
 //-----------------------------------------------------------------------------
 
-uint16_t DataPacket::getNrOfSignalTypes()
+boost::uint16_t DataPacket::getNrOfSignalTypes()
 {
   if(!flagsOK())
     throw(std::logic_error("DataPacket::getNrOfSignalTypes() -- Flags differ from Amount of Signals in DataPacket!"));
@@ -275,7 +274,7 @@ uint16_t DataPacket::getNrOfSignalTypes()
 
 //-----------------------------------------------------------------------------
 
-vector<uint16_t> DataPacket::getNrOfBlocks()
+vector<boost::uint16_t> DataPacket::getNrOfBlocks()
 {
   return(nr_blocks_);
 }
@@ -298,7 +297,7 @@ vector<double> DataPacket::getData()
 
 //-----------------------------------------------------------------------------
 
-vector<double> DataPacket::getSingleDataBlock(uint32_t flag)
+vector<double> DataPacket::getSingleDataBlock(boost::uint32_t flag)
 {
   if(!flagsOK())
     throw(std::logic_error("DataPacket::getSingleDataBlock() -- Flags differ from Amount of Signals in DataPacket!"));
@@ -315,7 +314,7 @@ vector<double> DataPacket::getSingleDataBlock(uint32_t flag)
 
 //-----------------------------------------------------------------------------
 
-uint16_t DataPacket::getNrOfValues(uint32_t flag)
+boost::uint16_t DataPacket::getNrOfValues(boost::uint32_t flag)
 {
   if(!flagsOK())
     throw(std::logic_error("DataPacket::getNrOfValues() -- Flags differ from Amount of Signals in DataPacket!"));
@@ -328,7 +327,7 @@ uint16_t DataPacket::getNrOfValues(uint32_t flag)
 
 //-----------------------------------------------------------------------------
 
-uint16_t DataPacket::getNrOfBlocks(uint32_t flag)
+boost::uint16_t DataPacket::getNrOfBlocks(boost::uint32_t flag)
 {
   if(!flagsOK())
     throw(std::logic_error("DataPacket::getNrOfBlocks() -- Flags differ from Amount of Signals in DataPacket!"));
@@ -341,7 +340,7 @@ uint16_t DataPacket::getNrOfBlocks(uint32_t flag)
 
 //-----------------------------------------------------------------------------
 
-uint16_t DataPacket::calcNrOfSignalTypes(uint32_t f)
+boost::uint16_t DataPacket::calcNrOfSignalTypes(boost::uint32_t f)
 {
   uint16_t count = 0;
   uint32_t shift = 1;
@@ -363,14 +362,14 @@ bool DataPacket::flagsOK()
 
 //-----------------------------------------------------------------------------
 
-void DataPacket::setFlag(uint32_t f)
+void DataPacket::setFlag(boost::uint32_t f)
 {
   flags_ |= f;
 }
 
 //-----------------------------------------------------------------------------
 
-uint32_t DataPacket::getDataPos(uint32_t flag)
+boost::uint32_t DataPacket::getDataPos(boost::uint32_t flag)
 {
   if(flag > flags_)
     return(nr_of_signal_types_);
@@ -390,7 +389,7 @@ uint32_t DataPacket::getDataPos(uint32_t flag)
 
 //-----------------------------------------------------------------------------
 
-uint32_t DataPacket::getOffset(uint32_t pos)
+boost::uint32_t DataPacket::getOffset(boost::uint32_t pos)
 {
   uint32_t offset = 0;
 
@@ -401,7 +400,7 @@ uint32_t DataPacket::getOffset(uint32_t pos)
 
 //-----------------------------------------------------------------------------
 
-uint32_t DataPacket::getRawMemorySize()
+boost::uint32_t DataPacket::getRawMemorySize()
 {
   map<uint32_t, RawMem*>::iterator it(raw_map_.find(flags_));
 
@@ -435,7 +434,7 @@ void* DataPacket::getRaw()
 
 //-----------------------------------------------------------------------------
 
-uint32_t DataPacket::getRequiredRawMemorySize()
+boost::uint32_t DataPacket::getRequiredRawMemorySize()
 {
   uint32_t size = sizeof(flags_) + sizeof(sample_nr_) + sizeof(packet_nr_) \
     + sizeof(timestamp_) \
@@ -447,7 +446,7 @@ uint32_t DataPacket::getRequiredRawMemorySize()
 
 //-----------------------------------------------------------------------------
 
-uint32_t DataPacket::getRequiredRawMemorySize(void* mem, int32_t ba)
+boost::uint32_t DataPacket::getRequiredRawMemorySize(void* mem, boost::int32_t ba)
 {
   uint32_t bytes_available = 0;
 

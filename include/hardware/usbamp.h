@@ -66,23 +66,39 @@ static const unsigned int DIGITS_TO_ROUND = 2;
 * and letting them appear as one single device.
 * Configuration has to be done by an tinyXML object, satisfying the configuration file specifications
 * for the signalserver project.
+*
+* @attention Only g.USBamp verison B is supported and tested propperly
+*
+* @todo Implement Linux API
+* @todo Support g.USBamp version A
+* @todo Document also private methods
+* @todo Implement also "auto-blocksize" mode
+*
+* @bug  Timeouts occur every second time the USBamp ist started.
 */
 class USBamp : public HWThread
 {
   public:
-//   USBamp(boost::asio::io_service& io, const HWConfig& config)
-//   : HWThread(config.sampling_rate, config.nr_channels, config.blocks)
-//   {
-//     ch = new UCHAR [USBAMP_MAX_NR_OF_CHANNELS * sizeof(UCHAR)];
-//     initUSBamp();
-//   }
-
+  /**
+  * @brief Constructor
+  */
   USBamp(ticpp::Iterator<ticpp::Element> hw);
 
+  /**
+  * @brief Destructor
+  */
   virtual ~USBamp();
 
+  /**
+  * @brief Get data asynchronously.
+  * @todo Implement this mehtod properly.
+  */
   virtual SampleBlock<double> getSyncData();
 
+  /**
+  * @brief Get data asynchronously.
+  * @todo Implement this mehtod properly.
+  */
   virtual SampleBlock<double> getAsyncData();
 
   /**
@@ -223,7 +239,7 @@ class USBamp : public HWThread
 
     GTECUSBampWrapper usb_amp_;
 
-	std::map<std::string, std::string> m_;	/// Attributes mab -- to be renamed
+  std::map<std::string, std::string> m_;	/// Attributes mab -- to be renamed
 
     //-----------------------------------------------
     // Constants

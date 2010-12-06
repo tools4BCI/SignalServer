@@ -1,5 +1,6 @@
 
-/*! \mainpage TOBI Interface A v0.1
+/*! \mainpage TOBI Interface A
+*
 *
 * \section sec_intro Introduction
 * TOBI Interface A (TiA) is a platform independent interface to
@@ -49,4 +50,12 @@
 *
 * \section Contact
 *   TiA@tobi-project.org
+*
+* @author Christian Breitwieser
+* @author Christoph Eibel
+* @author Andreas Schuller
+* @author Mario Rowies
+*
+* @version 0.1
+* @date 2009-2011
 */

@@ -18,6 +18,10 @@
     Contact: c.breitwieser@tugraz.at
 */
 
+/**
+* @file jstick.cpp
+**/
+
 #include "hardware/jstick.h"
 
 #include "SDL/SDL.h"

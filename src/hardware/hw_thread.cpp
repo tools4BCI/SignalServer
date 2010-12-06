@@ -18,6 +18,10 @@
     Contact: c.breitwieser@tugraz.at
 */
 
+/**
+* @file hw_thread.cpp
+**/
+
 #include "hardware/hw_thread.h"
 #include "tia/constants.h"
 #include <boost/algorithm/string.hpp>

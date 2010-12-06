@@ -18,6 +18,10 @@
     Contact: c.breitwieser@tugraz.at
 */
 
+/**
+* @file xml_parser.cpp
+**/
+
 #include "config/xml_parser.h"
 #include <boost/algorithm/string.hpp>
 
