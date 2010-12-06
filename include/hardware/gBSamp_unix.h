@@ -81,16 +81,6 @@ class gBSamp : public HWThread
     int initCard();
 
     /**
-    * @brief Stops the device if an error occurs
-    */
-//    void stopDAQ(boost::int32_t error, TaskHandle taskHandle, char errBuff[2048]);
-
-    /**
-    * @brief Starts reading from device
-    */
-    int readFromDAQCard();
-
-    /**
     * @brief Set configuration listed in the \<device_settings\> section in the XML file.
     * @param[in] hw ticpp::Element pointing to an \<device_settings\> tag in the config file
     * @throw ticpp::exception
@@ -133,12 +123,15 @@ class gBSamp : public HWThread
     boost::int32_t first_run_;
 
     comedi_t* device_;
-    sampl_t* data_buffer_[10000];
+//    sampl_t* data_buffer_[10000];
     comedi_cmd comedi_cmd_;
 //    unsigned int channel_list[0];
 //    comedi_insn comedi_insn_;
-    comedi_insnlist insn_list_;
-    lsampl_t data_buf_[1000];
+//    comedi_insnlist insn_list_;
+//    lsampl_t data_buf_[1000];
+    comedi_range* range_info;
+    int maxdata;
+
 
 
 };

@@ -3,6 +3,7 @@
 #include <boost/asio.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/lexical_cast.hpp>
+#include <fstream>
 
 // STL
 #include <iostream>
@@ -22,7 +23,9 @@ using std::string;
 using std::cout;
 using std::endl;
 
-#define SUBDEVICE_FOR_ANALOG_INPUT 0;
+#define SUBDEVICE_AI 0 //subdevice for analog input
+#define PREF_RANGE  0 //range -10V - +10V
+#define BUF_SIZE 10000
 //-----------------------------------------------------------------------------
 
 gBSamp::gBSamp(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
@@ -56,7 +59,10 @@ gBSamp::~gBSamp()
   #endif
 
   if(device_)
-      comedi_close(device_);
+  {
+    comedi_cancel(device_, 0);
+    comedi_close(device_);
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -88,13 +94,6 @@ void gBSamp::stop()
 
 //-----------------------------------------------------------------------------
 
-int gBSamp::readFromDAQCard()
-{
-  return error;
-}
-
-//-----------------------------------------------------------------------------
-
 SampleBlock<double> gBSamp::getSyncData()
 {
   #ifdef DEBUG
@@ -114,48 +113,61 @@ SampleBlock<double> gBSamp::getSyncData()
 
   if(first_run_)
   {
-    cout << "gBSamp: Command-Test 1" << endl;
     error = comedi_command_test(device_, &comedi_cmd_);
-    if(error != 0)
+    if (error >= 0)
     {
-      cerr << "gBSamp: comedi_command_test - Error nr " << error  << endl;
+      cout << "gBSamp: Error for 1st comedi_command_test: " << error << endl;
     }
-    cout << "gBSamp: Command-Test 2" << endl;
     error = comedi_command_test(device_, &comedi_cmd_);
-    if(error != 0)
+    if (error >= 0)
     {
-      cerr << "gBSamp: comedi_command_test - Error nr " << error  << endl;
+      cout << "gBSamp: Error for 2nd comedi_command_test: " << error << endl;
     }
-    cout << "gBSamp: comediCommand" << endl;
+    error = comedi_command_test(device_, &comedi_cmd_);
+    if (error >= 0)
+    {
+      cout << "gBSamp: Error for 3nd comedi_command_test: " << error << endl;
+    }
     error = comedi_command(device_, &comedi_cmd_);
-    if (error < 0)
-      comedi_perror("gBSamp: comedi_command");
     first_run_ = 0;
+    if (error < 0)
+    {
+//      cout << "gBSamp: Error for comedi_command: " << error << endl;
+      first_run_=1;
+    }
+    if(!first_run_)
+      cout << "gBSamp: comedi_command successful" << endl;
   }
 
-  lsampl_t buf[1000];
-  error = read(comedi_fileno(device_),buf,sizeof(sampl_t));
+  sampl_t buf[10000];
 
-//  error = comedi_do_insnlist(device_, &insn_list_);
-//  if(error<0)
-//    comedi_perror("gBSamp: comedi_do_insnlist");
+//    comedi_get_buffer_contents(device_,0);
+  read(comedi_fileno(device_),buf, BUF_SIZE*sizeof(sampl_t));
 
-    comedi_range* range_info = comedi_get_range(device_, 0, 0, 0);
-    int maxdata = comedi_get_maxdata(device_, 0, 0);
-    double phys_val_[1000];
-    for(int i = 0; i < expected_values_/blocks_; i++)
+  double phys_val_[10000];
+  map<uint16_t, pair<string, uint32_t> >::iterator it = channel_info_.begin();
+  int chan=0;
+
+  for(int ch=0; ch < nr_ch_; it++)
+  {
+    chan = it->first - 1;
+//    if (chan == 0) cout << "Channel: " << chan << endl;
+    range_info = comedi_get_range(device_, 0, chan, 0);
+    maxdata = comedi_get_maxdata(device_, 0, chan);
+    for(int i = 0; i <  (expected_values_/blocks_); i++)
     {
-      cout << "RAW value [" << i << "]: " << buf[i] << endl;
-      phys_val_[i] = comedi_to_phys(buf[i], range_info, maxdata);
-      cout << "Physical value [" << i << "]: " << phys_val_[i] << endl;
+      phys_val_[i*ch+i] = comedi_to_phys(buf[i*ch+i], range_info, maxdata);
+//      phys_val_[i] = comedi_to_phys(buf[i], range_info, maxdata);
+//      fout << phys_val_[i] << ";" << endl;
+//      cout << "RAW value [" << (i*ch+i) << "]: " << buf[i*ch+i];
+//      cout << "Physical value [" << (i*ch+i) << "]: " << phys_val_[i*ch+i] << endl;
     }
-//  if (error){
-//  for(int i = 0; i < (blocks_*nr_ch_); i++)
-//    cout << " " << buf[i];
-//  }
+    ch++;
+  }
 
-  //  cout << "gBSamp: " << buf << endl;
-  for(int i=0; i < expected_values_/blocks_; i++)
+//  boost::shared_lock<boost::shared_mutex> lock(rw_);
+
+  for(int i=0; i < (expected_values_/blocks_); i++)
     for(int j=0; j < blocks_; j++)
       samples_[i+j] = phys_val_[i+j];
 
@@ -163,13 +175,10 @@ SampleBlock<double> gBSamp::getSyncData()
 //  cout << "sampleblock size: " << data_.getNrOfSamples() << endl;
 
   data_.setSamples(samples_);
-//  cout << "sampleblock size: " << data_.getNrOfSamples() << endl;
 
-  //cout << "gBSamp: getSyncData" << endl;
   samples_available_ = false;
   lock.unlock();
 
-  //cout << "getSyncData called" << endl;
   return(data_);
 }
 
@@ -181,36 +190,8 @@ SampleBlock<double> gBSamp::getAsyncData()
     cout << "gBSamp: getAsyncData" << endl;
   #endif
 
-  if(first_run_)
-  {
-    cout << "gBSamp: Command-Test 1" << endl;
-    error = comedi_command_test(device_, &comedi_cmd_);
-    if(error != 0)
-    {
-      cerr << "gBSamp: comedi_command_test - Error nr " << error  << endl;
-    }
-    cout << "gBSamp: Command-Test 2" << endl;
-    error = comedi_command_test(device_, &comedi_cmd_);
-    if(error != 0)
-    {
-      cerr << "gBSamp: comedi_command_test - Error nr " << error  << endl;
-    }
-    cout << "gBSamp: comediCommand" << endl;
-    error = comedi_command(device_, &comedi_cmd_);
-    if (error < 0)
-      comedi_perror("gBSamp: comedi_command");
-    first_run_ = 0;
-  }
-
-  sampl_t buf[10000];
-  read(comedi_fileno(device_),buf,sizeof(sampl_t));
-
-  for(int i=0; i < expected_values_/blocks_; i++)
-    for(int j=0; j < blocks_; j++)
-      samples_[i+j] = buf[i+j];
-
   boost::shared_lock<boost::shared_mutex> lock(rw_);
-  data_.setSamples(samples_);
+//  data_.setSamples(samples_);
   samples_available_ = false;
   lock.unlock();
   return(data_);
@@ -218,94 +199,65 @@ SampleBlock<double> gBSamp::getAsyncData()
 
 //-----------------------------------------------------------------------------
 
-//void gBSamp::stopDAQ(boost::int32_t error, TaskHandle taskHandle, char errBuff[2048])
-//{
-//
-//}
-
-//-----------------------------------------------------------------------------
-
 int gBSamp::initCard()
 {
+  #ifdef DEBUG
+    cout << "gBSamp: getAsyncData" << endl;
+  #endif
+
   device_ = comedi_open("/dev/comedi0");
   if(device_==0)
   {
       cerr << "Error: " << comedi_strerror( comedi_errno() ) << endl;
       return -1;
   }
-  else
-      cout << "gBSamp: device opened!" << endl;
+
+#ifdef DEBUG
+    cout << "gBSamp: device opened!" << endl;
+  #endif
 
   comedi_set_global_oor_behavior(COMEDI_OOR_NUMBER);
 
-  //TODO: channel list
-//  map<uint16_t, pair<string, uint32_t> >::iterator it = channel_info_.begin();
+//  cout << sysconf(_SC_PAGE_SIZE) << endl;
+//  int bufsize = comedi_get_max_buffer_size(device_,0);
+//  cout << bufsize << endl;
+//  comedi_set_buffer_size(device_,0,bufsize);
+
+  map<uint16_t, pair<string, uint32_t> >::iterator it = channel_info_.begin();
+  int chan=0;
   unsigned int channel_list[nr_ch_];
-  for(int i=0; i < nr_ch_; i++)
-      channel_list[i] = CR_PACK(i, 0, AREF_GROUND);
 
-  // prepare for comedi_command (if asynchronous read)
-//  unsigned int channel_list[1];
-//  channel_list[0] = CR_PACK(0, 10, AREF_GROUND);
-//  channel_list[1] = CR_PACK(1, 10, AREF_GROUND);
+//  for(int i=0; i < nr_ch_; it++)
+//  {
+//    chan = it->first - 1;
+//    cout << "Channel: " << chan << endl;
+//    channel_list[i] = CR_PACK(chan, 0, AREF_GROUND);
+//    i++;
+//  }
+  channel_list[0] = CR_PACK(0, 0, AREF_GROUND);
 
-//  int flags = comedi_get_subdevice_flags(device_, 0);
-//  cout << "Flags: " << flags << endl;
-  comedi_cmd_.subdev = SUBDEVICE_FOR_ANALOG_INPUT;
-//  comedi_cmd_.flags = TRIG_WAKE_EOS;
+  comedi_cmd_.subdev = 0;
   comedi_cmd_.flags = TRIG_ROUND_NEAREST | TRIG_WAKE_EOS;
-//  comedi_cmd_.flags = TRIG_RT;
 
   comedi_cmd_.start_src = TRIG_NOW;
   comedi_cmd_.start_arg = 0;
+
   comedi_cmd_.scan_begin_src = TRIG_TIMER;
-  comedi_cmd_.scan_begin_arg = 1e6;
-//  comedi_cmd_.scan_begin_arg = 2048000;
-//  comedi_cmd_.scan_begin_arg = 976562;
+//  comedi_cmd_.scan_begin_arg = 1e6/(fs_*10000); // (1/fs)=0,00irgendwas sekunden, sind irgendwas ms -> umrechnen !!!
+  comedi_cmd_.scan_begin_arg = fs_*1000; //---------- funktioniert!!!!!!!!!!!!!!
+
   comedi_cmd_.convert_src = TRIG_TIMER;
-  comedi_cmd_.convert_arg = 1;
-//  comedi_cmd_.convert_arg = 800;
+//  comedi_cmd_.convert_arg = fs_*100000;
+  comedi_cmd_.convert_arg = fs_*1000; //---------- funktioniert!!!!!!!!!!!!!!
+
   comedi_cmd_.scan_end_src = TRIG_COUNT;
   comedi_cmd_.scan_end_arg = nr_ch_;
+
   comedi_cmd_.stop_src = TRIG_NONE;
   comedi_cmd_.stop_arg = 0;
+
   comedi_cmd_.chanlist = channel_list;
   comedi_cmd_.chanlist_len = nr_ch_;
-
-  // prepare for comedi_insn (if synchronous read)
-//  comedi_insn insn[2];
-//  lsampl_t data_buf[fs_ ];
-
-//  insn_list_.n_insns=2;
-//  insn_list_.insns=insn;
-//
-//  for(int i=0; i < nr_ch_; i++)
-//  {
-//    insn[i].subdev = 0;
-//    insn[i].insn = INSN_READ;
-//    insn[i].data = data_buf_;
-//    insn[i].chanspec = CR_PACK(i,10,AREF_GROUND);
-//    insn[i].n = fs_;
-//  }
-
-//    insn[0].subdev = SUBDEVICE_FOR_ANALOG_INPUT;
-//    insn[0].insn = INSN_READ;
-//    insn[0].data = data_buf_;
-//    insn[0].chanspec = CR_PACK(0,10,AREF_GROUND);
-//    insn[0].n = fs_;
-//    insn[1].subdev = 0;
-//    insn[1].insn = INSN_READ;
-//    insn[1].data = data_buf_;
-//    insn[1].chanspec = CR_PACK(1,10,AREF_GROUND);
-//    insn[1].n = fs_;
-
-//  error = comedi_do_insnlist(device_, &insn_list_);
-//  error = comedi_do_insn(device_, &insn[0]);
-//  if(error<0)
-//    comedi_perror("gBSamp: comedi_do_insn");
-//  error = comedi_do_insn(device_, &insn[1]);
-//  if(error<0)
-//    comedi_perror("gBSamp: comedi_do_insn");
 
   return error;
 }
