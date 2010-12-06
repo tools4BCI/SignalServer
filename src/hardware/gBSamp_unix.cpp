@@ -3,7 +3,6 @@
 #include <boost/asio.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/lexical_cast.hpp>
-#include <fstream>
 
 // STL
 #include <iostream>
@@ -25,7 +24,7 @@ using std::endl;
 
 #define SUBDEVICE_AI 0 //subdevice for analog input
 #define PREF_RANGE  0 //range -10V - +10V
-#define BUF_SIZE 10000
+static const int buf_size = 1000;
 //-----------------------------------------------------------------------------
 
 gBSamp::gBSamp(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
@@ -111,68 +110,39 @@ SampleBlock<double> gBSamp::getSyncData()
 
   boost::shared_lock<boost::shared_mutex> lock(rw_);
 
-  if(first_run_)
+  sampl_t buf[buf_size];
+
+  comedi_get_buffer_contents(device_,0);
+  int temp = expected_values_;
+  int bytes_read = 0;
+  int samples_read = 0;
+  while(temp>0)
   {
-    error = comedi_command_test(device_, &comedi_cmd_);
-    if (error >= 0)
-    {
-      cout << "gBSamp: Error for 1st comedi_command_test: " << error << endl;
-    }
-    error = comedi_command_test(device_, &comedi_cmd_);
-    if (error >= 0)
-    {
-      cout << "gBSamp: Error for 2nd comedi_command_test: " << error << endl;
-    }
-    error = comedi_command_test(device_, &comedi_cmd_);
-    if (error >= 0)
-    {
-      cout << "gBSamp: Error for 3nd comedi_command_test: " << error << endl;
-    }
-    error = comedi_command(device_, &comedi_cmd_);
-    first_run_ = 0;
-    if (error < 0)
-    {
-//      cout << "gBSamp: Error for comedi_command: " << error << endl;
-      first_run_=1;
-    }
-    if(!first_run_)
-      cout << "gBSamp: comedi_command successful" << endl;
+    bytes_read = read(comedi_fileno(device_), (void*)buf+samples_read, temp*sizeof(sampl_t));
+    temp -= bytes_read/sizeof(sampl_t);
+    samples_read += bytes_read/sizeof(sampl_t);
+    if((bytes_read < 0) || (bytes_read % 2 != 0)) cout << "Error: Bytes read are " << bytes_read << endl;
+//    cout << "Samples read: " << samples_read << "Temp: " << temp << endl;
   }
 
-  sampl_t buf[10000];
-
-//    comedi_get_buffer_contents(device_,0);
-  read(comedi_fileno(device_),buf, BUF_SIZE*sizeof(sampl_t));
-
-  double phys_val_[10000];
+  double phys_val_[buf_size];
   map<uint16_t, pair<string, uint32_t> >::iterator it = channel_info_.begin();
-  int chan=0;
+  int k=0;
 
-  for(int ch=0; ch < nr_ch_; it++)
+  for(int i=0; i < nr_ch_; it++)
   {
-    chan = it->first - 1;
-//    if (chan == 0) cout << "Channel: " << chan << endl;
-    range_info = comedi_get_range(device_, 0, chan, 0);
-    maxdata = comedi_get_maxdata(device_, 0, chan);
-    for(int i = 0; i <  (expected_values_/blocks_); i++)
+    range_info = comedi_get_range(device_, SUBDEVICE_AI, (it->first - 1), 0);
+    maxdata = comedi_get_maxdata(device_, SUBDEVICE_AI, (it->first - 1));
+    for(int j = 0; j <  blocks_; j++)
     {
-      phys_val_[i*ch+i] = comedi_to_phys(buf[i*ch+i], range_info, maxdata);
-//      phys_val_[i] = comedi_to_phys(buf[i], range_info, maxdata);
-//      fout << phys_val_[i] << ";" << endl;
-//      cout << "RAW value [" << (i*ch+i) << "]: " << buf[i*ch+i];
-//      cout << "Physical value [" << (i*ch+i) << "]: " << phys_val_[i*ch+i] << endl;
+      phys_val_[k++] = comedi_to_phys(buf[j*nr_ch_+i], range_info, maxdata);
     }
-    ch++;
+    i++;
   }
-
-//  boost::shared_lock<boost::shared_mutex> lock(rw_);
 
   for(int i=0; i < (expected_values_/blocks_); i++)
     for(int j=0; j < blocks_; j++)
       samples_[i+j] = phys_val_[i+j];
-
-//  cout << "gBSamp: getSyncData -- samples.size() " << samples_.size() << endl;
-//  cout << "sampleblock size: " << data_.getNrOfSamples() << endl;
 
   data_.setSamples(samples_);
 
@@ -218,23 +188,14 @@ int gBSamp::initCard()
 
   comedi_set_global_oor_behavior(COMEDI_OOR_NUMBER);
 
-//  cout << sysconf(_SC_PAGE_SIZE) << endl;
-//  int bufsize = comedi_get_max_buffer_size(device_,0);
-//  cout << bufsize << endl;
-//  comedi_set_buffer_size(device_,0,bufsize);
-
   map<uint16_t, pair<string, uint32_t> >::iterator it = channel_info_.begin();
-  int chan=0;
   unsigned int channel_list[nr_ch_];
 
-//  for(int i=0; i < nr_ch_; it++)
-//  {
-//    chan = it->first - 1;
-//    cout << "Channel: " << chan << endl;
-//    channel_list[i] = CR_PACK(chan, 0, AREF_GROUND);
-//    i++;
-//  }
-  channel_list[0] = CR_PACK(0, 0, AREF_GROUND);
+  for(int i=0; i < nr_ch_; it++)
+  {
+    channel_list[i] = CR_PACK((it->first - 1), PREF_RANGE, AREF_GROUND);
+    i++;
+  }
 
   comedi_cmd_.subdev = 0;
   comedi_cmd_.flags = TRIG_ROUND_NEAREST | TRIG_WAKE_EOS;
@@ -243,12 +204,10 @@ int gBSamp::initCard()
   comedi_cmd_.start_arg = 0;
 
   comedi_cmd_.scan_begin_src = TRIG_TIMER;
-//  comedi_cmd_.scan_begin_arg = 1e6/(fs_*10000); // (1/fs)=0,00irgendwas sekunden, sind irgendwas ms -> umrechnen !!!
-  comedi_cmd_.scan_begin_arg = fs_*1000; //---------- funktioniert!!!!!!!!!!!!!!
+  comedi_cmd_.scan_begin_arg = 1e9/fs_;
 
   comedi_cmd_.convert_src = TRIG_TIMER;
-//  comedi_cmd_.convert_arg = fs_*100000;
-  comedi_cmd_.convert_arg = fs_*1000; //---------- funktioniert!!!!!!!!!!!!!!
+  comedi_cmd_.convert_arg = 1e9/fs_;
 
   comedi_cmd_.scan_end_src = TRIG_COUNT;
   comedi_cmd_.scan_end_arg = nr_ch_;
@@ -258,6 +217,36 @@ int gBSamp::initCard()
 
   comedi_cmd_.chanlist = channel_list;
   comedi_cmd_.chanlist_len = nr_ch_;
+
+  int i=10;
+  while(first_run_ && i>0)
+  {
+    error = comedi_command_test(device_, &comedi_cmd_);
+    if (error >= 0)
+    {
+      cout << "gBSamp: Error for 1st comedi_command_test: " << error << endl;
+    }
+    error = comedi_command_test(device_, &comedi_cmd_);
+    if (error >= 0)
+    {
+      cout << "gBSamp: Error for 2nd comedi_command_test: " << error << endl;
+    }
+    error = comedi_command_test(device_, &comedi_cmd_);
+    if (error >= 0)
+    {
+      cout << "gBSamp: Error for 3nd comedi_command_test: " << error << endl;
+    }
+    error = comedi_command(device_, &comedi_cmd_);
+    first_run_ = 0;
+    if (error < 0)
+    {
+//      cout << "gBSamp: Error for comedi_command: " << error << endl;
+      first_run_=1;
+      i--;
+    }
+    if(!first_run_)
+      cout << "gBSamp: comedi_command successful" << endl;
+  }
 
   return error;
 }

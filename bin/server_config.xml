@@ -64,7 +64,7 @@
  <hardware name="g.bsamp" version="2004" serial="BS-2004.08.02">
   <mode>master</mode>
   <device_settings>
-   <sampling_rate> 500 </sampling_rate>
+   <sampling_rate> 1024 </sampling_rate>
    <measurement_channels nr="1" names="eeg" type="eeg" />
    <blocksize> 1 </blocksize>
    <filter type="eeg" f_high="100" notch="on" f_low="2" sense="0.1" />
