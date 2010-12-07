@@ -1,27 +1,14 @@
 #include "UnitTest++/UnitTest++.h"
+
+#include "datapacket_tests_fixtures.h"
+
 #include "tia/data_packet.h"
 
+#include <string>
+#include <vector>
+
 using namespace tobiss;
-
-struct DataPacketSetterGetterFixture
-{
-    DataPacketSetterGetterFixture ()
-        : packet_number (5)
-    {}
-    unsigned packet_number;
-};
-
-struct DataPacketInsertingFixture
-{
-    DataPacketInsertingFixture ()
-    {
-        for (size_t i = 0; i < 100; ++i)
-            random_data.push_back (i);
-    }
-
-    std::vector<double> random_data;
-
-};
+using std::vector;
 
 //-------------------------------------------------------------------------------------------------
 TEST(emptyDataPacket)
@@ -54,3 +41,17 @@ TEST_FIXTURE(DataPacketInsertingFixture, insertingDataPacket)
     CHECK(packet.hasFlag(SIG_EEG));
     CHECK(packet.hasFlag(SIG_EMG) == false);
 }
+
+//-------------------------------------------------------------------------------------------------
+TEST_FIXTURE(DataPacketRawMemoryFixture, createVersion3DataPacket)
+{
+    DataPacket packet (reinterpret_cast<void*>(raw_data_packet_version_3));
+}
+
+//-------------------------------------------------------------------------------------------------
+// NOT COMPLETED YET
+//TEST_FIXTURE(DataPacketRawMemoryFixture, createVersion2DataPacket)
+//{
+//    DataPacket packet (reinterpret_cast<void*>(raw_data_packet_version_2));
+//}
+
