@@ -10,7 +10,14 @@ INCLUDEPATH += $$PWD/include
 
 LIBS += $$PWD/lib/libtia.a
 
-LIBS += $$PWD/extern/lib/ticpp/linux/libticpp.a
+HARDWARE_PLATFORM = $$system(uname -m)
+
+contains( HARDWARE_PLATFORM, x86_64 )::{
+  LIBS += $$PWD/extern/lib/ticpp/linux/libticpp_64.a
+}
+else:: {
+  LIBS += $$PWD/extern/lib/ticpp/linux/libticpp.a
+}
 
 LIBS += -lboost_thread \
         -lboost_system \
