@@ -45,6 +45,8 @@ namespace tobiss
 class ControlMsgEncoder;
 class ControlMsgDecoder;
 
+static const std::string MESSAGE_VERSION("0.2");
+
 //-----------------------------------------------------------------------------
 
 class ControlMsg

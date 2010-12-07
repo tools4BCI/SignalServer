@@ -122,6 +122,15 @@ ControlMsg* ControlMsgDecoderXML::decodeMsgInternal()
     return 0;
   }
 
+  std::string msg_version;
+  msg_version = message->GetAttribute<std::string>("version",  true);
+
+  if(msg_version != MESSAGE_VERSION)
+  {
+    cerr << "Wrong message version " << msg_version << " -- expected: " << MESSAGE_VERSION << endl;
+    return 0;
+  }
+
   xml_msg_header_ = message->FirstChildElement("header", false);
   if (xml_msg_header_ == 0)
   {
