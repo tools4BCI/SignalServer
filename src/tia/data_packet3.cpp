@@ -184,8 +184,8 @@ void DataPacket3::insertDataBlock(vector<double> v, uint32_t signal_flag, uint16
   if(!flagsOK())
     throw(std::logic_error("DataPacket3::insertDataBlock() -- Flags differ from Amount of Signals in DataPacket!"));
 
-  if(calcNrOfSignalTypes(signal_flag) >1)
-    throw(std::logic_error("DataPacket3::insertDataBlock() -- Trying to insert more than 1 signal type at the same time!"));
+  if(calcNrOfSignalTypes(signal_flag) != 1)
+    throw(std::logic_error("DataPacket3::insertDataBlock() -- Trying to insert more or less than 1 signal type at the same time!"));
 
   if(hasFlag(signal_flag))
   {
@@ -210,7 +210,7 @@ void DataPacket3::insertDataBlock(vector<double> v, uint32_t signal_flag, uint16
   samples_per_channel_.insert(it_nr, blocks);
 
   it_nr = nr_channels_.begin() + pos;
-  nr_channels_.insert(it_nr, v.size());
+  nr_channels_.insert(it_nr, v.size()/blocks);
 
   nr_of_signal_types_++;
 }
@@ -390,7 +390,7 @@ boost::uint16_t DataPacket3::calcNrOfSignalTypes(boost::uint32_t f)
   uint16_t count = 0;
   uint32_t shift = 1;
 
-  for(unsigned int n = 0; n < sizeof(f); n++)
+  for(unsigned int n = 0; n < sizeof(f) *8; n++)
     count += (((shift << n) & f) >= 1) ;
 
   return(count);
