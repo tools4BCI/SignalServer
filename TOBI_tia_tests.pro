@@ -6,7 +6,9 @@ QT -= core \
       gui
 
 
-INCLUDEPATH += $$PWD/include
+INCLUDEPATH += $$PWD/. \
+    $$PWD/include
+DEPENDPATH += $$INCLUDEPATH
 
 LIBS += $$PWD/lib/libtia.a
 
