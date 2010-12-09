@@ -78,7 +78,7 @@ class RawMem3
            boost::uint32_t flags,
            boost::uint64_t packet_id,
            boost::uint64_t packet_nr, \
-           boost::posix_time::ptime timestamp, \
+           boost::uint64_t timestamp, \
            std::vector<boost::uint16_t>& nr_channels,
            std::vector<boost::uint16_t>& samples_per_channel,
            std::vector<double>& data);

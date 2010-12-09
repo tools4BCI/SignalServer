@@ -152,9 +152,10 @@ class DataPacket3
     void setTimestamp();
 
     /**
-    * @brief Get the timestamp (localtime) of the datapacket.
+    * @brief Get the timestamp (microseconds since signal server has been started)
+    *        of the datapacket.
     */
-    boost::posix_time::ptime getTimestamp()   { return(timestamp_);  }
+    boost::uint64_t getTimestamp()   { return(timestamp_);  }
 
     /**
     * @brief Check, if a flag is already set.
@@ -334,7 +335,7 @@ class DataPacket3
     */
     boost::uint32_t  flags_;
     boost::uint64_t  connection_packet_nr_;        ///< The packet number of the DataPacket (not mandatory = the sample number)
-    boost::posix_time::ptime  timestamp_;   ///< Timestamp of the datapacket (important ... synchronize clocks!)
+    boost::uint64_t  timestamp_;                   ///< Timestamp of the datapacket (important ... synchronize clocks!)
 
     boost::uint16_t  nr_of_signal_types_;   ///<  Number of different signal types stored in the DataPacket.
 
