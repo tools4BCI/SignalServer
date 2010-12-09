@@ -4,8 +4,11 @@
 
 #include "tia/data_packet3.h"
 #include "tia/data_packet.h"
+#include "tia-private/clock.h"
 
 #include <boost/foreach.hpp>
+#include <boost/thread.hpp>
+#include <boost/thread/xtime.hpp>
 
 #include <string>
 #include <vector>
@@ -54,8 +57,20 @@ TEST(setterGetterDataPacket)
     empty_packet.setPacketID (10);
     CHECK (empty_packet.getPacketID() == 10);
 
+    // reset clock
+    Clock::instance ().reset ();
+
+    // wait some time
+    boost::xtime xt;
+    boost::xtime_get (&xt, boost::TIME_UTC);
+    xt.nsec += 10000;
+    boost::thread::sleep (xt);
+
+    // set the timestamp of the packet
     empty_packet.setTimestamp ();
-    //CHECK_CLOSE (empty_packet.getTimestamp());
+
+    CHECK (empty_packet.getTimestamp() > 0);
+    CHECK (empty_packet.getTimestamp () <= Clock::instance ().getMicroSeconds ());
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -79,11 +94,13 @@ TEST_FIXTURE(DataPacketRawMemoryFixture, createVersion3DataPacket)
     DataPacket3 empty_packet (reinterpret_cast<void*>(version_3_binary_packet_empty));
     CHECK_EQUAL (empty_packet.getPacketID(), RANDOM_PACKET_ID);
     CHECK_EQUAL (empty_packet.getConnectionPacketNr(), RANDOM_CONNECTION_PACKET_NUMBER);
+    CHECK_EQUAL (empty_packet.getTimestamp(), TIME_STAMP);
 
     DataPacket3 eeg_packet (reinterpret_cast<void*>(version_3_binary_packet_eeg));
     CHECK_EQUAL (eeg_packet.getPacketID(), RANDOM_PACKET_ID);
     CHECK_EQUAL (eeg_packet.getConnectionPacketNr(), RANDOM_CONNECTION_PACKET_NUMBER);
     CHECK_EQUAL (eeg_packet.getNrOfChannels (SIG_EEG), EEG_CHANNELS);
+    CHECK_EQUAL (eeg_packet.getTimestamp(), TIME_STAMP);
     BOOST_FOREACH (boost::uint32_t flag_setting, all_signal_type_flags_single)
     {
         if (flag_setting == SIG_EEG)
@@ -92,8 +109,8 @@ TEST_FIXTURE(DataPacketRawMemoryFixture, createVersion3DataPacket)
             CHECK (!eeg_packet.hasFlag (flag_setting));
     }
 
-
     DataPacket3 eeg_emg_packet (reinterpret_cast<void*>(version_3_binary_packet_eeg_emg));
+    CHECK_EQUAL (eeg_emg_packet.getTimestamp(), TIME_STAMP);
     BOOST_FOREACH (boost::uint32_t flag_setting, all_signal_type_flags_single)
     {
         if (flag_setting == SIG_EEG || flag_setting == SIG_EMG)
@@ -101,6 +118,8 @@ TEST_FIXTURE(DataPacketRawMemoryFixture, createVersion3DataPacket)
         else
             CHECK (!eeg_emg_packet.hasFlag (flag_setting));
     }
+
+
 }
 
 //-------------------------------------------------------------------------------------------------

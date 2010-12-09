@@ -26,6 +26,7 @@
 #include <stdexcept>
 
 #include "tia/data_packet3.h"
+#include "tia-private/clock.h"
 #include "tia-private/datapacket/raw_mem3.h"
 
 namespace tobiss
@@ -105,11 +106,11 @@ DataPacket3::DataPacket3(void* mem)
   ui64_ptr++;
   connection_packet_nr_ = *ui64_ptr;
 
-  boost::posix_time::ptime* ptime_ptr
-    = reinterpret_cast<boost::posix_time::ptime*>(++ui64_ptr);
-  timestamp_ = -1;
+  uint64_t* time_ptr
+    = reinterpret_cast<uint64_t*>(++ui64_ptr);
+  timestamp_ = *time_ptr;
 
-  uint16_t* ui16_ptr = reinterpret_cast<uint16_t*>(++ptime_ptr);
+  uint16_t* ui16_ptr = reinterpret_cast<uint16_t*>(++time_ptr);
   for(unsigned int n = 0; n < nr_of_signal_types_; n++)
   {
     nr_channels_.push_back(*ui16_ptr);
@@ -266,7 +267,7 @@ uint64_t DataPacket3::getConnectionPacketNr()
 
 void DataPacket3::setTimestamp()
 {
-  timestamp_ =  0;
+    timestamp_ =  Clock::instance ().getMicroSeconds ();
 }
 
 //-----------------------------------------------------------------------------

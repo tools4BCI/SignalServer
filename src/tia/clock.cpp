@@ -20,9 +20,15 @@ Clock& Clock::instance ()
 }
 
 //-------------------------------------------------------------------------------------------------
+boost::posix_time::ptime Clock::startTime () const
+{
+    return start_time_;
+}
+
+//-------------------------------------------------------------------------------------------------
 boost::uint64_t Clock::getMicroSeconds () const
 {
-    boost::posix_time::time_duration time = start_time_ - boost::date_time::microsec_clock<boost::posix_time::ptime>::local_time ();
+    boost::posix_time::time_duration time = boost::date_time::microsec_clock<boost::posix_time::ptime>::local_time () - start_time_;
     boost::uint64_t microseconds = time.ticks ();
     microseconds *= 100000;
     microseconds /= time.ticks_per_second ();
