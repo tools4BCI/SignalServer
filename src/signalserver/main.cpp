@@ -50,8 +50,8 @@ const string XML_CONFIG_FILE_PARAM = "-f";
 
 #ifndef WIN32
 const string DEFAULT_XML_CONFIG_HOME_SUBDIR = string("/tobi_sigserver_cfg/");
-const string TEMPLATE_XML_CONFIG = string("/usr/local/etc/signalserver/") + DEFAULT_XML_CONFIG;
-const string TEMPLATE_XML_CONFIG_COMMENTS = string("/usr/local/etc/signalserver/") + COMMENTS_XML_CONFIG;
+const string TEMPLATE_XML_CONFIG = string("/usr/share/signalserver/") + DEFAULT_XML_CONFIG;
+const string TEMPLATE_XML_CONFIG_COMMENTS = string("/usr/share/signalserver/") + COMMENTS_XML_CONFIG;
 #endif
 
 class DataPacketReader
