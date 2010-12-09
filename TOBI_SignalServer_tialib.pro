@@ -57,7 +57,11 @@ HEADERS += include/tia/tia_server.h \
     extern/include/LptTools/LptTools.h \
     include/tia/data_packet3.h \
     include/tia-private/datapacket/raw_mem3.h \
-    include/tia-private/clock.h
+    include/tia-private/clock.h \
+    include/tia-private/server/control_connection_server_2.h \
+    include/tia-private/server/server_command.h \
+    include/tia-private/server/socket.h \
+    include/tia-private/server/stop_data_transmission_server_command.h
 SOURCES += src/tia/tia_server.cpp \
     src/tia/constants.cpp \
     src/tia/config/control_message_decoder.cpp \
