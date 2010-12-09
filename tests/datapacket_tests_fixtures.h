@@ -5,9 +5,36 @@
 
 #include "UnitTest++/UnitTest++.h"
 
+#include "tia/defines.h"
+
 #include <boost/cstdint.hpp>
 
 #include <vector>
+
+//-------------------------------------------------------------------------------------------------
+class DataPacketSignalTypeFlags
+{
+public:
+    DataPacketSignalTypeFlags ()
+        : no_flag_set (0),
+          all_flags_set (0x3FFFFF),
+          smallest_flag (SIG_EEG),
+          highest_flag (SIG_EVENT),
+          all_signal_type_flags_combinations (all_flags_set, 0)
+    {
+        for (boost::uint32_t flag = smallest_flag; flag <= highest_flag; flag <<= 1)
+            all_signal_type_flags_single.push_back (flag);
+        for (boost::uint32_t flags = no_flag_set; flags < all_flags_set; ++flags)
+            all_signal_type_flags_combinations[flags] = flags;
+    }
+
+    boost::uint32_t const no_flag_set;
+    boost::uint32_t const all_flags_set;
+    boost::uint32_t const smallest_flag;
+    boost::uint32_t const highest_flag;
+    std::vector<boost::uint32_t> all_signal_type_flags_single;
+    std::vector<boost::uint32_t> all_signal_type_flags_combinations;
+};
 
 //-------------------------------------------------------------------------------------------------
 struct DataPacketSetterGetterFixture
