@@ -347,6 +347,12 @@ vector<double> DataPacket3::getSingleDataBlock(boost::uint32_t flag)
 
 boost::uint16_t DataPacket3::getNrOfValues(boost::uint32_t flag)
 {
+  if(!flagsOK())
+    throw(std::logic_error("DataPacket3::getNrOfValues() -- Flags differ from Amount of Signals in DataPacket!"));
+
+  if(!hasFlag(flag))
+    return(0);
+
   return( getNrOfChannels(flag) * getSamplesPerChannel(flag) );
 }
 
@@ -358,7 +364,8 @@ boost::uint16_t DataPacket3::getNrOfChannels(boost::uint32_t flag)
     throw(std::logic_error("DataPacket3::getNrOfChannels() -- Flags differ from Amount of Signals in DataPacket!"));
 
   if(!hasFlag(flag))
-    throw(std::invalid_argument("DataPacket3::getNrOfChannels() -- Error ... Flag not set, unable to get Data!"));
+    return(0);
+//    throw(std::invalid_argument("DataPacket3::getNrOfChannels() -- Error ... Flag not set, unable to get Data!"));
 
   return(nr_channels_[getDataPos(flag)]);
 }
@@ -371,7 +378,8 @@ boost::uint16_t DataPacket3::getSamplesPerChannel(boost::uint32_t flag)
     throw(std::logic_error("DataPacket3::getSamplesPerChannel() -- Flags differ from Amount of Signals in DataPacket!"));
 
   if(!hasFlag(flag))
-    throw(std::invalid_argument("DataPacket3::getSamplesPerChannel() -- Error ... Flag not set, unable to get Data!"));
+    return(0);
+//    throw(std::invalid_argument("DataPacket3::getSamplesPerChannel() -- Error ... Flag not set, unable to get Data!"));
 
   return(samples_per_channel_[getDataPos(flag)]);
 }
