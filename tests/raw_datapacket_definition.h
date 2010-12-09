@@ -7,11 +7,11 @@
 #include <cstring>
 #include <stdexcept>
 
-
 //-------------------------------------------------------------------------------------------------
 // signal type flags
 boost::uint32_t const NO_SIG_FLAG = 0x0;
 boost::uint32_t const EEG_SIG_FLAG = 0x1;
+boost::uint32_t const EMG_SIG_FLAG = 0x2;
 
 //-------------------------------------------------------------------------------------------------
 namespace datapacket_version_3
@@ -27,7 +27,7 @@ namespace datapacket_version_3
 //
 void generateRawDataPacketVersion3 (unsigned char* target_memory,
                                     boost::uint32_t signal_type_flags,
-                                    boost::uint64_t packet_number,
+                                    boost::uint64_t packet_id,
                                     boost::uint64_t connection_packet_number,
                                     std::vector<std::vector<std::vector<float> > > const& samples)
 {
@@ -53,29 +53,29 @@ void generateRawDataPacketVersion3 (unsigned char* target_memory,
     //-------------------------------------------
     // begin fixed header
 
-    // packet version
+    // packet version: byte [0]
     target_memory[0] = 3;
 
-    // packet size: target_memory[1] - [4]
+    // packet size: byte [1]-[4], little endian
     memcpy (target_memory + 1, &packet_size, 4);
 
-    // signal type flags
+    // signal type flags: [5]-[8], little endian
     target_memory[5] = signal_type_flags & 0xFF;
     target_memory[6] = (signal_type_flags >> 8) & 0xFF;
     target_memory[7] = (signal_type_flags >> 16) & 0xFF;
     target_memory[8] = (signal_type_flags >> 24) & 0xFF;
 
-    // packet number
-    target_memory[9] = packet_number & 0xFF;
-    target_memory[10] = (packet_number >> 8) & 0xFF;
-    target_memory[11] = (packet_number >> 16) & 0xFF;
-    target_memory[12] = (packet_number >> 24) & 0xFF;
-    target_memory[13] =  (packet_number >> 32) & 0xFF;
-    target_memory[14] = (packet_number >> 40) & 0xFF;
-    target_memory[15] = (packet_number >> 48) & 0xFF;
-    target_memory[16] = (packet_number >> 56) & 0xFF;
+    // packet id: byte [9]-[16], little endian
+    target_memory[9] = packet_id & 0xFF;
+    target_memory[10] = (packet_id >> 8) & 0xFF;
+    target_memory[11] = (packet_id >> 16) & 0xFF;
+    target_memory[12] = (packet_id >> 24) & 0xFF;
+    target_memory[13] = (packet_id >> 32) & 0xFF;
+    target_memory[14] = (packet_id >> 40) & 0xFF;
+    target_memory[15] = (packet_id >> 48) & 0xFF;
+    target_memory[16] = (packet_id >> 56) & 0xFF;
 
-    // connection packet number
+    // connection packet number: byte [17]-[24], little endian
     target_memory[17] = connection_packet_number & 0xFF;
     target_memory[18] = (connection_packet_number >> 8) & 0xFF;
     target_memory[19] = (connection_packet_number >> 16) & 0xFF;
@@ -85,7 +85,7 @@ void generateRawDataPacketVersion3 (unsigned char* target_memory,
     target_memory[23] = (connection_packet_number >> 48) & 0xFF;
     target_memory[24] = (connection_packet_number >> 56) & 0xFF;
 
-    // posix timestamp
+    // posix timestamp: byte [25]-[32], little endian
     target_memory[25] = 0x0;
     target_memory[26] = 0x0;
     target_memory[27] = 0x0;
@@ -168,7 +168,6 @@ void generateRawDataPacketVersion2 (unsigned char* target_memory,
     memcpy(target_memory, &signal_type_flags, 4);
 
     memcpy(target_memory + 4, &sample_number, 8);
-
     memcpy(target_memory + 12, &sample_number, 8);
 
 }

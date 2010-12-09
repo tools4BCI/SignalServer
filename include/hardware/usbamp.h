@@ -157,6 +157,9 @@ class USBamp : public HWThread
     void adjustSettingsToChannelSelection();
     void checkTriggerLineChannel();
 
+    /**
+    * @todo If serial not found, list all available serials.
+    */
     void getHandles();
     void check4USBampError();
     void initFilterPtrs();

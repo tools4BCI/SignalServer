@@ -33,31 +33,61 @@ struct DataPacketInsertingFixture
 struct DataPacketRawMemoryFixture
 {
     DataPacketRawMemoryFixture ()
-        : eeg_channels (10),
-          eeg_blocksize (12),
-          packet_number (5),
-          connection_packet_number (10)
+        : EEG_CHANNELS (10),
+          EEG_SAMPLES_PER_CHANNEL (12),
+          EMG_CHANNELS (2),
+          EMG_SAMPLES_PER_CHANNEL (3),
+          RANDOM_PACKET_ID (rand()),
+          RANDOM_CONNECTION_PACKET_NUMBER (rand())
     {
-        for (size_t eeg_channel = 0; eeg_channel < eeg_channels; ++eeg_channel)
-        {
-            for (size_t eeg_sample = 0; eeg_sample < eeg_blocksize; ++eeg_sample)
-                data[0][eeg_channel][eeg_sample] = eeg_channel * eeg_blocksize + eeg_sample;
-        }
-        generateRawDataPacketVersion2 (raw_data_packet_version_2, EEG_SIG_FLAG, packet_number, connection_packet_number, data);
-        generateRawDataPacketVersion3 (raw_data_packet_version_3, EEG_SIG_FLAG, packet_number, connection_packet_number, data);
-        generateRawDataPacketVersion3 (empty_raw_data_packet_version_3, NO_SIG_FLAG, packet_number, connection_packet_number, std::vector<std::vector<std::vector<float> > >());
+        initSignalData (eeg_data, EEG_CHANNELS, EEG_SAMPLES_PER_CHANNEL);
+        initSignalData (emg_data, EMG_CHANNELS, EMG_SAMPLES_PER_CHANNEL);
+
+        std::vector<std::vector<std::vector<float> > > empty_data;
+        std::vector<std::vector<std::vector<float> > > data_only_eeg;
+        std::vector<std::vector<std::vector<float> > > data_eeg_and_emg;
+
+        data_only_eeg.push_back (eeg_data);
+
+        data_eeg_and_emg.push_back (eeg_data);
+        data_eeg_and_emg.push_back (emg_data);
+
+        generateRawDataPacketVersion2 (version_2_binary_packet_empty, NO_SIG_FLAG, RANDOM_PACKET_ID, RANDOM_CONNECTION_PACKET_NUMBER, empty_data);
+
+        generateRawDataPacketVersion3 (version_3_binary_packet_empty, NO_SIG_FLAG, RANDOM_PACKET_ID, RANDOM_CONNECTION_PACKET_NUMBER, empty_data);
+        generateRawDataPacketVersion3 (version_3_binary_packet_eeg, EEG_SIG_FLAG, RANDOM_PACKET_ID, RANDOM_CONNECTION_PACKET_NUMBER, data_only_eeg);
+        generateRawDataPacketVersion3 (version_3_binary_packet_eeg_emg, EEG_SIG_FLAG | EMG_SIG_FLAG, RANDOM_PACKET_ID, RANDOM_CONNECTION_PACKET_NUMBER, data_eeg_and_emg);
     }
 
-    size_t eeg_channels;
-    size_t eeg_blocksize;
-    std::vector<std::vector<std::vector<float> > > data;
+    size_t const EEG_CHANNELS;
+    size_t const EEG_SAMPLES_PER_CHANNEL;
+    std::vector<std::vector<float> > eeg_data;
 
-    boost::uint64_t packet_number;
-    boost::uint64_t connection_packet_number;
+    size_t const EMG_CHANNELS;
+    size_t const EMG_SAMPLES_PER_CHANNEL;
+    std::vector<std::vector<float> > emg_data;
 
-    unsigned char raw_data_packet_version_2[500];
-    unsigned char raw_data_packet_version_3[500];
-    unsigned char empty_raw_data_packet_version_3[500];
+    boost::uint64_t RANDOM_PACKET_ID;
+    boost::uint64_t RANDOM_CONNECTION_PACKET_NUMBER;
+
+    unsigned char version_2_binary_packet_empty[50];
+
+    unsigned char version_3_binary_packet_empty[50];
+    unsigned char version_3_binary_packet_eeg[1000];
+    unsigned char version_3_binary_packet_eeg_emg[1500];
+
+private:
+    void initSignalData (std::vector<std::vector<float> >& signal_data, size_t channels, size_t samples_per_channel)
+    {
+        signal_data.clear ();
+        signal_data.insert (signal_data.begin (), channels, std::vector<float> (samples_per_channel));
+        for (size_t channel = 0; channel < channels; ++channel)
+        {
+            for (size_t sample = 0; sample < samples_per_channel; ++sample)
+                signal_data[channel][sample] = (channel * samples_per_channel) + sample;
+        }
+
+    }
 };
 
 

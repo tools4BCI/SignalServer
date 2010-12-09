@@ -3,6 +3,7 @@
 #include "datapacket_tests_fixtures.h"
 
 #include "tia/data_packet3.h"
+#include "tia/data_packet.h"
 
 #include <string>
 #include <vector>
@@ -43,9 +44,21 @@ TEST_FIXTURE(DataPacketInsertingFixture, insertingDataPacket)
 }
 
 //-------------------------------------------------------------------------------------------------
+///
+/// createVersion3DataPacket
+///
+/// test the creation of a data packet from a binary version 3 representation
+///
 TEST_FIXTURE(DataPacketRawMemoryFixture, createVersion3DataPacket)
 {
-    DataPacket3 packet (reinterpret_cast<void*>(raw_data_packet_version_3));
+    DataPacket3 empty_packet (reinterpret_cast<void*>(version_3_binary_packet_empty));
+    CHECK_EQUAL (empty_packet.getPacketID(), RANDOM_PACKET_ID);
+    CHECK_EQUAL (empty_packet.getConnectionPacketNr(), RANDOM_CONNECTION_PACKET_NUMBER);
+
+    DataPacket3 eeg_packet (reinterpret_cast<void*>(version_3_binary_packet_eeg));
+    //CHECK (empty_packet.getPacketNr() == )
+
+    DataPacket3 eeg_emg_packet (reinterpret_cast<void*>(version_3_binary_packet_eeg_emg));
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -97,8 +110,9 @@ TEST(assemblePacket)
 
 //-------------------------------------------------------------------------------------------------
 // NOT COMPLETED YET
-//TEST_FIXTURE(DataPacketRawMemoryFixture, createVersion2DataPacket)
-//{
-//    DataPacket packet (reinterpret_cast<void*>(raw_data_packet_version_2));
-//}
+TEST_FIXTURE(DataPacketRawMemoryFixture, createVersion2DataPacket)
+{
+    DataPacket packet (reinterpret_cast<void*>(version_2_binary_packet_empty));
 
+    CHECK_EQUAL (packet.getPacketNr(), RANDOM_PACKET_ID);
+}
