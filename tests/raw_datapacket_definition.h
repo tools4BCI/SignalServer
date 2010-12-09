@@ -29,6 +29,7 @@ void generateRawDataPacketVersion3 (unsigned char* target_memory,
                                     boost::uint32_t signal_type_flags,
                                     boost::uint64_t packet_id,
                                     boost::uint64_t connection_packet_number,
+                                    boost::uint64_t time_stamp,
                                     std::vector<std::vector<std::vector<float> > > const& samples)
 {
     size_t variable_header_size = 4 * samples.size ();
@@ -86,14 +87,7 @@ void generateRawDataPacketVersion3 (unsigned char* target_memory,
     target_memory[24] = (connection_packet_number >> 56) & 0xFF;
 
     // posix timestamp: byte [25]-[32], little endian
-    target_memory[25] = 0x0;
-    target_memory[26] = 0x0;
-    target_memory[27] = 0x0;
-    target_memory[28] = 0x0;
-    target_memory[29] = 0x0;
-    target_memory[30] = 0x0;
-    target_memory[31] = 0x0;
-    target_memory[32] = 0x0;
+    memcpy (target_memory + 25, &time_stamp, 8);
 
     // end of fixed header
     //-------------------------------------------

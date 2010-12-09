@@ -53,7 +53,8 @@ public:
           EMG_CHANNELS (2),
           EMG_SAMPLES_PER_CHANNEL (3),
           RANDOM_PACKET_ID (rand()),
-          RANDOM_CONNECTION_PACKET_NUMBER (rand())
+          RANDOM_CONNECTION_PACKET_NUMBER (rand()),
+          TIME_STAMP (rand())
     {
         initSignalData (eeg_data, EEG_CHANNELS, EEG_SAMPLES_PER_CHANNEL);
         initSignalData (emg_data, EMG_CHANNELS, EMG_SAMPLES_PER_CHANNEL);
@@ -69,9 +70,9 @@ public:
 
         generateRawDataPacketVersion2 (version_2_binary_packet_empty, NO_SIG_FLAG, RANDOM_PACKET_ID, RANDOM_CONNECTION_PACKET_NUMBER, empty_data);
 
-        generateRawDataPacketVersion3 (version_3_binary_packet_empty, NO_SIG_FLAG, RANDOM_PACKET_ID, RANDOM_CONNECTION_PACKET_NUMBER, empty_data);
-        generateRawDataPacketVersion3 (version_3_binary_packet_eeg, EEG_SIG_FLAG, RANDOM_PACKET_ID, RANDOM_CONNECTION_PACKET_NUMBER, data_only_eeg);
-        generateRawDataPacketVersion3 (version_3_binary_packet_eeg_emg, EEG_SIG_FLAG | EMG_SIG_FLAG, RANDOM_PACKET_ID, RANDOM_CONNECTION_PACKET_NUMBER, data_eeg_and_emg);
+        generateRawDataPacketVersion3 (version_3_binary_packet_empty, NO_SIG_FLAG, RANDOM_PACKET_ID, RANDOM_CONNECTION_PACKET_NUMBER, TIME_STAMP, empty_data);
+        generateRawDataPacketVersion3 (version_3_binary_packet_eeg, EEG_SIG_FLAG, RANDOM_PACKET_ID, RANDOM_CONNECTION_PACKET_NUMBER, TIME_STAMP, data_only_eeg);
+        generateRawDataPacketVersion3 (version_3_binary_packet_eeg_emg, EEG_SIG_FLAG | EMG_SIG_FLAG, RANDOM_PACKET_ID, RANDOM_CONNECTION_PACKET_NUMBER, TIME_STAMP, data_eeg_and_emg);
     }
 
     size_t const EEG_CHANNELS;
@@ -84,6 +85,7 @@ public:
 
     boost::uint64_t RANDOM_PACKET_ID;
     boost::uint64_t RANDOM_CONNECTION_PACKET_NUMBER;
+    boost::uint64_t TIME_STAMP;
 
     unsigned char version_2_binary_packet_empty[50];
 

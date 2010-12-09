@@ -15,16 +15,18 @@ public:
     static Clock& instance ();
 
     //---------------------------------------------------------------------------------------------
+    boost::posix_time::ptime startTime () const;
+
+    //---------------------------------------------------------------------------------------------
     boost::uint64_t getMicroSeconds () const;
 
     //---------------------------------------------------------------------------------------------
     void reset ();
 
-
 private:
     Clock ();
-    Clock (Clock const& src) {}
-    Clock& operator= (Clock const& src) {}
+    Clock (Clock const& src);
+    Clock& operator= (Clock const& src);
 
     boost::posix_time::ptime start_time_;
 };

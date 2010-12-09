@@ -10,6 +10,10 @@ INCLUDEPATH += $$PWD/. \
     $$PWD/include
 DEPENDPATH += $$INCLUDEPATH
 
+QMAKE_CXXFLAGS += -fprofile-arcs -ftest-coverage
+QMAKE_LFLAGS += -fprofile-arcs -ftest-coverage
+LIBS += -lgcov
+
 LIBS += $$PWD/lib/libtia.a
 
 HARDWARE_PLATFORM = $$system(uname -m)
