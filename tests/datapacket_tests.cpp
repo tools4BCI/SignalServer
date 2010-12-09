@@ -5,6 +5,8 @@
 #include "tia/data_packet3.h"
 #include "tia/data_packet.h"
 
+#include <boost/foreach.hpp>
+
 #include <string>
 #include <vector>
 
@@ -12,25 +14,48 @@ using namespace tobiss;
 using std::vector;
 
 //-------------------------------------------------------------------------------------------------
-TEST(emptyDataPacket)
+///
+/// emptyDataPacket
+///
+/// checks if an newly created empty data packet behaves like an empty one
+///
+TEST_FIXTURE(DataPacketSignalTypeFlags, emptyDataPacket)
 {
     DataPacket3 empty_packet;
-    CHECK(empty_packet.getNrOfChannels().size() == 0);
-    CHECK(empty_packet.getSamplesPerChannel().size() == 0);
-    CHECK(empty_packet.getData().size() == 0);
-    CHECK(empty_packet.getConnectionPacketNr() == 0);
+    CHECK (empty_packet.getNrOfChannels().size() == 0);
+    CHECK (empty_packet.getNrOfSignalTypes() == 0);
+    CHECK (empty_packet.getSamplesPerChannel().size() == 0);
+    CHECK (empty_packet.getData().size() == 0);
+    CHECK (empty_packet.getConnectionPacketNr() == 0);
+    CHECK (empty_packet.getFlags() == 0);
+
+    BOOST_FOREACH (boost::uint32_t flag_setting, all_signal_type_flags_single)
+    {
+        CHECK_THROW (empty_packet.getSingleDataBlock (flag_setting), std::invalid_argument);
+        CHECK (empty_packet.hasFlag (flag_setting) == false);
+        CHECK (empty_packet.getNrOfValues(flag_setting) == 0);
+        CHECK (empty_packet.getSamplesPerChannel (flag_setting) == 0);
+        CHECK (empty_packet.getNrOfBlocks (flag_setting) == 0);
+    }
 }
 
 //-------------------------------------------------------------------------------------------------
-TEST_FIXTURE(DataPacketSetterGetterFixture, setterGetterDataPacket)
+///
+/// setterGetterDataPacket
+///
+/// check the setter and getter methods of DataPacket
+TEST(setterGetterDataPacket)
 {
     DataPacket3 empty_packet;
 
-    empty_packet.setConnectionPacketNr (packet_number);
-    CHECK(empty_packet.getConnectionPacketNr() == packet_number);
+    empty_packet.setConnectionPacketNr (5);
+    CHECK(empty_packet.getConnectionPacketNr() == 5);
 
-    empty_packet.setConnectionPacketNr (packet_number);
-    CHECK(empty_packet.getConnectionPacketNr() == packet_number);
+    empty_packet.setPacketID (10);
+    CHECK (empty_packet.getPacketID() == 10);
+
+    empty_packet.setTimestamp ();
+    CHECK_CLOSE (empty_packet.getTimestamp());
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -56,9 +81,26 @@ TEST_FIXTURE(DataPacketRawMemoryFixture, createVersion3DataPacket)
     CHECK_EQUAL (empty_packet.getConnectionPacketNr(), RANDOM_CONNECTION_PACKET_NUMBER);
 
     DataPacket3 eeg_packet (reinterpret_cast<void*>(version_3_binary_packet_eeg));
-    //CHECK (empty_packet.getPacketNr() == )
+    CHECK_EQUAL (eeg_packet.getPacketID(), RANDOM_PACKET_ID);
+    CHECK_EQUAL (eeg_packet.getConnectionPacketNr(), RANDOM_CONNECTION_PACKET_NUMBER);
+    CHECK_EQUAL (eeg_packet.getNrOfChannels (SIG_EEG), EEG_CHANNELS);
+    BOOST_FOREACH (boost::uint32_t flag_setting, all_signal_type_flags_single)
+    {
+        if (flag_setting == SIG_EEG)
+            CHECK (eeg_packet.hasFlag (flag_setting));
+        else
+            CHECK (!eeg_packet.hasFlag (flag_setting));
+    }
+
 
     DataPacket3 eeg_emg_packet (reinterpret_cast<void*>(version_3_binary_packet_eeg_emg));
+    BOOST_FOREACH (boost::uint32_t flag_setting, all_signal_type_flags_single)
+    {
+        if (flag_setting == SIG_EEG || flag_setting == SIG_EMG)
+            CHECK (eeg_emg_packet.hasFlag (flag_setting));
+        else
+            CHECK (!eeg_emg_packet.hasFlag (flag_setting));
+    }
 }
 
 //-------------------------------------------------------------------------------------------------
