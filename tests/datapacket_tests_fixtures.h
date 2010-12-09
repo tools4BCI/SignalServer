@@ -5,17 +5,31 @@
 
 #include "UnitTest++/UnitTest++.h"
 
+#include "tia/defines.h"
+
 #include <boost/cstdint.hpp>
 
 #include <vector>
 
 //-------------------------------------------------------------------------------------------------
-struct DataPacketSetterGetterFixture
+class DataPacketSignalTypeFlags
 {
-    DataPacketSetterGetterFixture ()
-        : packet_number (5)
-    {}
-    unsigned packet_number;
+public:
+    DataPacketSignalTypeFlags ()
+        : no_flag_set (0),
+          all_flags_set (0x3FFFFF),
+          smallest_flag (SIG_EEG),
+          highest_flag (SIG_EVENT)
+    {
+        for (boost::uint32_t flag = smallest_flag; flag <= highest_flag; flag <<= 1)
+            all_signal_type_flags_single.push_back (flag);
+    }
+
+    boost::uint32_t const no_flag_set;
+    boost::uint32_t const all_flags_set;
+    boost::uint32_t const smallest_flag;
+    boost::uint32_t const highest_flag;
+    std::vector<boost::uint32_t> all_signal_type_flags_single;
 };
 
 //-------------------------------------------------------------------------------------------------
@@ -30,8 +44,9 @@ struct DataPacketInsertingFixture
 };
 
 //-------------------------------------------------------------------------------------------------
-struct DataPacketRawMemoryFixture
+class DataPacketRawMemoryFixture : public DataPacketSignalTypeFlags
 {
+public:
     DataPacketRawMemoryFixture ()
         : EEG_CHANNELS (10),
           EEG_SAMPLES_PER_CHANNEL (12),
