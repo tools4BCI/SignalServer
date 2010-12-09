@@ -36,8 +36,10 @@ SOURCES += \
     tests/main.cpp \
     tests/datapacket_tests.cpp \
     tests/tia_client_tests.cpp \
-    tests/tia_clock_tests.cpp
+    tests/tia_clock_tests.cpp \
+    tests/tia_server_tests.cpp
 
 HEADERS += \
     tests/datapacket_tests_fixtures.h \
-    tests/raw_datapacket_definition.h
+    tests/raw_datapacket_definition.h \
+    tests/tia_server_control_connection_tests_fixtures.h
