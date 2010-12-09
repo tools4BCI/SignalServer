@@ -5,6 +5,8 @@
 #include "tia/data_packet3.h"
 #include "tia/data_packet.h"
 
+#include <boost/foreach.hpp>
+
 #include <string>
 #include <vector>
 
@@ -12,13 +14,29 @@ using namespace tobiss;
 using std::vector;
 
 //-------------------------------------------------------------------------------------------------
-TEST(emptyDataPacket)
+///
+/// emptyDataPacket
+///
+/// checks if an newly created empty data packet is really empty
+///
+TEST_FIXTURE(DataPacketSignalTypeFlags, emptyDataPacket)
 {
     DataPacket3 empty_packet;
-    CHECK(empty_packet.getNrOfChannels().size() == 0);
-    CHECK(empty_packet.getSamplesPerChannel().size() == 0);
-    CHECK(empty_packet.getData().size() == 0);
-    CHECK(empty_packet.getConnectionPacketNr() == 0);
+    CHECK (empty_packet.getNrOfChannels().size() == 0);
+    CHECK (empty_packet.getNrOfSignalTypes() == 0);
+    CHECK (empty_packet.getSamplesPerChannel().size() == 0);
+    CHECK (empty_packet.getData().size() == 0);
+    CHECK (empty_packet.getConnectionPacketNr() == 0);
+    CHECK (empty_packet.getFlags() == 0);
+
+    BOOST_FOREACH (boost::uint32_t flag_setting, all_signal_type_flags_single)
+    {
+        CHECK_THROW (empty_packet.getSingleDataBlock (flag_setting), std::invalid_argument);
+        CHECK (empty_packet.hasFlag (flag_setting) == false);
+        CHECK (empty_packet.getNrOfValues(flag_setting) == 0);
+        CHECK (empty_packet.getSamplesPerChannel (flag_setting) == 0);
+        CHECK (empty_packet.getNrOfBlocks (flag_setting) == 0);
+    }
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -56,7 +74,7 @@ TEST_FIXTURE(DataPacketRawMemoryFixture, createVersion3DataPacket)
     CHECK_EQUAL (empty_packet.getConnectionPacketNr(), RANDOM_CONNECTION_PACKET_NUMBER);
 
     DataPacket3 eeg_packet (reinterpret_cast<void*>(version_3_binary_packet_eeg));
-    //CHECK (empty_packet.getPacketNr() == )
+    //CHECK (empty_packet.getPacketNr() == );
 
     DataPacket3 eeg_emg_packet (reinterpret_cast<void*>(version_3_binary_packet_eeg_emg));
 }
