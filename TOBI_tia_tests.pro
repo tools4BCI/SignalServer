@@ -31,7 +31,8 @@ LIBS += -lboost_thread \
 SOURCES += \
     tests/main.cpp \
     tests/datapacket_tests.cpp \
-    tests/tia_client_tests.cpp
+    tests/tia_client_tests.cpp \
+    tests/tia_clock_tests.cpp
 
 HEADERS += \
     tests/datapacket_tests_fixtures.h \

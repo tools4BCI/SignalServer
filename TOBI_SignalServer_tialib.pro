@@ -56,7 +56,8 @@ HEADERS += include/tia/tia_server.h \
     include/tia/ssconfig.h \
     extern/include/LptTools/LptTools.h \
     include/tia/data_packet3.h \
-    include/tia-private/datapacket/raw_mem3.h
+    include/tia-private/datapacket/raw_mem3.h \
+    include/tia-private/clock.h
 SOURCES += src/tia/tia_server.cpp \
     src/tia/constants.cpp \
     src/tia/config/control_message_decoder.cpp \
@@ -74,7 +75,8 @@ SOURCES += src/tia/tia_server.cpp \
     src/tia/client/tia_client_impl.cpp \
     src/tia/tia_client.cpp \
     src/tia/data_packet3.cpp \
-    src/tia/datapacket/raw_mem3.cpp
+    src/tia/datapacket/raw_mem3.cpp \
+    src/tia/clock.cpp
 unix:SOURCES += extern/include/LptTools/LptToolsLinux.cpp
 win32:SOURCES += extern/include/LptTools/LptTools_.cpp
 

@@ -49,7 +49,7 @@ static const unsigned int CURRENT_DATA_PACKET_VERSION = 3;
 DataPacket3::DataPacket3()
 : version_(CURRENT_DATA_PACKET_VERSION), packet_id_(0),
   flags_(0), connection_packet_nr_(0),
-  timestamp_(boost::posix_time::microsec_clock::local_time()), nr_of_signal_types_(0)
+  timestamp_(0), nr_of_signal_types_(0)
 {
 
 }
@@ -107,7 +107,7 @@ DataPacket3::DataPacket3(void* mem)
 
   boost::posix_time::ptime* ptime_ptr
     = reinterpret_cast<boost::posix_time::ptime*>(++ui64_ptr);
-  timestamp_ = *ptime_ptr;
+  timestamp_ = -1;
 
   uint16_t* ui16_ptr = reinterpret_cast<uint16_t*>(++ptime_ptr);
   for(unsigned int n = 0; n < nr_of_signal_types_; n++)
@@ -266,7 +266,7 @@ uint64_t DataPacket3::getConnectionPacketNr()
 
 void DataPacket3::setTimestamp()
 {
-  timestamp_ =  boost::posix_time::microsec_clock::local_time();
+  timestamp_ =  0;
 }
 
 //-----------------------------------------------------------------------------

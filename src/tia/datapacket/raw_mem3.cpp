@@ -46,7 +46,7 @@ using std::cerr;
 //-----------------------------------------------------------------------------
 
 RawMem3::RawMem3(uint8_t packet_version, uint32_t flags, uint64_t packet_id, uint64_t packet_nr, \
-                boost::posix_time::ptime timestamp, \
+                uint64_t timestamp, \
                 vector<uint16_t>& nr_channels, vector<uint16_t>& samples_per_channel,
                 vector<double>& data)
                   : size_(0)
@@ -70,11 +70,11 @@ RawMem3::RawMem3(uint8_t packet_version, uint32_t flags, uint64_t packet_id, uin
   *ui64_ptr++ = packet_id;
   *ui64_ptr++ = packet_nr;
 
-  boost::posix_time::ptime* ptime_ptr
-  = reinterpret_cast<boost::posix_time::ptime*>(ui64_ptr);
-  *ptime_ptr++ = timestamp;
+  uint64_t* time_ptr
+  = reinterpret_cast<uint64_t*>(ui64_ptr);
+  *time_ptr++ = timestamp;
 
-  uint16_t* ui16_ptr = reinterpret_cast<uint16_t*>(ptime_ptr);
+  uint16_t* ui16_ptr = reinterpret_cast<uint16_t*>(time_ptr);
 
   for(unsigned int n = 0; n < nr_channels.size(); n++)
     *ui16_ptr++ = nr_channels[n];
