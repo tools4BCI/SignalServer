@@ -13,7 +13,7 @@ TEST(clientBasicConnection)
     CHECK(client.connected() == false);
     CHECK(client.receiving() == false);
 
-    CHECK_THROW(client.connect("0.0.0.0", 1000);, std::ios_base::failure);
+    CHECK_THROW(client.connect("0.0.0.0", 1000), std::ios_base::failure);
     CHECK(client.connected() == false);
 
     CHECK_THROW(client.requestConfig(), std::ios_base::failure);

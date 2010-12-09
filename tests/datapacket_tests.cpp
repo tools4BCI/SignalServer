@@ -64,48 +64,49 @@ TEST_FIXTURE(DataPacketRawMemoryFixture, createVersion3DataPacket)
 //-------------------------------------------------------------------------------------------------
 TEST(assemblePacket)
 {
-    DataPacket3 empty_packet;
-    vector<double> v0(25,0);
-    vector<double> v1(5,1);
-    vector<double> v2(16,2);
-    vector<double> v3(12,3);
+    DataPacket3 assembled_packet;
+    vector<double> v0 (25,0);
+    vector<double> v1 (5,1);
+    vector<double> v2 (16,2);
+    vector<double> v3 (12,3);
 
-    empty_packet.insertDataBlock(v0,SIG_EMG,1);
+    assembled_packet.insertDataBlock (v0,SIG_EMG,1);
 
-    empty_packet.insertDataBlock(v1,SIG_EEG,1);   // insert
-    empty_packet.insertDataBlock(v3,SIG_EEG,1,1);  // prepend
-    empty_packet.insertDataBlock(v2,SIG_EEG,1);    // append   --> v3, v1, v2
+    assembled_packet.insertDataBlock (v1,SIG_EEG,1);   // insert
+    assembled_packet.insertDataBlock (v3,SIG_EEG,1,1);  // prepend
+    assembled_packet.insertDataBlock (v2,SIG_EEG,1);    // append   --> v3, v1, v2
 
-    empty_packet.insertDataBlock(v2,SIG_EOG,8);
-    empty_packet.insertDataBlock(v3,SIG_HR,2);
+    assembled_packet.insertDataBlock (v2,SIG_EOG,8);
+    assembled_packet.insertDataBlock (v3,SIG_HR,2);
 
-    vector<double> v;
-    vector<double> test_v;
-    v = empty_packet.getSingleDataBlock(SIG_EEG);
-    CHECK(v.size() == (v1.size() + v3.size() + v2.size()) );
 
-    test_v.insert(test_v.end(), v3.begin(), v3.end());
-    test_v.insert(test_v.end(), v1.begin(), v1.end());
-    test_v.insert(test_v.end(), v2.begin(), v2.end());
+    vector<double> assembled_eeg_data;
+    assembled_eeg_data.insert (assembled_eeg_data.end(), v3.begin(), v3.end());
+    assembled_eeg_data.insert (assembled_eeg_data.end(), v1.begin(), v1.end());
+    assembled_eeg_data.insert (assembled_eeg_data.end(), v2.begin(), v2.end());
 
-    for(unsigned int n = 0; n < v.size(); n++)
-        CHECK(v[n] == test_v[n]);
+    vector<double> eeg_data_from_packet = assembled_packet.getSingleDataBlock(SIG_EEG);
+    CHECK_EQUAL (eeg_data_from_packet.size (), assembled_eeg_data.size ());
+    for (unsigned n = 0; n < eeg_data_from_packet.size (); n++)
+        CHECK_EQUAL (eeg_data_from_packet[n], assembled_eeg_data[n]);
 
-    v = empty_packet.getSingleDataBlock(SIG_EOG);
-    for(unsigned int n = 0; n < v.size(); n++)
-        CHECK(v[n] == v2[n]);
+    vector<double> eog_data_from_packet = assembled_packet.getSingleDataBlock (SIG_EOG);
+    CHECK_EQUAL (eog_data_from_packet.size (), v2.size ());
+    for (unsigned n = 0; n < eog_data_from_packet.size (); n++)
+        CHECK_EQUAL(eog_data_from_packet[n], v2[n]);
 
-    v = empty_packet.getSingleDataBlock(SIG_HR);
-    for(unsigned int n = 0; n < v.size(); n++)
-        CHECK(v[n] == v3[n]);
+    vector<double> hr_data_from_packet = assembled_packet.getSingleDataBlock (SIG_HR);
+    CHECK_EQUAL (hr_data_from_packet.size (), v3.size ());
+    for (unsigned n = 0; n < hr_data_from_packet.size (); n++)
+        CHECK_EQUAL (hr_data_from_packet[n], v3[n]);
 
-    v = empty_packet.getSingleDataBlock(SIG_EMG);
-    for(unsigned int n = 0; n < v.size(); n++)
-        CHECK(v[n] == v0[n]);
+    vector<double> emg_data_from_packet = assembled_packet.getSingleDataBlock (SIG_EMG);
+    CHECK_EQUAL (emg_data_from_packet.size (), v0.size ());
+    for (unsigned n = 0; n < emg_data_from_packet.size (); n++)
+        CHECK_EQUAL (emg_data_from_packet[n], v0[n]);
 
-    // How to check for exceptions?
-    //empty_packet.getSingleDataBlock(SIG_BP);
-
+    CHECK_THROW (assembled_packet.getSingleDataBlock (SIG_BP), std::invalid_argument);
+    CHECK_THROW (assembled_packet.getSingleDataBlock (SIG_BP | SIG_EEG), std::invalid_argument);
 }
 
 //-------------------------------------------------------------------------------------------------
