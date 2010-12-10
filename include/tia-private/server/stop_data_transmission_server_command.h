@@ -2,6 +2,7 @@
 #define STOP_DATA_TRANSMISSION_SERVER_COMMAND_H
 
 #include "server_command.h"
+#include "socket.h"
 
 namespace tia
 {
@@ -9,11 +10,14 @@ namespace tia
 class StopDataTransmissionServerCommand : public ServerCommand
 {
 public:
-    void execute (Socket&)
+    StopDataTransmissionServerCommand (WriteSocket& socket) : socket_ (socket) {}
+    void execute ()
     {
-        // stop the data transmission
+        socket_.sendString ("<?xml version=\"1.0\" encoding=\"UTF-8\"?><message version=\"0.2\"><errorReply  /></message>");
     }
 
+private:
+    WriteSocket& socket_;
 };
 
 }
