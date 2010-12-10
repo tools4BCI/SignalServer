@@ -7,11 +7,18 @@ namespace tia
 {
 
 //-----------------------------------------------------------------------------
-/// base class for any socket
-class Socket
+/// base class for any socket that could write data
+class WriteSocket
 {
 public:
     virtual void sendString (std::string const& string) = 0;
+};
+
+//-----------------------------------------------------------------------------
+/// base class for any socket
+class Socket : public WriteSocket
+{
+public:
     virtual std::string readString () = 0;
 };
 
