@@ -7,6 +7,10 @@ namespace tia
 typedef unsigned ConnectionID;
 typedef unsigned short Port;
 
+//-----------------------------------------------------------------------------
+/// DataServer
+///
+/// @brief base class for data servers which broadcast datapackets
 class DataServer
 {
 public:
