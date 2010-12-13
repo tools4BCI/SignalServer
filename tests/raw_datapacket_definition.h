@@ -149,8 +149,8 @@ namespace datapacket_version_2
 void generateRawDataPacketVersion2 (unsigned char* target_memory,
                                     boost::uint32_t signal_type_flags,
                                     boost::uint64_t sample_number,
-                                    boost::uint64_t packet_number,
-                                    std::vector<std::vector<std::vector<float> > > const& samples)
+                                    boost::uint64_t /*packet_number*/,
+                                    std::vector<std::vector<std::vector<float> > > const& /*samples*/)
 {
     if (signal_type_flags & (datapacket_version_2::PACKET_VERSION_FLAG | datapacket_version_2::PACKET_CONTROL_FLAG))
         throw std::runtime_error ("generateRawDataPacketVersion2: invalid signal type flags");

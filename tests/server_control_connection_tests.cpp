@@ -3,6 +3,7 @@
 #include "tia_control_messages_definition.h"
 
 #include "tia-private/server/stop_data_transmission_server_command.h"
+#include "tia-private/server/get_data_connection_server_command.h"
 
 #include "ticpp/ticpp.h"
 
@@ -71,7 +72,6 @@ std::string message02Command (std::string const& xml)
 //-----------------------------------------------------------------------------
 TEST_FIXTURE (TiAServerControlConnectionFixture, stopDataTransmissionServerCommand)
 {
-    test_control_socket.setStringToBeRead ("");
     ConnectionID valid_connection_id = test_data_server.addConnection ();
     ConnectionID invalid_connection_id = valid_connection_id + 100;
 
@@ -98,6 +98,13 @@ TEST_FIXTURE (TiAServerControlConnectionFixture, stopDataTransmissionServerComma
     StopDataTransmissionServerCommand command_with_invalid_id (invalid_connection_id, test_data_server, test_control_socket);
     command_with_invalid_id.execute ();
     CHECK_EQUAL (static_cast<unsigned>(0), test_control_socket.transmittedString().size());
+}
+
+//-----------------------------------------------------------------------------
+TEST_FIXTURE (TiAServerControlConnectionFixture, getDataTransmissionServerCommand)
+{
+    ConnectionID connection_id = -1;
+    GetDataConnectionServerCommand command (connection_id, test_data_server, test_control_socket);
 }
 
 }
