@@ -42,7 +42,10 @@ gBSamp::gBSamp(XMLParser& parser, ticpp::Iterator<ticpp::Element> hw)
   data_.init(blocks_, nr_ch_, channel_types_);
   samples_.resize(expected_values_, 0);
 
-  initCard();
+  if( initCard() != 0)
+  {
+    cout << "TODO: Exception, weil initCard nicht funktioniert hat" << endl;
+    cout << "Programm bitte neu starten" << endl;
 
   cout << " * gBSamp sucessfully initialized" << endl;
   cout << "    fs: " << fs_ << "Hz, nr of channels: " << nr_ch_  << ", blocksize: " << blocks_  << endl;
@@ -59,7 +62,7 @@ gBSamp::~gBSamp()
 
   if(device_)
   {
-    comedi_cancel(device_, 0);
+//    comedi_cancel(device_, 0);
     comedi_close(device_);
   }
 }
@@ -121,8 +124,7 @@ SampleBlock<double> gBSamp::getSyncData()
     bytes_read = read(comedi_fileno(device_), (void*)buf+samples_read, temp*sizeof(sampl_t));
     temp -= bytes_read/sizeof(sampl_t);
     samples_read += bytes_read/sizeof(sampl_t);
-    if((bytes_read < 0) || (bytes_read % 2 != 0)) cout << "Error: Bytes read are " << bytes_read << endl;
-//    cout << "Samples read: " << samples_read << "Temp: " << temp << endl;
+//    if((bytes_read < 0) || (bytes_read % 2 != 0)) cout << "Error: Bytes read are " << bytes_read << endl;
   }
 
   double phys_val_[buf_size];
@@ -203,6 +205,7 @@ int gBSamp::initCard()
   comedi_cmd_.start_src = TRIG_NOW;
   comedi_cmd_.start_arg = 0;
 
+  //TODO: fs_*nr_ch_???
   comedi_cmd_.scan_begin_src = TRIG_TIMER;
   comedi_cmd_.scan_begin_arg = 1e9/fs_;
 
