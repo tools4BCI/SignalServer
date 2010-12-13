@@ -61,7 +61,9 @@ HEADERS += include/tia/tia_server.h \
     include/tia-private/server/control_connection_server_2.h \
     include/tia-private/server/server_command.h \
     include/tia-private/server/socket.h \
-    include/tia-private/server/stop_data_transmission_server_command.h
+    include/tia-private/server/stop_data_transmission_server_command.h \
+    include/tia-private/server/data_server.h \
+    include/tia-private/server/start_data_transmission_server_command.h
 SOURCES += src/tia/tia_server.cpp \
     src/tia/constants.cpp \
     src/tia/config/control_message_decoder.cpp \

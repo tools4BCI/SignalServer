@@ -69,15 +69,35 @@ std::string message02Command (std::string const& xml)
 }
 
 //-----------------------------------------------------------------------------
-TEST (stopDataTransmissionServerCommand)
+TEST_FIXTURE (TiAServerControlConnectionFixture, stopDataTransmissionServerCommand)
 {
-    TestSocket socket;
-    socket.setStringToBeRead ("");
-    StopDataTransmissionServerCommand command (socket);
+    test_control_socket.setStringToBeRead ("");
+    ConnectionID valid_connection_id = test_data_server.addConnection ();
+    ConnectionID invalid_connection_id = valid_connection_id + 100;
+
+    StopDataTransmissionServerCommand command (valid_connection_id, test_data_server, test_control_socket);
+
     command.execute ();
 
-    CHECK (validMessage02 (socket.sentString()));
-    CHECK_EQUAL (std::string ("errorReply"), message02Command (socket.sentString()));
+    // error reply if transmission already not active
+    CHECK (validMessage02 (test_control_socket.transmittedString()));
+    CHECK_EQUAL (std::string ("errorReply"), message02Command (test_control_socket.transmittedString()));
+    CHECK (!test_data_server.transmissionEnabled (valid_connection_id));
+
+    test_data_server.startTransmission (valid_connection_id);
+
+    command.execute ();
+
+    // ok reply if transmission has been active and could be stopped
+    CHECK (validMessage02 (test_control_socket.transmittedString()));
+    CHECK_EQUAL (std::string ("okReply"), message02Command (test_control_socket.transmittedString()));
+    CHECK (!test_data_server.transmissionEnabled (valid_connection_id));
+
+
+    // no reply if connection doesn't even exist
+    StopDataTransmissionServerCommand command_with_invalid_id (invalid_connection_id, test_data_server, test_control_socket);
+    command_with_invalid_id.execute ();
+    CHECK_EQUAL (static_cast<unsigned>(0), test_control_socket.transmittedString().size());
 }
 
 }
