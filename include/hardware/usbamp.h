@@ -194,7 +194,7 @@ class USBamp : public HWThread
   private:
     static std::set<static std::string> serials_;
     static bool is_usbamp_master_;
-    std::string serial;
+    std::string serial_;
 
     static USBamp*         master_device_;
     static std::vector<USBamp*>   slave_devices_;

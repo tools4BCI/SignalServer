@@ -167,7 +167,7 @@ USBamp::USBamp(ticpp::Iterator<ticpp::Element> hw)
     master_device_ = this;
 
   cout << endl;
-  cout << " * g.USBamp sucessfully initialized" << endl;
+  cout << " * g.USBamp " << serial_ << " sucessfully initialized" << endl;
   cout << "    driver version: " << usb_amp_.getDriverVersion () << ", hardware version: " << usb_amp_.getHWVersion (h_) << endl;
   cout << "    fs: " << fs_ << "Hz, nr of channels: " << nr_ch_ << ", blocksize: " << blocks_ << endl;
   cout << endl;
@@ -462,7 +462,7 @@ void USBamp::getHandles()
     throw(std::invalid_argument("USBamp::getHandles -- No serial number for g.USBamp given!"));
 
   serials_.insert(m_.find(hardware_serial_)->second);
-  serial = m_.find(hardware_serial_)->second;
+  serial_ = m_.find(hardware_serial_)->second;
 
   HANDLE h_tmp;
   h_tmp = usb_amp_.openDeviceEx( const_cast<LPSTR>(  m_.find(hardware_serial_)->second.c_str() ));
@@ -545,11 +545,11 @@ void USBamp::run()
     }
 
     running_ = 1;
-    cout << " * g.USBamp " << serial << " sucessfully started" << endl;
+    cout << " * g.USBamp " << serial_ << " sucessfully started" << endl;
 
   }
   else
-    cout << " * g.USBamp " << serial << " will be started by the master ..." << endl;
+    cout << " * g.USBamp " << serial_ << " will be started by the master ..." << endl;
 }
 
 //-----------------------------------------------------------------------------
