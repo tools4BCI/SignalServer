@@ -157,9 +157,6 @@ class USBamp : public HWThread
     void adjustSettingsToChannelSelection();
     void checkTriggerLineChannel();
 
-    /**
-    * @todo If serial not found, list all available serials.
-    */
     void getHandles();
     void check4USBampError();
     void initFilterPtrs();
@@ -168,6 +165,7 @@ class USBamp : public HWThread
     int search4NotchID(float f_center);
     void printPossibleBandPassFilters();
     void printPossibleNotchFilters();
+	void printAvailableAmps();
     void setUSBampFilter();
     void setUSBampNotch();
 
@@ -181,6 +179,7 @@ class USBamp : public HWThread
     void fillSampleBlock();
 
     int getUSBampFilterType(const std::string& s);
+    std::string getUSBampFilterName(double n);
     std::string getUSBampOpMode(const std::string& s);
     int getUSBampBlockNr(const std::string& s);
 

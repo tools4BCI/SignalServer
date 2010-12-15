@@ -288,6 +288,11 @@ public:
 		return get_last_error_ptr_ (wErrorCode, pLastError);
 	}
 
+  HANDLE openDevice (int portNr)
+	{
+		return open_device_ptr_ (portNr);
+	}
+
 	HANDLE openDeviceEx (LPSTR lpSerial)
 	{
 		return open_device_ex_ptr_ (lpSerial);
