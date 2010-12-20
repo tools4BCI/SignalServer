@@ -28,11 +28,9 @@ using boost::bad_lexical_cast;
 
 using std::vector;
 using std::string;
-using std::map;
 using std::pair;
 using std::cout;
 using std::endl;
-using std::make_pair;
 using std::set;
 
 set<boost::uint16_t> MouseBase::used_ids_;
@@ -45,27 +43,27 @@ const string MouseBase::usb_port("usb_port");
 MouseBase::MouseBase(ticpp::Iterator<ticpp::Element> hw)
   : HWThread()
 {
-  #ifdef DEBUG
-    cout << "MouseBase: Constructor" << endl;
-  #endif
-setType("Mouse");
-  checkMandatoryHardwareTags(hw);
-  if(mode_ != APERIODIC)
-    throw(std::invalid_argument("Mouse has to be started as aperiodic device!"));
-  initMouse();
+	#ifdef DEBUG
+		cout << "MouseBase: Constructor" << endl;
+	#endif
+	setType("Mouse");
+	checkMandatoryHardwareTags(hw);
+	if(mode_ != APERIODIC)
+		throw(std::invalid_argument("Mouse has to be started as aperiodic device!"));
+	initMouse();
 
-  ticpp::Iterator<ticpp::Element> ds(hw->FirstChildElement(hw_devset_, true));
-  setDeviceSettings(ds);
-  DS = ds;
-  data_.init(1, channel_types_.size() , channel_types_);
+	ticpp::Iterator<ticpp::Element> ds(hw->FirstChildElement(hw_devset_, true));
+	setDeviceSettings(ds);
+	DS = ds;
+	data_.init(1, channel_types_.size() , channel_types_);
 
-  vector<boost::uint32_t> v;
-  empty_block_.init(0,0, v);
+	vector<boost::uint32_t> v;
+	empty_block_.init(0,0, v);
 
-  cout << " * Mouse sucessfully initialized -- running as aperiodic: ";
-  cout << (mode_ == APERIODIC) << ";  ";
-  cout << "Mouse ID: " << id_ << ",  Name: " << name_;
-   cout<<", vid: "<<vid_<<", pid: "<<pid_<<endl;
+	cout << " * Mouse sucessfully initialized -- running as aperiodic: ";
+	cout << (mode_ == APERIODIC) << ";  ";
+	cout << "Mouse ID: " << id_ << ",  Name: " << name_;
+	cout<<", vid: "<<vid_<<", pid: "<<pid_<<endl;
 }
 
 //-----------------------------------------------------------------------------
@@ -145,8 +143,6 @@ void MouseBase::setUsbPort(ticpp::Iterator<ticpp::Element>const &elem)
     }
 }
 
-//---------------------------------------------------------------------------------------
-
 //-----------------------------------------------------------------------------
 
 void MouseBase::setDeviceSettings(ticpp::Iterator<ticpp::Element>const& father)
@@ -168,9 +164,9 @@ void MouseBase::setDeviceSettings(ticpp::Iterator<ticpp::Element>const& father)
   string type;
 
   if(buttons_)
-    channel_types_.push_back(SIG_BUTTON);
+    channel_types_.push_back(SIG_MBUTTON);
   for(boost::uint32_t n = 0; n < buttons_; n++)
-    channel_types_.push_back(SIG_BUTTON);
+    channel_types_.push_back(SIG_MBUTTON);
 
   if(axes_)
     channel_types_.push_back(SIG_MOUSE);
@@ -181,7 +177,7 @@ void MouseBase::setDeviceSettings(ticpp::Iterator<ticpp::Element>const& father)
   boost::uint16_t n = 1;
   if(buttons_)
     for( ; n <= buttons_ +1; n++)
-      channel_info_.insert(pair<boost::uint16_t, pair<string, boost::uint32_t> >(n, pair<string, boost::uint32_t>(naming, SIG_BUTTON)));
+      channel_info_.insert(pair<boost::uint16_t, pair<string, boost::uint32_t> >(n, pair<string, boost::uint32_t>(naming, SIG_MBUTTON)));
 
   if(axes_)
     for( ; n <= axes_ + buttons_ +2; n++)

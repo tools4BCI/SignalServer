@@ -78,6 +78,7 @@ const string Constants::usb_port("usb_port");
 Constants::Constants()
 {
   signaltypes.insert(pair <string,uint32_t>("mouse", SIG_MOUSE));
+  signaltypes.insert(pair <string,uint32_t>("mouse-button", SIG_MBUTTON));
 
   signaltypes.insert(pair <string,uint32_t>("eeg", SIG_EEG));
   signaltypes.insert(pair <string,uint32_t>("emg", SIG_EMG));

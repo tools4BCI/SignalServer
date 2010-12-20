@@ -93,8 +93,6 @@ class MouseBase : public HWThread
       */
       void setUsbPort(ticpp::Iterator<ticpp::Element>const &elem);
 
-      //     void setHardware(ticpp::Iterator<ticpp::Element>const &hw);
-
       virtual void setDeviceSettings(ticpp::Iterator<ticpp::Element>const &father);
 
       virtual void setChannelSettings(ticpp::Iterator<ticpp::Element>const &father);
@@ -124,19 +122,12 @@ class MouseBase : public HWThread
 
       SampleBlock<double> empty_block_;
 
-      int x_,y_;
-
-
       boost::thread*  async_acqu_thread_;
       std::vector<boost::int16_t>  raw_data_;
       int async_data_x_;
       int async_data_y_;
       int async_data_buttons_;
-      bool dirty_;
-
   };
-
-
 
 } // Namespace tobiss
 
