@@ -15,9 +15,9 @@
 
 #include "ticpp/ticpp.h"
 
-#include "definitions/constants.h"
-#include "signalserver-client/ssclient.h"
-#include "signalserver-client/ssconfig.h"
+#include "tia/constants.h"
+#include "tia/tia_client.h"
+#include "tia/ssconfig.h"
 
 #include <boost/cstdint.hpp>
 
@@ -93,7 +93,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
 //     cout.rdbuf (strm_buffer);
 
     cout << "Using server " << srv_addr << ":" << port << endl;
-    SSClient client;
+    TiAClient client;
     client.connect(srv_addr, port);
 
     client.requestConfig();
