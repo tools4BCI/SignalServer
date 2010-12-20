@@ -18,6 +18,10 @@
     Contact: c.breitwieser@tugraz.at
 */
 
+/**
+* @file serial_port_base.h
+* @brief serial_port_base includes a base class using boost::asio to access the serial port
+**/
 
 #ifndef SERIALPORTBASE_H
 #define SERIALPORTBASE_H
@@ -36,50 +40,33 @@
 namespace tobiss
 {
 
-
-class AsioSerialPortTypeNames
-{
-  public:
-    ~AsioSerialPortTypeNames()    {  }
-    static AsioSerialPortTypeNames& getInstance();
-
-    std::string getFlowControlName(unsigned int id);
-    std::string getStopBitName(unsigned int id);
-    std::string getParityName(unsigned int id);
-
-    unsigned int getFlowControlID(std::string str);
-    unsigned int getStopBitID(std::string);
-    unsigned int getParityID(std::string);
-
-  private:
-    AsioSerialPortTypeNames(const AsioSerialPortTypeNames& cc);
-    AsioSerialPortTypeNames();
-
-    static std::map<unsigned int, std::string> flow_control_values_;
-    static std::map<unsigned int, std::string> stop_bit_values_;
-    static std::map<unsigned int, std::string> parity_values_;
-
-    struct MapValue: public std::binary_function<
-        std::pair<unsigned int, std::string>, std::string, bool >
-    {
-      bool operator () ( const std::pair<unsigned int, std::string> p, std::string str ) const
-      {
-        return(p.second == str);
-      }
-    };
-};
-
-
 //-----------------------------------------------------------------------------
 
-
+/**
+* @class SerialPortBase
+* @brief This class wrapps boost::asio::serial_port
+*
+* SerialPortBase is a base class wrapping boost asios
+* serial_port class. It provides synchronous and asynchronous
+* operations to send and receive data.
+*/
 class SerialPortBase
 {
+
+
   protected:
-//    SerialPortBase(boost::asio::io_service& io, XMLParser& parser);
+    /**
+    * @brief Constructor
+    */
     SerialPortBase(boost::asio::io_service& io);
+    /**
+    * @brief Destructor
+    */
     virtual ~SerialPortBase();
 
+    /**
+    * @brief Set the name of the used serial port (/dev/ttyS1,S2,... or COM1, COM2, ...).
+    */
     void setPortName(const std::string& name);
     void open();
     void close();
@@ -89,13 +76,33 @@ class SerialPortBase
     void setStopBits(const std::string& bits);
     void setCharacterSize(const unsigned int size);
 
+    /**
+    * @brief Synchronous read until "values" is full.
+    */
     template<typename T> void sync_read(std::vector<T>& values);
+
+    /**
+    * @brief Synchronous read at least "bytes_to_receive".
+    */
     template<typename T> void sync_read(std::vector<T>& values, unsigned int bytes_to_receive);
 
+    /**
+    * @brief Asynchronous read until "values" is full.
+    */
     template<typename T> void async_read(std::vector<T>& values);
+
+    /**
+    * @brief Asynchronous read at least "bytes_to_receive".
+    */
     template<typename T> void async_read(std::vector<T>& values, unsigned int bytes_to_receive);
 
+    /**
+    * @brief Synchronous write "values".
+    */
     template<typename T> void sync_write(std::vector<T>& values);
+    /**
+    * @brief Asynchronous write "values".
+    */
     template<typename T> void async_write(std::vector<T>& values);
 
     std::string getSerialPortName()
@@ -120,6 +127,40 @@ class SerialPortBase
                     std::size_t bytes_transferred );
 
   private:
+
+    class AsioSerialPortTypeNames
+    {
+      public:
+        ~AsioSerialPortTypeNames()    {  }
+        static AsioSerialPortTypeNames& getInstance();
+
+        std::string getFlowControlName(unsigned int id);
+        std::string getStopBitName(unsigned int id);
+        std::string getParityName(unsigned int id);
+
+        unsigned int getFlowControlID(std::string str);
+        unsigned int getStopBitID(std::string);
+        unsigned int getParityID(std::string);
+
+      private:
+        AsioSerialPortTypeNames(const AsioSerialPortTypeNames& cc);
+        AsioSerialPortTypeNames();
+
+        static std::map<unsigned int, std::string> flow_control_values_;
+        static std::map<unsigned int, std::string> stop_bit_values_;
+        static std::map<unsigned int, std::string> parity_values_;
+
+        struct MapValue: public std::binary_function<
+            std::pair<unsigned int, std::string>, std::string, bool >
+        {
+          bool operator () ( const std::pair<unsigned int, std::string> p, std::string str ) const
+          {
+            return(p.second == str);
+          }
+        };
+    };
+
+
     boost::asio::serial_port    serial_port_;
     std::string                 port_name_;
 

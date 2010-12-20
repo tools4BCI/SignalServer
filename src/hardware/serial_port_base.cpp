@@ -18,6 +18,10 @@
     Contact: c.breitwieser@tugraz.at
 */
 
+/**
+* @file serial_port_base.cpp
+**/
+
 #include "hardware/serial_port_base.h"
 
 #include <iostream>
@@ -36,13 +40,13 @@ using std::flush;
 
 //-----------------------------------------------------------------------------
 
-std::map<unsigned int, std::string> AsioSerialPortTypeNames::flow_control_values_;
-std::map<unsigned int, std::string> AsioSerialPortTypeNames::stop_bit_values_;
-std::map<unsigned int, std::string> AsioSerialPortTypeNames::parity_values_;
+std::map<unsigned int, std::string> SerialPortBase::AsioSerialPortTypeNames::flow_control_values_;
+std::map<unsigned int, std::string> SerialPortBase::AsioSerialPortTypeNames::stop_bit_values_;
+std::map<unsigned int, std::string> SerialPortBase::AsioSerialPortTypeNames::parity_values_;
 
 //-----------------------------------------------------------------------------
 
-AsioSerialPortTypeNames& AsioSerialPortTypeNames::getInstance()
+SerialPortBase::AsioSerialPortTypeNames& SerialPortBase::AsioSerialPortTypeNames::getInstance()
 {
  static AsioSerialPortTypeNames instance;
  return instance;
@@ -50,7 +54,7 @@ AsioSerialPortTypeNames& AsioSerialPortTypeNames::getInstance()
 
 //-----------------------------------------------------------------------------
 
-AsioSerialPortTypeNames::AsioSerialPortTypeNames()
+SerialPortBase::AsioSerialPortTypeNames::AsioSerialPortTypeNames()
 {
   flow_control_values_[1] = "none";
   flow_control_values_[2] = "software";
@@ -67,7 +71,7 @@ AsioSerialPortTypeNames::AsioSerialPortTypeNames()
 
 //-----------------------------------------------------------------------------
 
-std::string AsioSerialPortTypeNames::getFlowControlName(unsigned int id)
+std::string SerialPortBase::AsioSerialPortTypeNames::getFlowControlName(unsigned int id)
 {
   std::string str;
   str = ((flow_control_values_.find(id) != flow_control_values_.end() )?
@@ -79,7 +83,7 @@ std::string AsioSerialPortTypeNames::getFlowControlName(unsigned int id)
 
 //-----------------------------------------------------------------------------
 
-std::string AsioSerialPortTypeNames::getStopBitName(unsigned int id)
+std::string SerialPortBase::AsioSerialPortTypeNames::getStopBitName(unsigned int id)
 {
   std::string str;
   str = ( (stop_bit_values_.find(id) != stop_bit_values_.end() )?
@@ -91,7 +95,7 @@ std::string AsioSerialPortTypeNames::getStopBitName(unsigned int id)
 
 //-----------------------------------------------------------------------------
 
-std::string AsioSerialPortTypeNames::getParityName(unsigned int id)
+std::string SerialPortBase::AsioSerialPortTypeNames::getParityName(unsigned int id)
 {
   std::string str;
   str = ( (parity_values_.find(id) != parity_values_.end() )?
@@ -103,7 +107,7 @@ std::string AsioSerialPortTypeNames::getParityName(unsigned int id)
 
 //-----------------------------------------------------------------------------
 
-unsigned int AsioSerialPortTypeNames::getFlowControlID(std::string str)
+unsigned int SerialPortBase::AsioSerialPortTypeNames::getFlowControlID(std::string str)
 {
   std::map<unsigned int, std::string>::iterator it =
       find_if(flow_control_values_.begin(),
@@ -116,7 +120,7 @@ unsigned int AsioSerialPortTypeNames::getFlowControlID(std::string str)
 
 //-----------------------------------------------------------------------------
 
-unsigned int AsioSerialPortTypeNames::getStopBitID(std::string str)
+unsigned int SerialPortBase::AsioSerialPortTypeNames::getStopBitID(std::string str)
 {
   std::map<unsigned int, std::string>::iterator it =
       find_if(stop_bit_values_.begin(),
@@ -129,7 +133,7 @@ unsigned int AsioSerialPortTypeNames::getStopBitID(std::string str)
 
 //-----------------------------------------------------------------------------
 
-unsigned int AsioSerialPortTypeNames::getParityID(std::string str)
+unsigned int SerialPortBase::AsioSerialPortTypeNames::getParityID(std::string str)
 {
   std::map<unsigned int, std::string>::iterator it =
       find_if(parity_values_.begin(),

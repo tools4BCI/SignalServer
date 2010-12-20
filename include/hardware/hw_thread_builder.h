@@ -18,6 +18,10 @@
     Contact: christoph.eibel@tugraz.at
 */
 
+/**
+* @file hw_thread_builder.h
+**/
+
 #ifndef HW_THREAD_BUILDER_H
 #define HW_THREAD_BUILDER_H
 

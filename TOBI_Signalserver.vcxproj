@@ -1,0 +1,199 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>signalserver</ProjectName>
+    <ProjectGuid>{0A4BE492-F0C7-4FA0-9997-35AD041A7519}</ProjectGuid>
+    <RootNamespace>signalserver_backup</RootNamespace>
+    <Keyword>Qt4VSv1.0</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">tmp\debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">tmp\debug\</IntDir>
+    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</IgnoreImportLibrary>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">tmp\release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">tmp\release\</IntDir>
+    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</IgnoreImportLibrary>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <WarningLevel>0</WarningLevel>
+      <DefaultCharType>Unsigned</DefaultCharType>
+      <EnableErrorChecks>None</EnableErrorChecks>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>-Zm200 -w34100 -w34189 -w34100 -w34189 %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>.;include;extern\include;extern\include\SDL-1.2.14-VC8;C:\Programme\boost\boost_1_44;..\..\Qt\2009.05\qt\mkspecs\win32-msvc2008;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;TIXML_USE_TICPP;_WIN32_WINNT=0x0501;_CONSOLE;_USE_MATH_DEFINES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessToFile>false</PreprocessToFile>
+      <PreprocessSuppressLineNumbers>false</PreprocessSuppressLineNumbers>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <AssemblerListingLocation>tmp\debug\</AssemblerListingLocation>
+      <ObjectFileName>tmp\debug\</ObjectFileName>
+      <ProgramDataBaseFileName>tmp\debug\</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>UNICODE;WIN32;QT_LARGEFILE_SUPPORT;TIXML_USE_TICPP;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+    <Link>
+      <AdditionalDependencies>tiad.lib;ticppd-msvc10.lib;SDL.lib;libusb0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>bin\signalserver_debug.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>lib;extern\lib\g.usbamp\win;extern\lib\sdl\win;extern\lib\ticpp\win;extern\lib\libgdf\win;extern\lib\libusb\win;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>
+      </ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
+      <OptimizeReferences>false</OptimizeReferences>
+      <EnableCOMDATFolding>false</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>
+      </LinkTimeCodeGeneration>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <WarningLevel>0</WarningLevel>
+      <DefaultCharType>Unsigned</DefaultCharType>
+      <EnableErrorChecks>None</EnableErrorChecks>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>-Zm200 -w34100 -w34189 -w34100 -w34189 %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>.;include;extern\include;extern\include\SDL-1.2.14-VC8;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;TIXML_USE_TICPP;_WIN32_WINNT=0x0501;_CONSOLE;_USE_MATH_DEFINES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessToFile>false</PreprocessToFile>
+      <PreprocessSuppressLineNumbers>false</PreprocessSuppressLineNumbers>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <AssemblerListingLocation>tmp\release\</AssemblerListingLocation>
+      <ObjectFileName>tmp\release\</ObjectFileName>
+      <ProgramDataBaseFileName>tmp\release\</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>UNICODE;WIN32;QT_LARGEFILE_SUPPORT;TIXML_USE_TICPP;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+    <Link>
+      <AdditionalDependencies>ticpp-msvc10.lib;SDL.lib;libusb0.lib;tia.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>bin\signalserver.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>lib;extern\lib\g.usbamp\win;extern\lib\sdl\win;extern\lib\ticpp\win;extern\lib\libgdf\win;extern\lib\libusb\win;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>
+      </ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src\signalserver\main.cpp" />
+    <ClCompile Include="src\hardware\artificial_signal_source.cpp" />
+    <ClCompile Include="src\hardware\eeg_simulator.cpp" />
+    <ClCompile Include="src\hardware\event_listener.cpp" />
+    <ClCompile Include="src\hardware\g_mobilab.cpp" />
+    <ClCompile Include="src\hardware\hw_access.cpp" />
+    <ClCompile Include="src\hardware\hw_thread.cpp" />
+    <ClCompile Include="src\hardware\hw_thread_factory.cpp" />
+    <ClCompile Include="src\hardware\jstick.cpp" />
+    <ClCompile Include="src\hardware\serial_port_base.cpp" />
+    <ClCompile Include="src\hardware\sine_generator.cpp" />
+    <ClCompile Include="src\hardware\usbamp.cpp" />
+    <ClCompile Include="src\sampleblock\sample_block.cpp" />
+    <ClCompile Include="src\filereading\data_file_handler.cpp" />
+    <ClCompile Include="src\filereading\file_reader.cpp" />
+    <ClCompile Include="src\filereading\file_reader_factory.cpp" />
+    <ClCompile Include="src\filereading\gdf_file_reader.cpp" />
+    <ClCompile Include="src\config\xml_parser.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\hardware\artificial_signal_source.h" />
+    <ClInclude Include="include\hardware\eeg_simulator.h" />
+    <ClInclude Include="include\hardware\event_listener.h" />
+    <ClInclude Include="include\hardware\g_mobilab.h" />
+    <ClInclude Include="include\hardware\gtec_usbamp_wrapper.h" />
+    <ClInclude Include="include\hardware\hw_access.h" />
+    <ClInclude Include="include\hardware\hw_thread.h" />
+    <ClInclude Include="include\hardware\hw_thread_builder.h" />
+    <ClInclude Include="include\hardware\hw_thread_factory.h" />
+    <ClInclude Include="include\hardware\jstick.h" />
+    <ClInclude Include="include\hardware\serial_port_base.h" />
+    <ClInclude Include="include\hardware\sine_generator.h" />
+    <ClInclude Include="include\hardware\usbamp.h" />
+    <ClInclude Include="include\sampleblock\sample_block.h" />
+    <ClInclude Include="include\filereading\data_file_handler.h" />
+    <ClInclude Include="include\filereading\file_reader.h" />
+    <ClInclude Include="include\filereading\file_reader_factory.h" />
+    <ClInclude Include="include\filereading\gdf_file_reader.h" />
+    <ClInclude Include="include\config\xml_parser.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

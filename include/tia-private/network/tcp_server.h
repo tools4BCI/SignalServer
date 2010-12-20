@@ -20,9 +20,7 @@
 
 /**
 * @file tcp_server.h
-*
-* @brief \TODO.
-*
+* @brief This file includes classes handling TCP connections.
 **/
 
 #ifndef TCPSERVER_H
@@ -97,7 +95,7 @@ private:
 /**
 * @class TCPServer
 *
-* @brief
+* @brief A TCP server base class used to establish TCP connections.
 */
 class TCPServer
 {
@@ -130,9 +128,8 @@ protected:
   virtual void startAccept();
 
   /**
-   * @brief Handles a new client connection
-   * @param[in]  packet
-   * @throws
+   * @brief Handles a new client connection (abstract method).
+   * @param[in] new_connection A reference to a new TCPConnection object used from this TCPServer object.
    */
   virtual void handleAccept(const TCPConnection::pointer& new_connection,
         const boost::system::error_code& error) = 0;

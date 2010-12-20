@@ -18,6 +18,10 @@
     Contact: c.breitwieser@tugraz.at
 */
 
+/**
+* @file sample_block.cpp
+**/
+
 #include <boost/lexical_cast.hpp>
 
 #include "sampleblock/sample_block.h"

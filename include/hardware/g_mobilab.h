@@ -23,7 +23,7 @@
 
 /**
 * @file g_mobilab.h
-*
+* @brief This file includes a class to gain access the g.tec g.Mobilab.
 **/
 
 #include <vector>
@@ -41,22 +41,27 @@ namespace tobiss
 
 /**
 * @class GMobilab
+* @brief This class is used to gain access to g.tec g.Mobilab.
 *
-* @brief
+* This class is NOT using the official g.tec API, thus not all functionallity
+* provided with this API is not supported within this implementation.
+*
+* @bug Problems during initialization of the serial port using boost::asio
+*       under Linux (no problems with Qt framework). Now compensated by
+*       directly modifying the termios structure.
 */
 class GMobilab : private SerialPortBase, public HWThread
 {
   public:
+    /**
+    * @brief Destructor
+    */
     GMobilab(boost::asio::io_service& io,
              ticpp::Iterator<ticpp::Element> hw);
-    virtual ~GMobilab()
-    {
-      async_acqu_thread_->join();
-      close();
-      if(async_acqu_thread_)
-        delete async_acqu_thread_;
-    }
-
+    /**
+    * @brief Destructor
+    */
+    virtual ~GMobilab();
 
     virtual SampleBlock<double> getSyncData();
     virtual SampleBlock<double> getAsyncData();
@@ -71,14 +76,36 @@ class GMobilab : private SerialPortBase, public HWThread
     virtual void stop();
 
   private:
+    /**
+    * @brief Set configuration defined in the device settings xml section.
+    */
     virtual void setDeviceSettings(ticpp::Iterator<ticpp::Element>const &father);
+    /**
+    * @brief Set configuration defined in the channel settings xml section.
+    */
     virtual void setChannelSettings(ticpp::Iterator<ticpp::Element>const &father);
+    /**
+    * @brief Initialize the g.Mobilab device.
+    */
     void setHardware(ticpp::Iterator<ticpp::Element>const &hw);
 
+    /**
+    * @brief Set scaling values dependent on the g.Mobilab type defined int the XML config (multi or EEG).
+    */
     void setScalingValues();
+    /**
+    * @brief Get a code to access a channel of the g.Mobilab.
+    */
     unsigned char getChannelCode();
+
+    /**
+    * @brief Check if the number of channels is correct.
+    */
     void checkNrOfChannels();
 
+    /**
+    * @brief Get data from the g.Mobilab and store it into samples_.
+    */
     void acquireData();
 
     enum device_types_ { MOBILAB_EEG, MOBILAB_MULTI };
