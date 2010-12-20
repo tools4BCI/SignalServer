@@ -37,6 +37,7 @@ if(isunix)
   end
 
 else
+  if(~exist(win_boost_path,'dir'))    error('Boost not found!');  end
   
   eval([win_build_command  ' src/mex_get_config.cpp ' ...
     c_files ticpp_files ' ../../extern/lib/ticpp/linux/libticpp.a' win_libs]);
