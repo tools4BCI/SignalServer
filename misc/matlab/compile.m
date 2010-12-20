@@ -11,12 +11,12 @@ win_boost_path = 'C:\Programme\boost\boost_1_44';
 
 win_build_command  = ['mex -v -O -DTIXML_USE_TICPP -DWIN32 -D_WIN32_WINNT=0x0501 -I' win_boost_path ' '];
 win_build_command  = [ win_build_command ' -I../../include/  -I../../extern/include/ -L' win_boost_path '\lib -outdir build'];
-win_libs = '-llibboost_system-vc100-mt-1_44 -llibboost_date_time-vc100-mt-1_44 -llibboost_regex-vc100-mt-1_44 -llibboost_thread-vc100-mt-1_44';
+win_libs = ' -llibboost_system-vc100-mt-1_44 -llibboost_date_time-vc100-mt-1_44 -llibboost_regex-vc100-mt-1_44 -llibboost_thread-vc100-mt-1_44';
 
 ticpp_files = ' ../../extern/include/ticpp/tinyxmlparser.cpp ../../extern/include/ticpp/tinyxmlerror.cpp';
 ticpp_files = [ticpp_files ' ../../extern/include/ticpp/tinystr.cpp ../../extern/include/ticpp/tinyxml.cpp ../../extern/include/ticpp/ticpp.cpp'];
 
-if(exist('build','dir'))
+if(~exist('build','dir'))
   mkdir('build');
 end
 
