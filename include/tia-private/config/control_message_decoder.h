@@ -20,9 +20,7 @@
 
 /**
 * @file control_message_decoder.h
-*
-* @brief \TODO.
-*
+* @brief This file includes an interface and a concrete class to decode control messages.
 **/
 
 #ifndef CONTROLMESSAGEDECODER_H
@@ -44,38 +42,59 @@
 namespace tobiss
 {
 //-----------------------------------------------------------------------------
-
+/**
+* @class ControlMsgDecoder
+* @brief Interface to decode control message
+*
+* @todo Check constructor
+* @todo Find out what decodeMsg() is exactly planned/used for
+*/
 class ControlMsgDecoder
 {
 public:
   virtual ~ControlMsgDecoder() {  };
-  ///
+
+  ///< Set the istream to decode control messages from.
   void setInputStream(std::istream* stream) { istream_ = stream; }
-  ///
+
+  ///< Decode message already in the istream.
   virtual ControlMsg* decodeMsg() = 0;
-  ///
+
+  ///< Decode a KeepAlive message
   virtual void decodeMsg(KeepAliveMsg& msg) = 0;
-  ///
+
+  ///< Decode a GetConfig message
   virtual void decodeMsg(GetConfigMsg& msg) = 0;
-  ///
+
+  ///< Decode a GetDataCnnection message
   virtual void decodeMsg(GetDataConnectionMsg& msg) = 0;
-  ///
+
+  ///< Decode a DataConnection message
   virtual void decodeMsg(DataConnectionMsg& msg) = 0;
-  ///
+
+  ///< Decode a StartTransmission message
   virtual void decodeMsg(StartTransmissionMsg& msg) = 0;
-  ///
+
+  ///< Decode a StopTransmission message
   virtual void decodeMsg(StopTransmissionMsg& msg) = 0;
-  ///
+
+  ///< Decode a Config message
   virtual void decodeMsg(ConfigMsg& msg) = 0;
-  ///
+
+  ///< Decode a Reply message
   virtual void decodeMsg(ReplyMsg& msg) = 0;
 
 protected:
-  std::istream* istream_;
+  std::istream* istream_;    ///< The istream to decode messages from
 };
 
 //-----------------------------------------------------------------------------
 
+/**
+* @class ControlMsgEncoderXML
+* @brief Concrete class to decode XML control messages
+* @todo  Find out what "decodeHeader" is exactly planned/used for.
+*/
 class ControlMsgDecoderXML : public ControlMsgDecoder
 {
 public:
@@ -105,9 +124,9 @@ public:
 private:
   ///
   ControlMsg* decodeMsgInternal();
-  ///
+  ///< Write the type of the XML message into "type".
   bool getXmlMsgType(ticpp::Element& header, std::string& type) const;
-  ///
+  ///< Get the sender from the control message
   bool decodeHeader(ControlMsg& msg);
 
 private:

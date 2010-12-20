@@ -18,6 +18,10 @@
     Contact: christoph.eibel@tugraz.at
 */
 
+/**
+* @file gtec_usbamp_wrapper.h
+**/
+
 #ifndef GTEC_USBAMP_WRAPPER_H
 #define GTEC_USBAMP_WRAPPER_H
 
@@ -282,6 +286,11 @@ public:
 	BOOL getLastError (WORD * wErrorCode, char *pLastError)
 	{
 		return get_last_error_ptr_ (wErrorCode, pLastError);
+	}
+
+  HANDLE openDevice (int portNr)
+	{
+		return open_device_ptr_ (portNr);
 	}
 
 	HANDLE openDeviceEx (LPSTR lpSerial)

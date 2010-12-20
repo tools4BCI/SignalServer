@@ -20,7 +20,6 @@
 
 /**
 * @file constants.cpp
-* @brief TODO
 **/
 
 #include "tia/constants.h"

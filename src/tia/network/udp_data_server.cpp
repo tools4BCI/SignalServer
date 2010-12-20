@@ -20,9 +20,7 @@
 
 /**
 * @file udp_data_server.cpp
-*
-* @brief \TODO.
-*
+* @brief This file includes the definitions of the UDPServer class.
 **/
 
 // STL

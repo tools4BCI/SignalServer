@@ -20,9 +20,7 @@
 
 /**
 * @file jstick.h
-*
-* @brief
-*
+* @brief This file includes a class handling generic joysticks using SDL.
 **/
 
 #ifndef JSTICK_H
@@ -44,9 +42,17 @@ namespace tobiss
 {
 //-----------------------------------------------------------------------------
 
+/**
+* @class JStick
+* @brief A class using SDL to access generic joysticks.
+* @todo Get rid of using void* for working with SDL.
+*/
 class JStick : public HWThread
 {
   public:
+    /**
+    * @brief Constructor
+    */
     JStick (ticpp::Iterator<ticpp::Element> hw);
 
     /**
@@ -74,24 +80,32 @@ class JStick : public HWThread
 
     //-----------------------------------------------
   private:
-
-//     void setHardware(ticpp::Iterator<ticpp::Element>const &hw);
-
+    /**
+    * @brief Set configuration listed in the \<device_settings\> section in the XML file.
+    * @param[in] hw ticpp::Element pointing to an \<device_settings\> tag in the config file
+    */
     virtual void setDeviceSettings(ticpp::Iterator<ticpp::Element>const &father);
-
+    /**
+    * @brief Set configuration listed in the \<channel_settings\> section in the XML file.
+    * @param[in] hw ticpp::Element pointing to an \<device_settings\> tag in the config file
+    */
     virtual void setChannelSettings(ticpp::Iterator<ticpp::Element>const &father);
 
     /**
-    * @brief Method to achieve synchronous data acquisition not planned to be used for joysticks.
+    * @brief Method to achieve synchronous data acquisition.
+    * @todo Implement this method.
     */
     virtual SampleBlock<double> getSyncData()   {return data_; }
 
+    /**
+    * @brief Initialize the Joystick.
+    */
     void initJoystick();
 
     //-----------------------------------------------
 
   private:
-  static std::set<boost::uint16_t> used_ids_;
+    static std::set<boost::uint16_t> used_ids_;        ///<  every Joystick has a unique ID
 
     void* joy_;   //FIXME: should be of type SDL_Joystick  ... problems with includes
     boost::uint16_t id_;

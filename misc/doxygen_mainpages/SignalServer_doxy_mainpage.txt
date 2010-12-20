@@ -1,5 +1,5 @@
 
-/*! \mainpage TOBI SignalServer v0.1
+/*! \mainpage TOBI SignalServer
 *
 * \section sec_intro Introduction
 * The TOBI SignalServer implements the data acquisition section from the TOBI hybrid BCI (hBCI).
@@ -18,10 +18,19 @@
 *   - libusb (v1.0)
 *
 *
-* \section sec_notes Notes, to-do list etc.
+* \section sec_tests Tests.
 * Tests have been performed using Ubuntu 10.04, 10.10, Debian unstable, Windows Xp and Windows 7.
 *
-* To use the g.tec g.USBamp, Microsofts Visual Studio compiler has to be used, otherwise
+* @note To use the g.tec g.USBamp, Microsofts Visual Studio compiler has to be used, otherwise
 * acquiering data through this device will lead the program to crash.
+*
+* @author Christian Breitwieser
+* @author Christoph Eibel
+* @author Andreas Schuller
+* @author Mario Rowies
+* @author Bettina Kaltner
+*
+* @version 0.1
+* @date 2009-2011
 *
 */

@@ -31,8 +31,8 @@ cp ./lib/libtia.a ./$dev_dir/usr/lib/
 cp -r ./include/tia ./$dev_dir/usr/include
 
 cp ./bin/signalserver ./$ss_dir/usr/bin/
-cp ./bin/server_config.xml ./$ss_dir/usr/local/etc/signalserver/
-cp ./bin/server_config_comments.xml ./$ss_dir/usr/local/etc/signalserver/
+cp ./bin/server_config.xml ./$ss_dir/usr/share/signalserver/
+cp ./bin/server_config_comments.xml ./$ss_dir/usr/share/signalserver/
 
 # current version
 version=0.1

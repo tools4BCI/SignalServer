@@ -20,9 +20,6 @@
 
 /**
 * @file control_message_encoder.cpp
-*
-* @brief \TODO.
-*
 **/
 
 // Boost
@@ -329,7 +326,7 @@ void ControlMsgEncoderXML::encodeBaseMsg(const ControlMsg& msg, const std::strin
 
   xml_msg = new TiXmlElement("message");
   doc.LinkEndChild(xml_msg);
-  xml_msg->SetAttribute("version", "0.1");
+  xml_msg->SetAttribute("version", MESSAGE_VERSION);
 
   TiXmlElement* header = new TiXmlElement("header");
   xml_msg->LinkEndChild(header);

@@ -19,7 +19,7 @@
 */
 
 /**
-* @file server_server.h
+* @file tia_client_impl_base.h
 *
 * @brief Declaration of the abstract base class of the TiAClient implementation
 *

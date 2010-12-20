@@ -1,4 +1,8 @@
-TODOS
+
+
+       **************    TODOS    ***************
+
+//---------------------------------------------------------------------------------------
 
  Created on: Feb 25, 2010
      Author: andreas
@@ -11,8 +15,52 @@ TODOS
 6) XML Protocol Version definieren
 7) Server data ports auf einen in der Config definierbaren Bereich einschraenken (Firewall)
 8) KeepAlive handling; Client arbeitet blocking momentan, wie kann KeepAlive regelmeaßig verschickt werden?
-9) Asynchronen SSClient implementieren? 
-10) Doxygen
+9) Asynchronen SSClient implementieren?
+
+
+//---------------------------------------------------------------------------------------
+
+
+ Extended on: 13.12.2010
+ Author: Chrisitan
+
+ (priority:    - ... low       * ...  normal        *** ... high)
+
+ * Doxygen
+ * README + User Instruction
+
+ * SDL dynymic linking
+ * Integration of a "STOP-Transmission" message (server --> client(s) )
+ - SUSE open build
+ * xml-config: specify channel positions
+ * get rid of master/slave ratio in HWAccess
+ * port to CMake build tool
+ * file-saving inside the SigServer
+ * Windows exception bugfixes (e.g. starting a 2nd SigServer)
+ *** automatic tests
+ *** downsampling + channel selection
+ * logging
+ * GUI
+ * Error messages to the client
+ * time-sync between client/server (e.g. ptp)
+ * shared mem
+ *** Folder structure refactoring
+ *** xml message refactoring
 
 
 
+ * TiD
+
+  Hardware stuff:
+  *** fix USBamp timeout bug
+  * USBamp --> LinuxApi
+  * File streaming
+  * NIRx
+  * BrainAmp
+  * EEG Simulator
+  * Dry electrodes API (Berlin)
+  * Neurosky
+  * Generic keyboards
+  * Arduino
+
+  * Document(ation) how to write a HW module

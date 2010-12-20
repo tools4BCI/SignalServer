@@ -20,9 +20,7 @@
 
 /**
 * @file ssconfig.h
-*
-* @brief
-*
+* @brief This file includes a class storing the TiA config for the subject and the transmitted signals.
 **/
 
 #ifndef SSCONFIG_BASE_H
@@ -37,19 +35,19 @@ namespace tobiss
 /**
 * @class SSConfig
 *
-* @brief The core of the Signal Server
+* @brief This class holds information regarding the subject and the transmitted signals.
 *
-* @todo
+* @todo Rename class to TiAConfig
 */
 class SSConfig
 {
   public:
   /**
-  * @brief
+  * @brief Element holding subject specific information.
   */
   SubjectInfo subject_info;
   /**
-  * @brief
+  * @brief Element holding information of transmitted signals.
   */
   SignalInfo  signal_info;
 };

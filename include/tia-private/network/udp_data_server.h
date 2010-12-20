@@ -20,9 +20,7 @@
 
 /**
 * @file udp_data_server.h
-*
-* @brief \TODO.
-*
+* @brief This file includes a class handling UDP data tranmission.
 **/
 
 #ifndef UDPDATASERVER_H
@@ -46,14 +44,14 @@ class DataPacket;
 *
 * @brief Server to distribute DataPacket via UDP
 *
-* @todo
+* @todo Maybe use transmission into multiple subnets or use multicast.
 */
 class UDPDataServer
 {
 public:
   /**
    * @brief Constructor
-   * @param io_service
+   * @param boost::asio::io_service
    * @throws
    */
   UDPDataServer(boost::asio::io_service& io_service);
@@ -77,8 +75,6 @@ public:
 
   /**
    * @brief Increments the number of clients of this server by one
-   * @param[in]  packet
-   * @throws
    */
   void incClientCount()
   {
@@ -87,8 +83,6 @@ public:
 
   /**
    * @brief Decrements the number of clients of this server by one
-   * @param[in]  packet
-   * @throws
    */
   void decClientCount()
   {
@@ -103,11 +97,6 @@ public:
   void sendDataPacket(DataPacket& packet);
 
 private:
-  /**
-   * @brief Runs the io_service
-   */
-  void run();
-
   /**
    * @brief Called if sending of a data packet has been finished
    */

@@ -58,6 +58,8 @@ namespace tobiss
 * It supports synchronous and asynchronous data acquisition. Data can be produced with freely
 * selectable frequencies in a block-based or non-block based way.
 * To achive a consistent access to hardware devices, this class is a derived class.
+*
+* @bug Sometimes the SineGenerator crashes in Windows, especially using high sampling rates.
 */
 class SineGenerator : public ArtificialSignalSource
 {

@@ -18,6 +18,10 @@
     Contact: c.breitwieser@tugraz.at
 */
 
+/**
+* @file g_mobilab.cpp
+**/
+
 #include "hardware/g_mobilab.h"
 #include "hardware/hw_thread_builder.h"
 
@@ -187,6 +191,16 @@ void GMobilab::run()
 
   running_ = true;
   std::cout << " * g.Mobilab sucessfully started" << std::endl;
+}
+
+//-----------------------------------------------------------------------------
+
+GMobilab::~GMobilab()
+{
+  async_acqu_thread_->join();
+  close();
+  if(async_acqu_thread_)
+    delete async_acqu_thread_;
 }
 
 //-----------------------------------------------------------------------------

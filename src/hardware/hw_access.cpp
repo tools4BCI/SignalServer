@@ -18,6 +18,10 @@
     Contact: c.breitwieser@tugraz.at
 */
 
+/**
+* @file hw_access.cpp
+**/
+
 #include <iostream>
 #include <fstream>
 

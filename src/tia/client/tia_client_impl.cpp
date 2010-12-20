@@ -21,9 +21,6 @@
 
 /**
 * @file tia_client_impl.cpp
-*
-* @brief
-*
 **/
 
 // STL
