@@ -18,6 +18,10 @@
     Contact: c.breitwieser@tugraz.at
 */
 
+/**
+* @file file_reader_factory.cpp
+**/
+
 #include "filereading/file_reader_factory.h"
 
 namespace tobiss

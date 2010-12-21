@@ -18,8 +18,12 @@
     Contact: c.breitwieser@tugraz.at
 */
 
+/**
+* @file hw_thread.cpp
+**/
+
 #include "hardware/hw_thread.h"
-#include "definitions/constants.h"
+#include "tia/constants.h"
 #include <boost/algorithm/string.hpp>
 
 #include <boost/lexical_cast.hpp>
@@ -43,7 +47,7 @@ using std::cout;
 using std::endl;
 using std::dec;
 using std::hex;
-
+ 
 //-----------------------------------------------------------------------------
 
 //const string HWThread::hardware_("hardware");

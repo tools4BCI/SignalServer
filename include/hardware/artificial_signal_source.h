@@ -20,9 +20,7 @@
 
 /**
 * @file artificial_signal_source.h
-*
-* @brief TODO
-*
+* @brief This file includes a base class that can be used creating artificial signals.
 **/
 
 #ifndef ARTIFICIAL_SIGNAL_SOURCE
@@ -32,7 +30,7 @@
 #include <map>
 
 #include <boost/asio.hpp>
-#include <boost/thread/condition.hpp>  // for mutex and cond. variables
+#include <boost/thread/condition.hpp>               // for mutex and cond. variables
 #include <boost/thread/shared_mutex.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/cstdint.hpp>
@@ -46,7 +44,7 @@ namespace tobiss
 /**
 * @class ArtificialSignalSource
 *
-* @brief TODO
+* @brief A base class providing basic functionallity for artificial signal creation.
 */
 class ArtificialSignalSource : public HWThread
 {
@@ -99,7 +97,10 @@ class ArtificialSignalSource : public HWThread
     virtual void stop();
 
     /**
-    * @brief TODO
+    * @brief Method initializing the artificial signal source object.
+    *
+    *  This method initializes the artificial signal source object. Member variables
+    *  like the stepsize and the timer used to assure appropriate timing are initialized.
     */
     void init();
 
@@ -110,7 +111,7 @@ class ArtificialSignalSource : public HWThread
     */
     virtual void setHardware(ticpp::Iterator<ticpp::Element>const &hw) = 0;
     /**
-    * @brief TODO
+    * @brief Abstract method generating the artificial signal.
     */
     virtual void generateSignal() = 0;
     /**

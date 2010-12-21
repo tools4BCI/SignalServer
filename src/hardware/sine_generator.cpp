@@ -18,6 +18,10 @@
     Contact: c.breitwieser@tugraz.at
 */
 
+/**
+* @file sine_generator.cpp
+**/
+
 #include "hardware/sine_generator.h"
 
 #include <cmath>

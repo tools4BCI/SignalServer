@@ -18,6 +18,10 @@
     Contact: c.breitwieser@tugraz.at
 */
 
+/**
+* @file eeg_simulator.cpp
+**/
+
 #include "hardware/eeg_simulator.h"
 
 #include <cmath>

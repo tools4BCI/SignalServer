@@ -18,6 +18,10 @@
     Contact: christoph.eibel@tugraz.at
 */
 
+/**
+* @file gtec_usbamp_wrapper.h
+**/
+
 #ifndef GTEC_USBAMP_WRAPPER_H
 #define GTEC_USBAMP_WRAPPER_H
 
@@ -201,6 +205,7 @@ public:
 		setupDLLFunction (open_device_ex_ptr_, "GT_OpenDeviceEx");
 		setupDLLFunction (close_device_ptr_, "GT_CloseDevice");
 
+		setupDLLFunction (set_buffer_size_ptr_, "GT_SetBufferSize");
 		setupDLLFunction (set_sample_rate_ptr_, "GT_SetSampleRate");
 		setupDLLFunction (start_ptr_, "GT_Start");
 		setupDLLFunction (stop_ptr_, "GT_Stop");
@@ -281,6 +286,11 @@ public:
 	BOOL getLastError (WORD * wErrorCode, char *pLastError)
 	{
 		return get_last_error_ptr_ (wErrorCode, pLastError);
+	}
+
+  HANDLE openDevice (int portNr)
+	{
+		return open_device_ptr_ (portNr);
 	}
 
 	HANDLE openDeviceEx (LPSTR lpSerial)

@@ -49,7 +49,7 @@
 				InlineFunctionExpansion="0"
 				EnableIntrinsicFunctions="false"
 				FavorSizeOrSpeed="0"
-				AdditionalIncludeDirectories=".;include;extern\include;&quot;extern\include\SDL-1.2.14-VC8&quot;;F:\Programme\boost\boost_1_44;&quot;..\..\Qt\2009.05\qt\mkspecs\win32-msvc2008&quot;"
+				AdditionalIncludeDirectories=".;include;extern\include;&quot;extern\include\SDL-1.2.14-VC8&quot;;C:\Programme\boost\boost_1_44;&quot;..\..\Qt\2009.05\qt\mkspecs\win32-msvc2008&quot;"
 				PreprocessorDefinitions="WIN32;TIXML_USE_TICPP;_WIN32_WINNT=0x0501;_CONSOLE;_USE_MATH_DEFINES"
 				GeneratePreprocessedFile="0"
 				BasicRuntimeChecks="0"
@@ -78,12 +78,12 @@
 				IgnoreImportLibrary="true"
 				LinkLibraryDependencies="true"
 				UseUnicodeResponseFiles="false"
-				AdditionalOptions="&quot;/MANIFESTDEPENDENCY:type=&apos;win32&apos; name=&apos;Microsoft.Windows.Common-Controls&apos; version=&apos;6.0.0.0&apos; publicKeyToken=&apos;6595b64144ccf1df&apos; language=&apos;*&apos; processorArchitecture=&apos;*&apos;&quot;&#x0D;&#x0A;"
+				AdditionalOptions="/NODEFAULTLIB:MSVCRT"
 				AdditionalDependencies="ticppd.lib SDL.lib SDLmain.lib libusb0.lib"
 				OutputFile="bin\signalserver_debug.exe"
 				LinkIncremental="0"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="extern\lib\g.usbamp\win;extern\lib\sdl\win;extern\lib\ticpp\win;extern\lib\libgdf\win;F:\Programme\boost\boost_1_44\lib;extern\lib\libusb\win"
+				AdditionalLibraryDirectories="extern\lib\g.usbamp\win;extern\lib\sdl\win;extern\lib\ticpp\win;extern\lib\libgdf\win;C:\Programme\boost\boost_1_44\lib;extern\lib\libusb\win"
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="true"
@@ -182,12 +182,12 @@
 				IgnoreImportLibrary="true"
 				LinkLibraryDependencies="true"
 				UseUnicodeResponseFiles="false"
-				AdditionalOptions="/NODEFAULTLIB:MSVCRT &quot;/MANIFESTDEPENDENCY:type=&apos;win32&apos; name=&apos;Microsoft.Windows.Common-Controls&apos; version=&apos;6.0.0.0&apos; publicKeyToken=&apos;6595b64144ccf1df&apos; language=&apos;*&apos; processorArchitecture=&apos;*&apos;&quot;"
+				AdditionalOptions="/NODEFAULTLIB:MSVCRT"
 				AdditionalDependencies="ticpp.lib SDL.lib  libusb0.lib tia.lib"
 				OutputFile="bin\signalserver.exe"
 				LinkIncremental="0"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="lib;extern\lib\g.usbamp\win;extern\lib\sdl\win;extern\lib\ticpp\win;extern\lib\libgdf\win;extern\lib\libusb\win"
+				AdditionalLibraryDirectories="extern\lib\g.usbamp\win;extern\lib\sdl\win;extern\lib\ticpp\win;extern\lib\libgdf\win;extern\lib\libusb\win;lib"
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="true"
@@ -267,6 +267,14 @@
 				</File>
 				<File
 					RelativePath=".\src\hardware\jstick.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\hardware\mouse.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\hardware\mouse_win.cpp"
 					>
 				</File>
 				<File
@@ -365,6 +373,14 @@
 				</File>
 				<File
 					RelativePath=".\include\hardware\jstick.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\hardware\mouse.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\hardware\mouse_win.h"
 					>
 				</File>
 				<File

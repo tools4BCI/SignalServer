@@ -18,6 +18,10 @@
     Contact: c.breitwieser@tugraz.at
 */
 
+/**
+* @file g_mobilab.cpp
+**/
+
 #include "hardware/g_mobilab.h"
 #include "hardware/hw_thread_builder.h"
 
@@ -191,6 +195,16 @@ void GMobilab::run()
 
 //-----------------------------------------------------------------------------
 
+GMobilab::~GMobilab()
+{
+  async_acqu_thread_->join();
+  close();
+  if(async_acqu_thread_)
+    delete async_acqu_thread_;
+}
+
+//-----------------------------------------------------------------------------
+
 void GMobilab::stop()
 {
   running_ = false;
@@ -333,7 +347,7 @@ void GMobilab::setScalingValues()
     {
       channel = (*it).first;
 
-      std::cout << "GMobilab::setScalingValues() -- channel numbers: ";
+      std::cout << " GMobilab::setScalingValues() -- channel numbers: ";
       std::cout <<  channel << std::flush << std::endl;
 
       if(channel == 1 || channel == 2)
