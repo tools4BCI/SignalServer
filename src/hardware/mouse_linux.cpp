@@ -75,6 +75,7 @@ namespace tobiss
         int ret;
         ret = libusb_release_interface(dev_handle_, 0);
         if(ret)
+            return -1;
         ret = libusb_attach_kernel_driver(dev_handle_, 0);
         if(ret)
             return -2;
