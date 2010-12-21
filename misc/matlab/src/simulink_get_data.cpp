@@ -9,25 +9,22 @@
 #include <vector>
 #include <string>
 #include <map>
-#include <sstream>
+// #include <sstream>
 #include <fstream>
 #include <stdexcept>
-#include <bitset>
+// #include <bitset>
 
-// #include <boost/asio.hpp>
-// #include <boost/bind.hpp>
-// #include <boost/thread.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/exception/all.hpp>
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 #include "boost/date_time/posix_time/posix_time.hpp"
 
-#include "definitions/defines.h"
-#include "ticpp/ticpp.h"
+#include "tia/defines.h"
+// #include "ticpp/ticpp.h"
 #include "config/xml_parser.h"
-#include "signalserver-client/ssclient.h"
-#include "datapacket/data_packet.h"
+#include "tia/data_packet.h"
+#include "tia/tia_client.h"
 
 #include <boost/cstdint.hpp>
 
@@ -202,7 +199,7 @@ static void mdlInitializeSizes(SimStruct *S)
   // set sample nr port
   ssSetOutputPortFrameData(S, width.size() +1, FRAME_NO);
   ssSetOutputPortMatrixDimensions(S, width.size() +1, DYNAMICALLY_SIZED, DYNAMICALLY_SIZED);
-//   DECL_AND_INIT_DIMSINFO(di);
+  //   DECL_AND_INIT_DIMSINFO(di);
   di.width   = 1;
   di.numDims = 2;
   dimensions[0] = 1;    //  rows
@@ -216,7 +213,6 @@ static void mdlInitializeSizes(SimStruct *S)
   // set timestamp port
   ssSetOutputPortFrameData(S, width.size() +2, FRAME_NO);
   ssSetOutputPortMatrixDimensions(S, width.size() +2, DYNAMICALLY_SIZED, DYNAMICALLY_SIZED);
-//   DECL_AND_INIT_DIMSINFO(di);
   di.width   = 1;
   di.numDims = 2;
   dimensions[0] = 1;    //  rows
@@ -230,7 +226,6 @@ static void mdlInitializeSizes(SimStruct *S)
   // set timestamp port
   ssSetOutputPortFrameData(S, width.size() +3, FRAME_NO);
   ssSetOutputPortMatrixDimensions(S, width.size() +3, DYNAMICALLY_SIZED, DYNAMICALLY_SIZED);
-//   DECL_AND_INIT_DIMSINFO(di);
   di.width   = 1;
   di.numDims = 2;
   dimensions[0] = 1;    //  rows
@@ -260,13 +255,6 @@ static void mdlStart(SimStruct *S)
 {
   try
   {
-    //     ofstream debug_file;
-    //     debug_file.open("debug.log");
-    //     streambuf* strm_buffer = cout.rdbuf();
-    //     cout.rdbuf(debug_file.rdbuf());
-
-    mexPrintf( "Starting Model ... \n");
-
     const mxArray* server_info = ssGetSFcnParam(S, SERVER_INFO_POS);
     char str_tmp[129];
 
@@ -302,9 +290,10 @@ static void mdlStart(SimStruct *S)
 
     ssGetPWork(S)[SIGNAL_TYPES_MAP_POSITION] =  sig_info;
 
-    SSClient* client = new SSClient;
+    TiAClient* client = new TiAClient;
     ssGetPWork(S)[SSClient_POSITION] = client;
     client->connect(ip, ctrl_port);
+
 
     boost::posix_time::ptime* start_time =
           new boost::posix_time::ptime( boost::posix_time::microsec_clock::local_time() );
@@ -333,41 +322,6 @@ static void mdlStart(SimStruct *S)
     ex_str += '\n';
     ssSetErrorStatus(S, ex_str.c_str());
   }
-  catch(std::invalid_argument& e)
-  {
-    string ex_str(" ***** STL Exception -- Invalid argument -- caught! *****\n  -->");
-    ex_str += e.what();
-    ex_str += '\n';
-    ssSetErrorStatus(S, ex_str.c_str());
-  }
-  catch(std::length_error& e)
-  {
-    string ex_str(" ***** STL Exception -- Length error -- caught! *****\n  -->");
-    ex_str += e.what();
-    ex_str += '\n';
-    ssSetErrorStatus(S, ex_str.c_str());
-  }
-  catch(std::logic_error& e)
-  {
-    string ex_str(" ***** STL Exception -- Logic error -- caught! *****\n  -->");
-    ex_str += e.what();
-    ex_str += '\n';
-    ssSetErrorStatus(S, ex_str.c_str());
-  }
-  catch(std::range_error& e)
-  {
-    string ex_str(" ***** STL Exception -- Range error -- caught! *****\n  -->");
-    ex_str += e.what();
-    ex_str += '\n';
-    ssSetErrorStatus(S, ex_str.c_str());
-  }
-  catch(std::runtime_error& e)
-  {
-    string ex_str(" ***** STL Exception -- Runtime error -- caught! *****\n  -->");
-    ex_str += e.what();
-    ex_str += '\n';
-    ssSetErrorStatus(S, ex_str.c_str());
-  }
   catch(std::exception& e)
   {
     string ex_str(" ***** STL Exception caught! *****\n  -->");
@@ -392,10 +346,7 @@ static void mdlStart(SimStruct *S)
 
 static void mdlOutputs(SimStruct *S, int_T tid)
 {
-
-
-
-  SSClient* client = static_cast<SSClient* >(ssGetPWork(S)[SSClient_POSITION]);
+  TiAClient* client = static_cast<TiAClient* >(ssGetPWork(S)[SSClient_POSITION]);
 
   map<uint32_t, pair<uint16_t, uint16_t> >* sig_info =
   static_cast<map<uint32_t, pair<uint16_t, uint16_t> >* >(ssGetPWork(S)[SIGNAL_TYPES_MAP_POSITION]);
@@ -503,41 +454,6 @@ static void mdlOutputs(SimStruct *S, int_T tid)
     ex_str += '\n';
     ssSetErrorStatus(S, ex_str.c_str());
   }
-  catch(std::invalid_argument& e)
-  {
-    string ex_str(" ***** STL Exception -- Invalid argument -- caught! *****\n  -->");
-    ex_str += e.what();
-    ex_str += '\n';
-    ssSetErrorStatus(S, ex_str.c_str());
-  }
-  catch(std::length_error& e)
-  {
-    string ex_str(" ***** STL Exception -- Length error -- caught! *****\n  -->");
-    ex_str += e.what();
-    ex_str += '\n';
-    ssSetErrorStatus(S, ex_str.c_str());
-  }
-  catch(std::logic_error& e)
-  {
-    string ex_str(" ***** STL Exception -- Logic error -- caught! *****\n  -->");
-    ex_str += e.what();
-    ex_str += '\n';
-    ssSetErrorStatus(S, ex_str.c_str());
-  }
-  catch(std::range_error& e)
-  {
-    string ex_str(" ***** STL Exception -- Range error -- caught! *****\n  -->");
-    ex_str += e.what();
-    ex_str += '\n';
-    ssSetErrorStatus(S, ex_str.c_str());
-  }
-  catch(std::runtime_error& e)
-  {
-    string ex_str(" ***** STL Exception -- Runtime error -- caught! *****\n  -->");
-    ex_str += e.what();
-    ex_str += '\n';
-    ssSetErrorStatus(S, ex_str.c_str());
-  }
   catch(std::exception& e)
   {
     string ex_str(" ***** STL Exception caught! *****\n  -->");
@@ -564,26 +480,26 @@ static void mdlTerminate(SimStruct *S)
 {
   try
   {
-  map<uint32_t, pair<uint16_t, uint16_t> >* sig_info =
-    static_cast<map<uint32_t, pair<uint16_t, uint16_t> >* >(ssGetPWork(S)[SIGNAL_TYPES_MAP_POSITION]);
-  if(sig_info)
-    delete(sig_info);
+    map<uint32_t, pair<uint16_t, uint16_t> >* sig_info =
+      static_cast<map<uint32_t, pair<uint16_t, uint16_t> >* >(ssGetPWork(S)[SIGNAL_TYPES_MAP_POSITION]);
+    if(sig_info)
+      delete(sig_info);
 
-  boost::posix_time::ptime* start_time =
-    static_cast<boost::posix_time::ptime*>(ssGetPWork(S)[START_TIME_POSITION]);
-  if(start_time)
-    delete(start_time);
+    boost::posix_time::ptime* start_time =
+      static_cast<boost::posix_time::ptime*>(ssGetPWork(S)[START_TIME_POSITION]);
+    if(start_time)
+      delete(start_time);
 
-  SSClient* client = static_cast<SSClient* >(ssGetPWork(S)[SSClient_POSITION]);
-  client->stopReceiving();
+    TiAClient* client = static_cast<TiAClient* >(ssGetPWork(S)[SSClient_POSITION]);
+    client->stopReceiving();
 
-  if (client->receiving())
-  {
-    mexPrintf("Cannot Stop Receiving! \n");
-  }
+    if (client->receiving())
+    {
+      mexPrintf("Cannot Stop Receiving! \n");
+    }
 
-  if(client)
-    delete(client);
+    if(client)
+      delete(client);
   }
   catch(...)
   {
