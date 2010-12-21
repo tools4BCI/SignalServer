@@ -75,7 +75,7 @@ int Mouse::blockKernelDriver()
     CreateProcess(const_cast<LPCSTR>(devcon_path_.c_str()),
          const_cast<LPSTR>(command.c_str()),
 		 0,0,FALSE,CREATE_DEFAULT_ERROR_MODE,0,0,&siStartupInfo,&piProcessInfo);
-    WaitForSingleObject(piProcessInfo.hProcess, 10000);
+    WaitForSingleObject(piProcessInfo.hProcess, 1000);
 
 	const char *inf_file = "libusb/mouse.inf";
   
@@ -95,8 +95,11 @@ int Mouse::blockKernelDriver()
             }
         }
     }
-	if (!UsbDevice) return -1;
+	if (!UsbDevice) 
+		return -1;
 	dev_handle_ = usb_open(UsbDevice);
+    if(!dev_handle_)
+		return -11;
 
 	if (usb_set_configuration (dev_handle_, 1) < 0) {
 		usb_close(dev_handle_);
@@ -131,11 +134,11 @@ int Mouse::freeKernelDriver()
     CreateProcess(const_cast<LPCSTR>(devcon_path_.c_str()),
          const_cast<LPSTR>(command.c_str()),
 		 0,0,FALSE,CREATE_DEFAULT_ERROR_MODE,0,0,&siStartupInfo,&piProcessInfo);
-    WaitForSingleObject(piProcessInfo.hProcess, 10000);
+    WaitForSingleObject(piProcessInfo.hProcess, 1000);
 
 	CreateProcess(const_cast<LPCSTR>(devcon_path_.c_str()),
          " rescan",0,0,FALSE,CREATE_DEFAULT_ERROR_MODE,0,0,&siStartupInfo,&piProcessInfo);
-    WaitForSingleObject(piProcessInfo.hProcess, 10000);    
+    WaitForSingleObject(piProcessInfo.hProcess, 1000);    
 	
 	cout<< "MouseDevice disconnected"<<endl;
 	return 0;
@@ -150,11 +153,11 @@ void Mouse::acquireData()
   {
 	    boost::unique_lock<boost::shared_mutex> lock(rw_);
         unsigned char async_data_[10];
-		
-        int r = usb_interrupt_read(dev_handle_,usb_port_, (char *)async_data_, sizeof(async_data_), 100);
-	    if(r<0)
-          throw(std::runtime_error("Mouse::acquireData -- Mouse device could not be connected! Check usb-port!"));
-        
+		int r = usb_bulk_read(dev_handle_,usb_port_, (char *)async_data_, sizeof(async_data_), 100);
+		if(r<0){
+			cout<<"usb-device could not be read, please check usb_port"<<endl;
+			break;
+		}
 		async_data_buttons_ = (int)(char)async_data_[0];
         async_data_x_ = (int)(char)async_data_[1];
         async_data_y_ = (int)(char)async_data_[2];
