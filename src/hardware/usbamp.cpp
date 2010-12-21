@@ -18,6 +18,10 @@
     Contact: c.breitwieser@tugraz.at
 */
 
+/**
+* @file usbamp.cpp
+**/
+
 #ifdef WIN32
 
 #include "winsock2.h"
@@ -39,6 +43,8 @@ using boost::uint32_t;
 using std::cout;
 using std::cerr;
 using std::endl;
+using std::left;
+using std::right;
 using std::string;
 using std::vector;
 using std::map;
@@ -55,6 +61,7 @@ bool USBamp::is_usbamp_master_(0);
 USBamp* USBamp::master_device_(0);
 std::vector<USBamp*>  USBamp::slave_devices_;
 
+static const unsigned int USBAMP_MAX_NR_OF_AMPS   = 16;
 static const unsigned int USBAMP_MAX_NR_OF_CHANNELS   = 17;
 static const unsigned int USBAMP_NR_OF_CHANNEL_GROUPS = 4;
 static const unsigned int USBAMP_NOTCH_HALF_WIDTH = 2;   // to one side  ...  e.g.  f_center = 50 Hz -->  48/52 Hz
@@ -99,7 +106,6 @@ USBamp::USBamp(ticpp::Iterator<ticpp::Element> hw)
     sample_count_(0), error_count_(0) ,error_code_(0), expected_values_(0),
     first_run_(1), current_overlapped_(0)
 {
-  cout << "Driver Version" << usb_amp_.getDriverVersion () << endl;
   #ifdef DEBUG
     cout << "USBamp: Constructor" << endl;
   #endif
@@ -124,7 +130,7 @@ USBamp::USBamp(ticpp::Iterator<ticpp::Element> hw)
 
   ticpp::Iterator<ticpp::Element> elem(hw);
   ticpp::Iterator< ticpp::Attribute > attribute;
- 
+
   for(attribute = attribute.begin(elem.Get()); attribute != attribute.end();
       attribute++)
     m_.insert(pair<string, string>(attribute->Name(), attribute->Value()));
@@ -162,7 +168,8 @@ USBamp::USBamp(ticpp::Iterator<ticpp::Element> hw)
     master_device_ = this;
 
   cout << endl;
-  cout << " * g.USBamp sucessfully initialized" << endl;
+  cout << " * g.USBamp " << serial_ << " sucessfully initialized" << endl;
+  cout << "    driver version: " << usb_amp_.getDriverVersion () << ", hardware version: " << usb_amp_.getHWVersion (h_) << endl;
   cout << "    fs: " << fs_ << "Hz, nr of channels: " << nr_ch_ << ", blocksize: " << blocks_ << endl;
   cout << endl;
   if(!homogenous_signal_type_)
@@ -456,7 +463,7 @@ void USBamp::getHandles()
     throw(std::invalid_argument("USBamp::getHandles -- No serial number for g.USBamp given!"));
 
   serials_.insert(m_.find(hardware_serial_)->second);
-  serial = m_.find(hardware_serial_)->second;
+  serial_ = m_.find(hardware_serial_)->second;
 
   HANDLE h_tmp;
   h_tmp = usb_amp_.openDeviceEx( const_cast<LPSTR>(  m_.find(hardware_serial_)->second.c_str() ));
@@ -475,8 +482,11 @@ void USBamp::getHandles()
     }
   }
   else
-    throw(std::runtime_error("USBamp::getHandles -- g.USBamp with serial "\
+  {
+	printAvailableAmps();
+    throw(std::invalid_argument("USBamp::getHandles -- g.USBamp with serial "\
           +m_.find(hardware_serial_)->second+" not connected!"));
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -535,15 +545,15 @@ void USBamp::run()
     for(uint32_t n = 0; n < slave_devices_.size(); n++)
     {
       slave_devices_[n]->running_ = 1;
-      cout << " * g.USBamp " << slave_devices_[n]->serial << " sucessfully started by the master" << endl;
+      cout << " * g.USBamp " << slave_devices_[n]->serial_ << " sucessfully started by the master" << endl;
     }
 
     running_ = 1;
-    cout << " * g.USBamp " << serial << " sucessfully started" << endl;
+    cout << " * g.USBamp " << serial_ << " sucessfully started" << endl;
 
   }
   else
-    cout << " * g.USBamp " << serial << " will be started by the master ..." << endl;
+    cout << " * g.USBamp " << serial_ << " will be started by the master ..." << endl;
 }
 
 //-----------------------------------------------------------------------------
@@ -559,11 +569,12 @@ void USBamp::stop()
   boost::unique_lock<boost::shared_mutex> lock(rw_);
   running_ = 0;
 
-  if( !usb_amp_.stop (h_))
-    throw(std::runtime_error("USBamp::stop -- Error stopping the device!"));
   if(!external_sync_)
     for(uint32_t n = 0; n < slave_devices_.size(); n++)
       slave_devices_[n]->stop();
+
+  if( !usb_amp_.stop (h_))
+    throw(std::runtime_error("USBamp::stop -- Error stopping the device!"));
 
   if( !usb_amp_.closeDevice (&h_))
     throw(std::runtime_error("USBamp::stop -- Error closing the device!"));
@@ -905,9 +916,10 @@ int USBamp::search4FilterID(unsigned int type, unsigned int order, double f_low,
 
   if(id < 0)
   {
+    printPossibleBandPassFilters();
     string ex_str = "USBamp::search4FilterID -- Filter settings not possible -- ";
     ex_str = ex_str + "Fs: "   + lexical_cast<string>(boost::format("%d") % fs_)  +  ", ";
-    ex_str = ex_str + "Type: "   + lexical_cast<string>(type)  +  ", ";
+    ex_str = ex_str + "Type: "   + getUSBampFilterName(type)  +  ", ";
     ex_str = ex_str + "Order: "  + lexical_cast<string>(order) +  ", ";
     ex_str = ex_str + "f_low: "  + lexical_cast<string>(boost::format("%d") % f_low) +  ", ";
     ex_str = ex_str + "f_high: " + lexical_cast<string>(boost::format("%d") % f_high);
@@ -915,6 +927,126 @@ int USBamp::search4FilterID(unsigned int type, unsigned int order, double f_low,
   }
 
   return(id);
+}
+
+//---------------------------------------------------------------------------------------
+
+void USBamp::printPossibleBandPassFilters()
+{
+  if(!bp_filters_)
+    return;
+
+  cout << left;
+  cout << endl;
+  cout.width(9);
+  cout << "     Fs: "<< " | ";
+
+  cout.width(10);
+  cout << "Type: "<< "|  ";
+  cout << "Order: "<< "|  ";
+
+  cout.width(6);
+  cout << " f_low: "<< "| ";
+
+
+  cout << "f_high: ";
+
+  cout << endl;
+  cout << endl;
+
+
+  for(int n = 0; n < nr_of_bp_filters_; n++)
+    if(fs_ == bp_filters_[n].fs)
+    {
+    cout << right;
+    cout.width(9);
+    cout << bp_filters_[n].fs << " | ";
+
+    cout.width(9);
+    cout <<  getUSBampFilterName(bp_filters_[n].type)  << " | ";
+    cout.width(7);
+    cout <<  bp_filters_[n].order << " | ";
+
+    cout.width(8);
+    cout << roundD(bp_filters_[n].fu) << " | ";
+
+    cout << left;
+    cout.width(8);
+    cout << roundD(bp_filters_[n].fo);
+    cout << endl;
+  }
+
+  cout << endl;
+  cout << endl;
+}
+
+//---------------------------------------------------------------------------------------
+
+void USBamp::printPossibleNotchFilters()
+{
+  if(!notch_filters_)
+    return;
+
+  cout << left;
+  cout << endl;
+  cout.width(9);
+  cout << "     Fs: "<< " | ";
+
+  cout.width(10);
+  cout << "Type: "<< "|  ";
+  cout << "Order: "<< "|  ";
+
+  cout.width(6);
+  cout << " f_low: "<< "| ";
+
+
+  cout << "f_high: ";
+
+  cout << endl;
+  cout << endl;
+
+  for(int n = 0; n < nr_of_notch_filters_; n++)
+    if(fs_ == notch_filters_[n].fs)
+    {
+      cout << right;
+      cout.width(9);
+      cout << notch_filters_[n].fs << " | ";
+
+      cout.width(8);
+      cout <<  getUSBampFilterName(notch_filters_[n].type)  << " | ";
+      cout.width(7);
+      cout <<  notch_filters_[n].order << " | ";
+
+      cout.width(8);
+      cout << roundD(notch_filters_[n].fu) << " | ";
+
+      cout << left;
+      cout.width(8);
+      cout << roundD(notch_filters_[n].fo);
+      cout << endl;
+    }
+
+}
+
+//---------------------------------------------------------------------------------------
+
+void USBamp::printAvailableAmps()
+{
+  HANDLE dev = 0;
+  string serial_str("\0", 16);    // at least 16 ... 256 g.tec ref. implem. !!
+  cout << "   Available serials: " << endl;
+
+  for(unsigned int n = 0; n < USBAMP_MAX_NR_OF_AMPS; n++)
+  {
+    dev = usb_amp_.openDevice(n);
+    if(dev != 0)
+    {
+      usb_amp_.getSerial(dev, const_cast<LPSTR>(serial_str.c_str()) , serial_str.size() );
+      cout << "    * " << serial_str.c_str() << endl;
+      usb_amp_.closeDevice(&dev);
+    }
+  }
+  cout << std::flush;
 }
 
 //---------------------------------------------------------------------------------------
@@ -1043,6 +1175,7 @@ int USBamp::search4NotchID(float f_center)
 
   if(id < 0)
   {
+    printPossibleNotchFilters();
     string ex_str = "USBamp::search4NotchID -- Notch settings not possible -- ";
     ex_str = ex_str + "f_center: " + lexical_cast<string>(boost::format("%d") % f_center);
     throw(std::invalid_argument(ex_str));
@@ -1580,6 +1713,24 @@ int USBamp::getUSBampFilterType(const string& s)
     throw(std::invalid_argument(e));
   }
   return(it->second);
+}
+
+//-----------------------------------------------------------------------------
+
+string USBamp::getUSBampFilterName(double n)
+{
+  map<string, unsigned int>::iterator it;
+  int nr = boost::numeric_cast<int>(n);
+  it = usbamp_filter_types_.begin();
+
+  while(it != usbamp_filter_types_.end())
+  {
+    if(it->second == nr)
+      return(it->first);
+    it++;
+  }
+  string e = "USBamp filter number not found!";
+  throw(std::invalid_argument(e));
 }
 
 //-----------------------------------------------------------------------------

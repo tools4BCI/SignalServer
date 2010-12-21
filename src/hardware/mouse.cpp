@@ -28,46 +28,42 @@ using boost::bad_lexical_cast;
 
 using std::vector;
 using std::string;
-using std::map;
 using std::pair;
 using std::cout;
 using std::endl;
-using std::make_pair;
 using std::set;
 
 set<boost::uint16_t> MouseBase::used_ids_;
 
-
+const string MouseBase::hw_vid("vendorid");
+const string MouseBase::hw_pid("productid");
+const string MouseBase::usb_port("usb_port");
 
 //-----------------------------------------------------------------------------
 MouseBase::MouseBase(ticpp::Iterator<ticpp::Element> hw)
   : HWThread()
 {
-  #ifdef DEBUG
-    cout << "MouseBase: Constructor" << endl;
-  #endif
+	#ifdef DEBUG
+		cout << "MouseBase: Constructor" << endl;
+	#endif
+	setType("Mouse");
+	checkMandatoryHardwareTags(hw);
+	if(mode_ != APERIODIC)
+		throw(std::invalid_argument("Mouse has to be started as aperiodic device!"));
+	initMouse();
 
-  checkMandatoryHardwareTags(hw);
-  if(mode_ != APERIODIC)
-    throw(std::invalid_argument("Mouse has to be started as aperiodic device!"));
+	ticpp::Iterator<ticpp::Element> ds(hw->FirstChildElement(hw_devset_, true));
+	setDeviceSettings(ds);
+	DS = ds;
+	data_.init(1, channel_types_.size() , channel_types_);
 
-  initMouse();
+	vector<boost::uint32_t> v;
+	empty_block_.init(0,0, v);
 
-  ticpp::Iterator<ticpp::Element> ds(hw->FirstChildElement(hw_devset_, true));
-  setDeviceSettings(ds);
-
-  data_.init(1, channel_types_.size() , channel_types_);
-
-  vector<boost::uint32_t> v;
-  empty_block_.init(0,0, v);
-
-
-
-  cout<<"vid: "<<vid_<<"pid: "<<pid_<<endl;
-  cout << " * Mouse sucessfully initialized -- running as aperiodic: ";
-  cout << (mode_ == APERIODIC) << ";  ";
-  cout << "Mouse ID: " << id_ << ",  Name: " << name_;
-   cout<<", vid: "<<vid_<<", pid: "<<pid_<<endl;
+	cout << " * Mouse sucessfully initialized -- running as aperiodic: ";
+	cout << (mode_ == APERIODIC) << ";  ";
+	cout << "Mouse ID: " << id_ << ",  Name: " << name_;
+	cout<<", vid: "<<vid_<<", pid: "<<pid_<<endl;
 }
 
 //-----------------------------------------------------------------------------
@@ -147,8 +143,6 @@ void MouseBase::setUsbPort(ticpp::Iterator<ticpp::Element>const &elem)
     }
 }
 
-//---------------------------------------------------------------------------------------
-
 //-----------------------------------------------------------------------------
 
 void MouseBase::setDeviceSettings(ticpp::Iterator<ticpp::Element>const& father)
@@ -157,23 +151,15 @@ void MouseBase::setDeviceSettings(ticpp::Iterator<ticpp::Element>const& father)
     cout << "MouseBase: setDeviceSettings" << endl;
   #endif
 
-//   ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(cst_.hw_fs,true));
-//   setSamplingRate(elem);
-
-  //ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(cst_.hw_channels,true));
-//   elem = father->FirstChildElement(cst_.hw_channels,true);
-
-    Constants cst;
-
-    ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(cst.hw_vid,true));
+    ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(hw_vid,true));
     setVendorId(elem);
 
-    ticpp::Iterator<ticpp::Element> elem2(father->FirstChildElement(cst.hw_pid,true));
+    ticpp::Iterator<ticpp::Element> elem2(father->FirstChildElement(hw_pid,true));
     setProductId(elem2);
 
-    ticpp::Iterator<ticpp::Element> elem3(father->FirstChildElement(cst.usb_port,true));
+    ticpp::Iterator<ticpp::Element> elem3(father->FirstChildElement(usb_port,true));
     setUsbPort(elem3);
-
+    
   string naming;
   string type;
 
@@ -188,21 +174,10 @@ void MouseBase::setDeviceSettings(ticpp::Iterator<ticpp::Element>const& father)
     channel_types_.push_back(SIG_MOUSE);
   nr_ch_= channel_types_.size();
 
-  //try
-  //{
-  //  parser_.parseDeviceChannels(elem, nr_ch_, naming, type);
-  //}
-  //catch(ticpp::Exception& e)
-  //{
-  //  string ex_str;
-  //  ex_str = "Error in "+ cst_.hardware +" - " + m_.find(cst_.hardware_name)->second + " -- ";
-  //  throw(ticpp::Exception(ex_str + e.what()));
-  //}
-
   boost::uint16_t n = 1;
   if(buttons_)
     for( ; n <= buttons_ +1; n++)
-      channel_info_.insert(pair<boost::uint16_t, pair<string, boost::uint32_t> >(n, pair<string, boost::uint32_t>(naming, SIG_BUTTON)));
+      channel_info_.insert(pair<boost::uint16_t, pair<string, boost::uint32_t> >(n, pair<string, boost::uint32_t>(naming, SIG_MBUTTON)));
 
   if(axes_)
     for( ; n <= axes_ + buttons_ +2; n++)
@@ -221,9 +196,6 @@ void MouseBase::setChannelSettings(ticpp::Iterator<ticpp::Element>const& )
     cout << "MouseBase: setChannelSettings" << endl;
 //  #endif
 
-//   ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(cst_.hw_sel,false));
-//   if (elem != elem.end())
-//     setChannelSelection(elem);
 }
 
 //---------------------------------------------------------------------------------------
@@ -237,10 +209,11 @@ SampleBlock<double> MouseBase::getAsyncData()
   {
           bool dirty = 0;
 
-          for(uint n = 0; n < buttons_values_.size(); n++)
+          for(int n = 0; n < buttons_values_.size(); n++)
           {
             bool value = 0;
-            int state_n = (async_data_buttons_ & (int)pow(2,n));
+			double base = 2;
+            int state_n = (async_data_buttons_ & (int)pow(base,n));
             if (state_n!=value)
                 value = 1;
               if( value != buttons_values_[n])
@@ -320,15 +293,15 @@ void MouseBase::initMouse()
 }
 
 int MouseBase::blockKernelDriver(){
-
+  return 0;
 }
 
 int MouseBase::freeKernelDriver(){
-cout<<"destruct Base"<<endl;
+  return 0;
 }
 
 void MouseBase::acquireData(){
-
+  
 }
 
 //-----------------------------------------------------------------------------

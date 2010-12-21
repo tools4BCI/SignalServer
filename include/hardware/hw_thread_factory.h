@@ -18,6 +18,10 @@
     Contact: christoph.eibel@tugraz.at
 */
 
+/**
+* @file hw_thread_factory.h
+**/
+
 #ifndef HW_THREAD_FACTORY_H
 #define HW_THREAD_FACTORY_H
 

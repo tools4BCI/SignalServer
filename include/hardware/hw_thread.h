@@ -39,7 +39,7 @@
 #include "ticpp/ticpp.h"
 
 #include "config/xml_parser.h"
-#include "definitions/defines.h"
+#include "tia/defines.h"
 #include "sampleblock/sample_block.h"
 
 namespace tobiss
@@ -62,6 +62,7 @@ namespace tobiss
 *
 * @todo Write instruction how to derive from HWThread
 * @todo Maybe rename HWTHread to HWBase
+* @todo Implement unique device ID mechanism
 */
 class HWThread
 {
@@ -253,7 +254,10 @@ class HWThread
           return false;
       return true;
     }
-
+    /**
+    * @brief Set the type (name) of the respective hardware device.
+    * @todo Check if the type is set.
+    */
     void setType(std::string s)
     {
       type_ = s;

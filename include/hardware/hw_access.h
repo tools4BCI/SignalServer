@@ -38,7 +38,7 @@
 #include <boost/cstdint.hpp>
 
 #include "config/xml_parser.h"
-#include "datapacket/data_packet.h"
+#include "tia/data_packet.h"
 
 #include "hw_thread.h"
 
@@ -57,6 +57,9 @@ namespace tobiss
 * It is also responsible for synchronisation between connected devices.
 * It can hold multiple types of hardware objects, derived from HWThread, whereby
 * only ONE master is allowed coincident.
+*
+* @attention Inappropriate downsamlpling used now!
+* @todo Eliminate the master/slave ratio principle!
 */
 class HWAccess
 {

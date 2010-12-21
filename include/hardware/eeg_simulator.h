@@ -18,6 +18,11 @@
     Contact: c.breitwieser@tugraz.at
 */
 
+/**
+* @file eeg_simulator.h
+* @brief eeg_simulator includes a class to simulate EEG signals
+**/
+
 #ifndef EEG_SIMULATOR_H
 #define EEG_SIMULATOR_H
 
@@ -35,25 +40,56 @@ namespace tobiss
 {
 
 //-----------------------------------------------------------------------------
+
+/**
+* @class EEGSimulator
+*
+* @brief A class to simulate EEG signals.
+*
+* This class is writtern to provide a very basic EEG simulator based on creating
+* normal distributed noise. It provides the possibility to increase the amplitude of
+* this noise or add an offset to it. Additionally it is possible to and sine waves
+* (frequency, amplitude and phase adjustable) to the simulated EEG.
+* This can be applied to every channel individually while running using network
+* communication.
+*
+* @todo If needed: Provide the possibility to change the source-distribution during runtime.
+* @todo Define and implement a configuration protocol.
+* @todo Write an EEG simulator based on filtering rather than on adding just a Sine.
+*/
+
 class EEGSimulator : public ArtificialSignalSource
 {
   public:
+    /**
+    * @brief Constructor
+    */
     EEGSimulator(boost::asio::io_service& io,
                  ticpp::Iterator<ticpp::Element> hw);
+    /**
+    * @brief Destructor
+    */
     virtual ~EEGSimulator();
 
 //------------------------------------------
 
   private:
-
-    class EEGConfig
+    /**
+    * @struct EEGConfig
+    * @brief Simple struct holding parameters to configure the EEG signal.
+    */
+    struct EEGConfig
     {
       public:
         double scaling_;
         double offset_;
     };
 
-    class SineConfig
+    /**
+    * @struct SineConfig
+    * @brief Simple struct holding parameters to configure the sine waves.
+    */
+    struct SineConfig
     {
       public:
         double freq_;
@@ -62,43 +98,84 @@ class EEGSimulator : public ArtificialSignalSource
     };
 
     /**
-    * @brief TODO
+    * @brief Implementation of the abstract method creating the signals (sine and EEG).
     */
-    void generateSignal();
+    virtual void generateSignal();
 
     /**
     * @brief Set the configuration of the SineGenerator with a XML object
     * @param[in] hw ticpp::Element pointing to an \<hardware\> tag in the config file
-    * @throw ticpp::exception if \<channel_settings\> is defined multiple times.
+    * @throw std::invalid_argument if \<channel_settings\> is defined multiple times.
     */
     void setHardware(ticpp::Iterator<ticpp::Element>const &hw);
     /**
     * @brief Set configuration listed in the \<device_settings\> section in the XML file.
     * @param[in] hw ticpp::Element pointing to an \<device_settings\> tag in the config file
-    * @throw ticpp::exception
+    * @throw std::invalid_argument
     */
     virtual void setDeviceSettings(ticpp::Iterator<ticpp::Element>const &father);
     /**
     * @brief Set configuration listed in the \<channel_settings\> section in the XML file.
     * @param[in] hw ticpp::Element pointing to an \<channel_settings\> tag in the config file
-    * @throw ticpp::exception
+    * @throw std::invalid_argument
     */
     virtual void setChannelSettings(ticpp::Iterator<ticpp::Element>const &father);
 
+    /**
+    * @brief Set the port number used to remote control the EEGsimulator.
+    */
     void setPort(ticpp::Iterator<ticpp::Element>const &elem);
+
+    /**
+    * @brief Set the configuration of the EEG signal from the device configuration section.
+    */
     void setDeviceEEGConfig(ticpp::Iterator<ticpp::Element>const &elem);
+    /**
+    * @brief Set the configuration of the sine waves from the device configuration section.
+    */
     void setDeviceSineConfig(ticpp::Iterator<ticpp::Element>const &elem);
 
+    /**
+    * @brief Set the configuration of individual EEG signals from the channel settings section.
+    */
     void setChannelEEGConfig(ticpp::Iterator<ticpp::Element>const &father);
+    /**
+    * @brief Set the configuration of individual sine waves from the channel settings section.
+    */
     void setChannelSineConfig(ticpp::Iterator<ticpp::Element>const &father);
 
+    /**
+    * @brief Check if all arguments from the EEG config are OK.
+    * @throws std::invalid_argument
+    */
     void checkEEGConfigAttributes(ticpp::Iterator<ticpp::Element>const &elem);
+    /**
+    * @brief Check if all arguments from the sine config are OK.
+    * @throws std::invalid_argument
+    */
     void checkSineConfigAttributes(ticpp::Iterator<ticpp::Element>const &elem);
 
+    /**
+    * @brief Get an EEGConfig object out of the XML node.
+    * @throws std::invalid_argument
+    */
     EEGConfig getEEGConfig(ticpp::Iterator<ticpp::Element>const &elem);
+    /**
+    * @brief Get a SineConfig object out of the XML node.
+    * @throws std::invalid_argument
+    */
     SineConfig getSineConfig(ticpp::Iterator<ticpp::Element>const &elem);
 
+    /**
+    * @brief NOT IMPLEMENTED YET! (Handle incomming network packets asynchronously.)
+    * @todo  Implement this method.
+    */
     void handleAsyncRead(const boost::system::error_code& ec, std::size_t bytes_transferred );
+
+    /**
+    * @brief NOT IMPLEMENTED YET! (Accept handler handling incomming connections.)
+    * @todo  Implement this method.
+    */
     void acceptHandler(const boost::system::error_code& error);
 
 //------------------------------------------

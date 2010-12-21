@@ -20,9 +20,6 @@
 
 /**
 * @file gdf_file_reader.h
-*
-* @brief
-*
 **/
 
 #ifndef GDFFILEREADER_H

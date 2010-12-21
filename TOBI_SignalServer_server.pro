@@ -13,7 +13,7 @@ DEFINES += TIXML_USE_TICPP
 
 # TIMING_TEST
 TARGET = signalserver
-DESTDIR = bin
+DESTDIR = $$PWD/bin
 OBJECTS_DIR = tmp
 INCLUDEPATH += . \
     include \
@@ -26,7 +26,7 @@ unix {
     versiontarget.target = ./update-version.sh
     versiontarget.commands = ./update-version.sh
     versiontarget.depends = FORCE
-    PRE_TARGETDEPS += ./update-version.sh
+    PRE_TARGETDEPS += $$PWD/update-version.sh
     QMAKE_EXTRA_TARGETS += versiontarget
 }
 QMAKE_CXXFLAGS_WARN_ON = -Wall \
@@ -55,7 +55,7 @@ HEADERS += include/config/xml_parser.h \
     extern/include/LptTools/LptTools.h \
     include/hardware/mouse.h
 unix:HEADERS += include/hardware/mouse_linux.h
-win32:HEADERS += include/hardware/mouse_.h
+win32:HEADERS += include/hardware/mouse_win.h
 SOURCES += src/signalserver/main.cpp \
     src/config/xml_parser.cpp \
     src/hardware/hw_access.cpp \
@@ -76,10 +76,10 @@ SOURCES += src/signalserver/main.cpp \
     src/hardware/eeg_simulator.cpp \
     src/hardware/mouse.cpp
 unix:SOURCES += src/hardware/mouse_linux.cpp
-win32:SOURCES += src/hardware/mouse_.cpp
+win32:SOURCES += src/hardware/mouse_win.cpp
 unix:SOURCES += extern/include/LptTools/LptToolsLinux.cpp
 win32:SOURCES += extern/include/LptTools/LptTools_.cpp
-LIBS += lib/libtia.a
+LIBS += $$PWD/lib/libtia.a
 
 # -----------------------------------------------------------------------
 
@@ -102,7 +102,7 @@ unix {
         
         # 64-bit Linux
         LIBS += -L \
-            extern/lib/ticpp/linux \
+            $$PWD/extern/lib/ticpp/linux \
             -lticpp_64
 #            -Lextern/lib/libgdf/linux \
 #            -llibgdf_64
@@ -110,7 +110,7 @@ unix {
     else:: { 
         # 32-bit Linux
         message(Building 32 bit )
-        LIBS += -Lextern/lib/ticpp/linux \
+        LIBS += -L$$PWD/extern/lib/ticpp/linux \
             -lticpp
 #           -Lextern/lib/libgdf/linux \
 #            -llibgdf

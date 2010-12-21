@@ -18,6 +18,10 @@
     Contact: c.breitwieser@tugraz.at
 */
 
+/**
+* @file artificial_signal_source.cpp
+**/
+
 #include "hardware/artificial_signal_source.h"
 
 #include <math.h>
