@@ -211,7 +211,7 @@ SampleBlock<double> MouseBase::getAsyncData()
 
           for(int n = 0; n < buttons_values_.size(); n++)
           {
-            int value = 0;
+            bool value = 0;
 			double base = 2;
             int state_n = (async_data_buttons_ & (int)pow(base,n));
             if (state_n!=value)
