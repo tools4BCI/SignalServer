@@ -7,6 +7,6 @@ if [ ! -f bin/${SERVER_CMD} ]; then
   exit 1
 fi
 
-cd bin
+#cd bin
 
-exec env LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(pwd)/../lib ./${SERVER_CMD}  $1 $2
+exec env LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(pwd)/../lib ./bin/${SERVER_CMD}  $1 $2
