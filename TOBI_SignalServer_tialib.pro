@@ -85,7 +85,9 @@ SOURCES += src/tia/tia_server.cpp \
     src/tia/data_packet3.cpp \
     src/tia/datapacket/raw_mem3.cpp \
     src/tia/clock.cpp \
-    src/tia/server/commands/stop_data_transmission_server_command.cpp
+    src/tia/server/commands/stop_data_transmission_server_command.cpp \
+    src/tia/server/commands/get_data_connection_server_command.cpp \
+    src/tia/server/server_command.cpp
 unix:SOURCES += extern/include/LptTools/LptToolsLinux.cpp
 win32:SOURCES += extern/include/LptTools/LptTools_.cpp
 

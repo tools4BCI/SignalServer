@@ -7,6 +7,6 @@
 int main()
 {
     srand (time(NULL));
-    std::cout << "Build on " << __DATE__ << " at " << __TIME__ << std::endl << std::endl;
+    std::cout << std::endl << "Build on " << __DATE__ << " at " << __TIME__ << std::endl << std::endl;
     return UnitTest::RunAllTests();
 }
