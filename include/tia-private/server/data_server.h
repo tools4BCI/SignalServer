@@ -20,6 +20,10 @@ public:
 
     virtual ConnectionID addConnection () = 0;
 
+    virtual bool hasConnection (ConnectionID connection) const = 0;
+
+    virtual bool transmitting (ConnectionID connection) const = 0;
+
     virtual bool removeConnection (ConnectionID connection) = 0;
 
     virtual void startTransmission (ConnectionID connection) = 0;

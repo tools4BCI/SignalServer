@@ -54,6 +54,19 @@ public:
         return most_recent_connection_id_;
     }
 
+    virtual bool hasConnection (tia::ConnectionID connection) const
+    {
+        return connection_transmission_map_.count (connection) > 0;
+    }
+
+    virtual bool transmitting (tia::ConnectionID connection) const
+    {
+        bool transmit = false;
+        if (connection_transmission_map_.count (connection))
+            transmit = connection_transmission_map_.find (connection)->second;
+        return transmit;
+    }
+
     virtual bool removeConnection (tia::ConnectionID connection)
     {
         connection_transmission_map_.erase (connection);

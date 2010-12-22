@@ -2,8 +2,8 @@
 #include "tia_server_control_connection_tests_fixtures.h"
 #include "tia_control_messages_definition.h"
 
-#include "tia-private/server/stop_data_transmission_server_command.h"
-#include "tia-private/server/get_data_connection_server_command.h"
+#include "tia-private/server/commands/stop_data_transmission_server_command.h"
+#include "tia-private/server/commands/get_data_connection_server_command.h"
 
 #include "ticpp/ticpp.h"
 
