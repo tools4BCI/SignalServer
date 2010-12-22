@@ -70,6 +70,18 @@ std::string message02Command (std::string const& xml)
 }
 
 //-----------------------------------------------------------------------------
+bool isErrorReply (std::string const& reply)
+{
+    if (validMessage02 (reply))
+        return std::string ("errorReply") == message02Command (reply);
+    else
+        return false;
+}
+
+//-----------------------------------------------------------------------------
+///
+/// StopDataTransmissionServerCommand
+///
 TEST_FIXTURE (TiAServerControlConnectionFixture, stopDataTransmissionServerCommand)
 {
     ConnectionID valid_connection_id = test_data_server.addConnection ();
@@ -80,8 +92,7 @@ TEST_FIXTURE (TiAServerControlConnectionFixture, stopDataTransmissionServerComma
     command.execute ();
 
     // error reply if transmission already not active
-    CHECK (validMessage02 (test_control_socket.transmittedString()));
-    CHECK_EQUAL (std::string ("errorReply"), message02Command (test_control_socket.transmittedString()));
+    CHECK (isErrorReply (test_control_socket.transmittedString()));
     CHECK (!test_data_server.transmissionEnabled (valid_connection_id));
 
     test_data_server.startTransmission (valid_connection_id);
@@ -101,10 +112,28 @@ TEST_FIXTURE (TiAServerControlConnectionFixture, stopDataTransmissionServerComma
 }
 
 //-----------------------------------------------------------------------------
+///
+/// GetDataTransmissionServerCommand
+///
 TEST_FIXTURE (TiAServerControlConnectionFixture, getDataTransmissionServerCommand)
 {
-    ConnectionID connection_id = -1;
-    GetDataConnectionServerCommand command (connection_id, test_data_server, test_control_socket);
+    ConnectionID valid_connection_id = test_data_server.addConnection ();
+    //ConnectionID invalid_connection_id = valid_connection_id + 100;
+    std::map<std::string, std::string> no_attributes;
+    std::map<std::string, std::string> wrong_attributes;
+    std::map<std::string, std::string> tcp_attribute;
+    std::map<std::string, std::string> udp_attribute;
+
+
+    GetDataConnectionServerCommand command (valid_connection_id, test_data_server, test_control_socket);
+
+    command.execute();
+
+    // error reply if no attribute is set (tcp or udp)
+    CHECK (isErrorReply (test_control_socket.transmittedString()));
+
+    // error reply if wrong attribute is set
+
 }
 
 }
