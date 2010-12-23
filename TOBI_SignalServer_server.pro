@@ -21,7 +21,7 @@ INCLUDEPATH += . \
 DEPENDPATH += $$INCLUDEPATH
 INCLUDEPATH += extern/include
 win32:INCLUDEPATH += extern/include/SDL-1.2.14-VC8
-unix { 
+unix {
     QMAKE_CXXFLAGS += -pedantic
     versiontarget.target = ./update-version.sh
     versiontarget.commands = ./update-version.sh
@@ -41,7 +41,6 @@ HEADERS += include/config/xml_parser.h \
     include/hardware/jstick.h \
     include/hardware/serial_port_base.h \
     include/hardware/gtec_usbamp_wrapper.h \
-    include/hardware/usbamp.h \
     include/hardware/g_mobilab.h \
     include/hardware/hw_thread_factory.h \
     include/hardware/hw_thread_builder.h \
@@ -64,7 +63,6 @@ SOURCES += src/signalserver/main.cpp \
     src/hardware/event_listener.cpp \
     src/hardware/jstick.cpp \
     src/hardware/serial_port_base.cpp \
-    src/hardware/usbamp.cpp \
     src/hardware/g_mobilab.cpp \
     src/hardware/hw_thread_factory.cpp \
     src/filereading/data_file_handler.cpp \
@@ -97,9 +95,9 @@ unix {
             -lusb-1.0
 
     HARDWARE_PLATFORM = $$system(uname -m)
-    contains( HARDWARE_PLATFORM, x86_64 ):: { 
+    contains( HARDWARE_PLATFORM, x86_64 ):: {
         message(Building 64 bit )
-        
+
         # 64-bit Linux
         LIBS += -L \
             $$PWD/extern/lib/ticpp/linux \
@@ -107,7 +105,7 @@ unix {
 #            -Lextern/lib/libgdf/linux \
 #            -llibgdf_64
     }
-    else:: { 
+    else:: {
         # 32-bit Linux
         message(Building 32 bit )
         LIBS += -L$$PWD/extern/lib/ticpp/linux \
