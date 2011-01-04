@@ -42,9 +42,6 @@
 #include <windows.h>
 
 #include "gtec_usbamp_wrapper.h"
-//#include "extern/include/g.usbamp/gUSBamp.h"
-//#pragma comment(lib,"gUSBamp.lib")
-
 #include "hw_thread.h"
 #include "hw_thread_builder.h"
 
@@ -241,7 +238,7 @@ class USBamp : public HWThread
 
     GTECUSBampWrapper usb_amp_;
 
-  std::map<std::string, std::string> m_;	/// Attributes mab -- to be renamed
+    std::map<std::string, std::string> m_;	/// Attributes mab -- to be renamed
 
     //-----------------------------------------------
     // Constants

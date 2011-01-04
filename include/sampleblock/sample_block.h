@@ -255,7 +255,7 @@ template<class T> class SampleBlock
 template<class T> void SampleBlock<T>::init(boost::uint16_t blocksize, boost::uint16_t nr_ch, std::vector<boost::uint32_t> sig_types)
 {
   #ifdef DEBUG
-    std::cout << "SampleBlock: init" << std::endl;
+    //std::cout << "SampleBlock: init" << std::endl;
   #endif
 
   using boost::uint16_t;
@@ -339,7 +339,7 @@ template<class T> std::vector<T> SampleBlock<T>::getSamples()
 template<class T> boost::uint32_t SampleBlock<T>::getFlagByNr(boost::uint32_t nr)
 {
   #ifdef DEBUG
-    std::cout << "SampleBlock: getFlagByNr" << std::endl;
+    //std::cout << "SampleBlock: getFlagByNr" << std::endl;
   #endif
 
   using boost::uint16_t;
@@ -406,7 +406,7 @@ template<class T> void SampleBlock<T>::getSignalByFlag(boost::uint32_t flag, std
 template<class T> std::vector<T> SampleBlock<T>::getSignalByNr(boost::uint32_t nr)
 {
   #ifdef DEBUG
-    std::cout << "SampleBlock: getSignalByNr" << std::endl;
+   // std::cout << "SampleBlock: getSignalByNr" << std::endl;
   #endif
 
   using boost::uint16_t;
@@ -430,7 +430,7 @@ template<class T> std::vector<T> SampleBlock<T>::getSignalByNr(boost::uint32_t n
 template<class T> void SampleBlock<T>::getSignalByNr(boost::uint32_t nr, std::vector<T>& v)
 {
   #ifdef DEBUG
-    std::cout << "SampleBlock: getSignalByNr" << std::endl;
+    //std::cout << "SampleBlock: getSignalByNr" << std::endl;
   #endif
 
   using boost::uint16_t;
@@ -495,7 +495,7 @@ template<class T> void SampleBlock<T>::appendBlock(std::vector<T> v, boost::uint
 template<class T> void SampleBlock<T>::setSamples(std::vector<T> v)
 {
   #ifdef DEBUG
-    std::cout << "SampleBlock: setSamples" << std::endl;
+    //std::cout << "SampleBlock: setSamples" << std::endl;
   #endif
 
   if(v.size() != static_cast<boost::uint32_t>(blocks_ *channels_))
@@ -549,7 +549,7 @@ template<class T> void SampleBlock<T>::sort(std::vector<T>& v,
 template<class T> void SampleBlock<T>::checkBlockIntegrity()
 {
   #ifdef DEBUG
-    std::cout << "SampleBlock: checkBlockIntegrity" << std::endl;
+    //std::cout << "SampleBlock: checkBlockIntegrity" << std::endl;
   #endif
 
   if(samples_.size() != static_cast<boost::uint32_t>(channels_*blocks_ ))

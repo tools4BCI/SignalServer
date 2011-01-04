@@ -467,14 +467,14 @@ void HWAccess::buildFsInfoMap()
 
 //-----------------------------------------------------------------------------
 
-vector<uint32_t> HWAccess::getSamplingRatePerSignalType()
+vector<boost::uint32_t> HWAccess::getSamplingRatePerSignalType()
 {
   #ifdef DEBUG
     cout << "HWAccess: getSamplingRatePerSignalType" << endl;
   #endif
 
-  vector<uint32_t> v;
-  for(map<uint32_t, uint32_t>::iterator it(fs_info_.begin());
+  vector<boost::uint32_t> v;
+  for(map<uint32_t, double>::iterator it(fs_info_.begin());
       it != fs_info_.end(); it++)
     v.push_back(it->second);
   return(v);

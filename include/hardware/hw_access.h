@@ -268,7 +268,7 @@ class HWAccess
     std::vector<unsigned int> sample_it_;  // iteration variable for sample-count
 
     std::map<boost::uint32_t, std::pair<boost::uint16_t, boost::uint16_t> > data_info_;  ///< map containing ( type,  (nr_ch, blocksize) )
-    std::map<boost::uint32_t, boost::uint32_t > fs_info_;  ///< map containing ( type, sampling rate )
+    std::map<boost::uint32_t, double > fs_info_;  ///< map containing ( type, sampling rate )
 
     std::map<boost::uint32_t, std::vector<std::string> > channel_naming_;  ///< map containing ( type,  channel names )
 

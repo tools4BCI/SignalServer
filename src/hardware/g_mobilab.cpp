@@ -269,7 +269,7 @@ void GMobilab::setHardware(ticpp::Iterator<ticpp::Element>const &hw)
     for(ticpp::Iterator<ticpp::Element> it(cs); ++it != it.end(); )
       if(it->Value() == hw_chset_)
       {
-        string ex_str(mobilab_type_ + " -- ");
+        string ex_str(type_ + " -- ");
         ex_str += "Multiple channel_settings found!";
         throw(std::invalid_argument(ex_str));
       }

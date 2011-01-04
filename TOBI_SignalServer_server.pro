@@ -53,6 +53,8 @@ HEADERS += include/config/xml_parser.h \
     include/hardware/eeg_simulator.h \
     extern/include/LptTools/LptTools.h \
     include/hardware/mouse.h
+    #include/hardware/nirscout.h
+    #include/hardware/brainampseries.h
 unix:HEADERS += include/hardware/mouse_linux.h
 win32:HEADERS += include/hardware/mouse_win.h
 SOURCES += src/signalserver/main.cpp \
@@ -73,6 +75,8 @@ SOURCES += src/signalserver/main.cpp \
     src/hardware/artificial_signal_source.cpp \
     src/hardware/eeg_simulator.cpp \
     src/hardware/mouse.cpp
+    #src/hardware/nirscout.cpp
+    #src/hardware/brainampseries.cpp
 unix:SOURCES += src/hardware/mouse_linux.cpp
 win32:SOURCES += src/hardware/mouse_win.cpp
 unix:SOURCES += extern/include/LptTools/LptToolsLinux.cpp
@@ -80,20 +84,17 @@ win32:SOURCES += extern/include/LptTools/LptTools_.cpp
 LIBS += $$PWD/lib/libtia.a
 
 # -----------------------------------------------------------------------
-
 unix {
-#    LIBS += /usr/lib/libboost_thread.a \
-#            /usr/lib/libboost_system.a \
-#            /usr/lib/libboost_filesystem.a \
-#            -lSDL
-
+    # LIBS += /usr/lib/libboost_thread.a \
+    # /usr/lib/libboost_system.a \
+    # /usr/lib/libboost_filesystem.a \
+    # -lSDL
     LIBS += -lboost_thread \
-            -lboost_system \
-            -lboost_filesystem \
-            -lSDL \
-            -Lextern/lib/libusb/linux \
-            -lusb-1.0
-
+        -lboost_system \
+        -lboost_filesystem \
+        -lSDL \
+        -Lextern/lib/libusb/linux \
+        -lusb-1.0
     HARDWARE_PLATFORM = $$system(uname -m)
     contains( HARDWARE_PLATFORM, x86_64 ):: {
         message(Building 64 bit )
@@ -102,18 +103,20 @@ unix {
         LIBS += -L \
             $$PWD/extern/lib/ticpp/linux \
             -lticpp_64
-#            -Lextern/lib/libgdf/linux \
-#            -llibgdf_64
     }
+
+    # -Lextern/lib/libgdf/linux \
+    # -llibgdf_64
     else:: {
         # 32-bit Linux
         message(Building 32 bit )
         LIBS += -L$$PWD/extern/lib/ticpp/linux \
             -lticpp
-#           -Lextern/lib/libgdf/linux \
-#            -llibgdf
     }
 }
+
+# -Lextern/lib/libgdf/linux \
+# -llibgdf
 win32:LIBS += extern\lib\sdl\win\SDL.lib \
     extern\lib\sdl\win\SDLmain.lib \
     extern\lib\ticpp\win\ticpp.lib \
