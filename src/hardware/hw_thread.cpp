@@ -47,7 +47,7 @@ using std::cout;
 using std::endl;
 using std::dec;
 using std::hex;
- 
+
 //-----------------------------------------------------------------------------
 
 //const string HWThread::hardware_("hardware");
@@ -124,10 +124,10 @@ void HWThread::setSamplingRate(ticpp::Iterator<ticpp::Element>const &elem)
     cout << "HWThread: setSamplingRate" << endl;
   #endif
 
-    // FIXXXME: Allow also float sampling rates (e.g. 0.1)
+    /// @todo: Allow also float sampling rates (e.g. 0.1)
   try
   {
-    fs_ = lexical_cast<int>(elem->GetText(true));
+    fs_ = lexical_cast<double>(elem->GetText(true));
   }
   catch(bad_lexical_cast &)
   {
