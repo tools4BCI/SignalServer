@@ -113,7 +113,7 @@ class HWThread
     * @brief Get the sampling rate set for the device.
     * @return uint16_t sampling_rate
     */
-    boost::uint32_t getSamplingRate()  { return(fs_); }
+    double getSamplingRate()  { return(fs_); }
     /**
     * @brief Get the number of channels the device is acquiering.
     * @return uint16_t nr_of_ch
@@ -186,16 +186,15 @@ class HWThread
     : nr_ch_(channels),fs_(sampling_rate), samples_available_(0), blocks_(blocks),
     mode_(SLAVE), running_(0)
     {    }
-    //    , parser_(parser)
+
     /**
     * @brief Default constructor
     *
     * Sets the device to 0 channel, sampling_rate 0 and blocksize 1.
     */
-    HWThread()  // XMLParser& parser
+    HWThread()
     : nr_ch_(0),fs_(0), samples_available_(0), blocks_(1), mode_(SLAVE), running_(0)
     {    }
-    //    , parser_(parser)
 
     /**
     * @brief Set configuration listed in the \<device_settings\> section in the XML file.
@@ -267,7 +266,7 @@ class HWThread
 
   protected:
     boost::uint16_t nr_ch_;   ///< number of channels
-    boost::uint32_t fs_;      ///< sampling rate
+    double fs_;      ///< sampling rate
     bool samples_available_;
     boost::uint16_t blocks_;   ///< blocksize (or also called buffersize)
     boost::uint8_t mode_;       ///< master, slave or aperiodic
@@ -278,9 +277,6 @@ class HWThread
     std::map<boost::uint16_t, std::pair<std::string, boost::uint32_t> > channel_info_;  ///< map containing ( ch_nr,  (name,  type) )
     bool homogenous_signal_type_;  ///< true, if device delivers different signal types -- e.g. EEG and EMG
     std::vector<boost::uint32_t> channel_types_;   ///< vector containing signal types of channels (for faster access)
-
-    // Constants cst_;  ///< A static object containing constants.
-    // XMLParser& parser_;   ///< Reference pointing to the XMLParser.
 
     /**
     * @brief Data object representing the last available samples from the SineGenerator.
@@ -300,8 +296,6 @@ class HWThread
     //-----------------------------------------------
     // Constant variables & methods:
 
-//    static const std::string hardware_;
-//    static const std::string hardware_name_;
     static const std::string hardware_version_;
     static const std::string hardware_serial_;
 

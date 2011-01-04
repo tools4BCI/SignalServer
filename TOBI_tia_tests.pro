@@ -1,6 +1,7 @@
 TEMPLATE += app
 CONFIG += console
 TARGET = $$PWD/bin/test
+OBJECTS_DIR = tmp/tests/
 
 QT -= core \
       gui
@@ -17,25 +18,34 @@ DEFINES += TIXML_USE_TICPP
 #QMAKE_LFLAGS += -fprofile-arcs -ftest-coverage
 #LIBS += -lgcov
 
+QMAKE_CXXFLAGS_WARN_ON = -Wall \
+    -pedantic
+
 LIBS += $$PWD/lib/libtia.a
 
 HARDWARE_PLATFORM = $$system(uname -m)
 
 contains( HARDWARE_PLATFORM, x86_64 )::{
   LIBS += $$PWD/extern/lib/ticpp/linux/libticpp_64.a
-}
-else:: {
+  }
+  else:: {
   LIBS += $$PWD/extern/lib/ticpp/linux/libticpp.a
-}
+  }
 
 LIBS += -lboost_thread \
         -lboost_system \
         -lboost_filesystem \
         -L$$PWD/extern/lib \
         -L$$PWD/extern/lib/ticpp/linux \
-        -L$$PWD/tests/UnitTest++ \
-        -lUnitTest++ \
-        -lticpp
+        -L$$PWD/tests/UnitTest++
+
+contains( HARDWARE_PLATFORM, x86_64 )::{
+  LIBS += -lUnitTest++_64
+  }
+  else:: {
+  LIBS += -lUnitTest++
+  }
+
 
 SOURCES += \
     tests/main.cpp \
