@@ -308,8 +308,6 @@ void ControlConnection::handle_read(const boost::system::error_code& error,
         break;
       }
     }
-    else
-        close ();
 
     // Read next message
     tcp_connection_->socket().async_read_some(input_buffer_->prepare(MAX_DATA_SIZE),
@@ -317,6 +315,8 @@ void ControlConnection::handle_read(const boost::system::error_code& error,
           boost::asio::placeholders::error,
           boost::asio::placeholders::bytes_transferred));
   }
+  else
+    close ();
 }
 
 //-----------------------------------------------------------------------------
