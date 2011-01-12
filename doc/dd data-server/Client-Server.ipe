@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70010" creator="Ipe 7.0.10">
-<info created="D:20090527113011" modified="D:20100914105843"/>
+<info created="D:20090527113011" modified="D:20110107113951"/>
 <ipestyle name="ipe6">
 <symbol name="mark/circle(sx)" transformations="translations">
 <path fill="sym-stroke">
@@ -113,13 +113,13 @@ h
 <dashstyle name="dash dotted" value="[4 2 1 2] 0"/>
 <dashstyle name="dash dot dotted" value="[4 2 1 2 1 2] 0"/>
 <textsize name="large" value="\large"/>
+<textsize name="small" value="\small"/>
+<textsize name="tiny" value="\tiny"/>
 <textsize name="Large" value="\Large"/>
 <textsize name="LARGE" value="\LARGE"/>
 <textsize name="huge" value="\huge"/>
 <textsize name="Huge" value="\Huge"/>
-<textsize name="small" value="\small"/>
 <textsize name="footnote" value="\footnotesize"/>
-<textsize name="tiny" value="\tiny"/>
 <textstyle name="center" begin="\begin{center}" end="\end{center}"/>
 <textstyle name="itemize" begin="\begin{itemize}" end="\end{itemize}"/>
 <textstyle name="item" begin="\begin{itemize}\item{}" end="\end{itemize}"/>
@@ -177,8 +177,8 @@ h
 <use name="mark/fdisk(sfx)" pos="456 508" size="large" stroke="black" fill="black"/>
 <use name="mark/fdisk(sfx)" pos="456 496" size="large" stroke="black" fill="black"/>
 <use name="mark/fdisk(sfx)" pos="456 484" size="large" stroke="black" fill="black"/>
-<text matrix="1 0 0 1 32 12" transformations="translations" pos="464 752" stroke="black" type="label" width="81.637" height="11.955" depth="0" valign="baseline" size="LARGE">UDP Client</text>
-<text matrix="1 0 0 1 -356 -160" transformations="translations" pos="464 752" stroke="black" type="label" width="42.875" height="11.761" depth="0" valign="baseline" size="LARGE">Server</text>
+<text matrix="1 0 0 1 27.1521 12" transformations="translations" pos="464 752" stroke="black" type="label" width="91.449" height="11.955" depth="0" valign="baseline" size="LARGE">UDP \textbf{Client}</text>
+<text matrix="1 0 0 1 -372 -176" transformations="translations" pos="464 752" stroke="black" type="label" width="77.66" height="17.007" depth="0" valign="baseline" size="Huge">\textbf{Server}</text>
 <text matrix="1 0 0 1 20 -172" transformations="translations" pos="240 768" stroke="black" type="label" width="21.447" height="6.808" depth="0" valign="baseline" size="10">Data</text>
 <text matrix="1 0 0 1 32 12" transformations="translations" pos="468 736" stroke="black" type="label" width="59.57" height="8.965" depth="2.99" valign="baseline" size="large">(e.g. scope)</text>
 <path matrix="1 0 0 1 0 -68" stroke="black">
@@ -188,7 +188,7 @@ h
 104 776 l
 h
 </path>
-<text matrix="1 0 0 1 -40 -92" transformations="translations" pos="152 752" stroke="black" type="label" width="19.838" height="6.127" depth="0" valign="baseline" size="9">Data</text>
+<text matrix="1 0 0 1 -40 -92" transformations="translations" pos="152 752" stroke="black" type="label" width="68.478" height="6.127" depth="0" valign="baseline" size="9">Data Connection</text>
 <text matrix="1 0 0 1 -40 -100" transformations="translations" pos="152 752" stroke="black" type="label" width="29.749" height="6.227" depth="0" valign="baseline" size="9">Sockets</text>
 <path matrix="1 0 0 1 12 -28" stroke="black">
 76 552 m
@@ -199,8 +199,8 @@ h
 </path>
 <text matrix="1 0 0 1 24 -24" transformations="translations" pos="84 560" stroke="black" type="label" width="61.798" height="6.227" depth="0" valign="baseline" size="9">EEG Hardware</text>
 <text matrix="1 0 0 1 24 -32" transformations="translations" pos="84 560" stroke="black" type="label" width="63.74" height="6.127" depth="0" valign="baseline" size="9">Communication</text>
-<text matrix="1 0 0 1 0 -44" transformations="translations" pos="392 772" stroke="black" type="label" width="19.838" height="6.127" depth="0" valign="baseline" size="9">Data</text>
-<text matrix="1 0 0 1 0 44" transformations="translations" pos="392 728" stroke="black" type="label" width="70.319" height="6.23" depth="1.74" valign="baseline" size="9">Control Messages</text>
+<text matrix="1 0 0 1 0 -44" transformations="translations" pos="392 772" stroke="black" type="label" width="68.478" height="6.127" depth="0" valign="baseline" size="9">Data Connection</text>
+<text matrix="1 0 0 1 0 44" transformations="translations" pos="392 728" stroke="black" type="label" width="79.123" height="6.227" depth="0" valign="baseline" size="9">Control Connection</text>
 <path matrix="1 0 0 1 0 -44" stroke="black">
 384 740 m
 488 740 l
@@ -223,7 +223,7 @@ h
 h
 </path>
 <text matrix="1 0 0 1 0 36" transformations="translations" pos="152 696" stroke="black" type="label" width="21.171" height="6.808" depth="0" valign="baseline">TCP</text>
-<text transformations="translations" pos="112 768" stroke="black" type="label" width="66.684" height="6.23" depth="1.74" valign="baseline" size="9">Control Message</text>
+<text transformations="translations" pos="112 768" stroke="black" type="label" width="79.123" height="6.227" depth="0" valign="baseline" size="9">Control Connection</text>
 <text transformations="translations" pos="112 756" stroke="black" type="label" width="26.114" height="6.227" depth="0" valign="baseline" size="9">Socket</text>
 <path stroke="black" pen="0.4">
 384 684 m
@@ -248,8 +248,8 @@ h
 h
 </path>
 <text matrix="1 0 0 1 248 -72" transformations="translations" pos="152 696" stroke="black" type="label" width="21.171" height="6.808" depth="0" valign="baseline">TCP</text>
-<text matrix="1 0 0 1 32 -116" transformations="translations" pos="464 752" stroke="black" type="label" width="80.524" height="11.955" depth="0" valign="baseline" size="LARGE">TCP Client</text>
-<text matrix="1 0 0 1 0 -172" transformations="translations" pos="392 772" stroke="black" type="label" width="19.838" height="6.127" depth="0" valign="baseline" size="9">Data</text>
+<text matrix="1 0 0 1 27.6907 -116" transformations="translations" pos="464 752" stroke="black" type="label" width="90.335" height="11.955" depth="0" valign="baseline" size="LARGE">TCP \textbf{Client}</text>
+<text matrix="1 0 0 1 0 -172" transformations="translations" pos="392 772" stroke="black" type="label" width="68.478" height="6.127" depth="0" valign="baseline" size="9">Data Connection</text>
 <text matrix="1 0 0 1 0 -84" transformations="translations" pos="392 728" stroke="black" type="label" width="70.319" height="6.23" depth="1.74" valign="baseline" size="9">Control Messages</text>
 <path matrix="1 0 0 1 0 -172" stroke="black">
 384 740 m
@@ -279,25 +279,17 @@ h
 104 776 l
 h
 </path>
-<path stroke="black" dash="dashed" pen="0.4" arrow="normal/7" rarrow="normal/7">
-192 736 m
-384 756 l
-</path>
 <path stroke="black" dash="dashed" pen="0.4" arrow="normal/7">
 192 688 m
 384 712 l
-</path>
-<path stroke="black" dash="dashed" pen="0.4" arrow="normal/7" rarrow="normal/7">
-192 736 m
-384 628 l
 </path>
 <path stroke="black" dash="dashed" pen="0.4" arrow="normal/7">
 192 632 m
 384 584 l
 </path>
 <text matrix="1 0 0 1 -32 -92" transformations="translations" pos="240 768" stroke="black" type="label" width="21.447" height="6.808" depth="0" valign="baseline" size="10">Data</text>
-<text matrix="1 0 0 1 68.4867 -85.2194" transformations="translations" pos="260 752" stroke="black" type="label" width="47.876" height="6.926" depth="1.93" valign="baseline" size="10">xml-Config</text>
-<text matrix="1 0 0 1 68.2749 9.10332" transformations="translations" pos="260 752" stroke="black" type="label" width="47.876" height="6.926" depth="1.93" valign="baseline" size="10">xml-Config</text>
+<text matrix="1 0 0 1 68.4867 -85.2194" transformations="translations" pos="260 752" stroke="black" type="label" width="41.622" height="6.926" depth="1.93" valign="baseline" size="10">xml-Msgs</text>
+<text matrix="1 0 0 1 68.2749 9.10332" transformations="translations" pos="260 752" stroke="black" type="label" width="41.622" height="6.926" depth="1.93" valign="baseline" size="10">xml-Msgs</text>
 <path stroke="black" arrow="normal/normal" rarrow="normal/normal">
 224 536 m
 192 536 l
@@ -329,11 +321,19 @@ h
 <use matrix="1 0 0 1 -324 -60" name="mark/fdisk(sfx)" pos="456 508" size="large" stroke="black" fill="black"/>
 <use matrix="1 0 0 1 -324 -60" name="mark/fdisk(sfx)" pos="456 496" size="large" stroke="black" fill="black"/>
 <use matrix="1 0 0 1 -324 -60" name="mark/fdisk(sfx)" pos="456 484" size="large" stroke="black" fill="black"/>
-<path matrix="1 0 0 0.928571 0 41.1429" stroke="red" dash="dashed" pen="fat">
+<path matrix="1 0 0 0.928571 0 41.1429" stroke="red" dash="dashed" pen="ultrafat">
 288 800 m
 288 576 l
 </path>
 <text matrix="1 0 0 1 -8 0" transformations="translations" pos="304 784" stroke="black" type="label" width="27.726" height="11.761" depth="0" valign="baseline" size="LARGE">TiA</text>
 <text matrix="1 0 0 1 32 -116" transformations="translations" pos="468 736" stroke="black" type="label" width="68.606" height="8.965" depth="2.99" valign="baseline" size="large">(e.g. Matlab)</text>
+<path stroke="black" dash="dashed" arrow="normal/normal" rarrow="normal/normal">
+192 730.521 m
+384 628 l
+</path>
+<path stroke="black" dash="dashed" arrow="normal/normal" rarrow="normal/normal">
+384 756 m
+192 740.874 l
+</path>
 </page>
 </ipe>
