@@ -19,16 +19,12 @@ Debian/Ubuntu
 respective operating system and platform (32 or 64 bit).
 Install it with your preferred packet manager (e.g. synaptic). libtia.deb has to be installed first.
 
-Done ;-)
-
 *All required files are available at* `www.tobi-project.org/download`_.
 
 Windows
 ^^^^^^^
 
 `Download`_ the Signal Server setup file and install it.
-
-Done ;-)
 
 *All required files are available at* `www.tobi-project.org/download`_.
 
