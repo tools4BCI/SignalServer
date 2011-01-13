@@ -10,6 +10,7 @@ Signal Server -- User Manual
    :maxdepth: 3
 
    introduction
+   changelog
    requirements
    installation_instruction
    usage
