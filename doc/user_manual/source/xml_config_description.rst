@@ -1,8 +1,7 @@
 The XML Configuration File -- Basics
 ====================================
 
-This is just a general description of the XML configuration file. Detailed description for
-particular hardware devices is described elsewhere.
+This is just a general description of the XML configuration file.
 
 Subject Information
 ^^^^^^^^^^^^^^^^^^^
@@ -12,6 +11,19 @@ participating in the measurement.
 (Self-explanatory tags are not described here, e.g. birthday)
 
 *Exactly one <subject> tag has to be inside the XML configuration file.*
+::
+  <subject>
+    <id> asd52 </id>
+    <first_name> Nobody </first_name>
+    <surname> Nowhereman </surname>
+    <sex> m </sex>
+    <birthday> 31.12.1900 </birthday>
+    <handedness> r </handedness>
+    <medication> none </medication>
+
+    <optional glasses="yes" smoker="no" />
+  </subject>
+
 
 * ID
 
@@ -19,18 +31,24 @@ participating in the measurement.
 
 * Optional
 
-  The optional tag can be extended at will (e.g. technician = "t1")
+  The optional tag can be extended at will (e.g. technician = "tec1")
 
 Server Settings
 ^^^^^^^^^^^^^^^
 
-Inside this tag the Signal Server except it's attached hardware is configured.
+Inside this tag the Signal Server except its attached hardware is configured.
 
 *Exactly one <server_settings> tag has to be inside the XML configuration file.*
+::
+  <server_settings>
+    <ctl_port> 9000 </ctl_port>
+    <udp_port> 9998 </udp_port>
+    <udp_bc_addr> 127.0.0.255 </udp_bc_addr>
+  </server_settings>
 
 * ctl_port
 
-  A TCP port every client is connected with. This port has to be specified at the client,
+  A TCP port every client is connected to. This port has to be specified at the client
   (together with the IP address the server is running on; if the same machine is used, the IP
   address is 127.0.0.1) when connecting to the Signal Server.
 
@@ -54,8 +72,42 @@ The Hardware sections
 ^^^^^^^^^^^^^^^^^^^^^
 
 The Signal Server supports data acquision from multiple devices at the same time. For this reason every
-device has it's own hardware tag. Thus more than one hardware section is allowed inside the XML
+device has its own hardware tag. Thus more than one hardware section is allowed inside the XML
 configuration file.
+::
+  <hardware name="sinegenerator" version="1.0" serial="">
+    <mode> master </mode>
+    <device_settings>
+      <sampling_rate> 512 </sampling_rate>
+      <measurement_channels nr="1" names="eeg" type="eeg" />
+      <blocksize> 8 </blocksize>
+    </device_settings>
+
+   <channel_settings>
+      <selection>
+        <ch nr="01" name="C3" type="eeg" />
+        <ch nr="02" name="Cz" type="eeg" />
+        <ch nr="03" name="Hand" type="emg" />
+      </selection>
+    </channel_settings>
+  </hardware>
+
+Hardware
+--------
+
+  ``<hardware name="sinegenerator" version="1.0" serial="">``
+
+* Name
+
+  This attribute defines the respective hardware device to acquire data from.
+
+* Version
+
+  Not used yet. (May be removed in the future.)
+
+* Serial
+
+  Serial number of the device if available. Processed at particular devices (e.g. g.USBamp).
 
 Mode
 ----
@@ -64,20 +116,26 @@ Possible values are:
 
 * Master
 
-
 * Slave
 
 
 * Aperiodic
 
-  e.g. buttons; data is only delivered if a former value is altered
+  e.g. buttons; data is only delivered if a value is altered
 
 
 Inside the XML configuration file **exactly one device** has to be defined as master, all others
-have to be slave or aperiodic devices.
+have to be slave or aperiodic devices. The master device **must** have the highest "virtual" sampling
+rate compared to possible slave devices.
+
+Virtual sampling rate = sampling rate / blocksize (e.g. fs = 512 Hz, bs = 8  ...  v_fs = 64 Hz)
+
+Data is acquired from the master in blocking mode. Every time data is available at the master,
+the latest data is acquired from all slaves and aperiodic devices. There is **no software synchronization**
+of the acquired data!
 
 
-Not all devices support master, slave and aperiodic mode.
+Not all devices support master, slave, and aperiodic mode.
 
 
 Device Settings
@@ -120,9 +178,9 @@ Samples are grouped into blocks from the same channel if a blocksize >1 is used 
 does not affect the sampling rate itself, but the rate data packets are transmitted over the network.
 
 Using a sampling rate of 1000 Hz and a blocksize of 10, samples are still acquired with 1000 Hz,
-but data packets are sent with only 100 Hz, whereby every packets stores 10 samples for all acquired channels.
+but data packets are sent with only 100 Hz, whereby every packet stores 10 samples for all acquired channels.
 
-As incomming packets are used for timing control at the client, a bigger blocksize introduces a certain
+As incoming packets are used for timing control at the client, a bigger blocksize introduces a certain
 jitter, as the client has to wait for a new packet storing more than one sample and processes all samples
 immediately afterwards.
 
@@ -138,10 +196,11 @@ in the device settings section.
 * Selection
 
   Select only specific channels for recording. The sum of all channels here can be different from
-  the settings done in measurement_channels in device_settings. These settings here override the prior
+  the settings done in measurement_channels in device_settings. Settings here override the prior
   channel selection!
 
   ``<ch nr="01" name="Cz" type="eeg" />``
+
   ``<ch nr="02" name="C3" type="eeg" />``
 
   * nr

@@ -2,7 +2,7 @@ Introduction
 ============
 
 The TOBI signal server describes a programm using TiA (TOBI interface A) to acquire and distribute raw biosignals.
-Implementation was done using C++, static and shared library packages are available for Debian based systems (32bit and 64 bit), Microsoft Windows Xp and Windows 7.
+Implementation was done using C++, static and shared library packages are available for Debian based systems (32bit and 64 bit), Microsoft Windows Xp, and Windows 7.
 
 
 Supported hardware
@@ -27,6 +27,7 @@ Planned hardware support
 * NIRx NIRScout
 * Neurosky MindSet
 * Tunable EEG simulator
+* Arduino embedded DAQ system
 
 
 Planned extensions

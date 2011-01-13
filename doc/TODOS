@@ -40,27 +40,33 @@
  *** automatic tests
  *** downsampling + channel selection
  * logging
- * GUI
+ - GUI
  * Error messages to the client
- * time-sync between client/server (e.g. ptp)
- * shared mem
- *** Folder structure refactoring
+ - time-sync between client/server (e.g. ptp)
+ - shared mem
+ *** Folder structure refactoring   (partly done)
  *** xml message refactoring
+ ** Provide meta Information from hardware (e.g. phys range, device ID, ...)
 
-
+ *** List registered hardware at the hwBuilder (command: "l")
+ *** Implement "help" command ("h")
 
  * TiD
 
   Hardware stuff:
-  *** fix USBamp timeout bug
+
   * USBamp --> LinuxApi
   * File streaming
   * NIRx
-  * BrainAmp
   * EEG Simulator
   * Dry electrodes API (Berlin)
-  * Neurosky
+  - Neurosky
   * Generic keyboards
   * Arduino
 
   * Document(ation) how to write a HW module
+
+
+done:
+ *** fix USBamp timeout bug   ...  breidi 15.12.2010
+ * BrainAmp     ... breidi 4.1.2011
