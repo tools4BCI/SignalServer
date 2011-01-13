@@ -1,10 +1,11 @@
 Hardware Requirements
 =====================
 
-- Run TiA with highest process priority possible PC requirements:
 - CPU: at least 200 MHz (already tested on embedded systems)
+  (highly dependent on sampling rate and number of acquired channels)
 - RAM: 32 MB
 
+- Run the Signal Server with highest process priority
 
 For networking usage:
 
