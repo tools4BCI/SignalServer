@@ -52,6 +52,9 @@ Inside this tag the Signal Server except its attached hardware is configured.
   (together with the IP address the server is running on; if the same machine is used, the IP
   address is 127.0.0.1) when connecting to the Signal Server.
 
+UDP Data tranmission
+--------------------
+
 The Signal Server supports data tranmission via UDP (reduced packet overhead, no guarantee that
 all data is tranmsitted to the client). If a client requests UDP transmission UDP packets are
 broadcasted into the whole subnet specified inside this tag.

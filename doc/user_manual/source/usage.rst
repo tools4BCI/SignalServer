@@ -12,17 +12,19 @@ comments to facilitate understanding the configuration of the Signal Server.
 The Signal Server can be started by a quickstart where the file "server_config.xml" is automatically
 read (operating system dependent) or by passing an individual config file to the Signal Server.
 
+====
+Start Commands for individual config files:
+====
 
-**Start Commands for individual config files:**
-::
-  signalserver your_config_file.xml
-o
-r
-::
-  signalserver -f your_config_file.xml
+  ``signalserver your_config_file.xml``
 
-**Commands while the Signal Server is running:**
+  or
 
+  ``signalserver -f your_config_file.xml``
+
+====
+Commands while the Signal Server is running:
+====
 q ... stop
 
 r ... restart (problems with various DAQ devices -- bugfix in progress)
