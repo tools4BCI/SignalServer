@@ -18,6 +18,7 @@ public:
 
     std::string transmittedString () {return sent_string_;}
     void setStringToBeRead (std::string const& read_string) {string_to_return_on_read_ = read_string;}
+    void reset () {sent_string_.clear (); string_to_return_on_read_.clear ();}
 
 private:
     std::string sent_string_;

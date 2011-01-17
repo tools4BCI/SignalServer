@@ -71,7 +71,8 @@ HEADERS += include/tia/tia_server.h \
     include/tia-private/server/tia_control_message_builder.h \
     include/tia-private/server/version_1_0/tia_control_message_parser_1_0.h \
     include/tia-private/server/version_1_0/tia_control_message_tags_1_0.h \
-    include/tia-private/server/tia_exceptions.h
+    include/tia-private/server/tia_exceptions.h \
+    include/tia-private/server/string_utils.h
 SOURCES += src/tia/tia_server.cpp \
     src/tia/constants.cpp \
     src/tia/config/control_message_decoder.cpp \
