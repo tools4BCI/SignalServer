@@ -53,10 +53,13 @@ SOURCES += \
     tests/tia_client_tests.cpp \
     tests/tia_clock_tests.cpp \
     tests/tia_server_tests.cpp \
-    tests/server_control_connection_tests.cpp
+    tests/server_control_connection_tests.cpp \
+    tests/tia_version_1_0/tia_control_message_parser_1_0_tests.cpp \
+    tests/test_socket.cpp
 
 HEADERS += \
     tests/datapacket_tests_fixtures.h \
     tests/raw_datapacket_definition.h \
     tests/tia_server_control_connection_tests_fixtures.h \
-    tests/tia_control_messages_definition.h
+    tests/tia_control_messages_definition.h \
+    tests/test_socket.h

@@ -17,19 +17,19 @@ void ServerCommand::execute ()
 }
 
 //-------------------------------------------------------------------------
-void ServerCommand::executeAttributes (std::map<std::string, std::string> const& /*attributes*/)
+void ServerCommand::executeWithParameter (std::string const& /*parameter*/)
 {
     socket_.sendString ("<?xml version=\"1.0\" encoding=\"UTF-8\"?><message version=\"0.2\"><errorReply  /></message>");
 }
 
 //-------------------------------------------------------------------------
-void ServerCommand::executeContent (std::string const& /*content*/)
+void ServerCommand::executeWithContent (std::string const& /*content*/)
 {
     socket_.sendString ("<?xml version=\"1.0\" encoding=\"UTF-8\"?><message version=\"0.2\"><errorReply  /></message>");
 }
 
 //-------------------------------------------------------------------------
-void ServerCommand::executeAttributesContent (std::map<std::string, std::string> const& /*attributes*/, std::string const& /*content*/)
+void ServerCommand::executeWithParameterAndContent (std::string const& /*parameter*/, std::string const& /*content*/)
 {
     socket_.sendString ("<?xml version=\"1.0\" encoding=\"UTF-8\"?><message version=\"0.2\"><errorReply  /></message>");
 }

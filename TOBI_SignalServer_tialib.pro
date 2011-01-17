@@ -65,7 +65,13 @@ HEADERS += include/tia/tia_server.h \
     include/tia-private/server/data_server.h \
     include/tia-private/server/commands/start_data_transmission_server_command.h \
     include/tia-private/server/commands/get_data_connection_server_command.h \
-    include/tia-private/server/control_message_builder.h
+    include/tia-private/server/control_message_builder.h \
+    include/tia-private/server/tia_control_message_parser.h \
+    include/tia-private/server/tia_control_message.h \
+    include/tia-private/server/tia_control_message_builder.h \
+    include/tia-private/server/version_1_0/tia_control_message_parser_1_0.h \
+    include/tia-private/server/version_1_0/tia_control_message_tags_1_0.h \
+    include/tia-private/server/tia_exceptions.h
 SOURCES += src/tia/tia_server.cpp \
     src/tia/constants.cpp \
     src/tia/config/control_message_decoder.cpp \
@@ -87,7 +93,8 @@ SOURCES += src/tia/tia_server.cpp \
     src/tia/clock.cpp \
     src/tia/server/commands/stop_data_transmission_server_command.cpp \
     src/tia/server/commands/get_data_connection_server_command.cpp \
-    src/tia/server/server_command.cpp
+    src/tia/server/server_command.cpp \
+    src/tia/server/version_1_0/tia_control_message_parser_1_0.cpp
 unix:SOURCES += extern/include/LptTools/LptToolsLinux.cpp
 win32:SOURCES += extern/include/LptTools/LptTools_.cpp
 
