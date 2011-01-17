@@ -18,6 +18,7 @@ private:
     std::string readVersion (InputStream& stream) const;
     std::pair<std::string, std::string> readCommandAndParameter (InputStream& stream) const;
     std::string readContent (InputStream& stream) const;
+    std::pair<std::string, std::string> getPair (std::string const& str) const;
 };
 
 }
