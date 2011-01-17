@@ -24,16 +24,15 @@ public:
     virtual void execute ();
 
     //-------------------------------------------------------------------------
-    /// use if command takes attributes (e.g. get data connection: type = tcp/udp)
-    virtual void executeAttributes (std::map<std::string, std::string> const& /*attributes*/);
+    /// use if command takes parameters (e.g. GetDataConnection)
+    virtual void executeWithParameter (std::string const& /*parameter*/);
 
     //-------------------------------------------------------------------------
     /// use if command takes content (e.g. get config)
-    virtual void executeContent (std::string const& /*content*/);
+    virtual void executeWithContent (std::string const& /*content*/);
 
     //-------------------------------------------------------------------------
-    /// use if command takes attributes and content
-    virtual void executeAttributesContent (std::map<std::string, std::string> const& /*attributes*/, std::string const& /*content*/);
+    virtual void executeWithParameterAndContent (std::string const& /*parameter*/, std::string const& /*content*/);
 
 private:
     WriteSocket& socket_;
