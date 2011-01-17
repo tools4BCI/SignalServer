@@ -7,6 +7,21 @@ namespace tia
 {
 
 //-----------------------------------------------------------------------------
+class InputStream
+{
+public:
+    virtual std::string readLine (unsigned max_length) = 0;
+    virtual std::string readString (unsigned max_length) = 0;
+    virtual char readCharacter () = 0;
+};
+
+//-----------------------------------------------------------------------------
+class ReadSocket : public InputStream
+{
+public:
+};
+
+//-----------------------------------------------------------------------------
 /// base class for any socket that could write data
 class WriteSocket
 {
@@ -16,10 +31,9 @@ public:
 
 //-----------------------------------------------------------------------------
 /// base class for any socket
-class Socket : public WriteSocket
+class Socket : public WriteSocket, public ReadSocket
 {
 public:
-    virtual std::string readString () = 0;
 };
 
 }

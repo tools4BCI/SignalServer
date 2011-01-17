@@ -35,4 +35,3 @@ win32:LIBS += lib/tia.lib
 
 # Note: It is assumed that the boost libraries can be automatically detected by the linker
 # through #pragma comment(lib, xxx) declarations in boost.
-

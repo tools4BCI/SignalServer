@@ -7,10 +7,32 @@ Each client gets its own control connection to the server.
 The control connection can be used by the clients to send requests to the server such as
 "start/stop data transmission".
 
+Each message which is send from the client to the server or vice versa is structured as followed:
+
+* Version line
+* Command line
+* Optional content description line
+* Empty lines
+* Optional xml content
+
+
+Remarks:
+
+* The protocol is in the style of HTTP
+* The message is split into lines which are terminated by the 0x0A character (also known as ``\n``, line feed or <LF>)
+* Some messages contain additional XML-structured content which is UTF-8 encoded
+* All characters are case sensitive!
+
+
 Server Commands
 ---------------
 
-A TiA server implementation has to support the following commands:
+A TiA 1.0 server implementation has to support the following commands:
+
+* Get config
+* Get data connection
+* Start data transmission
+* Stop data transmission
 
 
 Get Config
@@ -18,49 +40,72 @@ Get Config
 
 This command is used to get the informations about signals from the server.
 
-XML Representation
-******************
+Representation
+**************
 ::
 
-  <?xml version="1.0" encoding="UTF-8"?>
-  <message version="1.0">
-    <getConfig/>
-  </message>
+  TiA 1.0 \n
+  GetConfig \n
+  \n
+
 
 Server Response
 ***************
 ::
 
-  <?xml version="1.0" encoding="UTF-8"?>
-  <message version="1.0">
-    <config>...</config>
-  </message>
+  TiA 1.0 \n
+  Config \n
+  Content-Length: [Length of XML Content in Bytes] \n
+  \n
+  <config>....</config>
+
+or
+
+::
+
+  TiA 1.0 \n
+  Error \n
+  \n
 
 
 Get Data Transmission
 ^^^^^^^^^^^^^^^^^^^^^
 
-Two types of data transmissions exist: "tcp" and "udp".
+Two types of data transmissions exist: "TCP" and "UDP".
 
 XML Representation
 ******************
 ::
 
-  <?xml version="1.0" encoding="UTF-8"?>
-  <message version="1.0">
-    <getDataTransmission type="tcp"/>
-  </message>
+  TiA 1.0 \n
+  GetDataConnection: TCP \n
+  \n
 
-Optionally the ``type`` attribute can be set to ``udp``.
+or
+
+::
+
+  TiA 1.0 \n
+  GetDataConnection: UDP \n
+  \n
+
 
 Server Response
 ***************
 ::
 
-  <?xml version="1.0" encoding="UTF-8"?>
-  <message version="1.0">
-    <dataConnection port="XXXX" />
-  </message>
+  TiA 1.0 \n
+  DataConnectionPort: [Port-Number] \n
+  \n
+  
+or
+
+::
+
+  TiA 1.0 \n
+  Error \n
+  \n
+
 
 Start Data Transmission
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -68,15 +113,27 @@ XML Representation
 ******************
 ::
 
-  <?xml version="1.0" encoding="UTF-8"?>
-  <message version="1.0">
-    <start/>
-  </message>
+  TiA 1.0 \n
+  Start \n
+  \n
 
 
 Server Response
 ***************
-Server will not respond to that message.
+::
+
+  TiA 1.0 \n
+  OK \n
+  \n
+
+or
+
+::
+
+  TiA 1.0 \n
+  Error \n
+  \n
+  
 
 
 Stop Data Transmission
@@ -85,11 +142,22 @@ XML Representation
 ******************
 ::
 
-  <?xml version="1.0" encoding="UTF-8"?>
-  <message version="1.0">
-    <stop/>
-  </message>
+  TiA 1.0 \n
+  Stop \n
+  \n
 
 Server Response
 ***************
-Server will not respont to that message.
+::
+
+  TiA 1.0 \n
+  OK \n
+  \n
+
+or
+
+::
+
+  TiA 1.0 \n
+  Error \n
+  \n
