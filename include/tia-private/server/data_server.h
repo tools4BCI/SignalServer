@@ -18,7 +18,7 @@ public:
 
     virtual Port localPort (ConnectionID connection) const = 0;
 
-    virtual ConnectionID addConnection () = 0;
+    virtual ConnectionID addConnection (bool udp) = 0;
 
     virtual bool hasConnection (ConnectionID connection) const = 0;
 

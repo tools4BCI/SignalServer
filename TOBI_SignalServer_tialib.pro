@@ -65,7 +65,6 @@ HEADERS += include/tia/tia_server.h \
     include/tia-private/server/data_server.h \
     #include/tia-private/server/commands/start_data_transmission_server_command.h \
     #include/tia-private/server/commands/get_data_connection_server_command.h \
-    include/tia-private/server/control_message_builder.h \
     include/tia-private/server/tia_control_message_parser.h \
     include/tia-private/server/tia_control_message.h \
     include/tia-private/server/tia_control_message_builder.h \
@@ -75,7 +74,8 @@ HEADERS += include/tia/tia_server.h \
     include/tia-private/server/string_utils.h \
     include/tia-private/server/tia_control_command.h \
     include/tia-private/server/commands/check_protocol_version_control_command.h \
-    include/tia-private/server/messages/standard_control_messages.h
+    include/tia-private/server/messages/standard_control_messages.h \
+    include/tia-private/server/boost_socket_impl.h
 SOURCES += src/tia/tia_server.cpp \
     src/tia/constants.cpp \
     src/tia/config/control_message_decoder.cpp \
@@ -98,7 +98,9 @@ SOURCES += src/tia/tia_server.cpp \
     #src/tia/server/commands/stop_data_transmission_server_command.cpp \
     #src/tia/server/commands/get_data_connection_server_command.cpp \
     #src/tia/server/server_command.cpp \
-    src/tia/server/version_1_0/tia_control_message_parser_1_0.cpp
+    src/tia/server/version_1_0/tia_control_message_parser_1_0.cpp \
+    src/tia/server/server_control_connection.cpp \
+    src/tia/server/boost_tcp_socket_impl.cpp
 unix:SOURCES += extern/include/LptTools/LptToolsLinux.cpp
 win32:SOURCES += extern/include/LptTools/LptTools_.cpp
 

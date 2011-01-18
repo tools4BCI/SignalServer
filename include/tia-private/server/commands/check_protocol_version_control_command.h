@@ -11,7 +11,7 @@ namespace tia
 class CheckProtocolVersionControlCommand : public TiAControlCommand
 {
 public:
-    virtual ~TiAControlCommand () {}
+    virtual ~CheckProtocolVersionControlCommand () {}
 
     virtual TiAControlMessage execute (TiAControlMessage const& command)
     {
