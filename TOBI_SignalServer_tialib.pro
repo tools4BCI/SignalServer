@@ -59,12 +59,12 @@ HEADERS += include/tia/tia_server.h \
     include/tia-private/datapacket/raw_mem3.h \
     include/tia-private/clock.h \
     include/tia-private/server/control_connection_server_2.h \
-    include/tia-private/server/server_command.h \
+    #include/tia-private/server/server_command.h \
     include/tia-private/server/socket.h \
-    include/tia-private/server/commands/stop_data_transmission_server_command.h \
+    #include/tia-private/server/commands/stop_data_transmission_server_command.h \
     include/tia-private/server/data_server.h \
-    include/tia-private/server/commands/start_data_transmission_server_command.h \
-    include/tia-private/server/commands/get_data_connection_server_command.h \
+    #include/tia-private/server/commands/start_data_transmission_server_command.h \
+    #include/tia-private/server/commands/get_data_connection_server_command.h \
     include/tia-private/server/control_message_builder.h \
     include/tia-private/server/tia_control_message_parser.h \
     include/tia-private/server/tia_control_message.h \
@@ -72,7 +72,10 @@ HEADERS += include/tia/tia_server.h \
     include/tia-private/server/version_1_0/tia_control_message_parser_1_0.h \
     include/tia-private/server/version_1_0/tia_control_message_tags_1_0.h \
     include/tia-private/server/tia_exceptions.h \
-    include/tia-private/server/string_utils.h
+    include/tia-private/server/string_utils.h \
+    include/tia-private/server/tia_control_command.h \
+    include/tia-private/server/commands/check_protocol_version_control_command.h \
+    include/tia-private/server/messages/standard_control_messages.h
 SOURCES += src/tia/tia_server.cpp \
     src/tia/constants.cpp \
     src/tia/config/control_message_decoder.cpp \
@@ -92,9 +95,9 @@ SOURCES += src/tia/tia_server.cpp \
     src/tia/data_packet3.cpp \
     src/tia/datapacket/raw_mem3.cpp \
     src/tia/clock.cpp \
-    src/tia/server/commands/stop_data_transmission_server_command.cpp \
-    src/tia/server/commands/get_data_connection_server_command.cpp \
-    src/tia/server/server_command.cpp \
+    #src/tia/server/commands/stop_data_transmission_server_command.cpp \
+    #src/tia/server/commands/get_data_connection_server_command.cpp \
+    #src/tia/server/server_command.cpp \
     src/tia/server/version_1_0/tia_control_message_parser_1_0.cpp
 unix:SOURCES += extern/include/LptTools/LptToolsLinux.cpp
 win32:SOURCES += extern/include/LptTools/LptTools_.cpp

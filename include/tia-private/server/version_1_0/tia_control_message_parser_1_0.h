@@ -6,10 +6,10 @@
 namespace tia
 {
 
-class TiAControlMessagParser10 : public TiAControlMessageParser
+class TiAControlMessageParser10 : public TiAControlMessageParser
 {
 public:
-    virtual ~TiAControlMessagParser10 () {}
+    virtual ~TiAControlMessageParser10 () {}
     TiAControlMessage parseMessage (InputStream& stream) const;
 
 private:

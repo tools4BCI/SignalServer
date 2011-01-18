@@ -11,10 +11,10 @@ using std::pair;
 namespace tia
 {
 
-unsigned const TiAControlMessagParser10::MAX_LINE_LENGTH_ = 1000;
+unsigned const TiAControlMessageParser10::MAX_LINE_LENGTH_ = 1000;
 
 //-----------------------------------------------------------------------------
-TiAControlMessage TiAControlMessagParser10::parseMessage (InputStream& stream) const
+TiAControlMessage TiAControlMessageParser10::parseMessage (InputStream& stream) const
 {
     string version = readVersion (stream);
     pair<string, string> command_and_parameter = readCommandAndParameter (stream);
@@ -23,25 +23,25 @@ TiAControlMessage TiAControlMessagParser10::parseMessage (InputStream& stream) c
 }
 
 //-----------------------------------------------------------------------------
-string TiAControlMessagParser10::readVersion (InputStream& stream) const
+string TiAControlMessageParser10::readVersion (InputStream& stream) const
 {
     string id_and_version = trim (stream.readLine (MAX_LINE_LENGTH_));
 
     if (id_and_version != TiAControlMessageTags10::ID_AND_VERSION)
-        throw TiAException (string ("TiAControlMessagParser10::readVersion Wrong Message ID and Version. Required \"") + TiAControlMessageTags10::ID_AND_VERSION + "\" but was \"" + id_and_version + "\".");
+        throw TiAException (string ("TiAControlMessageParser10::readVersion Wrong Message ID and Version. Required \"") + TiAControlMessageTags10::ID_AND_VERSION + "\" but was \"" + id_and_version + "\".");
 
     return TiAControlMessageTags10::VERSION;
 }
 
 //-----------------------------------------------------------------------------
-pair<string, string> TiAControlMessagParser10::readCommandAndParameter (InputStream& stream) const
+pair<string, string> TiAControlMessageParser10::readCommandAndParameter (InputStream& stream) const
 {
     string line = trim (stream.readLine (MAX_LINE_LENGTH_));
     return getPair (line);
 }
 
 //-----------------------------------------------------------------------------
-string TiAControlMessagParser10::readContent (InputStream& stream) const
+string TiAControlMessageParser10::readContent (InputStream& stream) const
 {
     string line = trim (stream.readLine (MAX_LINE_LENGTH_));
     if (line.size () == 0)
@@ -49,28 +49,28 @@ string TiAControlMessagParser10::readContent (InputStream& stream) const
 
     pair<string, string> content_length_pair = getPair (line);
     if (content_length_pair.first != TiAControlMessageTags10::CONTENT_LENGTH)
-        throw TiAException (string ("TiAControlMessagParser10::readContent: Invalid field. Expected \"") + TiAControlMessageTags10::CONTENT_LENGTH + "\" but was \"" + content_length_pair.first + "\"");
+        throw TiAException (string ("TiAControlMessageParser10::readContent: Invalid field. Expected \"") + TiAControlMessageTags10::CONTENT_LENGTH + "\" but was \"" + content_length_pair.first + "\"");
 
     std::istringstream isstr (content_length_pair.second);
     size_t length = 0;
     isstr >> length;
     if (isstr.fail ())
-        throw TiAException (string ("TiAControlMessagParser10::readContent: Error while converting \"") + content_length_pair.second + "\" into a number.");
+        throw TiAException (string ("TiAControlMessageParser10::readContent: Error while converting \"") + content_length_pair.second + "\" into a number.");
 
     string empty_line = stream.readLine (MAX_LINE_LENGTH_);
     if (empty_line.size ())
-        throw TiAException (string ("TiAControlMessagParser10::readContent: Expecting an empty line before content starts."));
+        throw TiAException (string ("TiAControlMessageParser10::readContent: Expecting an empty line before content starts."));
 
     string content = stream.readString (length);
     if (content.size () != length)
-        throw TiAException (string ("TiAControlMessagParser10::readContent: Missing bytes!"));
+        throw TiAException (string ("TiAControlMessageParser10::readContent: Missing bytes!"));
 
     return content;
 }
 
 
 //-----------------------------------------------------------------------------
-pair<string, string> TiAControlMessagParser10::getPair (std::string const& str) const
+pair<string, string> TiAControlMessageParser10::getPair (std::string const& str) const
 {
     size_t delimiter_index = 0;
     while ((str[delimiter_index] != TiAControlMessageTags10::COMMAND_DELIMITER) &&
