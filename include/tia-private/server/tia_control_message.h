@@ -15,6 +15,7 @@ public:
                            : version_ (version), command_ (command),
                              parameters_ (parameters), content_ (content)
     {}
+    virtual ~TiAControlMessage () {}
 
     std::string getVersion () const {return version_;}
     std::string getCommand () const {return command_;}
