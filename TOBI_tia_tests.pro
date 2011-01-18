@@ -55,7 +55,8 @@ SOURCES += \
     tests/tia_server_tests.cpp \
     #tests/server_control_connection_tests.cpp \
     tests/tia_version_1_0/tia_control_message_parser_1_0_tests.cpp \
-    tests/test_socket.cpp
+    tests/test_socket.cpp \
+    tests/boost_socket_tests.cpp
 
 HEADERS += \
     tests/datapacket_tests_fixtures.h \

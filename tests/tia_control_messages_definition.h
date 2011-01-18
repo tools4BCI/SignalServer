@@ -6,7 +6,7 @@
 
 //-----------------------------------------------------------------------------
 const std::string XML_DECLARATION = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-const std::string MESSAGE_VERSION = "0.2";
+const std::string MESSAGE_VERSION = "0.1";
 
 
 //-----------------------------------------------------------------------------

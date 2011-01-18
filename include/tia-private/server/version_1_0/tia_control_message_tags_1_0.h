@@ -21,6 +21,7 @@ namespace TiAControlMessageTags10
 
     std::string const GET_CONFIG = "GetConfig";
     std::string const CONFIG = "Config";
+    std::string const CHECK_PROTOCOL_VERSION = "CheckProtocolVersion";
 
 }
 
