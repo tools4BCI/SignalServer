@@ -29,10 +29,40 @@ Server Commands
 
 A TiA 1.0 server implementation has to support the following commands:
 
+* Check protocol version
 * Get config
 * Get data connection
 * Start data transmission
 * Stop data transmission
+
+Check Protocol Version
+^^^^^^^^^^^^^^^^^^^^^^
+This command may be used by the client to check if the server understands the commands the client wants to send.
+The server has to respond with an OK message if it understands commands of the given protocol version.
+
+Representation
+**************
+::
+
+  TiA 1.0 \n
+  CheckProtocolVersion \n
+  \n
+
+Server Response
+***************
+::
+
+  TiA 1.0 \n
+  OK \n
+  \n
+
+or 
+
+::
+
+  TiA 1.0 \n
+  Error \n
+  \n
 
 
 Get Config

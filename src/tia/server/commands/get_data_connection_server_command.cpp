@@ -4,7 +4,7 @@ namespace tia
 {
 
 //-------------------------------------------------------------------------------------------------
-void GetDataConnectionServerCommand::executeAttributes (std::map<std::string, std::string> const& /*attributes*/)
+TiAControlMessage GetDataConnectionControlCommand::executeAttributes (TiAControlMessage const& command)
 {
 
 }

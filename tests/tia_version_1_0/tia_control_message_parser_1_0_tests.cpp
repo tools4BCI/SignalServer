@@ -12,7 +12,7 @@ SUITE (TiAVersion10)
 
 TEST(TiAControlMessageParser10_parseMessage)
 {
-    TiAControlMessageParser* parser = new TiAControlMessagParser10 ();
+    TiAControlMessageParser* parser = new TiAControlMessageParser10 ();
 
     TestSocket socket;
 
