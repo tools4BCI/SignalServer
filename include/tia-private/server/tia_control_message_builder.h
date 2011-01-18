@@ -10,9 +10,9 @@ namespace tia
 class TiAControlMessageBuilder
 {
 public:
-    virtual ~TiAControlMessage () {}
+    virtual ~TiAControlMessageBuilder () {}
 
-    std::string buildTiAMessage (TiAControlMessage const& message) const = 0;
+    virtual std::string buildTiAMessage (TiAControlMessage const& message) = 0;
 };
 
 

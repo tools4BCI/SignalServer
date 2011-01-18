@@ -15,6 +15,7 @@ public:
     virtual std::string readString (unsigned number_bytes = 4000000000u);
     virtual std::string readLine (unsigned max_length);
     virtual char readCharacter ();
+    virtual void waitForData () {}
 
     std::string transmittedString () {return sent_string_;}
     void setStringToBeRead (std::string const& read_string) {string_to_return_on_read_ = read_string;}

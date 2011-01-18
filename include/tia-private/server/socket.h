@@ -19,6 +19,7 @@ public:
 class ReadSocket : public InputStream
 {
 public:
+    virtual void waitForData () = 0;
 };
 
 //-----------------------------------------------------------------------------
@@ -34,6 +35,7 @@ public:
 class Socket : public WriteSocket, public ReadSocket
 {
 public:
+
 };
 
 }
