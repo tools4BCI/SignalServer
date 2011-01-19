@@ -76,7 +76,8 @@ HEADERS += include/tia/tia_server.h \
     include/tia-private/server/commands/check_protocol_version_control_command.h \
     include/tia-private/server/messages/standard_control_messages.h \
     include/tia-private/server/boost_socket_impl.h \
-    include/tia-private/server/fusty_data_server_impl.h
+    include/tia-private/server/fusty_data_server_impl.h \
+    include/tia-private/server/version_1_0/tia_control_message_builder_1_0.h
 SOURCES += src/tia/tia_server.cpp \
     src/tia/constants.cpp \
     src/tia/config/control_message_decoder.cpp \

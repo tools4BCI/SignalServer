@@ -24,7 +24,7 @@ FustyDataServerImpl::~FustyDataServerImpl ()
 Port FustyDataServerImpl::localPort (ConnectionID connection) const
 {
     if (tcp_connections_.count (connection))
-        return id_tcp_endpoint_map_[connection].port ();
+        return id_tcp_endpoint_map_.at (connection).port ();
     else
         return udp_data_server_.destination ().port ();
 

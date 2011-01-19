@@ -8,6 +8,7 @@
 #include "tia_control_message_parser.h"
 #include "data_server.h"
 
+#include <boost/thread.hpp>
 #include <map>
 #include <memory>
 
@@ -21,10 +22,12 @@ public:
     ServerControlConnection (Socket& socket, DataServer& data_server);
     ~ServerControlConnection ();
 
-    void start ();
+    void asyncStart ();
     void stop ();
 
 private:
+    void run ();
+
     bool running_;
     Socket& socket_;
     DataServer& data_server_;
@@ -32,6 +35,7 @@ private:
     CommandMap command_map_;
     std::auto_ptr<TiAControlMessageParser> parser_;
     std::auto_ptr<TiAControlMessageBuilder> builder_;
+    boost::thread* thread_;
 };
 
 }
