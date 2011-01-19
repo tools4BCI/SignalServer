@@ -1,5 +1,6 @@
 #include "tia-private/server/boost_socket_impl.h"
 #include "tia-private/server/version_1_0/tia_control_message_tags_1_0.h"
+#include "tia-private/server/tia_exceptions.h"
 
 #include "tia-private/network/tcp_server.h"
 
@@ -74,22 +75,34 @@ void BoostTCPSocketImpl::waitForData ()
 //-----------------------------------------------------------------------------
 void BoostTCPSocketImpl::sendString (string const& str)
 {
-    socket_->send (boost::asio::buffer (str));
+    boost::system::error_code error;
+    socket_->send (boost::asio::buffer (str), 0, error);
+    if (error)
+        throw TiALostConnection ("BoostTCPSocketImpl");
 }
 
 //-----------------------------------------------------------------------------
 void BoostTCPSocketImpl::readBytes (unsigned num_bytes)
 {
-    unsigned available = socket_->available ();
+    boost::system::error_code error;
+
+    unsigned available = socket_->available (error);
+    if (error)
+        throw TiALostConnection ("BoostTCPSocketImpl");
     unsigned allocating = std::max<unsigned> (num_bytes, available);
 
     char* data = new char [allocating];
-    socket_->read_some (boost::asio::buffer (data, available));
+    socket_->read_some (boost::asio::buffer (data, available), error);
+    if (error)
+        throw TiALostConnection ("BoostTCPSocketImpl");
     buffered_string_.append (data, available);
 
     if (available < num_bytes)
     {
-        socket_->read_some (boost::asio::buffer (data, num_bytes - available));
+        socket_->read_some (boost::asio::buffer (data, num_bytes - available), error);
+        if (error)
+            throw TiALostConnection ("BoostTCPSocketImpl");
+
         buffered_string_.append (data, num_bytes - available);
     }
 
