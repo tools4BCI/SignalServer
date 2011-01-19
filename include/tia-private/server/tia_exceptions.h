@@ -13,6 +13,13 @@ public:
     virtual ~TiAException () throw () {}
 };
 
+class TiALostConnection : public TiAException
+{
+public:
+    TiALostConnection (std::string const& what) : TiAException (what) {}
+    virtual ~TiALostConnection () throw () {}
+};
+
 }
 
 #endif // TIA_EXCEPTIONS_H
