@@ -22,6 +22,9 @@ namespace TiAControlMessageTags10
     std::string const GET_CONFIG = "GetConfig";
     std::string const CONFIG = "Config";
     std::string const CHECK_PROTOCOL_VERSION = "CheckProtocolVersion";
+    std::string const GET_DATA_CONNECTION = "GetDataConnection";
+    std::string const TCP = "TCP";
+    std::string const UDP = "UDP";
 
 }
 
