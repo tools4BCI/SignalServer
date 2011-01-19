@@ -11,7 +11,7 @@ class InputStream
 {
 public:
     virtual std::string readLine (unsigned max_length) = 0;
-    virtual std::string readString (unsigned max_length) = 0;
+    virtual std::string readString (unsigned length) = 0;
     virtual char readCharacter () = 0;
 };
 
