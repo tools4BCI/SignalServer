@@ -1,6 +1,8 @@
 #include "tia-private/server/boost_socket_impl.h"
 #include "tia-private/server/version_1_0/tia_control_message_tags_1_0.h"
 
+#include "tia-private/network/tcp_server.h"
+
 #include <boost/asio.hpp>
 #include <iostream>
 
@@ -8,6 +10,16 @@ using std::string;
 
 namespace tia
 {
+
+//-----------------------------------------------------------------------------
+BoostTCPSocketImpl::BoostTCPSocketImpl (boost::asio::io_service& io_service,
+                                        boost::shared_ptr<tobiss::TCPConnection> con)
+   : fusty_connection_ (con)
+{
+    socket_ = &(con->socket());
+}
+
+
 
 //-----------------------------------------------------------------------------
 string BoostTCPSocketImpl::readLine (unsigned /*max_length*/)
@@ -62,22 +74,22 @@ void BoostTCPSocketImpl::waitForData ()
 //-----------------------------------------------------------------------------
 void BoostTCPSocketImpl::sendString (string const& str)
 {
-    socket_.send (boost::asio::buffer (str));
+    socket_->send (boost::asio::buffer (str));
 }
 
 //-----------------------------------------------------------------------------
 void BoostTCPSocketImpl::readBytes (unsigned num_bytes)
 {
-    unsigned available = socket_.available ();
+    unsigned available = socket_->available ();
     unsigned allocating = std::max<unsigned> (num_bytes, available);
 
     char* data = new char [allocating];
-    socket_.read_some (boost::asio::buffer (data, available));
+    socket_->read_some (boost::asio::buffer (data, available));
     buffered_string_.append (data, available);
 
     if (available < num_bytes)
     {
-        socket_.read_some (boost::asio::buffer (data, num_bytes - available));
+        socket_->read_some (boost::asio::buffer (data, num_bytes - available));
         buffered_string_.append (data, num_bytes - available);
     }
 
