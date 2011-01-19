@@ -5,6 +5,11 @@
 
 #include <boost/asio/ip/tcp.hpp>
 
+namespace tobiss
+{
+class TCPConnection;
+}
+
 namespace tia
 {
 
@@ -12,15 +17,19 @@ class BoostTCPSocketImpl : public Socket
 {
 public:
     BoostTCPSocketImpl (boost::asio::io_service& io_service, boost::asio::ip::tcp::endpoint const& endpoint)
-        : socket_ (io_service)
+        : socket_ (new boost::asio::ip::tcp::socket (io_service))
     {
-        socket_.connect (endpoint);
+        socket_->connect (endpoint);
     }
+
+    BoostTCPSocketImpl (boost::asio::io_service& io_service, boost::shared_ptr<tobiss::TCPConnection> con);
 
     virtual ~BoostTCPSocketImpl ()
     {
-        socket_.close ();
+        socket_->close ();
         buffered_string_.clear ();
+        if (!fusty_connection_.get ())
+            delete socket_;
     }
 
     virtual std::string readLine (unsigned max_length);
@@ -32,7 +41,8 @@ public:
 private:
     void readBytes (unsigned num_bytes);
 
-    boost::asio::ip::tcp::socket socket_;
+    boost::shared_ptr<tobiss::TCPConnection> fusty_connection_;
+    boost::asio::ip::tcp::socket* socket_;
     std::string buffered_string_;
 };
 
