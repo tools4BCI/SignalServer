@@ -64,7 +64,7 @@ HEADERS += include/tia/tia_server.h \
     #include/tia-private/server/commands/stop_data_transmission_server_command.h \
     include/tia-private/server/data_server.h \
     #include/tia-private/server/commands/start_data_transmission_server_command.h \
-    include/tia-private/server/commands/get_data_connection_server_command.h \
+    include/tia-private/server/commands/get_data_connection_control_command.h \
     include/tia-private/server/tia_control_message_parser.h \
     include/tia-private/server/tia_control_message.h \
     include/tia-private/server/tia_control_message_builder.h \
@@ -99,7 +99,7 @@ SOURCES += src/tia/tia_server.cpp \
     src/tia/datapacket/raw_mem3.cpp \
     src/tia/clock.cpp \
     #src/tia/server/commands/stop_data_transmission_server_command.cpp \
-    src/tia/server/commands/get_data_connection_server_command.cpp \
+    src/tia/server/commands/get_data_connection_control_command.cpp \
     #src/tia/server/server_command.cpp \
     src/tia/server/version_1_0/tia_control_message_parser_1_0.cpp \
     src/tia/server/server_control_connection.cpp \
