@@ -6,6 +6,8 @@
 namespace tia
 {
 
+//-----------------------------------------------------------------------------
+/// removes whitespaces at the beginning and the end of the given string
 std::string trim (std::string str)
 {
     size_t start_index = 0;
