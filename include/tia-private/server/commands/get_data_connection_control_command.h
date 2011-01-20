@@ -2,6 +2,7 @@
 #define GET_DATA_CONNECTION_CONTROL_COMMAND_H
 
 #include "../tia_control_command.h"
+#include "../tia_control_command_context.h"
 #include "../data_server.h"
 
 namespace tia
@@ -11,8 +12,8 @@ namespace tia
 class GetDataConnectionControlCommand : public TiAControlCommand
 {
 public:
-    GetDataConnectionControlCommand (ConnectionID& connection_id, DataServer& data_server)
-        : connection_id_ (connection_id), data_server_ (data_server)
+    GetDataConnectionControlCommand (TiAControlCommandContext& command_context, DataServer& data_server)
+        : command_context_ (command_context), data_server_ (data_server)
     {}
 
     virtual ~GetDataConnectionControlCommand () {}
@@ -20,7 +21,7 @@ public:
     virtual TiAControlMessage execute (TiAControlMessage const& command);
 
 private:
-    ConnectionID& connection_id_;
+    TiAControlCommandContext& command_context_;
     DataServer& data_server_;
 };
 

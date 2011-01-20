@@ -3,6 +3,7 @@
 
 #include "socket.h"
 #include "tia_control_command.h"
+#include "tia_control_command_context.h"
 #include "tia_control_message.h"
 #include "tia_control_message_builder.h"
 #include "tia_control_message_parser.h"
@@ -36,6 +37,7 @@ private:
     std::auto_ptr<TiAControlMessageParser> parser_;
     std::auto_ptr<TiAControlMessageBuilder> builder_;
     boost::thread* thread_;
+    TiAControlCommandContext command_context_;
 };
 
 }
