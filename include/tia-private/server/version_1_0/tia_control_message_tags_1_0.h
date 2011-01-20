@@ -24,6 +24,8 @@ namespace TiAControlMessageTags10
     std::string const CHECK_PROTOCOL_VERSION = "CheckProtocolVersion";
     std::string const DATA_CONNECTION_PORT = "DataConnectionPort";
     std::string const GET_DATA_CONNECTION = "GetDataConnection";
+    std::string const START_DATA_TRANSMISSION = "StartDataTransmission";
+    std::string const STOP_DATA_TRANSMISSION = "StopDataTransmission";
     std::string const TCP = "TCP";
     std::string const UDP = "UDP";
 

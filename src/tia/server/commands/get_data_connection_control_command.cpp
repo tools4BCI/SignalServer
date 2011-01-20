@@ -3,7 +3,6 @@
 #include "tia-private/server/messages/standard_control_messages.h"
 
 #include <sstream>
-#include <iostream>
 
 using std::string;
 
@@ -23,14 +22,12 @@ TiAControlMessage GetDataConnectionControlCommand::execute (TiAControlMessage co
     string content;
 
     ConnectionID data_connection;
-    std::cout << "GetDataConnectionControlCommand: will add connection" << std::endl;
     if (command.getParameters() == TiAControlMessageTags10::UDP)
         data_connection = data_server_.addConnection (true);
     else if (command.getParameters() == TiAControlMessageTags10::TCP)
         data_connection = data_server_.addConnection (false);
     else
         return ErrorControlMessage (version);
-    std::cout << "GetDataConnectionControlCommand: connection added will ask for port" << std::endl;
 
     command_context_.setDataConnectionID (data_connection);
     std::ostringstream oss;
