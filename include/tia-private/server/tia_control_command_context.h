@@ -9,6 +9,17 @@ namespace tia
 class TiAControlCommandContext
 {
 public:
+    TiAControlCommandContext () : has_connection_ (false) {}
+
+    bool hasDataConnection () const {return has_connection_;}
+
+    ConnectionID getDataConnectionID () const {return data_connection_;}
+
+    void setDataConnectionID (ConnectionID id) {data_connection_ = id;}
+
+private:
+    ConnectionID data_connection_;
+    bool has_connection_;
 
 };
 
