@@ -15,7 +15,7 @@ public:
 
     ConnectionID getDataConnectionID () const {return data_connection_;}
 
-    void setDataConnectionID (ConnectionID id) {data_connection_ = id;}
+    void setDataConnectionID (ConnectionID id) {data_connection_ = id; has_connection_ = true;}
 
 private:
     ConnectionID data_connection_;

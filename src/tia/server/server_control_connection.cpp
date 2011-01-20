@@ -1,6 +1,7 @@
 #include "tia-private/server/control_connection_server_2.h"
 #include "tia-private/server/commands/check_protocol_version_control_command.h"
 #include "tia-private/server/commands/get_data_connection_control_command.h"
+#include "tia-private/server/commands/start_data_transmission_control_command.h"
 
 #include "tia-private/server/version_1_0/tia_control_message_tags_1_0.h"
 #include "tia-private/server/version_1_0/tia_control_message_parser_1_0.h"
@@ -25,6 +26,7 @@ ServerControlConnection::ServerControlConnection (Socket& socket, DataServer& da
 {
     command_map_[TiAControlMessageTags10::CHECK_PROTOCOL_VERSION] = new CheckProtocolVersionControlCommand ();
     command_map_[TiAControlMessageTags10::GET_DATA_CONNECTION] = new GetDataConnectionControlCommand (command_context_, data_server_);
+    command_map_[TiAControlMessageTags10::START_DATA_TRANSMISSION] = new StartDataTransmissionControlCommand (command_context_, data_server_);
 }
 
 //-----------------------------------------------------------------------------
