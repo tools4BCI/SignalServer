@@ -144,7 +144,7 @@ XML Representation
 ::
 
   TiA 1.0 \n
-  Start \n
+  StartDataTransmission \n
   \n
 
 
@@ -173,7 +173,7 @@ XML Representation
 ::
 
   TiA 1.0 \n
-  Stop \n
+  StopDataTransmission \n
   \n
 
 Server Response
