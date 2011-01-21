@@ -8,10 +8,10 @@ SUITE (ControlCommands)
 
 TEST (getDataConnection)
 {
-    TestDataServer data_server;
-    tia::TiAControlCommandContext context;
+    // TestDataServer data_server;
+    //tia::TiAControlCommandContext context ;
 
-    tia::GetDataConnectionControlCommand command (context, data_server);
+    //tia::GetDataConnectionControlCommand command (context, data_server);
 }
 
 }

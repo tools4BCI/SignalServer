@@ -7,6 +7,7 @@
 #include "tia_control_message.h"
 #include "tia_control_message_builder.h"
 #include "tia_control_message_parser.h"
+#include "hardware_interface.h"
 #include "data_server.h"
 
 #include <boost/thread.hpp>
@@ -20,7 +21,7 @@ namespace tia
 class ServerControlConnection
 {
 public:
-    ServerControlConnection (Socket& socket, DataServer& data_server);
+    ServerControlConnection (Socket& socket, DataServer& data_server, HardwareInterface& hardware_interface);
     ~ServerControlConnection ();
 
     void asyncStart ();

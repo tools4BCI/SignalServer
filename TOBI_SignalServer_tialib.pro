@@ -82,7 +82,9 @@ HEADERS += include/tia/tia_server.h \
     include/tia-private/server/commands/start_data_transmission_control_command.h \
     include/tia-private/server/commands/stop_data_transmission_control_command.h \
     include/tia-private/server/commands/get_metainfo_control_command.h \
-    include/tia-private/server/tia_meta_info_parse_and_build_functions.h
+    include/tia-private/server/tia_meta_info_parse_and_build_functions.h \
+    include/tia-private/server/hardware_interface.h \
+    include/tia-private/server/fusty_hardware_interface_impl.h
 SOURCES += src/tia/tia_server.cpp \
     src/tia/constants.cpp \
     src/tia/config/control_message_decoder.cpp \
