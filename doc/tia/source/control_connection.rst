@@ -30,7 +30,7 @@ Server Commands
 A TiA 1.0 server implementation has to support the following commands:
 
 * Check protocol version
-* Get config
+* Get metainfo
 * Get data connection
 * Start data transmission
 * Stop data transmission
@@ -65,17 +65,17 @@ or
   \n
 
 
-Get Config
-^^^^^^^^^^
+Get MetaInfo
+^^^^^^^^^^^^
 
-This command is used to get the informations about signals from the server.
+This command is used to get the informations about the signals from the server.
 
 Representation
 **************
 ::
 
   TiA 1.0 \n
-  GetConfig \n
+  GetMetaInfo \n
   \n
 
 
@@ -84,10 +84,10 @@ Server Response
 ::
 
   TiA 1.0 \n
-  Config \n
+  MetaInfo \n
   Content-Length: [Length of XML Content in Bytes] \n
   \n
-  <config>....</config>
+  <?xml version="1.0" encoding="UTF-8"?><tiaMetaInfo version="1.0">....</tiaMetaInfo>
 
 or
 
@@ -191,3 +191,20 @@ or
   TiA 1.0 \n
   Error \n
   \n
+
+
+
+TiA Meta Info
+-------------
+The TiA meta info is structured in XML and contains information about the signals and the subject.
+
+
+TiA Server Config
+-----------------
+Die Server Config hat nichts mit den Meta Infos zu tun!!! Die Server config wird an die Hardware weitergereicht... TiA legt NICHT fest, wie diese config auszusehen hat!!!!!!
+
+
+TiA Channel Selection
+---------------------
+
+

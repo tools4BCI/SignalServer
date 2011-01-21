@@ -12,13 +12,7 @@ Contents:
    :maxdepth: 3
 
    introduction
+   signal_types
    control_connection
    data_packet
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
+   appendix
