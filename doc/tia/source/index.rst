@@ -6,10 +6,8 @@
 TiA - Documentation of TOBI Interface A Version
 ===============================================
 
-Contents:
-
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 4
 
    introduction
    signal_types
