@@ -1,18 +1,24 @@
 #include "tia-private/server/tia_meta_info_parse_and_build_functions.h"
+#include "tia-private/server/tia_exceptions.h"
 
+#include "tia-private/server/string_utils.h"
 #include "extern/include/rapidxml/rapidxml.hpp"
 #include "extern/include/rapidxml/rapidxml_print.hpp"
 
 #include <sstream>
+#include <map>
+#include <set>
 
 using std::string;
+using std::map;
+using std::set;
 
 namespace tia
 {
 
 namespace XML_TAGS
 {
-    std::string const TIA_META_INFO = "tiaMetaInfo";
+    string const TIA_META_INFO = "tiaMetaInfo";
     std::string const SUBJECT = "subject";
     std::string const SUBJECT_ID = "id";
     std::string const SUBJECT_FIRSTNAME = "firstName";
@@ -21,21 +27,85 @@ namespace XML_TAGS
     std::string const SIGNAL = "signal";
     std::string const SIGNAL_TYPE = "type";
     std::string const SIGNAL_SAMPLINGRATE = "samplingRate";
+    std::string const SIGNAL_NUMCHANNELS = "numChannels";
     std::string const SIGNAL_BLOCKSIZE = "blockSize";
+    string const SIGNAL_REQUIRED_ATTRIBUTES_ARRAY[] = {SIGNAL_TYPE, SIGNAL_SAMPLINGRATE, SIGNAL_BLOCKSIZE, SIGNAL_NUMCHANNELS};
+    set<string> const SIGNAL_REQUIRED_ATTRIBUTES (SIGNAL_REQUIRED_ATTRIBUTES_ARRAY, SIGNAL_REQUIRED_ATTRIBUTES_ARRAY + 4);
 
     std::string const CHANNEL = "channel";
     std::string const CHANNEL_NR = "nr";
     std::string const CHANNEL_LABEL = "label";
+    string const CHANNEL_REQUIRED_ATTRIBUTES_ARRAY[] = {CHANNEL_NR, CHANNEL_LABEL};
+    set<string> const CHANNEL_REQUIRED_ATTRIBUTES (CHANNEL_REQUIRED_ATTRIBUTES_ARRAY, CHANNEL_REQUIRED_ATTRIBUTES_ARRAY + 2);
 }
 
 //-----------------------------------------------------------------------------
 void addAttribute (rapidxml::xml_document<>* doc, rapidxml::xml_node<>* node, std::string const& attribute_name, std::string const& attribute_value);
 void addAttribute (rapidxml::xml_document<>* doc, rapidxml::xml_node<>* node, std::string const& attribute_name, unsigned attribute_value);
+map<string, string> getAttributes (rapidxml::xml_node<>* node);
+map<string, string> getAttributes (rapidxml::xml_node<>* node, set<string> required_attributes);
 
 //-----------------------------------------------------------------------------
-tobiss::SSConfig parserTiAMetaInfoFromXMLString (std::string const& tia_meta_info_xml_string)
+tobiss::SSConfig parseTiAMetaInfoFromXMLString (std::string const& tia_meta_info_xml_string)
 {
     tobiss::SSConfig tia_meta_info;
+    rapidxml::xml_document<> xml_doc;
+    xml_doc.parse<rapidxml::parse_non_destructive | rapidxml::parse_validate_closing_tags> ((char*)tia_meta_info_xml_string.c_str ());
+    rapidxml::xml_node<>* tia_metainfo_node = xml_doc.first_node ();
+    if (tia_metainfo_node->next_sibling ())
+        throw TiAException ("Parsing TiAMetaInfo String: Too many first level nodes.");
+
+    // parse subject
+    rapidxml::xml_node<>* subject_node = tia_metainfo_node->first_node (XML_TAGS::SUBJECT.c_str());
+    if (subject_node)
+    {
+        std::map<string, string> attributes = getAttributes (subject_node);
+        if (attributes.count (XML_TAGS::SUBJECT_ID))
+            tia_meta_info.subject_info.setId (attributes.at(XML_TAGS::SUBJECT_ID));
+        if (attributes.count (XML_TAGS::SUBJECT_FIRSTNAME))
+            tia_meta_info.subject_info.setFirstName (attributes.at(XML_TAGS::SUBJECT_FIRSTNAME));
+        if (attributes.count (XML_TAGS::SUBJECT_SURNAME))
+            tia_meta_info.subject_info.setSurname (attributes.at(XML_TAGS::SUBJECT_SURNAME));
+    }
+
+    // parse signals
+    rapidxml::xml_node<>* signal_node = 0;
+    signal_node = tia_metainfo_node->first_node (XML_TAGS::SIGNAL.c_str());
+    tobiss::SignalInfo::SignalMap& signal_map = tia_meta_info.signal_info.signals ();
+    while (signal_node)
+    {
+        tobiss::Signal signal;
+        map<string, string> signal_attributes = getAttributes (signal_node, XML_TAGS::SIGNAL_REQUIRED_ATTRIBUTES);
+        signal.setType (signal_attributes[XML_TAGS::SIGNAL_TYPE]);
+        signal.setSamplingRate (toUnsigned (signal_attributes[XML_TAGS::SIGNAL_SAMPLINGRATE]));
+        signal.setBlockSize (toUnsigned (signal_attributes[XML_TAGS::SIGNAL_BLOCKSIZE]));
+
+        unsigned const num_channels = toUnsigned (signal_attributes[XML_TAGS::SIGNAL_NUMCHANNELS]);
+
+        // parse channels
+        std::vector<tobiss::Channel>& channel_vector = signal.channels();
+        for (unsigned channel_nr = 0; channel_nr < num_channels; channel_nr++)
+        {
+            tobiss::Channel channel;
+            channel.setId (toString (channel_nr));
+        }
+
+        rapidxml::xml_node<>* channel_node = signal_node->first_node (XML_TAGS::CHANNEL.c_str());
+        while (channel_node)
+        {
+            map<string, string> channel_attributes = getAttributes (channel_node, XML_TAGS::CHANNEL_REQUIRED_ATTRIBUTES);
+            unsigned channel_nr = toUnsigned (channel_attributes[XML_TAGS::CHANNEL_NR]);
+            if (channel_nr > num_channels)
+                throw TiAException ("Parse TiAMetaInfo: nr-attribute of channel exceeds numChannels attribute of signal!");
+
+            channel_vector[channel_nr - 1].setId (channel_attributes[XML_TAGS::CHANNEL_LABEL]);
+            channel_node = channel_node->next_sibling (XML_TAGS::CHANNEL.c_str ());
+        }
+
+        signal_map[signal_attributes[XML_TAGS::SIGNAL_TYPE]] = signal;
+        signal_node = signal_node->next_sibling (XML_TAGS::SIGNAL.c_str ());
+    }
+
     return tia_meta_info;
 }
 
@@ -66,13 +136,14 @@ std::string buildTiAMetaInfoXMLString (tobiss::SSConfig const& tia_meta_info)
         addAttribute (&xml_doc, signal_node, XML_TAGS::SIGNAL_TYPE, signal_iter->second.type ());
         addAttribute (&xml_doc, signal_node, XML_TAGS::SIGNAL_SAMPLINGRATE, signal_iter->second.samplingRate());
         addAttribute (&xml_doc, signal_node, XML_TAGS::SIGNAL_BLOCKSIZE, signal_iter->second.blockSize());
+        addAttribute (&xml_doc, signal_node, XML_TAGS::SIGNAL_NUMCHANNELS, signal_iter->second.channels().size ());
 
-        for (unsigned channel_id = 0; channel_id < signal_iter->second.channels().size (); channel_id++)
+        for (unsigned channel_nr = 0; channel_nr < signal_iter->second.channels().size (); channel_nr++)
         {
             char *channel_node_name = xml_doc.allocate_string (XML_TAGS::CHANNEL.c_str ());
             rapidxml::xml_node<>* channel_node = xml_doc.allocate_node (rapidxml::node_element, channel_node_name);
-            addAttribute (&xml_doc, channel_node, XML_TAGS::CHANNEL_NR, channel_id + 1);
-            addAttribute (&xml_doc, channel_node, XML_TAGS::CHANNEL_LABEL, signal_iter->second.channels ()[channel_id].id());
+            addAttribute (&xml_doc, channel_node, XML_TAGS::CHANNEL_NR, channel_nr + 1);
+            addAttribute (&xml_doc, channel_node, XML_TAGS::CHANNEL_LABEL, signal_iter->second.channels ()[channel_nr].id());
             signal_node->append_node (channel_node);
         }
 
@@ -107,6 +178,45 @@ void addAttribute (rapidxml::xml_document<>* doc, rapidxml::xml_node<>* node, st
     oss << std::dec << attribute_value;
     addAttribute (doc, node, attribute_name, oss.str ());
 }
+
+
+//-----------------------------------------------------------------------------
+map<string, string> getAttributes (rapidxml::xml_node<>* node)
+{
+    set<string> no_required_attributes;
+    return getAttributes (node, no_required_attributes);
+}
+
+//-----------------------------------------------------------------------------
+map<std::string, std::string> getAttributes (rapidxml::xml_node<>* node, set<string> required_attributes)
+{
+    std::map<string, string> attributes;
+    if (!node)
+        return attributes;
+    rapidxml::xml_attribute<>* attribute = node->first_attribute ();
+    while (attribute)
+    {
+        string key (attribute->name (), attribute->name_size ());
+        required_attributes.erase (key);
+        string value (attribute->value (), attribute->value_size ());
+        attributes[key] = value;
+        attribute = attribute->next_attribute ();
+    }
+
+    if (required_attributes.size ())
+    {
+        string missing_attributes;
+        for (set<string>::const_iterator iter = required_attributes.begin (); iter != required_attributes.end (); )
+        {
+            missing_attributes += *iter;
+            if (++iter != required_attributes.end ())
+                missing_attributes += ", ";
+        }
+        throw TiAException (string ("Parse TiAMetaInfo: Required attributes missing: ") + missing_attributes);
+    }
+    return attributes;
+}
+
 
 
 }

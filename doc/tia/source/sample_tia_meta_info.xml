@@ -4,16 +4,18 @@
   <subject id="WE2" firstName="Max" lastName="Mustermann" 
            handedness="r" />
 
-  <signal type="eeg" blockSize="10" sampleRate="100">
+  <signal type="eeg" blockSize="10" sampleRate="100" numChannels="3">
     <channel nr="1" label="Cz"/>
     <channel nr="2" label="C1"/>
     <channel nr="3" label="C2"/>
   </signal>
 
-  <signal type="bp" blockSize="5" sampleRate="50">
-    <channel nr="1" label="1"/>
-    <channel nr="2" label="2"/>
-    <channel nr="3" label="3"/>
+  <signal type="bp" blockSize="5" sampleRate="50" numChannels="5">
+    <channel nr="3" label="Channel 3 with Label"/>
+    <channel nr="2" label="Channel 2 with Label"/>
+    <!--
+      Channel 1, 4 and 5 have no labels
+      -->
   </signal>
   
 </tiaMetaInfo>

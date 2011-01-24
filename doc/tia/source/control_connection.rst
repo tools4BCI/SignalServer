@@ -11,7 +11,7 @@ Some important remarks:
 
 1. The protocol is in the style of HTTP (line structured text messages)
 2. The messages are encoded in UTF-8
-3. The message is split into lines which are terminated by the 0x0A character (also known as ``\n``, line feed or <LF>)
+3. The message is split into lines which are terminated by the 0x0A character (also known as ``\n``, "line feed" or <LF>)
 4. Some messages contain additional XML-structured content which is UTF-8 encoded
 5. All characters are case sensitive!
 
@@ -27,6 +27,12 @@ Each message which is send from the client to the server or vice versa is struct
 4. An empty line
 5. Optional xml-structured content
 
+Example:
+::
+  
+  TiA 1.0\n
+  CheckProtocolVersion\n
+  \n
 
 
 
@@ -109,8 +115,8 @@ Get Data Transmission
 
 Two types of data transmissions exist: "TCP" and "UDP".
 
-XML Representation
-******************
+Representation
+**************
 ::
 
   TiA 1.0 \n
@@ -145,8 +151,8 @@ or
 
 Start Data Transmission
 ^^^^^^^^^^^^^^^^^^^^^^^
-XML Representation
-******************
+Representation
+**************
 ::
 
   TiA 1.0 \n
@@ -174,8 +180,8 @@ or
 
 Stop Data Transmission
 ^^^^^^^^^^^^^^^^^^^^^^
-XML Representation
-******************
+Representation
+**************
 ::
 
   TiA 1.0 \n

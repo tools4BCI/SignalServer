@@ -19,8 +19,9 @@ namespace TiAControlMessageTags10
 
     std::string const CONTENT_LENGTH = "Content-Length";
 
-    std::string const GET_CONFIG = "GetConfig";
-    std::string const CONFIG = "Config";
+    std::string const OK = "OK";
+    std::string const ERROR = "Error";
+    std::string const METAINFO = "MetaInfo";
     std::string const CHECK_PROTOCOL_VERSION = "CheckProtocolVersion";
     std::string const GET_METAINFO = "GetMetaInfo";
     std::string const DATA_CONNECTION_PORT = "DataConnectionPort";
