@@ -3,7 +3,9 @@
 
 #include "socket.h"
 
-#include <boost/asio/ip/tcp.hpp>
+#include <boost/asio.hpp>
+
+#include <memory>
 
 namespace tobiss
 {
