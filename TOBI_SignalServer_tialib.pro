@@ -84,7 +84,9 @@ HEADERS += include/tia/tia_server.h \
     include/tia-private/server/commands/get_metainfo_control_command.h \
     include/tia-private/server/tia_meta_info_parse_and_build_functions.h \
     include/tia-private/server/hardware_interface.h \
-    include/tia-private/server/fusty_hardware_interface_impl.h
+    include/tia-private/server/fusty_hardware_interface_impl.h \
+    include/tia-private/client/tia_new_client_impl.h \
+    include/tia-private/server/boost_udp_read_socket.h
 SOURCES += src/tia/tia_server.cpp \
     src/tia/constants.cpp \
     src/tia/config/control_message_decoder.cpp \
@@ -113,7 +115,8 @@ SOURCES += src/tia/tia_server.cpp \
     src/tia/server/fusty_data_server_impl.cpp \
     src/tia/server/commands/start_data_transmission_control_command.cpp \
     src/tia/server/commands/stop_data_transmission_control_command.cpp \
-    src/tia/server/tia_meta_info_parse_and_build_functions.cpp
+    src/tia/server/tia_meta_info_parse_and_build_functions.cpp \
+    src/tia/client/tia_new_client_impl.cpp
 unix:SOURCES += extern/include/LptTools/LptToolsLinux.cpp
 win32:SOURCES += extern/include/LptTools/LptTools_.cpp
 
