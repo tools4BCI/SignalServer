@@ -50,7 +50,15 @@ tobiss::SSConfig parseTiAMetaInfoFromXMLString (std::string const& tia_meta_info
 {
     tobiss::SSConfig tia_meta_info;
     rapidxml::xml_document<> xml_doc;
-    xml_doc.parse<rapidxml::parse_non_destructive | rapidxml::parse_validate_closing_tags> ((char*)tia_meta_info_xml_string.c_str ());
+    try
+    {
+        xml_doc.parse<rapidxml::parse_non_destructive | rapidxml::parse_validate_closing_tags> ((char*)tia_meta_info_xml_string.c_str ());
+    }
+    catch (rapidxml::parse_error &error)
+    {
+        throw TiAException (string (error.what()));
+    }
+
     rapidxml::xml_node<>* tia_metainfo_node = xml_doc.first_node ();
     if (tia_metainfo_node->next_sibling ())
         throw TiAException ("Parsing TiAMetaInfo String: Too many first level nodes.");
@@ -88,6 +96,7 @@ tobiss::SSConfig parseTiAMetaInfoFromXMLString (std::string const& tia_meta_info
         {
             tobiss::Channel channel;
             channel.setId (toString (channel_nr));
+            channel_vector.push_back (channel);
         }
 
         rapidxml::xml_node<>* channel_node = signal_node->first_node (XML_TAGS::CHANNEL.c_str());

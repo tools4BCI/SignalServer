@@ -48,6 +48,8 @@ bool TiANewClientImpl::connected () const
 //-----------------------------------------------------------------------------
 void TiANewClientImpl::disconnect ()
 {
+    receiving_ = false;
+    data_socket_.reset (0);
     socket_.reset (0);
 }
 
@@ -71,17 +73,26 @@ void TiANewClientImpl::startReceiving (bool use_udp_bc)
     if (receiving_)
         return;
 
-    if (data_socket_.get ())
-    {
-    }
-    else
+    if (!data_socket_.get ())
     {
         sendMessage (GetDataConnectionTiAControlMessage (MESSAGE_VERSION_, use_udp_bc));
         TiAControlMessage dataconnection_message = waitForControlMessage (TiAControlMessageTags10::DATA_CONNECTION_PORT);
         unsigned port = toUnsigned (dataconnection_message.getParameters ());
-        boost::asio::ip::udp::endpoint server_data_address (boost::asio::ip::address_v4::from_string (server_ip_address_), port);
-        data_socket_.reset (new BoostUDPReadSocket (io_service_, server_data_address));
+        if (use_udp_bc)
+        {
+            boost::asio::ip::udp::endpoint server_data_address (boost::asio::ip::address_v4::from_string (server_ip_address_), port);
+            data_socket_.reset (new BoostUDPReadSocket (io_service_, server_data_address));
+        }
+        else
+        {
+            boost::asio::ip::tcp::endpoint server_data_address (boost::asio::ip::address_v4::from_string (server_ip_address_), port);
+            data_socket_.reset (new BoostTCPSocketImpl (io_service_, server_data_address));
+        }
     }
+
+    sendMessage (TiAControlMessage (MESSAGE_VERSION_, TiAControlMessageTags10::START_DATA_TRANSMISSION, "", ""));
+    waitForOKResponse ();
+
     receiving_ = true;
 }
 
@@ -94,6 +105,11 @@ bool TiANewClientImpl::receiving() const
 //-----------------------------------------------------------------------------
 void TiANewClientImpl::stopReceiving()
 {
+    if (receiving_)
+    {
+        sendMessage (TiAControlMessage (MESSAGE_VERSION_, TiAControlMessageTags10::STOP_DATA_TRANSMISSION, "", ""));
+        waitForOKResponse();
+    }
     receiving_ = false;
 }
 
@@ -114,7 +130,7 @@ void TiANewClientImpl::setBufferSize (size_t /*size*/)
 void TiANewClientImpl::sendMessage (TiAControlMessage const& message)
 {
     if (socket_.get ())
-        socket_->sendString (message_builder_->buildTiAMessage (GetMetaInfoTiAControlMessage (MESSAGE_VERSION_)));
+        socket_->sendString (message_builder_->buildTiAMessage (message));
 }
 
 //-----------------------------------------------------------------------------
@@ -137,7 +153,7 @@ TiAControlMessage TiANewClientImpl::waitForControlMessage (std::string const& co
 
     TiAControlMessage message = message_parser_->parseMessage (*socket_);
 
-    if (message.getVersion () != TiAControlMessageTags10::ID_AND_VERSION)
+    if (message.getVersion () != TiAControlMessageTags10::VERSION)
         throw std::runtime_error (string ("wrong server response: awaiting \"") + TiAControlMessageTags10::VERSION + "\" but was \"" + message.getVersion() + "\"");
 
     if (message.getCommand () != command_name)

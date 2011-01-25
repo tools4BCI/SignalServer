@@ -1,6 +1,7 @@
 #include "tia-private/server/tia_datapacket_builder.h"
 
 #include <string>
+#include <iostream>
 
 using std::string;
 
@@ -11,10 +12,19 @@ namespace tia
 tobiss::DataPacket TiADataPacketBuilder::buildFustyDataPacketFromStream (InputStream& input_stream)
 {
     tobiss::DataPacket packet;
-    string data (1, input_stream.readCharacter ());
-    while (packet.getRequiredRawMemorySize (reinterpret_cast<void*>(const_cast<char*>(data.c_str ())), data.size ()) == 0)
-        data += input_stream.readCharacter ();
-    return tobiss::DataPacket (reinterpret_cast<void*>(const_cast<char*>(data.c_str ())));
+    char buffer[10000];
+    unsigned available = 0;
+    for (; available < 32; available++)
+        buffer[available] = input_stream.readCharacter ();
+
+    unsigned bytes_needed = packet.getRequiredRawMemorySize (reinterpret_cast<void*>(buffer), available);
+    while (bytes_needed != available)
+    {
+        buffer[available] = input_stream.readCharacter ();
+        available++;
+        bytes_needed = packet.getRequiredRawMemorySize (reinterpret_cast<void*>(buffer), available);
+    }
+    return tobiss::DataPacket (reinterpret_cast<void*>(buffer));
 }
 
 //-----------------------------------------------------------------------------
