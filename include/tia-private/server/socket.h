@@ -10,6 +10,7 @@ namespace tia
 class InputStream
 {
 public:
+    virtual ~InputStream () {}
     virtual std::string readLine (unsigned max_length) = 0;
     virtual std::string readString (unsigned length) = 0;
     virtual char readCharacter () = 0;
@@ -19,6 +20,7 @@ public:
 class ReadSocket : public InputStream
 {
 public:
+    virtual ~ReadSocket () {}
     virtual void waitForData () = 0;
 };
 
@@ -27,6 +29,7 @@ public:
 class WriteSocket
 {
 public:
+    virtual ~WriteSocket () {}
     virtual void sendString (std::string const& string) = 0;
 };
 
@@ -35,6 +38,7 @@ public:
 class Socket : public WriteSocket, public ReadSocket
 {
 public:
+    virtual ~Socket () {}
 
 };
 
