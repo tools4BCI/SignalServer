@@ -10,7 +10,7 @@
 TEMPLATE = lib
 VERSION = 0.1
 CONFIG += console \
-    release \
+    debug \
     thread \
     warn_on \
     static \

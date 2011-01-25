@@ -28,6 +28,7 @@
 // local
 #include "tia/tia_client.h"
 #include "tia-private/client/tia_client_impl.h"
+#include "tia-private/client/tia_new_client_impl.h"
 
 namespace tobiss
 {
@@ -37,6 +38,7 @@ TiAClient::TiAClient() :
   impl_(0)
 {
   impl_ = new TiAClientImpl;
+  //impl_ = new tia::TiANewClientImpl;
 }
 
 //-----------------------------------------------------------------------------
