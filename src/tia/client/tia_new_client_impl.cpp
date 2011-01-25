@@ -8,6 +8,8 @@
 #include "tia-private/server/tia_meta_info_parse_and_build_functions.h"
 #include "tia-private/server/string_utils.h"
 #include "tia-private/server/boost_socket_impl.h"
+#include "tia-private/server/boost_udp_read_socket.h"
+#include "tia-private/server/tia_datapacket_builder.h"
 
 using namespace tobiss;
 using namespace std;
@@ -20,6 +22,7 @@ unsigned const MAX_LINE_LENGTH = 30;
 //-----------------------------------------------------------------------------
 TiANewClientImpl::TiANewClientImpl ()
     : MESSAGE_VERSION_ (TiAControlMessageTags10::VERSION),
+      receiving_ (false),
       message_builder_ (new TiAControlMessageBuilder10),
       message_parser_ (new TiAControlMessageParser10)
 {
@@ -29,6 +32,7 @@ TiANewClientImpl::TiANewClientImpl ()
 //-----------------------------------------------------------------------------
 void TiANewClientImpl::connect (const std::string& address, short unsigned port)
 {
+    server_ip_address_ = address;
     boost::asio::ip::tcp::endpoint server_address (boost::asio::ip::address_v4::from_string (address), port);
     socket_.reset (new BoostTCPSocketImpl (io_service_, server_address));
     sendMessage (CheckProtocolVersionTiAControlMessage (MESSAGE_VERSION_));
@@ -64,34 +68,46 @@ SSConfig TiANewClientImpl::config () const
 //-----------------------------------------------------------------------------
 void TiANewClientImpl::startReceiving (bool use_udp_bc)
 {
-    sendMessage (GetDataConnectionTiAControlMessage (MESSAGE_VERSION_, use_udp_bc));
-    TiAControlMessage dataconnection_message = waitForControlMessage (TiAControlMessageTags10::DATA_CONNECTION_PORT);
-    unsigned port = toUnsigned (dataconnection_message.getParameters ());
+    if (receiving_)
+        return;
 
+    if (data_socket_.get ())
+    {
+    }
+    else
+    {
+        sendMessage (GetDataConnectionTiAControlMessage (MESSAGE_VERSION_, use_udp_bc));
+        TiAControlMessage dataconnection_message = waitForControlMessage (TiAControlMessageTags10::DATA_CONNECTION_PORT);
+        unsigned port = toUnsigned (dataconnection_message.getParameters ());
+        boost::asio::ip::udp::endpoint server_data_address (boost::asio::ip::address_v4::from_string (server_ip_address_), port);
+        data_socket_.reset (new BoostUDPReadSocket (io_service_, server_data_address));
+    }
+    receiving_ = true;
 }
 
 //-----------------------------------------------------------------------------
 bool TiANewClientImpl::receiving() const
 {
-
+    return receiving_;
 }
 
 //-----------------------------------------------------------------------------
 void TiANewClientImpl::stopReceiving()
 {
-
+    receiving_ = false;
 }
 
 //-----------------------------------------------------------------------------
 void TiANewClientImpl::getDataPacket (DataPacket& packet)
 {
-
+    TiADataPacketBuilder packet_builder;
+    packet = packet_builder.buildFustyDataPacketFromStream (*data_socket_);
 }
 
 //-----------------------------------------------------------------------------
-void TiANewClientImpl::setBufferSize (size_t size)
+void TiANewClientImpl::setBufferSize (size_t /*size*/)
 {
-
+    /// TODO: implement
 }
 
 //-----------------------------------------------------------------------------

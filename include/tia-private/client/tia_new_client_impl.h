@@ -58,6 +58,8 @@ private:
 
 
     std::string const MESSAGE_VERSION_;
+    std::string server_ip_address_;
+    bool receiving_;
 
     tobiss::SSConfig config_;
 
