@@ -31,7 +31,7 @@
 
 #include <map>
 #include <string>
-
+#include <vector>
 
 namespace tobiss
 {
@@ -56,7 +56,6 @@ public:
     */
     ~HWThreadFactory ();
 
-
     /**
     * @brief takes ownership of the HWThreadBuilder pointer (it will be destroyed
     *        if the factory is destroyed)
@@ -67,6 +66,11 @@ public:
     * the caller has to care for destruction of the created HWThread
     */
     HWThread* createHWThread (std::string const& key, boost::asio::io_service& io, ticpp::Iterator<ticpp::Element> hw);
+
+    /**
+    * @brief Get the names to build the respective hardware objects.
+    */
+    std::vector<std::string> getPossibleHardwareNames();
 
 private:
     std::map<std::string, HWThreadBuilder*> builders_;
