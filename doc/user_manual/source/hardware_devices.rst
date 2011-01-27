@@ -92,9 +92,9 @@ implemented soon.
 Using a too small blocksize for data acquisition might result in a loss of data.
 The following values are recomendations from g.tec:
 
-==================  ==========
+====================  ==========
 Sampling Rate \[Hz\]  Block Size
-==================  ==========
+====================  ==========
       32                1
       64                2
       128               4
@@ -107,7 +107,7 @@ Sampling Rate \[Hz\]  Block Size
       9600              512
       19200             512
       38400             512
-==================  ==========
+====================  ==========
 
 According to g.tec, the minimum buffersize can also be determined by following equation:
 

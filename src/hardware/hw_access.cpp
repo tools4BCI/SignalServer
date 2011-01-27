@@ -480,6 +480,11 @@ vector<boost::uint32_t> HWAccess::getSamplingRatePerSignalType()
   return(v);
 }
 
+std::vector<std::string> HWAccess::getPossibleHardwareNames()
+{
+  return(HWThreadFactory::instance().getPossibleHardwareNames());
+}
+
 //-----------------------------------------------------------------------------
 
 } // Namespace tobiss
