@@ -184,6 +184,12 @@ class HWAccess
       return(master_->getNrOfBlocks());
     }
 
+    /**
+    * @brief Get the names to build the respective hardware objects.
+    */
+    static std::vector<std::string> getPossibleHardwareNames();
+
+
 //-----------------------------------------------
 
   private:

@@ -61,6 +61,20 @@ HWThread* HWThreadFactory::createHWThread (std::string const& key, boost::asio::
     return builders_[key]->createInstance (io, hw);
 }
 
+//-----------------------------------------------------------------------------
+
+std::vector<std::string> HWThreadFactory::getPossibleHardwareNames()
+{
+  std::vector<std::string> hw_names;
+
+  for (std::map<std::string, HWThreadBuilder*>::iterator it = builders_.begin();
+       it != builders_.end(); ++it)
+  {
+      hw_names.push_back(it->first);
+  }
+
+  return(hw_names);
+}
 
 
 } // namespace tobiss

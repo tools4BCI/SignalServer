@@ -46,7 +46,9 @@ using namespace tobiss;
 
 const string DEFAULT_XML_CONFIG = "server_config.xml";
 const string COMMENTS_XML_CONFIG = "server_config_comments.xml";
+
 const string XML_CONFIG_FILE_PARAM = "-f";
+const string LIST_HARDWARE_PARAM   = "-l";
 
 #ifndef WIN32
 const string DEFAULT_XML_CONFIG_HOME_SUBDIR = string("/tobi_sigserver_cfg/");
@@ -136,6 +138,19 @@ void printVersion()
   cout << "http://bci.tugraz.at" << endl;
 }
 
+//-----------------------------------------------------------------------------
+
+void printPossibleHardware()
+{
+  cout << "Possible hardware abrevations to be used  with this signal server version:" << endl;
+  vector<string> hw_names = HWAccess::getPossibleHardwareNames();
+  for(unsigned int n = 0; n < hw_names.size(); n++)
+    cout << "  * " << hw_names[n] << endl;
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
 int main(int argc, const char* argv[])
 {
   try
@@ -152,6 +167,11 @@ int main(int argc, const char* argv[])
     }
     else if(argc == 2)
     {
+      if(argv[1] == LIST_HARDWARE_PARAM)
+      {
+        printPossibleHardware();
+        return(0);
+      }
       cout << endl << "  ***  Loading XML configuration file: " << argv[1] << endl << endl;
       config_file = argv[1];
     }
@@ -215,7 +235,8 @@ int main(int argc, const char* argv[])
       cout << endl << ">>";
 
       while(cin >> str)
-        if(str == "q")
+      {
+        if(str == "q" || str == "quit" || str == "exit")
         {
           running = false;
           break;
@@ -224,8 +245,22 @@ int main(int argc, const char* argv[])
         {
           break;
         }
+        else if(str == "h" || str == "help")
+        {
+          cout << "q (quit)    ... Quit the signalserver" << endl;
+          cout << "r (restart) ... Restart the signalserver (WARNING: malfunction with certain amplifiers possible)" << endl;
+          cout << "l (list)    ... List possible hardware devices" << endl;
+          cout << "h (help)    ... Print this help" << endl;
+          cout << endl << ">>";
+        }
+        else if(str == "l" || str == "list")
+        {
+          printPossibleHardware();
+          cout << endl << ">>";
+        }
         else
           cout << endl << ">>";
+      }
 
       reader.stop();
       io_service.stop();
