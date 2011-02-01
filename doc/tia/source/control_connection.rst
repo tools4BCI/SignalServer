@@ -34,6 +34,44 @@ Example:
   CheckProtocolVersion\n
   \n
 
+Example with additional xml-structured content
+::
+
+  TiA 1.0\n
+  MetaInfo\n
+  Content-Length: 79\n
+  \n
+  <?xml version="1.0" encoding="UTF-8"?><tiaMetaInfo version="1.0"></tiaMetaInfo>
+
+
+Reply Messages
+--------------
+Each command message is answered with an reply message which contains either an OK or an Error.
+Error messages optionally contain an error description.
+
+OK message:
+::
+
+  TiA 1.0\n
+  OK\n
+  \n
+
+Error message without an error description:
+::
+
+  TiA 1.0\n
+  Error\n
+  \n
+
+
+Error message including an error description:
+::
+
+  TiA 1.0\n
+  Error\n
+  Content-Length: 73\n
+  <tiaError version="1.0" description="Human readable error description."/>
+
 
 
 Server Commands
@@ -46,35 +84,26 @@ A TiA 1.0 server implementation has to support the following commands:
 * Get data connection
 * Start data transmission
 * Stop data transmission
+* Get server state connection
 
 Check Protocol Version
 ^^^^^^^^^^^^^^^^^^^^^^
 This command may be used by the client to check if the server understands the commands the client wants to send.
 The server has to respond with an OK message if it understands commands of the given protocol version.
 
-Representation
-**************
+Representation:
 ::
 
-  TiA 1.0 \n
-  CheckProtocolVersion \n
+  TiA 1.0\n
+  CheckProtocolVersion\n
   \n
 
 Server Response
-***************
 ::
 
-  TiA 1.0 \n
-  OK \n
-  \n
 
 or 
 
-::
-
-  TiA 1.0 \n
-  Error \n
-  \n
 
 
 Get MetaInfo
@@ -82,22 +111,20 @@ Get MetaInfo
 
 This command is used to get the informations about the signals from the server.
 
-Representation
-**************
+Representation:
 ::
 
-  TiA 1.0 \n
-  GetMetaInfo \n
+  TiA 1.0\n
+  GetMetaInfo\n
   \n
 
 
-Server Response
-***************
+Server Response:
 ::
 
-  TiA 1.0 \n
-  MetaInfo \n
-  Content-Length: [Length of XML Content in Bytes] \n
+  TiA 1.0\n
+  MetaInfo\n
+  Content-Length: [Length of XML Content in Bytes]\n
   \n
   <?xml version="1.0" encoding="UTF-8"?><tiaMetaInfo version="1.0">....</tiaMetaInfo>
 
@@ -105,8 +132,8 @@ or
 
 ::
 
-  TiA 1.0 \n
-  Error \n
+  TiA 1.0\n
+  Error\n
   \n
 
 
@@ -115,8 +142,7 @@ Get Data Transmission
 
 Two types of data transmissions exist: "TCP" and "UDP".
 
-Representation
-**************
+Representation:
 ::
 
   TiA 1.0 \n
@@ -132,8 +158,7 @@ or
   \n
 
 
-Server Response
-***************
+Server Response:
 ::
 
   TiA 1.0 \n
@@ -151,8 +176,7 @@ or
 
 Start Data Transmission
 ^^^^^^^^^^^^^^^^^^^^^^^
-Representation
-**************
+Representation:
 ::
 
   TiA 1.0 \n
@@ -160,8 +184,7 @@ Representation
   \n
 
 
-Server Response
-***************
+Server Response:
 ::
 
   TiA 1.0 \n
@@ -180,16 +203,14 @@ or
 
 Stop Data Transmission
 ^^^^^^^^^^^^^^^^^^^^^^
-Representation
-**************
+Representation:
 ::
 
   TiA 1.0 \n
   StopDataTransmission \n
   \n
 
-Server Response
-***************
+Server Response:
 ::
 
   TiA 1.0 \n
@@ -211,12 +232,12 @@ TiA Meta Info
 The TiA meta info is structured in XML and contains information about the signals and the subject.
 
 
-TiA Server Config
------------------
-Die Server Config hat nichts mit den Meta Infos zu tun!!! Die Server config wird an die Hardware weitergereicht... TiA legt NICHT fest, wie diese config auszusehen hat!!!!!!
-
-
-TiA Channel Selection
+TiA Error Description
 ---------------------
+Error message in TiA version 1.0 optionally supports error descriptions in a human readable format. 
+Therefore no error codes with special meaning are supported in this version.
 
 
+.. TiA Server Config
+.. -----------------
+.. Die Server Config hat nichts mit den Meta Infos zu tun!!! Die Server config wird an die Hardware weitergereicht... TiA legt NICHT fest, wie diese config auszusehen hat!!!!!!
