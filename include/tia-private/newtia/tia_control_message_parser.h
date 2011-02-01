@@ -2,7 +2,7 @@
 #define TIA_CONTROL_MESSAGE_PARSER_H
 
 #include "tia_control_message.h"
-#include "socket.h"
+#include "network/input_stream.h"
 
 namespace tia
 {

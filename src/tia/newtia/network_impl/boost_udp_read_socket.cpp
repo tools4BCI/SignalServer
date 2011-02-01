@@ -1,8 +1,6 @@
-#include "tia-private/newtia/boost_socket_impl.h"
+#include "tia-private/newtia/network_impl/boost_udp_read_socket.h"
 #include "tia-private/newtia/version_1_0/tia_control_message_tags_1_0.h"
 #include "tia-private/newtia/tia_exceptions.h"
-
-#include "tia-private/network/tcp_server.h"
 
 #include <boost/asio.hpp>
 #include <iostream>
@@ -12,18 +10,9 @@ using std::string;
 namespace tia
 {
 
-//-----------------------------------------------------------------------------
-BoostTCPSocketImpl::BoostTCPSocketImpl (boost::asio::io_service& io_service,
-                                        boost::shared_ptr<tobiss::TCPConnection> con)
-   : fusty_connection_ (con)
-{
-    socket_ = &(con->socket());
-}
-
-
 
 //-----------------------------------------------------------------------------
-string BoostTCPSocketImpl::readLine (unsigned /*max_length*/)
+string BoostUDPReadSocket::readLine (unsigned max_length)
 {
     string line;
 
@@ -44,7 +33,7 @@ string BoostTCPSocketImpl::readLine (unsigned /*max_length*/)
 
 
 //-----------------------------------------------------------------------------
-string BoostTCPSocketImpl::readString (unsigned length)
+string BoostUDPReadSocket::readString (unsigned length)
 {
     if (length > buffered_string_.size())
         readBytes (length - buffered_string_.size ());
@@ -56,7 +45,7 @@ string BoostTCPSocketImpl::readString (unsigned length)
 }
 
 //-----------------------------------------------------------------------------
-char BoostTCPSocketImpl::readCharacter ()
+char BoostUDPReadSocket::readCharacter ()
 {
     if (!buffered_string_.size ())
         readBytes (1);
@@ -66,42 +55,33 @@ char BoostTCPSocketImpl::readCharacter ()
 }
 
 //-----------------------------------------------------------------------------
-void BoostTCPSocketImpl::waitForData ()
+void BoostUDPReadSocket::waitForData ()
 {
     if (!buffered_string_.size ())
         readBytes (1);
 }
 
 //-----------------------------------------------------------------------------
-void BoostTCPSocketImpl::sendString (string const& str)
-{
-    boost::system::error_code error;
-    socket_->send (boost::asio::buffer (str), 0, error);
-    if (error)
-        throw TiALostConnection ("BoostTCPSocketImpl");
-}
-
-//-----------------------------------------------------------------------------
-void BoostTCPSocketImpl::readBytes (unsigned num_bytes)
+void BoostUDPReadSocket::readBytes (unsigned num_bytes)
 {
     boost::system::error_code error;
 
     unsigned available = socket_->available (error);
     if (error)
-        throw TiALostConnection ("BoostTCPSocketImpl");
+        throw TiALostConnection ("BoostUDPReadSocket");
     unsigned allocating = std::max<unsigned> (num_bytes, available);
 
     char* data = new char [allocating];
-    socket_->read_some (boost::asio::buffer (data, available), error);
+    socket_->receive (boost::asio::buffer (data, available), 0, error);
     if (error)
-        throw TiALostConnection ("BoostTCPSocketImpl");
+        throw TiALostConnection ("BoostUDPReadSocket");
     buffered_string_.append (data, available);
 
     if (available < num_bytes)
     {
-        socket_->read_some (boost::asio::buffer (data, num_bytes - available), error);
+        socket_->receive (boost::asio::buffer (data, num_bytes - available), 0, error);
         if (error)
-            throw TiALostConnection ("BoostTCPSocketImpl");
+            throw TiALostConnection ("BoostUDPReadSocket");
 
         buffered_string_.append (data, num_bytes - available);
     }
@@ -111,3 +91,4 @@ void BoostTCPSocketImpl::readBytes (unsigned num_bytes)
 
 
 }
+
