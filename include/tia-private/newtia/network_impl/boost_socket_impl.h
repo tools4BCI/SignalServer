@@ -1,7 +1,7 @@
 #ifndef BOOST_SOCKET_IMPL_H
 #define BOOST_SOCKET_IMPL_H
 
-#include "socket.h"
+#include "tia-private/newtia/network/socket.h"
 
 #include <boost/asio.hpp>
 

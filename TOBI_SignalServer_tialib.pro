@@ -60,7 +60,7 @@ HEADERS += include/tia/tia_server.h \
     include/tia-private/clock.h \
     include/tia-private/newtia/control_connection_server_2.h \
     #include/tia-private/newtia/server_command.h \
-    include/tia-private/newtia/socket.h \
+    include/tia-private/newtia/network/socket.h \
     #include/tia-private/newtia/commands/stop_data_transmission_server_command.h \
     include/tia-private/newtia/data_server.h \
     #include/tia-private/newtia/commands/start_data_transmission_server_command.h \
@@ -75,7 +75,7 @@ HEADERS += include/tia/tia_server.h \
     include/tia-private/newtia/tia_control_command.h \
     include/tia-private/newtia/commands/check_protocol_version_control_command.h \
     include/tia-private/newtia/messages/standard_control_messages.h \
-    include/tia-private/newtia/boost_socket_impl.h \
+    include/tia-private/newtia/network_impl/boost_socket_impl.h \
     include/tia-private/newtia/fusty_data_server_impl.h \
     include/tia-private/newtia/version_1_0/tia_control_message_builder_1_0.h \
     include/tia-private/newtia/tia_control_command_context.h \
@@ -86,9 +86,11 @@ HEADERS += include/tia/tia_server.h \
     include/tia-private/newtia/hardware_interface.h \
     include/tia-private/newtia/fusty_hardware_interface_impl.h \
     include/tia-private/client/tia_new_client_impl.h \
-    include/tia-private/newtia/boost_udp_read_socket.h \
+    include/tia-private/newtia/network_impl/boost_udp_read_socket.h \
     include/tia-private/newtia/tia_datapacket_builder.h \
-    include/tia-private/newtia/tia_datapacket.h
+    include/tia-private/newtia/tia_datapacket.h \
+    include/tia-private/newtia/network/input_stream.h \
+    include/tia-private/newtia/network/read_socket.h
 SOURCES += src/tia/tia_server.cpp \
     src/tia/constants.cpp \
     src/tia/config/control_message_decoder.cpp \
@@ -113,13 +115,13 @@ SOURCES += src/tia/tia_server.cpp \
     #src/tia/newtia/server_command.cpp \
     src/tia/newtia/version_1_0/tia_control_message_parser_1_0.cpp \
     src/tia/newtia/server_control_connection.cpp \
-    src/tia/newtia/boost_tcp_socket_impl.cpp \
+    src/tia/newtia/network_impl/boost_tcp_socket_impl.cpp \
     src/tia/newtia/fusty_data_server_impl.cpp \
     src/tia/newtia/commands/start_data_transmission_control_command.cpp \
     src/tia/newtia/commands/stop_data_transmission_control_command.cpp \
     src/tia/newtia/tia_meta_info_parse_and_build_functions.cpp \
     src/tia/client/tia_new_client_impl.cpp \
-    src/tia/newtia/boost_udp_read_socket.cpp \
+    src/tia/newtia/network_impl/boost_udp_read_socket.cpp \
     src/tia/newtia/tia_datapacket_builder.cpp
 unix:SOURCES += extern/include/LptTools/LptToolsLinux.cpp
 win32:SOURCES += extern/include/LptTools/LptTools_.cpp
