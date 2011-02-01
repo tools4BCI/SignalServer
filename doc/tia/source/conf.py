@@ -179,7 +179,7 @@ latex_font_size = '10pt'
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
   ('index', 'TiA-DocumentationofTOBIInterfaceA.tex', u'TiA 1.0',
-   u'Christoph Eibel', 'manual'),
+   u'Christoph Eibel', 'howto'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
