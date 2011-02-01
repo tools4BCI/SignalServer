@@ -1,6 +1,6 @@
 #include "test_socket.h"
-#include "tia-private/server/version_1_0/tia_control_message_tags_1_0.h"
-#include "tia-private/server/tia_exceptions.h"
+#include "tia-private/newtia/version_1_0/tia_control_message_tags_1_0.h"
+#include "tia-private/newtia/tia_exceptions.h"
 
 using std::string;
 using namespace tia::TiAControlMessageTags10;
