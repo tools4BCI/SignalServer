@@ -1,7 +1,7 @@
-#include "tia-private/server/tia_meta_info_parse_and_build_functions.h"
-#include "tia-private/server/tia_exceptions.h"
+#include "tia-private/newtia/tia_meta_info_parse_and_build_functions.h"
+#include "tia-private/newtia/tia_exceptions.h"
 
-#include "tia-private/server/string_utils.h"
+#include "tia-private/newtia/string_utils.h"
 #include "extern/include/rapidxml/rapidxml.hpp"
 #include "extern/include/rapidxml/rapidxml_print.hpp"
 

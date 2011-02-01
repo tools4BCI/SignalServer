@@ -1,7 +1,7 @@
 #ifndef TEST_DATA_SERVER_H
 #define TEST_DATA_SERVER_H
 
-#include "tia-private/server/data_server.h"
+#include "tia-private/newtia/data_server.h"
 
 #include <set>
 
