@@ -6,7 +6,7 @@
 
 #include "tia_datapacket.h"
 
-#include "socket.h"
+#include "network/input_stream.h"
 
 namespace tia
 {

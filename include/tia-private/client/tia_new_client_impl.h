@@ -3,7 +3,7 @@
 
 #include "tia_client_impl_base.h"
 #include "tia/ssconfig.h"
-#include "../newtia/socket.h"
+#include "../newtia/network/socket.h"
 #include "../newtia/tia_control_message_builder.h"
 #include "../newtia/tia_control_message_parser.h"
 
