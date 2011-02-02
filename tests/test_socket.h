@@ -1,7 +1,7 @@
 #ifndef TEST_SOCKET_H
 #define TEST_SOCKET_H
 
-#include "tia-private/server/socket.h"
+#include "tia-private/newtia/network/socket.h"
 
 //-----------------------------------------------------------------------------
 /// TestSocket

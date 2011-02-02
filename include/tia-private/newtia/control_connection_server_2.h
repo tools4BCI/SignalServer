@@ -1,7 +1,7 @@
 #ifndef SERVER_CONTROL_CONNECTION_H
 #define SERVER_CONTROL_CONNECTION_H
 
-#include "socket.h"
+#include "network/socket.h"
 #include "tia_control_command.h"
 #include "tia_control_command_context.h"
 #include "tia_control_message.h"

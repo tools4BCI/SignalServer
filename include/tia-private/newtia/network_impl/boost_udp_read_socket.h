@@ -1,7 +1,7 @@
 #ifndef BOOST_UDP_READ_SOCKET_H
 #define BOOST_UDP_READ_SOCKET_H
 
-#include "socket.h"
+#include "tia-private/newtia/network/read_socket.h"
 
 #include <boost/asio/ip/udp.hpp>
 #include <memory>

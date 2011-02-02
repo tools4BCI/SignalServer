@@ -1,6 +1,6 @@
 #include "../UnitTest++/UnitTest++.h"
 #include "../test_data_server.h"
-#include "tia-private/server/commands/get_data_connection_control_command.h"
+#include "tia-private/newtia/commands/get_data_connection_control_command.h"
 
 
 SUITE (ControlCommands)

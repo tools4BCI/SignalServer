@@ -1,6 +1,6 @@
 #include "UnitTest++/UnitTest++.h"
 
-#include "tia-private/server/boost_socket_impl.h"
+#include "tia-private/newtia/network_impl/boost_socket_impl.h"
 
 #include <boost/asio/ip/tcp.hpp>
 //#include <boost/thread.hpp>

@@ -12,5 +12,7 @@ TiA - Documentation of TOBI Interface A Version
    introduction
    signal_types
    control_connection
+   server_state
    data_packet
+   outlook
    appendix
