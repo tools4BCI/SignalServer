@@ -87,10 +87,11 @@ HEADERS += include/tia/tia_server.h \
     include/tia-private/newtia/fusty_hardware_interface_impl.h \
     include/tia-private/client/tia_new_client_impl.h \
     include/tia-private/newtia/network_impl/boost_udp_read_socket.h \
-    include/tia-private/newtia/tia_datapacket_builder.h \
+    include/tia-private/newtia/tia_datapacket_parser.h \
     include/tia-private/newtia/tia_datapacket.h \
     include/tia-private/newtia/network/input_stream.h \
-    include/tia-private/newtia/network/read_socket.h
+    include/tia-private/newtia/network/read_socket.h \
+    include/tia-private/newtia/commands/get_serverstate_connection_command.h
 SOURCES += src/tia/tia_server.cpp \
     src/tia/constants.cpp \
     src/tia/config/control_message_decoder.cpp \
@@ -122,7 +123,7 @@ SOURCES += src/tia/tia_server.cpp \
     src/tia/newtia/tia_meta_info_parse_and_build_functions.cpp \
     src/tia/client/tia_new_client_impl.cpp \
     src/tia/newtia/network_impl/boost_udp_read_socket.cpp \
-    src/tia/newtia/tia_datapacket_builder.cpp
+    src/tia/newtia/tia_datapacket_parser.cpp
 unix:SOURCES += extern/include/LptTools/LptToolsLinux.cpp
 win32:SOURCES += extern/include/LptTools/LptTools_.cpp
 

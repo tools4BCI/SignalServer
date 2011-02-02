@@ -1,4 +1,4 @@
-#include "tia-private/newtia/tia_datapacket_builder.h"
+#include "tia-private/newtia/tia_datapacket_parser.h"
 
 #include <string>
 #include <iostream>
@@ -9,7 +9,7 @@ namespace tia
 {
 
 //-----------------------------------------------------------------------------
-tobiss::DataPacket TiADataPacketBuilder::buildFustyDataPacketFromStream (InputStream& input_stream)
+tobiss::DataPacket TiADataPacketParser::parseFustyDataPacketFromStream (InputStream& input_stream)
 {
     tobiss::DataPacket packet;
     char buffer[10000];
@@ -28,7 +28,7 @@ tobiss::DataPacket TiADataPacketBuilder::buildFustyDataPacketFromStream (InputSt
 }
 
 //-----------------------------------------------------------------------------
-tobiss::DataPacket3 TiADataPacketBuilder::buildFustyDataPacket3FromStream (InputStream& /*input_stream*/)
+tobiss::DataPacket3 TiADataPacketParser::parseFustyDataPacket3FromStream (InputStream& /*input_stream*/)
 {
     return tobiss::DataPacket3 ();
 }

@@ -9,7 +9,7 @@
 #include "tia-private/newtia/string_utils.h"
 #include "tia-private/newtia/network_impl/boost_socket_impl.h"
 #include "tia-private/newtia/network_impl/boost_udp_read_socket.h"
-#include "tia-private/newtia/tia_datapacket_builder.h"
+#include "tia-private/newtia/tia_datapacket_parser.h"
 
 using namespace tobiss;
 using namespace std;
@@ -116,8 +116,8 @@ void TiANewClientImpl::stopReceiving()
 //-----------------------------------------------------------------------------
 void TiANewClientImpl::getDataPacket (DataPacket& packet)
 {
-    TiADataPacketBuilder packet_builder;
-    packet = packet_builder.buildFustyDataPacketFromStream (*data_socket_);
+    TiADataPacketParser packet_builder;
+    packet = packet_builder.parseFustyDataPacketFromStream (*data_socket_);
 }
 
 //-----------------------------------------------------------------------------
