@@ -86,7 +86,7 @@ void generateRawDataPacketVersion3 (unsigned char* target_memory,
     target_memory[23] = (connection_packet_number >> 48) & 0xFF;
     target_memory[24] = (connection_packet_number >> 56) & 0xFF;
 
-    // posix timestamp: byte [25]-[32], little endian
+    // milliseconds since server start: byte [25]-[32], little endian
     memcpy (target_memory + 25, &time_stamp, 8);
 
     // end of fixed header
