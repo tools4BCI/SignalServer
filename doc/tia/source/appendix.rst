@@ -15,3 +15,11 @@ TiA MetaInfo XML Example
    :language: xml
    :encoding: utf-8
    :linenos:
+
+TiA Error Message XML Schema
+----------------------------
+.. literalinclude:: tia_error_message_schema.xsd
+   :language: xml
+   :encoding: utf-8
+   :linenos:
+
