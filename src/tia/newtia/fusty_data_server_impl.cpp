@@ -1,5 +1,5 @@
-#include "tia-private/server/fusty_data_server_impl.h"
-#include "tia-private/server/tia_exceptions.h"
+#include "tia-private/newtia/fusty_data_server_impl.h"
+#include "tia-private/newtia/tia_exceptions.h"
 
 #include <iostream>
 

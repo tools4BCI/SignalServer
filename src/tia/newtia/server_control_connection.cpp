@@ -1,15 +1,15 @@
-#include "tia-private/server/control_connection_server_2.h"
-#include "tia-private/server/commands/check_protocol_version_control_command.h"
-#include "tia-private/server/commands/get_data_connection_control_command.h"
-#include "tia-private/server/commands/start_data_transmission_control_command.h"
-#include "tia-private/server/commands/stop_data_transmission_control_command.h"
-#include "tia-private/server/commands/get_metainfo_control_command.h"
+#include "tia-private/newtia/control_connection_server_2.h"
+#include "tia-private/newtia/commands/check_protocol_version_control_command.h"
+#include "tia-private/newtia/commands/get_data_connection_control_command.h"
+#include "tia-private/newtia/commands/start_data_transmission_control_command.h"
+#include "tia-private/newtia/commands/stop_data_transmission_control_command.h"
+#include "tia-private/newtia/commands/get_metainfo_control_command.h"
 
-#include "tia-private/server/version_1_0/tia_control_message_tags_1_0.h"
-#include "tia-private/server/version_1_0/tia_control_message_parser_1_0.h"
-#include "tia-private/server/version_1_0/tia_control_message_builder_1_0.h"
-#include "tia-private/server/messages/standard_control_messages.h"
-#include "tia-private/server/tia_exceptions.h"
+#include "tia-private/newtia/version_1_0/tia_control_message_tags_1_0.h"
+#include "tia-private/newtia/version_1_0/tia_control_message_parser_1_0.h"
+#include "tia-private/newtia/version_1_0/tia_control_message_builder_1_0.h"
+#include "tia-private/newtia/messages/standard_control_messages.h"
+#include "tia-private/newtia/tia_exceptions.h"
 
 using std::string;
 
