@@ -98,12 +98,7 @@ Representation:
   CheckProtocolVersion\n
   \n
 
-Server Response
-::
-
-
-or 
-
+Server responses either with an OK or an error message.
 
 
 Get MetaInfo
@@ -119,7 +114,7 @@ Representation:
   \n
 
 
-Server Response:
+Server response:
 ::
 
   TiA 1.0\n
@@ -128,13 +123,7 @@ Server Response:
   \n
   <?xml version="1.0" encoding="UTF-8"?><tiaMetaInfo version="1.0">....</tiaMetaInfo>
 
-or
-
-::
-
-  TiA 1.0\n
-  Error\n
-  \n
+or an error message.
 
 
 Get Data Transmission
@@ -165,13 +154,7 @@ Server Response:
   DataConnectionPort: [Port-Number] \n
   \n
   
-or
-
-::
-
-  TiA 1.0 \n
-  Error \n
-  \n
+or an error message.
 
 
 Start Data Transmission
@@ -184,21 +167,7 @@ Representation:
   \n
 
 
-Server Response:
-::
-
-  TiA 1.0 \n
-  OK \n
-  \n
-
-or
-
-::
-
-  TiA 1.0 \n
-  Error \n
-  \n
-  
+Server responses either with an OK or an error message.
 
 
 Stop Data Transmission
@@ -210,21 +179,26 @@ Representation:
   StopDataTransmission \n
   \n
 
+Server responses either with an OK or an error message.
+
+
+Get Server State Connection
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Representation:
+::
+
+  TiA 1.0\n
+  GetServerStateConnection\n
+  \n
+
 Server Response:
 ::
 
-  TiA 1.0 \n
-  OK \n
+  TiA 1.0\n
+  ServerStateConnectionPort: [Port-Number]\n
   \n
-
-or
-
-::
-
-  TiA 1.0 \n
-  Error \n
-  \n
-
+  
+or an error message.
 
 
 TiA Meta Info
