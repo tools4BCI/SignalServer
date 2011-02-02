@@ -62,7 +62,7 @@ RawMem3::RawMem3(uint8_t packet_version, uint32_t flags, uint64_t packet_id, uin
   uint8_t* ui8_ptr = reinterpret_cast<uint8_t*>(mem_);
   *ui8_ptr++ = packet_version;
 
-  uint32_t* ui32_ptr = reinterpret_cast<uint32_t*>(mem_);
+  uint32_t* ui32_ptr = reinterpret_cast<uint32_t*>(ui8_ptr);
   *ui32_ptr++ = size_;
   *ui32_ptr++ = flags;
 
