@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70010" creator="Ipe 7.0.10">
-<info created="D:20090527163342" modified="D:20100917120403"/>
+<info created="D:20090527163342" modified="D:20110202194601"/>
 <ipestyle name="ipe6">
 <symbol name="mark/circle(sx)" transformations="translations">
 <path fill="sym-stroke">
@@ -142,8 +142,8 @@ h
 h
 </path>
 <text transformations="translations" pos="40 808" stroke="black" type="label" width="460.447" height="17.213" depth="0" valign="baseline" size="Huge">TOBI Interface A:  Client -- Server Handshake:</text>
-<text transformations="translations" pos="64 768" stroke="black" type="label" width="90.047" height="11.954" depth="3.35" valign="baseline" size="LARGE">Signal Server</text>
-<text matrix="1 0 0 1 40 0" transformations="translations" pos="424 768" stroke="black" type="label" width="41.526" height="11.955" depth="0" valign="baseline" size="LARGE">Client</text>
+<text transformations="translations" pos="64 768" stroke="black" type="label" width="75.798" height="11.761" depth="0" valign="baseline" size="LARGE">TiA Server</text>
+<text matrix="1 0 0 1 40 0" transformations="translations" pos="424 768" stroke="black" type="label" width="74.449" height="11.955" depth="0" valign="baseline" size="LARGE">TiA Client</text>
 <path matrix="0.6 0 0 0.609375 201.6 264.875" stroke="black">
 440 672 m
 528 672 l
@@ -217,7 +217,8 @@ h
 120 636
 144 644 s
 </path>
-<text matrix="1 0 0 1 -16 48" transformations="translations" pos="48 560" stroke="black" type="minipage" width="96" height="18.866" depth="13.9" valign="top">load config from xml file or wait for remote config</text>
+<text matrix="1 0 0 1 -16 48" transformations="translations" pos="48 560" stroke="black" type="minipage" width="96" height="19.139" depth="14.18" valign="top">load config\\
+ (future plans: or wait for remote config)</text>
 <path matrix="1 0 0 1 0 32" stroke="black">
 64 592 m
 64 720 l
@@ -233,21 +234,21 @@ h
 144 608 m
 144 16 l
 </path>
-<path matrix="1 0 0 1 -0.0309535 0.703063" stroke="black" dash="dashed">
+<path matrix="1 0 0 1 -0.0309535 0.703063" stroke="black" dash="dotted">
 8 0 0 8 184 560 e
 </path>
 <text matrix="1 0 0 1 -19.3059 4.5875" transformations="translations" pos="200 552" stroke="black" type="label" width="5.853" height="7.704" depth="0" valign="baseline" size="large">3</text>
 <text matrix="1 0 0 1 2.20994 15.9114" transformations="translations" pos="195.15 544" stroke="black" type="minipage" width="222.121" height="5.958" depth="0.96" valign="top">send xml-file to server</text>
-<path matrix="1 0 0 1 223.969 -31.2969" stroke="black" dash="dashed">
+<path matrix="1 0 0 1 223.969 -31.2969" stroke="black" dash="dotted">
 8 0 0 8 184 560 e
 </path>
 <text matrix="1 0 0 1 205.347 -27.3328" transformations="translations" pos="200 552" stroke="black" type="label" width="5.853" height="7.704" depth="0" valign="baseline" size="large">4</text>
 <text matrix="1 0 0 1 2.20994 -16.0886" transformations="translations" pos="195.15 544" stroke="black" type="minipage" width="222.121" height="7.473" depth="2.49" valign="top">set remote config response: OK/error</text>
-<path stroke="black" rarrow="normal/normal">
+<path stroke="black" dash="dotted" rarrow="normal/normal">
 160 544 m
 432 544 l
 </path>
-<path stroke="black" arrow="normal/normal">
+<path stroke="black" dash="dotted" arrow="normal/normal">
 160 512 m
 432 512 l
 </path>
@@ -259,31 +260,31 @@ h
 8 0 0 8 184 560 e
 </path>
 <text matrix="1 0 0 1 -18.8597 -59.3328" transformations="translations" pos="200 552" stroke="black" type="label" width="5.853" height="7.704" depth="0" valign="baseline" size="large">5</text>
-<text matrix="1 0 0 1 2.20994 -48.0886" transformations="translations" pos="195.15 544" stroke="black" type="minipage" width="222.121" height="6.926" depth="1.93" valign="top">request config from server</text>
+<text matrix="1 0 0 1 2.20994 -48.0886" transformations="translations" pos="195.15 544" stroke="black" type="minipage" width="222.121" height="6.926" depth="1.93" valign="top">request meta information from server</text>
 <path matrix="1 0 0 1 223.969 -95.2969" stroke="black">
 8 0 0 8 184 560 e
 </path>
 <text matrix="1 0 0 1 205.14 -91.1256" transformations="translations" pos="200 552" stroke="black" type="label" width="5.853" height="7.704" depth="0" valign="baseline" size="large">6</text>
-<text matrix="1 0 0 1 2.20994 -80.0886" transformations="translations" pos="195.15 544" stroke="black" type="minipage" width="222.121" height="6.926" depth="1.93" valign="top">send signal server configuration</text>
+<text matrix="1 0 0 1 2.20994 -80.0886" transformations="translations" pos="195.15 544" stroke="black" type="minipage" width="222.121" height="5.958" depth="0.96" valign="top">send meta information</text>
 <path matrix="1 0 0 1 0 -64" stroke="black" arrow="normal/normal">
 160 512 m
 432 512 l
 </path>
-<path matrix="1 0 0 1 -0.0309535 -127.297" stroke="black" dash="dashed">
+<path matrix="1 0 0 1 -0.0309535 -127.297" stroke="black" dash="dotted">
 8 0 0 8 184 560 e
 </path>
 <text matrix="1 0 0 1 -18.6525 -123.54" transformations="translations" pos="200 552" stroke="black" type="label" width="5.853" height="7.704" depth="0" valign="baseline" size="large">7</text>
 <text matrix="1 0 0 1 2.20994 -112.089" transformations="translations" pos="195.15 544" stroke="black" type="minipage" width="222.121" height="6.926" depth="1.93" valign="top">select channels, signal types, sampling rate</text>
-<path matrix="1 0 0 1 223.969 -159.297" stroke="black" dash="dashed">
+<path matrix="1 0 0 1 223.969 -159.297" stroke="black" dash="dotted">
 8 0 0 8 184 560 e
 </path>
 <text matrix="1 0 0 1 204.892 -155.374" transformations="translations" pos="200 552" stroke="black" type="label" width="5.853" height="7.704" depth="0" valign="baseline" size="large">8</text>
 <text matrix="1 0 0 1 2.20994 -144.089" transformations="translations" pos="195.15 544" stroke="black" type="minipage" width="222.121" height="7.473" depth="2.49" valign="top">client specific selection response: OK/error</text>
-<path matrix="1 0 0 1 0 -128" stroke="black" rarrow="normal/normal">
+<path matrix="1 0 0 1 0 -128" stroke="black" dash="dotted" rarrow="normal/normal">
 160 544 m
 432 544 l
 </path>
-<path matrix="1 0 0 1 0 -128" stroke="black" arrow="normal/normal">
+<path matrix="1 0 0 1 0 -128" stroke="black" dash="dotted" arrow="normal/normal">
 160 512 m
 432 512 l
 </path>
@@ -337,16 +338,16 @@ UDP: listen to assigned port</text>
 8 0 0 8 184 560 e
 </path>
 <text matrix="1 0 0 1 202.331 -322.836" transformations="translations" pos="200 552" stroke="black" type="label" width="11.706" height="7.704" depth="0" valign="baseline" size="large">13</text>
-<path matrix="1 0 0 1 0 -64" stroke="black" arrow="normal/normal">
+<path matrix="1 0 0 1 0 -64" stroke="black" dash="dotted" arrow="normal/normal">
 160 208 m
 432 208 l
 </path>
-<path matrix="1 0 0 1 0 -40" stroke="black" rarrow="normal/normal">
+<path matrix="1 0 0 1 0 -40" stroke="black" dash="dotted" rarrow="normal/normal">
 160 216 m
 432 216 l
 </path>
 <text matrix="1 0 0 1 2.20994 -352.089" transformations="translations" pos="195.15 544" stroke="black" type="minipage" width="222.121" height="6.926" depth="1.93" valign="top">keep alive packets</text>
-<path matrix="1 0 0 1 -0.031 -367.297" stroke="black">
+<path matrix="1 0 0 1 -0.031 -367.297" stroke="black" dash="dotted">
 8 0 0 8 184 560 e
 </path>
 <text matrix="1 0 0 1 -21.669 -362.836" transformations="translations" pos="200 552" stroke="black" type="label" width="11.706" height="7.704" depth="0" valign="baseline" size="large">14</text>
@@ -362,17 +363,17 @@ UDP: listen to assigned port</text>
 <use matrix="1 0 0 1 0 -16" name="mark/disk(sx)" pos="296 152" size="normal" stroke="black"/>
 <use matrix="1 0 0 1 0 -16" name="mark/disk(sx)" pos="296 144" size="normal" stroke="black"/>
 <use matrix="1 0 0 1 0 -16" name="mark/disk(sx)" pos="296 136" size="normal" stroke="black"/>
-<text matrix="1 0 0 1 408 48" transformations="translations" pos="48 560" stroke="black" type="minipage" width="96" height="12.5" depth="7.52" valign="top">startup;\\
-if given: load xml file</text>
+<text matrix="1 0 0 1 408 48" transformations="translations" pos="48 560" stroke="black" type="minipage" width="96" height="18.739" depth="13.79" valign="top">startup;\\
+(future plans: if given -- load config file)</text>
 <text matrix="1 0 0 1 32 -16" transformations="translations" pos="32 72" stroke="black" type="minipage" width="104" height="12.891" depth="7.92" valign="top">close connection\\
 to specific client</text>
 <text matrix="1 0 0 1 424 -16" transformations="translations" pos="32 72" stroke="black" type="minipage" width="104" height="12.891" depth="7.92" valign="top">close connection\\
 to signal server</text>
-<path matrix="1 0 0 1 24 0" stroke="red" dash="dashed" pen="ultrafat">
+<path matrix="1 0 0 1 24 0" stroke="gray4" dash="dashed" pen="ultrafat">
 272 760 m
 272 616 l
 </path>
-<text matrix="1 0 0 1 -120 -16" transformations="translations" pos="424 768" stroke="red" type="label" width="27.726" height="11.761" depth="0" valign="baseline" size="LARGE">TiA</text>
+<text matrix="1 0 0 1 -120 -16" transformations="translations" pos="424 768" stroke="gray4" type="label" width="27.726" height="11.761" depth="0" valign="baseline" size="LARGE">TiA</text>
 <path stroke="black" arrow="normal/normal">
 136 696 m
 768.01 0 0 -768.01 292 -56 448 696 a
@@ -381,14 +382,38 @@ to signal server</text>
 136 680 m
 768.01 0 0 768.01 292 1432 448 680 a
 </path>
-<path matrix="1 0 0 1 0 -48" stroke="black" arrow="normal/normal">
+<path matrix="1 0 0 1 0 -48" stroke="black" dash="dotted" arrow="normal/normal">
 160 208 m
 432 208 l
 </path>
 <text matrix="1 0 0 1 1.85981 -372.641" transformations="translations" pos="195.15 544" stroke="black" type="minipage" width="222.121" height="6.926" depth="1.93" valign="top">keep alive response</text>
-<path matrix="1 0 0 1 0 8" stroke="black" rarrow="normal/normal">
+<path matrix="1 0 0 1 0 8" stroke="black" dash="dotted" rarrow="normal/normal">
 160 144 m
 432 144 l
 </path>
+<path stroke="black" dash="dashed" pen="fat">
+128 704 m
+128 672 l
+120 672 l
+120 704 l
+h
+</path>
+<path stroke="black" dash="dashed" pen="fat">
+456 704 m
+456 672 l
+464 672 l
+464 704 l
+h
+</path>
+<path stroke="black">
+124.157 679.654 m
+160 656 l
+</path>
+<path stroke="black">
+459.472 679.384 m
+416 656 l
+</path>
+<text matrix="1 0 0 1 -32 0" transformations="translations" pos="168 648" stroke="black" type="label" width="112.763" height="6.13" depth="1.74" valign="baseline" size="small">incomming TCP connection</text>
+<text matrix="1 0 0 1 176 0" transformations="translations" pos="168 648" stroke="black" type="label" width="103.548" height="6.13" depth="1.74" valign="baseline" size="small">outgoing TCP connection</text>
 </page>
 </ipe>

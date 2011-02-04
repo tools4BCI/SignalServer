@@ -90,7 +90,6 @@ void ArtificialSignalSource::run()
     cout << "ArtificialSignalSource: run" << endl;
   #endif
 
-  cout << " * " << type_ << " sucessfully started" << endl;
   running_ = 1;
   generateSignal();
 }
@@ -104,7 +103,6 @@ void ArtificialSignalSource::stop()
     cout << "ArtificialSignalSource: stop" << endl;
   #endif
 
-  cout << " * " << type_ << " sucessfully stopped" << endl;
   running_ = 0;
   cond_.notify_all();
 }

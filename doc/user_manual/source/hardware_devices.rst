@@ -1,5 +1,5 @@
 Specific Hardware Section Configuration with the XML Config File
-========================================================
+================================================================
 
 **Before using some hardware with the Signal Server, please read the manufacturers user manual!**
 
@@ -92,6 +92,13 @@ implemented soon.
 Using a too small blocksize for data acquisition might result in a loss of data.
 The following values are recomendations from g.tec:
 
+..
+  +----------------------+----+----+-----+-----+-----+-----+------+------+------+------+-------+-------+
+  | Sampling Rate \[Hz\] | 32 | 64 | 128 | 256 | 512 | 600 | 1200 | 2400 | 4800 | 9600 | 19200 | 38400 |
+  +======================+====+====+=====+=====+=====+=====+======+======+======+======+=======+=======+
+  | Block Size           |  1 |  2 |  4  |   8 |  16 |  32 |   64 |  128 |  256 |  512 |   512 |   512 |
+  +----------------------+----+----+-----+-----+-----+-----+------+------+------+------+-------+-------+
+
 ====================  ==========
 Sampling Rate \[Hz\]  Block Size
 ====================  ==========
@@ -118,7 +125,38 @@ of 4.
 
 **Notice: You can use  blocksize smaller than the recommeded values on your own risk!**
 
-If doing so, it is recommeded to perform extensive tests before.
+ (If doing so, it is recommeded to perform extensive tests before.)
+
+**Notice: g.USBamp running as slave without external sync is not supported yet! (4.2.2011)**
+
+Possible messages, warnings and known issues:
+---------------------------------------------
+
+* Received not enough data:
+
+  Staring the signal server with a connected g.UABamp, sometimes this message occurs for the first sample(s).
+  This could happen, because the amplifier returns a not completely filled buffer, especially at startup.
+  If this message occurs during runtime, often the signal servers process priority is too low or the used
+  blocksize is too small.
+  Missing values are filled up with "0".
+
+* Timeout:
+
+  If timeouts occur, please restart the g.USBamp and check the sync-cables, if multiple amps are used.
+  (Due to a already fixed bug, this happened frequently if the signal server was stopped and started again.
+  Starting and stopping the signal server a second time solved the problem.)
+
+* Unable to set filter settings:
+
+  Setting wring filter settings or also a wrong sampling rate (e.g. 500 Hz) produces errors setting the
+  hardware filter. Please re-check your settings if the desired filter is really supported.
+
+
+Description of g.USBamp specific configuration tags:
+----------------------------------------------------
+
+The g.USBamp provides adjustable online filtering and other features. The following sections
+explains which configuration settings can be done.
 ::
   <hardware name="g.usbamp" version="" serial="UA-2008.06.42">
     <mode> master </mode>
@@ -174,8 +212,6 @@ If doing so, it is recommeded to perform extensive tests before.
     </channel_settings>
   </hardware>
 
-Description of g.USBamp specific configuration tags:
-----------------------------------------------------
 
 Every g.USBamp is equipped with a unique serial number. The respective device used for
 acquisition is specified via its serial in the "serial" tag (here: UA-2008.06.42).
@@ -189,6 +225,7 @@ acquisition is specified via its serial in the "serial" tag (here: UA-2008.06.42
 The g.USBamp has the possibilty to use different built in filters for pre-signal processing.
 Possible filter settings are listed in a supplementary file called "g.USBamp_filter_settings.txt"
 or can also be listed with the program "list_usbamp_filter_settings.exe".
+(g.USBamp driver version 3.10.0 -- only chebyshev filters are suported yet by the amplifier)
 
   ``<filter type="chebyshev" order="8" f_low="0.5" f_high="100"/>``
 

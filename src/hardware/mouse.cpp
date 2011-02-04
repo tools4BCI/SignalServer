@@ -60,9 +60,9 @@ MouseBase::MouseBase(ticpp::Iterator<ticpp::Element> hw)
 	vector<boost::uint32_t> v;
 	empty_block_.init(0,0, v);
 
-	cout << " * Mouse sucessfully initialized -- running as aperiodic: ";
-	cout << (mode_ == APERIODIC) << ";  ";
-	cout << "Mouse ID: " << id_ << ",  Name: " << name_;
+  //	cout << " * Mouse sucessfully initialized -- running as aperiodic: ";
+  //	cout << (mode_ == APERIODIC) << ";  ";
+	cout << " --> Mouse ID: " << id_ << ",  Name: " << name_;
 	cout<<", vid: "<<vid_<<", pid: "<<pid_<<endl;
 }
 
@@ -159,7 +159,7 @@ void MouseBase::setDeviceSettings(ticpp::Iterator<ticpp::Element>const& father)
 
     ticpp::Iterator<ticpp::Element> elem3(father->FirstChildElement(usb_port,true));
     setUsbPort(elem3);
-    
+
   string naming;
   string type;
 
@@ -301,7 +301,7 @@ int MouseBase::freeKernelDriver(){
 }
 
 void MouseBase::acquireData(){
-  
+
 }
 
 //-----------------------------------------------------------------------------
