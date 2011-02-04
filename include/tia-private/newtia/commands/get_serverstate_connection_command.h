@@ -1,6 +1,6 @@
 #ifndef GET_SERVERSTATE_CONNECTION_COMMAND_H
 #define GET_SERVERSTATE_CONNECTION_COMMAND_H
-/*
+
 #include "../tia_control_command.h"
 
 namespace tia
@@ -23,6 +23,6 @@ private:
     DataServer& data_server_;
 };
 
-}*/
+}
 
 #endif // GET_SERVERSTATE_CONNECTION_COMMAND_H

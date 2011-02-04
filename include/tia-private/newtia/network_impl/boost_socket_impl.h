@@ -15,6 +15,7 @@ class TCPConnection;
 namespace tia
 {
 
+//-----------------------------------------------------------------------------
 class BoostTCPSocketImpl : public Socket
 {
 public:
@@ -24,15 +25,11 @@ public:
         socket_->connect (endpoint);
     }
 
-    BoostTCPSocketImpl (boost::asio::io_service& io_service, boost::shared_ptr<tobiss::TCPConnection> con);
+    BoostTCPSocketImpl (boost::shared_ptr<tobiss::TCPConnection> con);
 
-    virtual ~BoostTCPSocketImpl ()
-    {
-        socket_->close ();
-        buffered_string_.clear ();
-        if (!fusty_connection_.get ())
-            delete socket_;
-    }
+    BoostTCPSocketImpl (boost::shared_ptr<boost::asio::ip::tcp::socket> boost_socket);
+
+    virtual ~BoostTCPSocketImpl ();
 
     virtual std::string readLine (unsigned max_length);
     virtual std::string readString (unsigned length);
@@ -42,9 +39,8 @@ public:
 
 private:
     void readBytes (unsigned num_bytes);
-
     boost::shared_ptr<tobiss::TCPConnection> fusty_connection_;
-    boost::asio::ip::tcp::socket* socket_;
+    boost::shared_ptr<boost::asio::ip::tcp::socket> socket_;
     std::string buffered_string_;
 };
 
