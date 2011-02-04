@@ -13,14 +13,25 @@ namespace tia
 {
 
 //-----------------------------------------------------------------------------
-BoostTCPSocketImpl::BoostTCPSocketImpl (boost::asio::io_service& io_service,
-                                        boost::shared_ptr<tobiss::TCPConnection> con)
+BoostTCPSocketImpl::BoostTCPSocketImpl (boost::shared_ptr<tobiss::TCPConnection> con)
    : fusty_connection_ (con)
 {
-    socket_ = &(con->socket());
 }
 
+//-----------------------------------------------------------------------------
+BoostTCPSocketImpl::BoostTCPSocketImpl (boost::shared_ptr<boost::asio::ip::tcp::socket> boost_socket)
+    : socket_ (boost_socket)
+{
 
+}
+
+//-----------------------------------------------------------------------------
+BoostTCPSocketImpl::~BoostTCPSocketImpl ()
+{
+    if (socket_)
+        socket_->close ();
+    buffered_string_.clear ();
+}
 
 //-----------------------------------------------------------------------------
 string BoostTCPSocketImpl::readLine (unsigned /*max_length*/)
@@ -76,9 +87,12 @@ void BoostTCPSocketImpl::waitForData ()
 void BoostTCPSocketImpl::sendString (string const& str)
 {
     boost::system::error_code error;
-    socket_->send (boost::asio::buffer (str), 0, error);
+    if (fusty_connection_)
+        fusty_connection_->socket().send (boost::asio::buffer (str), 0, error);
+    else
+        socket_->send (boost::asio::buffer (str), 0, error);
     if (error)
-        throw TiALostConnection ("BoostTCPSocketImpl");
+        throw TiALostConnection ("BoostTCPSocketImpl: sending string failed");
 }
 
 //-----------------------------------------------------------------------------
@@ -86,27 +100,41 @@ void BoostTCPSocketImpl::readBytes (unsigned num_bytes)
 {
     boost::system::error_code error;
 
-    unsigned available = socket_->available (error);
+    unsigned available = 0;
+    if (fusty_connection_)
+        available = fusty_connection_->socket().available (error);
+    else
+        available = socket_->available (error);
+
     if (error)
-        throw TiALostConnection ("BoostTCPSocketImpl");
+        throw TiALostConnection ("BoostTCPSocketImpl: error calling available: " + string (error.category().name()) + error.message());
     unsigned allocating = std::max<unsigned> (num_bytes, available);
 
     char* data = new char [allocating];
-    socket_->read_some (boost::asio::buffer (data, available), error);
+    if (fusty_connection_)
+        fusty_connection_->socket().read_some (boost::asio::buffer (data, available), error);
+    else
+        socket_->read_some (boost::asio::buffer (data, available), error);
+
     if (error)
-        throw TiALostConnection ("BoostTCPSocketImpl");
+        throw TiALostConnection ("BoostTCPSocketImpl: error read_some");
+
     buffered_string_.append (data, available);
 
     if (available < num_bytes)
     {
-        socket_->read_some (boost::asio::buffer (data, num_bytes - available), error);
+        if (fusty_connection_)
+            fusty_connection_->socket().read_some (boost::asio::buffer (data, num_bytes - available), error);
+        else
+            socket_->read_some (boost::asio::buffer (data, num_bytes - available), error);
+
         if (error)
-            throw TiALostConnection ("BoostTCPSocketImpl");
+            throw TiALostConnection ("BoostTCPSocketImpl: error read_some 2");
 
         buffered_string_.append (data, num_bytes - available);
     }
 
-    delete data;
+    delete[] data;
 }
 
 

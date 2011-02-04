@@ -12,6 +12,8 @@ INCLUDEPATH += $$PWD/. \
     $$PWD/extern/include
 DEPENDPATH += $$INCLUDEPATH
 
+PRE_TARGETDEPS += $$PWD/lib/libtia.a
+
 DEFINES += TIXML_USE_TICPP
 
 #QMAKE_CXXFLAGS += -fprofile-arcs -ftest-coverage
@@ -57,7 +59,8 @@ SOURCES += \
     tests/tia_version_1_0/tia_control_message_parser_1_0_tests.cpp \
     tests/test_socket.cpp \
     tests/boost_socket_tests.cpp \
-    tests/control_commands/get_data_transmission.cpp
+    tests/control_commands/get_data_transmission.cpp \
+    tests/tia_version_1_0/tia_tcp_server_socket_tests.cpp
 
 HEADERS += \
     tests/datapacket_tests_fixtures.h \
