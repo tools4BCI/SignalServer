@@ -12,7 +12,7 @@ Position (Byte) Length (Byte) Type               Content
 5               4             unsigned integer   Signal type flags
 9               8             unsigned integer   Packet id
 17              8             unsigned integer   Connection packet number
-25              8             unsigned integer   Time stamp (milliseconds since server start)
+25              8             unsigned integer   Time stamp
 =============== ============= ================== ============================================
 
 Packet Size
@@ -21,6 +21,10 @@ The packet size is the total number of bytes (octets) of a datapacket including 
 the variable header and the data. 
 
 The packet size of an empty datapacket is 33.
+
+Time Stamp
+**********
+microseconds since server start
 
 Variable Header
 ---------------
