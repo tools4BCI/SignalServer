@@ -145,11 +145,11 @@ BrainAmpSeries::BrainAmpSeries(ticpp::Iterator<ticpp::Element> hw)
   unsigned int nMinor = (driver_version_ % 1000000) / 10000;
   unsigned int nMajor = driver_version_ / 1000000;
 
-  cout << endl;
-  cout << " * Brainamp sucessfully initialized -- Mode: " << acqu_type_ << endl;
-  cout << "    driver version: " << nMajor << "." << nMinor << "." << nModule << endl;
-  cout << "    fs: " << fs_ << "Hz, nr of channels: " << nr_ch_ << ", blocksize: " << blocks_ << endl;
-  cout << endl;
+//  cout << endl;
+  cout << " --> Using Brainamp -- Mode: " << acqu_type_ <<;
+  cout << " -- driver version: " << nMajor << "." << nMinor << "." << nModule << endl;
+//  cout << "    fs: " << fs_ << "Hz, nr of channels: " << nr_ch_ << ", blocksize: " << blocks_ << endl;
+//  cout << endl;
 
 #ifdef DEBUG
   for (int n = 0; n < nr_ch_; n++)
@@ -195,8 +195,6 @@ void BrainAmpSeries::run()
       throw(std::runtime_error("Run failed (check battery, power switch and connectors) -- Error code: "  +  lexical_cast<string>(GetLastError() ) ));
   }
   running_ = 1;
-
-  cout << " * Brainamp sucessfully started" << endl;
 }
 
 //-----------------------------------------------------------------------------
@@ -207,8 +205,6 @@ void BrainAmpSeries::stop()
   DWORD bytes_returned = 0;
   if(!DeviceIoControl(dev_handle_, IOCTL_BA_STOP, NULL, 0, NULL, 0, &bytes_returned, NULL))
     throw(std::runtime_error("Stop failed, error code: "+  lexical_cast<string>(GetLastError() ) ) );
-
-  cout << " * Brainamp sucessfully stopped" << endl;
 }
 
 //-----------------------------------------------------------------------------

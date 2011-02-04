@@ -13,14 +13,23 @@ The Signal Server can be started by a quickstart where the file "server_config.x
 read (operating system dependent) or by passing an individual config file to the Signal Server.
 
 ====
-Start Commands for individual config files:
+Startup Commands:
 ====
+
+Individual config files:
+------------------------
 
   ``signalserver your_config_file.xml``
 
   or
 
   ``signalserver -f your_config_file.xml``
+
+List possible hardware:
+-----------------------
+
+  ``signalserver -l``
+
 
 ====
 Commands while the Signal Server is running:

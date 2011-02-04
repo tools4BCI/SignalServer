@@ -10,10 +10,13 @@ Signal Server -- User Manual
    :maxdepth: 3
 
    introduction
-   changelog
+
    requirements
    installation_instruction
    usage
    xml_config_description
    hardware_devices
 ==================
+
+..
+  changelog

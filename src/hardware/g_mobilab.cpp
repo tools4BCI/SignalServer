@@ -173,8 +173,6 @@ GMobilab::GMobilab(boost::asio::io_service& io, ticpp::Iterator<ticpp::Element> 
 
   data_.init(blocks_ , nr_ch_ , channel_types_);
 
-  std::cout << " * g.Mobilab sucessfully initialized" << std::endl;
-  std::cout << "    fs: " << fs_ << "Hz, nr of channels: " << nr_ch_  << ", blocksize: " << blocks_  << std::endl;
 }
 
 //-----------------------------------------------------------------------------
@@ -190,7 +188,6 @@ void GMobilab::run()
     async_acqu_thread_ = new boost::thread( boost::bind(&GMobilab::acquireData, this) );
 
   running_ = true;
-  std::cout << " * g.Mobilab sucessfully started" << std::endl;
 }
 
 //-----------------------------------------------------------------------------
@@ -214,7 +211,6 @@ void GMobilab::stop()
   std::vector<unsigned char> command(1,0x62);
   sync_write(command);
 
-  std::cout << " * g.Mobilab sucessfully stopped!" << std::endl;
 }
 
 //-----------------------------------------------------------------------------
