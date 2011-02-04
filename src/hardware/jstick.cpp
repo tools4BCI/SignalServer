@@ -62,9 +62,9 @@ JStick::JStick(ticpp::Iterator<ticpp::Element> hw)
 
   vector<boost::uint32_t> v;
   empty_block_.init(0,0, v);
-  cout << " * Joystick sucessfully initialized -- running as aperiodic: ";
-  cout << (mode_ == APERIODIC) << ";  ";
-  cout << "Jostick ID: " << id_ << ",  Name: " << name_ << endl;
+//  cout << " * Joystick sucessfully initialized -- running as aperiodic: ";
+//  cout << (mode_ == APERIODIC) << ";  ";
+  cout << " --> Jostick ID: " << id_ << ",  Name: " << name_ << endl;
   cout << " ... buttons: " << buttons_;
   cout << ", axes: " << axes_;
   cout << ", balls: " << balls_ << endl;

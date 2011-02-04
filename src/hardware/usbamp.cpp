@@ -168,69 +168,15 @@ USBamp::USBamp(ticpp::Iterator<ticpp::Element> hw)
     master_device_ = this;
 
   cout << endl;
-  cout << " * g.USBamp " << serial_ << " sucessfully initialized" << endl;
-  cout << "    driver version: " << usb_amp_.getDriverVersion () << ", hardware version: " << usb_amp_.getHWVersion (h_) << endl;
-  cout << "    fs: " << fs_ << "Hz, nr of channels: " << nr_ch_ << ", blocksize: " << blocks_ << endl;
-  cout << endl;
+  cout << " --> g.USBamp " << serial_;
+  cout << "  (driver version: " << usb_amp_.getDriverVersion ();
+  cout << ", hardware version: " << usb_amp_.getHWVersion (h_) << ")" <<  endl;
+
   if(!homogenous_signal_type_)
   {
     cout << "   ... NOTICE: Device is acquiring different signal types" << endl;
     cout << "     --  ensure that reference and ground settings are correctly set!" << endl;
   }
-
-  #ifdef DEBUG
-    map<uint16_t, pair<string, uint32_t> >::iterator it(channel_info_.begin());
-
-    cout << "Filter/Notch Settings:  (filter id size)" << filter_id_.size() <<endl;
-    for(unsigned int n = 0; n < filter_id_.size(); n++)
-    {
-      cout << "ch: " << it->first << " -- type: "<<  bp_filters_[ filter_id_[n] ].type;
-      cout << ", order: "  <<  bp_filters_[ filter_id_[n] ].order;
-      cout << ", f_low: "  <<  bp_filters_[ filter_id_[n] ].fu;
-      cout << ", f_high: " <<  bp_filters_[ filter_id_[n] ].fo;
-      cout << "; -- notch: type: " <<  notch_filters_[ notch_id_[n] ].type;
-      cout << ", order: "  <<  notch_filters_[ notch_id_[n] ].order;
-      cout << ", f_low: "  <<  notch_filters_[ notch_id_[n] ].fu;
-      cout << ", f_high: " <<  notch_filters_[ notch_id_[n] ].fo << endl;
-      it++;
-    }
-
-    GND ground;
-    usb_amp_.getGround(h_, &ground);
-    //    GT_GetGround(h_, &ground);
-
-    cout << "Ground settings: " << endl;
-    cout << ground.GND1 << ", " << ground.GND2 << ", ";
-    cout << ground.GND3 << ", " << ground.GND4 << endl;
-
-    REF reference;
-    usb_amp_.getReference(h_, &reference);
-    //    GT_GetReference(h_, &reference);
-
-    cout << "Reference settings: " << endl;
-    cout << reference.ref1 << ", " << reference.ref2 << ", ";
-    cout << reference.ref3 << ", " << reference.ref4 << endl;
-
-    cout << "Bipolar channel settings: " << endl;
-    cout << static_cast<uint32_t>(bipolar_channels_.Channel1) << ", " << static_cast<uint32_t>(bipolar_channels_.Channel2) << ", ";
-    cout << static_cast<uint32_t>(bipolar_channels_.Channel3) << ", " << static_cast<uint32_t>(bipolar_channels_.Channel4) << ", ";
-    cout << static_cast<uint32_t>(bipolar_channels_.Channel5) << ", " << static_cast<uint32_t>(bipolar_channels_.Channel6) << ", ";
-    cout << static_cast<uint32_t>(bipolar_channels_.Channel7) << ", " << static_cast<uint32_t>(bipolar_channels_.Channel8) << endl;
-    cout << static_cast<uint32_t>(bipolar_channels_.Channel9) << ", " << static_cast<uint32_t>(bipolar_channels_.Channel10) << ", ";
-    cout << static_cast<uint32_t>(bipolar_channels_.Channel11) << ", " << static_cast<uint32_t>(bipolar_channels_.Channel12) << ", ";
-    cout << static_cast<uint32_t>(bipolar_channels_.Channel13) << ", " << static_cast<uint32_t>(bipolar_channels_.Channel14) << ", ";
-    cout << static_cast<uint32_t>(bipolar_channels_.Channel15) << ", " << static_cast<uint32_t>(bipolar_channels_.Channel16) << endl;
-
-    cout << "DRL channel settings: " << endl;
-    cout << static_cast<uint32_t>(drl_channels_.Channel1) << ", " << static_cast<uint32_t>(drl_channels_.Channel2) << ", ";
-    cout << static_cast<uint32_t>(drl_channels_.Channel3) << ", " << static_cast<uint32_t>(drl_channels_.Channel4) << ", ";
-    cout << static_cast<uint32_t>(drl_channels_.Channel5) << ", " << static_cast<uint32_t>(drl_channels_.Channel6) << ", ";
-    cout << static_cast<uint32_t>(drl_channels_.Channel7) << ", " << static_cast<uint32_t>(drl_channels_.Channel8) << endl;
-    cout << static_cast<uint32_t>(drl_channels_.Channel9) << ", " << static_cast<uint32_t>(drl_channels_.Channel10) << ", ";
-    cout << static_cast<uint32_t>(drl_channels_.Channel11) << ", " << static_cast<uint32_t>(drl_channels_.Channel12) << ", ";
-    cout << static_cast<uint32_t>(drl_channels_.Channel13) << ", " << static_cast<uint32_t>(drl_channels_.Channel14) << ", ";
-    cout << static_cast<uint32_t>(drl_channels_.Channel15) << ", " << static_cast<uint32_t>(drl_channels_.Channel16) << endl;
-  #endif
 }
 
 //-----------------------------------------------------------------------------
@@ -408,7 +354,7 @@ void USBamp::fillSyncBuffer()
 
   if(bytes_received_[current_overlapped_] != expected_values_ * sizeof(float) )
   {
-    cerr << "Received not enough data  ... " << bytes_received_[current_overlapped_] << ";  expected: " << expected_values_ * sizeof(float) << endl;
+    cerr << "Received not enough data  at sample " << sample_count_ << "... " << bytes_received_[current_overlapped_] << ";  expected: " << expected_values_ * sizeof(float) << endl;
 
     for(unsigned int n = 0; n < ( (expected_values_ * sizeof(float) ) - bytes_received_[current_overlapped_] ) ; n++)
       driver_buffer_[current_overlapped_][ bytes_received_[current_overlapped_] + n ]  = 0;
@@ -566,6 +512,7 @@ void USBamp::stop()
 
   if(!running_)
     return;
+  cout << " * stopping USBamp "  << m_.find(hardware_serial_)->second << " ... ";
   boost::unique_lock<boost::shared_mutex> lock(rw_);
   running_ = 0;
 
@@ -586,7 +533,7 @@ void USBamp::stop()
     CloseHandle(data_Ev_[n]);
   lock.unlock();
 
-  cout << " * USBamp "  << m_.find(hardware_serial_)->second <<  " sucessfully stopped" << endl;
+
   serials_.erase(m_.find(hardware_serial_)->second);
 }
 
@@ -1766,3 +1713,62 @@ int USBamp::getUSBampBlockNr(const string& s)
 } // Namespace tobiss
 
 #endif // WIN32
+
+
+// DEBUG code from constructor
+
+//#ifdef DEBUG
+//  map<uint16_t, pair<string, uint32_t> >::iterator it(channel_info_.begin());
+//
+//  cout << "Filter/Notch Settings:  (filter id size)" << filter_id_.size() <<endl;
+//  for(unsigned int n = 0; n < filter_id_.size(); n++)
+//  {
+//    cout << "ch: " << it->first << " -- type: "<<  bp_filters_[ filter_id_[n] ].type;
+//    cout << ", order: "  <<  bp_filters_[ filter_id_[n] ].order;
+//    cout << ", f_low: "  <<  bp_filters_[ filter_id_[n] ].fu;
+//    cout << ", f_high: " <<  bp_filters_[ filter_id_[n] ].fo;
+//    cout << "; -- notch: type: " <<  notch_filters_[ notch_id_[n] ].type;
+//    cout << ", order: "  <<  notch_filters_[ notch_id_[n] ].order;
+//    cout << ", f_low: "  <<  notch_filters_[ notch_id_[n] ].fu;
+//    cout << ", f_high: " <<  notch_filters_[ notch_id_[n] ].fo << endl;
+//    it++;
+//  }
+//
+//  GND ground;
+//  usb_amp_.getGround(h_, &ground);
+//  //    GT_GetGround(h_, &ground);
+//
+//  cout << "Ground settings: " << endl;
+//  cout << ground.GND1 << ", " << ground.GND2 << ", ";
+//  cout << ground.GND3 << ", " << ground.GND4 << endl;
+//
+//  REF reference;
+//  usb_amp_.getReference(h_, &reference);
+//  //    GT_GetReference(h_, &reference);
+//
+//  cout << "Reference settings: " << endl;
+//  cout << reference.ref1 << ", " << reference.ref2 << ", ";
+//  cout << reference.ref3 << ", " << reference.ref4 << endl;
+//
+//  cout << "Bipolar channel settings: " << endl;
+//  cout << static_cast<uint32_t>(bipolar_channels_.Channel1) << ", " << static_cast<uint32_t>(bipolar_channels_.Channel2) << ", ";
+//  cout << static_cast<uint32_t>(bipolar_channels_.Channel3) << ", " << static_cast<uint32_t>(bipolar_channels_.Channel4) << ", ";
+//  cout << static_cast<uint32_t>(bipolar_channels_.Channel5) << ", " << static_cast<uint32_t>(bipolar_channels_.Channel6) << ", ";
+//  cout << static_cast<uint32_t>(bipolar_channels_.Channel7) << ", " << static_cast<uint32_t>(bipolar_channels_.Channel8) << endl;
+//  cout << static_cast<uint32_t>(bipolar_channels_.Channel9) << ", " << static_cast<uint32_t>(bipolar_channels_.Channel10) << ", ";
+//  cout << static_cast<uint32_t>(bipolar_channels_.Channel11) << ", " << static_cast<uint32_t>(bipolar_channels_.Channel12) << ", ";
+//  cout << static_cast<uint32_t>(bipolar_channels_.Channel13) << ", " << static_cast<uint32_t>(bipolar_channels_.Channel14) << ", ";
+//  cout << static_cast<uint32_t>(bipolar_channels_.Channel15) << ", " << static_cast<uint32_t>(bipolar_channels_.Channel16) << endl;
+//
+//  cout << "DRL channel settings: " << endl;
+//  cout << static_cast<uint32_t>(drl_channels_.Channel1) << ", " << static_cast<uint32_t>(drl_channels_.Channel2) << ", ";
+//  cout << static_cast<uint32_t>(drl_channels_.Channel3) << ", " << static_cast<uint32_t>(drl_channels_.Channel4) << ", ";
+//  cout << static_cast<uint32_t>(drl_channels_.Channel5) << ", " << static_cast<uint32_t>(drl_channels_.Channel6) << ", ";
+//  cout << static_cast<uint32_t>(drl_channels_.Channel7) << ", " << static_cast<uint32_t>(drl_channels_.Channel8) << endl;
+//  cout << static_cast<uint32_t>(drl_channels_.Channel9) << ", " << static_cast<uint32_t>(drl_channels_.Channel10) << ", ";
+//  cout << static_cast<uint32_t>(drl_channels_.Channel11) << ", " << static_cast<uint32_t>(drl_channels_.Channel12) << ", ";
+//  cout << static_cast<uint32_t>(drl_channels_.Channel13) << ", " << static_cast<uint32_t>(drl_channels_.Channel14) << ", ";
+//  cout << static_cast<uint32_t>(drl_channels_.Channel15) << ", " << static_cast<uint32_t>(drl_channels_.Channel16) << endl;
+//#endif
+
+

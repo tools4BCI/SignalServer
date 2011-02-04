@@ -66,7 +66,13 @@ HWAccess::HWAccess(boost::asio::io_service& io, XMLParser& parser)
     {
       HWThread* thread = HWThreadFactory::instance().createHWThread (parser.getHardwareElementName(n), io, parser.getHardwareElement(n));
       if (thread)
+      {
         slaves_.push_back (thread);
+        cout << " * " << thread->getType() << " successfully initialized" << endl;
+        cout << "    fs: " << thread->getSamplingRate();
+        cout << "Hz, nr of channels: " << thread->getNrOfChannels();
+        cout << ", blocksize: " << thread->getNrOfBlocks()  << endl;
+      }
     }
   }
   catch(std::invalid_argument& e)
@@ -284,17 +290,24 @@ void HWAccess::startDataAcquisition()
   if(slaves_.size())
     cout << endl << " Slaves:" << endl;
   for(unsigned int n = 0; n < slaves_.size(); n++)
+  {
     slaves_[n]->run();
+    cout << " * " << slaves_[n]->getType() << " successfully started" << endl;
+  }
 
   if(aperiodics_.size())
     cout << endl << " Aperiodic devices:" << endl;
   for(unsigned int n = 0; n < aperiodics_.size(); n++)
+  {
     aperiodics_[n]->run();
+    cout << " * " << aperiodics_[n]->getType() << " successfully started" << endl;
+  }
 
   event_listener_->run();
 
   cout << endl << " Master:" << endl;
   master_->run();
+  cout << " * " << master_->getType() << " successfully started" << endl;
 }
 
 //-----------------------------------------------------------------------------
@@ -307,8 +320,12 @@ void HWAccess::stopDataAcquisition()
 
   cout << endl;
   master_->stop();
+  cout << " * " << master_->getType() << " successfully stopped" << endl;
   for(unsigned int n = 0; n < slaves_.size(); n++)
+  {
     slaves_[n]->stop();
+    cout << " * " << slaves_[n]->getType() << " successfully started" << endl;
+  }
 }
 
 //-----------------------------------------------------------------------------

@@ -48,9 +48,6 @@ SineGenerator::SineGenerator(boost::asio::io_service& io, ticpp::Iterator<ticpp:
   setType("Sine Generator");
   setHardware(hw);
   init();
-
-  cout << " * SineGenerator sucessfully initialized" << endl;
-  cout << "    fs: " << fs_ << "Hz, nr of channels: " << nr_ch_  << ", blocksize: " << blocks_  << endl;
 }
 
 //-----------------------------------------------------------------------------
