@@ -1,26 +1,42 @@
 #include "tia-private/newtia/tia_server_state_server_impl.h"
-#include "tia-private/newtia/network_impl/boost_tcp_server_socket_impl.h"
+
+#include <boost/thread.hpp>
+#include <iostream>
 
 namespace tia
 {
 
 //-----------------------------------------------------------------------------
-TiAServerStateServerImpl::TiAServerStateServerImpl (boost::asio::io_service& io_service, unsigned port)
-    : server_socket_ (new BoostTCPServerSocketImpl (io_service))
+TiAServerStateServerImpl::TiAServerStateServerImpl (boost::shared_ptr<TCPServerSocket> server_socket, unsigned port)
+    : server_socket_ (server_socket),
+      port_ (port),
+      current_state_ (SERVER_STATE_RUNNING)
 {
-    server_socket_->startListening (port, shared_from_this());
+    server_socket_->startListening (port_, this);
+}
+
+//-----------------------------------------------------------------------------
+TiAServerStateServerImpl::~TiAServerStateServerImpl ()
+{
+    server_socket_->stopListening ();
 }
 
 //-----------------------------------------------------------------------------
 unsigned TiAServerStateServerImpl::getPort () const
 {
-    return 0;
+    return port_;
+}
+
+//-----------------------------------------------------------------------------
+void TiAServerStateServerImpl::emitState (ServerState server_state)
+{
+    current_state_ = server_state;
 }
 
 //-----------------------------------------------------------------------------
 void TiAServerStateServerImpl::newConnection (boost::shared_ptr<Socket> socket)
 {
-
+    socket->sendString ("asdf");
 }
 
 }

@@ -14,12 +14,16 @@ class BoostTCPServerSocketImpl : public TCPServerSocket
 public:
     //-------------------------------------------------------------------------
     BoostTCPServerSocketImpl (boost::asio::io_service& io_service)
-        : acceptor_ (io_service)
+        : new_connection_listener_ (0),
+          acceptor_ (io_service)
     {}
 
     //-------------------------------------------------------------------------
     virtual void startListening (unsigned port,
-                                 boost::shared_ptr<NewConnectionListener> new_connection_listener);
+                                 NewConnectionListener* new_connection_listener);
+
+    //-------------------------------------------------------------------------
+    virtual void stopListening ();
 
 private:
     //-------------------------------------------------------------------------
@@ -28,7 +32,7 @@ private:
     //-------------------------------------------------------------------------
     void handleAccept (boost::shared_ptr<boost::asio::ip::tcp::socket> socket);
 
-    boost::shared_ptr<NewConnectionListener> new_connection_listener_;
+    NewConnectionListener* new_connection_listener_;
     boost::asio::ip::tcp::acceptor acceptor_;
 };
 

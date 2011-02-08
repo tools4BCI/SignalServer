@@ -6,7 +6,8 @@ namespace tia
 
 enum ServerState
 {
-    SERVER_SHUTDOWN
+    SERVER_STATE_RUNNING,
+    SERVER_STATE_SHUTDOWN
 };
 
 }

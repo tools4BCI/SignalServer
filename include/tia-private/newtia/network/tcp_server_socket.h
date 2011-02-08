@@ -16,8 +16,13 @@ public:
     virtual ~TCPServerSocket () {}
 
     //-------------------------------------------------------------------------
+    /// only one listener is allowed
     virtual void startListening (unsigned port,
-                                 boost::shared_ptr<NewConnectionListener> new_connection_listener) = 0;
+                                 NewConnectionListener* new_connection_listener) = 0;
+
+    //-------------------------------------------------------------------------
+    /// stops listening
+    virtual void stopListening () = 0;
 };
 
 }

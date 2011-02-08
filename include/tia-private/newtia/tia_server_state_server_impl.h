@@ -5,7 +5,6 @@
 #include "network/tcp_server_socket.h"
 #include "server_state_connection.h"
 
-#include <boost/enable_shared_from_this.hpp>
 #include <boost/asio/io_service.hpp>
 #include <memory>
 #include <list>
@@ -14,18 +13,21 @@ namespace tia
 {
 
 //-----------------------------------------------------------------------------
-class TiAServerStateServerImpl : public TiAServerStateServer, public NewConnectionListener, public boost::enable_shared_from_this<TiAServerStateServerImpl>
+class TiAServerStateServerImpl : public TiAServerStateServer, public NewConnectionListener
 {
 public:
-    TiAServerStateServerImpl (boost::asio::io_service& io_service, unsigned port);
+    TiAServerStateServerImpl (boost::shared_ptr<TCPServerSocket> server_socket, unsigned port);
+    virtual ~TiAServerStateServerImpl ();
 
-    unsigned getPort () const;
+    virtual unsigned getPort () const;
 
     virtual void newConnection (boost::shared_ptr<Socket> socket);
-
+    virtual void emitState (ServerState server_state);
 private:
-    std::auto_ptr<TCPServerSocket> server_socket_;
+    boost::shared_ptr<TCPServerSocket> server_socket_;
     std::list<boost::shared_ptr<ServerStateConnection> > connections_;
+    unsigned port_;
+    ServerState current_state_;
 };
 
 }
