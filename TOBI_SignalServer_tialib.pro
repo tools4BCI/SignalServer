@@ -94,7 +94,13 @@ HEADERS += include/tia/tia_server.h \
     include/tia-private/newtia/commands/get_serverstate_connection_command.h \
     include/tia-private/newtia/network/tcp_server_socket.h \
     include/tia-private/newtia/network/new_connection_listener.h \
-    include/tia-private/newtia/network_impl/boost_tcp_server_socket_impl.h
+    include/tia-private/newtia/network_impl/boost_tcp_server_socket_impl.h \
+    include/tia-private/newtia/server_state_connection.h \
+    include/tia-private/newtia/network/server_state_server.h \
+    include/tia-private/newtia/messages/server_state_message.h \
+    include/tia-private/newtia/server_states.h \
+    include/tia-private/newtia/tia_server_state_server.h \
+    include/tia-private/newtia/tia_server_state_server_impl.h
 SOURCES += src/tia/tia_server.cpp \
     src/tia/constants.cpp \
     src/tia/config/control_message_decoder.cpp \
@@ -127,7 +133,8 @@ SOURCES += src/tia/tia_server.cpp \
     src/tia/client/tia_new_client_impl.cpp \
     src/tia/newtia/network_impl/boost_udp_read_socket.cpp \
     src/tia/newtia/tia_datapacket_parser.cpp \
-    src/tia/newtia/network_impl/boost_tcp_server_socket_impl.cpp
+    src/tia/newtia/network_impl/boost_tcp_server_socket_impl.cpp \
+    src/tia/newtia/tia_server_state_server_impl.cpp
 unix:SOURCES += extern/include/LptTools/LptToolsLinux.cpp
 win32:SOURCES += extern/include/LptTools/LptTools_.cpp
 
