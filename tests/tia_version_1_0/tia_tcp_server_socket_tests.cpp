@@ -30,7 +30,7 @@ TEST(TiATCPServerSocket)
 
     shared_ptr<TestListener> testlistener (new TestListener);
     auto_ptr<TCPServerSocket> server_socket (new BoostTCPServerSocketImpl (io_service));
-    server_socket->startListening (9008, testlistener);
+    server_socket->startListening (9008, testlistener.get());
 
     asio::ip::tcp::endpoint connection_endpoint (boost::asio::ip::address_v4::from_string ("127.0.0.1"), 9008);
     auto_ptr<Socket> tcp_client_socket (new BoostTCPSocketImpl (io_service, connection_endpoint));
@@ -40,6 +40,7 @@ TEST(TiATCPServerSocket)
     tcp_client_socket->waitForData ();
     CHECK_EQUAL (send_string, tcp_client_socket->readString (send_string.size()));
 
+    server_socket->stopListening ();
     io_service.stop ();
     io_thread->join ();
     delete io_thread;
