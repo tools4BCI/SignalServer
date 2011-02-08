@@ -70,6 +70,7 @@ Error message including an error description:
   TiA 1.0\n
   Error\n
   Content-Length: 73\n
+  \n
   <tiaError version="1.0" description="Human readable error description."/>
 
 
@@ -208,8 +209,8 @@ The TiA meta info is structured in XML and contains information about the signal
 
 TiA Error Description
 ---------------------
-Error message in TiA version 1.0 optionally supports error descriptions in a human readable format. 
-Therefore no error codes with special meaning are supported in this version.
+An error message in TiA version 1.0 optionally supports an error description in a human readable format. 
+No error codes with special meaning are supported in this version.
 
 
 .. TiA Server Config

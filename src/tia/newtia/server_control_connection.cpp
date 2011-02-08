@@ -4,6 +4,7 @@
 #include "tia-private/newtia/commands/start_data_transmission_control_command.h"
 #include "tia-private/newtia/commands/stop_data_transmission_control_command.h"
 #include "tia-private/newtia/commands/get_metainfo_control_command.h"
+#include "tia-private/newtia/commands/get_serverstate_connection_command.h"
 
 #include "tia-private/newtia/version_1_0/tia_control_message_tags_1_0.h"
 #include "tia-private/newtia/version_1_0/tia_control_message_parser_1_0.h"
@@ -32,6 +33,7 @@ ServerControlConnection::ServerControlConnection (Socket& socket, DataServer& da
     command_map_[TiAControlMessageTags10::GET_DATA_CONNECTION] = new GetDataConnectionControlCommand (command_context_, data_server_);
     command_map_[TiAControlMessageTags10::START_DATA_TRANSMISSION] = new StartDataTransmissionControlCommand (command_context_, data_server_);
     command_map_[TiAControlMessageTags10::STOP_DATA_TRANSMISSION] = new StopDataTransmissionControlCommand (command_context_, data_server_);
+    command_map_[TiAControlMessageTags10::GET_SERVER_STATE_CONNECTION] = new GetServerStateConnectionCommand (3000);
 }
 
 //-----------------------------------------------------------------------------
@@ -81,9 +83,9 @@ void ServerControlConnection::run ()
 
             socket_.sendString (response);
         }
-        catch (TiALostConnection&)
+        catch (TiALostConnection& exc)
         {
-            std::cout << "ServerControlConnection::run lost connection to client" << std::endl;
+            std::cout << "ServerControlConnection::run lost connection to client: \"" << exc.what() << "\"" << std::endl;
             running_ = false;
         }
         catch (TiAException& exc)

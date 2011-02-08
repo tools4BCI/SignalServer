@@ -1,6 +1,9 @@
 Data Packet
 ===========
 
+.. image:: data-packet-structure.jpg
+
+
 Fixed Header
 ------------
 
@@ -14,6 +17,10 @@ Position (Byte) Length (Byte) Type               Content
 17              8             unsigned integer   Connection packet number
 25              8             unsigned integer   Time stamp
 =============== ============= ================== ============================================
+
+Byte Order
+**********
+All data and fields are transmitted in little endian.
 
 Packet Size
 ***********
