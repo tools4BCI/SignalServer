@@ -3,19 +3,20 @@
 
 #include <boost/bind.hpp>
 #include <boost/thread.hpp>
+#include <boost/weak_ptr.hpp>
 #include <iostream>
 
 using namespace boost::asio::ip;
 using boost::shared_ptr;
+using boost::weak_ptr;
 
 namespace tia
 {
 
 //-----------------------------------------------------------------------------
 void BoostTCPServerSocketImpl::startListening (unsigned port,
-                                       shared_ptr<NewConnectionListener> new_connection_listener)
+                                               NewConnectionListener* new_connection_listener)
 {
-
     new_connection_listener_ = new_connection_listener;
 
     tcp::endpoint endpoint(boost::asio::ip::tcp::v4(), port);
@@ -24,6 +25,13 @@ void BoostTCPServerSocketImpl::startListening (unsigned port,
     acceptor_.bind (endpoint);
     acceptor_.listen ();
     asyncAccept ();
+}
+
+//-------------------------------------------------------------------------
+void BoostTCPServerSocketImpl::stopListening ()
+{
+    new_connection_listener_ = 0;
+    acceptor_.cancel ();
 }
 
 //-----------------------------------------------------------------------------

@@ -2,8 +2,20 @@
 #include "tia-private/newtia/version_1_0/tia_control_message_tags_1_0.h"
 #include "tia-private/newtia/tia_exceptions.h"
 
+#include <boost/thread/locks.hpp>
+
 using std::string;
 using namespace tia::TiAControlMessageTags10;
+
+
+//-----------------------------------------------------------------------------
+void TestSocket::sendString (std::string const& string)
+{
+    boost::lock_guard<boost::mutex> lock (transmitted_string_lock_);
+    sent_string_ += string;
+    wait_for_data_condition_.notify_all ();
+}
+
 
 //-----------------------------------------------------------------------------
 string TestSocket::readString (unsigned number_bytes)
@@ -50,5 +62,16 @@ char TestSocket::readCharacter ()
     else
         throw tia::TiAException ("TestSocket::readLine: No NewLine Character in given string.");
     return ret_val;
+}
+
+//-----------------------------------------------------------------------------
+void TestSocket::waitForData ()
+{
+    boost::unique_lock<boost::mutex> lock (transmitted_string_lock_);
+
+    if (sent_string_.size())
+        return;
+    else
+        wait_for_data_condition_.wait (lock);
 }
 
