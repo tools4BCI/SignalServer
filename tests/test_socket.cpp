@@ -9,8 +9,11 @@ using namespace tia::TiAControlMessageTags10;
 
 
 //-----------------------------------------------------------------------------
-void TestSocket::sendString (std::string const& string)
+void TestSocket::sendString (std::string const& string) throw (tia::TiALostConnection)
 {
+    if (failure_if_sending_)
+        throw tia::TiALostConnection ("Lost connection simulation.");
+
     boost::lock_guard<boost::mutex> lock (transmitted_string_lock_);
     sent_string_ += string;
     wait_for_data_condition_.notify_all ();
