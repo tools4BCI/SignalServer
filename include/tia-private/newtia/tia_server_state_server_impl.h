@@ -1,9 +1,8 @@
 #ifndef TIA_SERVER_STATE_SERVER_IMPL_H
 #define TIA_SERVER_STATE_SERVER_IMPL_H
 
-#include "tia_server_state_server.h"
+#include "server/tia_server_state_server.h"
 #include "network/tcp_server_socket.h"
-#include "server_state_connection.h"
 #include "tia_control_message_builder.h"
 
 

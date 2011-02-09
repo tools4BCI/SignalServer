@@ -4,8 +4,6 @@
 #include "tia/data_packet.h"
 #include "tia/data_packet3.h"
 
-#include "tia_datapacket.h"
-
 #include "network/input_stream.h"
 
 namespace tia
