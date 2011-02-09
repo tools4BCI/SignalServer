@@ -35,7 +35,7 @@ public:
     virtual std::string readString (unsigned length);
     virtual char readCharacter ();
     virtual void waitForData ();
-    virtual void sendString (std::string const& str);
+    virtual void sendString (std::string const& str) throw (TiALostConnection);
 
 private:
     void readBytes (unsigned num_bytes);

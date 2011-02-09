@@ -84,7 +84,7 @@ void BoostTCPSocketImpl::waitForData ()
 }
 
 //-----------------------------------------------------------------------------
-void BoostTCPSocketImpl::sendString (string const& str)
+void BoostTCPSocketImpl::sendString (string const& str) throw (TiALostConnection)
 {
     boost::system::error_code error;
     if (fusty_connection_)
