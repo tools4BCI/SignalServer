@@ -7,6 +7,8 @@
 namespace tia
 {
 
+//-----------------------------------------------------------------------------
+/// hardware interface implementation as adapter to old (tobiss) stuff
 class FustyHardwareInterfaceImpl : public HardwareInterface
 {
 public:

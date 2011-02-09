@@ -62,7 +62,7 @@ HEADERS += include/tia/tia_server.h \
     #include/tia-private/newtia/server_command.h \
     include/tia-private/newtia/network/socket.h \
     #include/tia-private/newtia/commands/stop_data_transmission_server_command.h \
-    include/tia-private/newtia/data_server.h \
+    include/tia-private/newtia/server/data_server.h \
     #include/tia-private/newtia/commands/start_data_transmission_server_command.h \
     include/tia-private/newtia/commands/get_data_connection_control_command.h \
     include/tia-private/newtia/tia_control_message_parser.h \
@@ -76,7 +76,7 @@ HEADERS += include/tia/tia_server.h \
     include/tia-private/newtia/commands/check_protocol_version_control_command.h \
     include/tia-private/newtia/messages/standard_control_messages.h \
     include/tia-private/newtia/network_impl/boost_socket_impl.h \
-    include/tia-private/newtia/fusty_data_server_impl.h \
+    include/tia-private/newtia/server_impl/fusty_data_server_impl.h \
     include/tia-private/newtia/version_1_0/tia_control_message_builder_1_0.h \
     include/tia-private/newtia/tia_control_command_context.h \
     include/tia-private/newtia/commands/start_data_transmission_control_command.h \
@@ -88,18 +88,16 @@ HEADERS += include/tia/tia_server.h \
     include/tia-private/client/tia_new_client_impl.h \
     include/tia-private/newtia/network_impl/boost_udp_read_socket.h \
     include/tia-private/newtia/tia_datapacket_parser.h \
-    include/tia-private/newtia/tia_datapacket.h \
     include/tia-private/newtia/network/input_stream.h \
     include/tia-private/newtia/network/read_socket.h \
     include/tia-private/newtia/commands/get_serverstate_connection_command.h \
     include/tia-private/newtia/network/tcp_server_socket.h \
     include/tia-private/newtia/network/new_connection_listener.h \
     include/tia-private/newtia/network_impl/boost_tcp_server_socket_impl.h \
-    include/tia-private/newtia/server_state_connection.h \
     include/tia-private/newtia/network/server_state_server.h \
     include/tia-private/newtia/messages/server_state_message.h \
-    include/tia-private/newtia/server_states.h \
-    include/tia-private/newtia/tia_server_state_server.h \
+    include/tia-private/newtia/server/server_states.h \
+    include/tia-private/newtia/server/tia_server_state_server.h \
     include/tia-private/newtia/tia_server_state_server_impl.h
 SOURCES += src/tia/tia_server.cpp \
     src/tia/constants.cpp \
@@ -126,7 +124,7 @@ SOURCES += src/tia/tia_server.cpp \
     src/tia/newtia/version_1_0/tia_control_message_parser_1_0.cpp \
     src/tia/newtia/server_control_connection.cpp \
     src/tia/newtia/network_impl/boost_tcp_socket_impl.cpp \
-    src/tia/newtia/fusty_data_server_impl.cpp \
+    src/tia/newtia/server_impl/fusty_data_server_impl.cpp \
     src/tia/newtia/commands/start_data_transmission_control_command.cpp \
     src/tia/newtia/commands/stop_data_transmission_control_command.cpp \
     src/tia/newtia/tia_meta_info_parse_and_build_functions.cpp \
@@ -134,7 +132,7 @@ SOURCES += src/tia/tia_server.cpp \
     src/tia/newtia/network_impl/boost_udp_read_socket.cpp \
     src/tia/newtia/tia_datapacket_parser.cpp \
     src/tia/newtia/network_impl/boost_tcp_server_socket_impl.cpp \
-    src/tia/newtia/tia_server_state_server_impl.cpp
+    src/tia/newtia/server_impl/tia_server_state_server_impl.cpp
 unix:SOURCES += extern/include/LptTools/LptToolsLinux.cpp
 win32:SOURCES += extern/include/LptTools/LptTools_.cpp
 

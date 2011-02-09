@@ -2,10 +2,10 @@
 #define FUSTY_DATA_SERVER_IMPL_H
 
 
-#include "../network/tcp_data_server.h"
-#include "../network/udp_data_server.h"
+#include "../../network/tcp_data_server.h"
+#include "../../network/udp_data_server.h"
 
-#include "data_server.h"
+#include "../server/data_server.h"
 
 #include <map>
 #include <set>
