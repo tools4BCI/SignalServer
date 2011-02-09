@@ -17,7 +17,9 @@
 class TestSocket : public tia::Socket
 {
 public:
-    virtual void sendString (std::string const& string);
+    TestSocket () : failure_if_sending_ (false) {}
+
+    virtual void sendString (std::string const& string) throw (tia::TiALostConnection);
 
     virtual std::string readString (unsigned number_bytes = 4000000000u);
     virtual std::string readLine (unsigned max_length);
@@ -28,12 +30,14 @@ public:
     void setStringToBeRead (std::string const& read_string) {string_to_return_on_read_ = read_string;}
     void reset () {sent_string_.clear (); string_to_return_on_read_.clear ();}
 
+    void enableFailureIfSending (bool enabled) {failure_if_sending_ = enabled;}
 private:
     boost::condition_variable wait_for_data_condition_;
     boost::mutex transmitted_string_lock_;
 
     std::string sent_string_;
     std::string string_to_return_on_read_;
+    bool failure_if_sending_;
 };
 
 

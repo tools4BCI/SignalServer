@@ -1,6 +1,7 @@
 #ifndef SOCKET_H
 #define SOCKET_H
 
+#include "../tia_exceptions.h"
 #include "read_socket.h"
 
 #include <string>
@@ -14,7 +15,7 @@ class WriteSocket
 {
 public:
     virtual ~WriteSocket () {}
-    virtual void sendString (std::string const& string) = 0;
+    virtual void sendString (std::string const& string) throw (TiALostConnection) = 0;
 };
 
 //-----------------------------------------------------------------------------

@@ -9,6 +9,7 @@
 #include <iostream>
 
 using namespace tia;
+using namespace std;
 
 SUITE(ServerStateServer)
 {
@@ -20,10 +21,21 @@ void testServerStateServer (boost::shared_ptr<TiAServerStateServer> server, boos
 {
     CHECK_EQUAL (server->getPort(), PORT);
     boost::shared_ptr<TestSocket> server_test_socket = test_server_socket->clientConnects ();
-    server->emitState (SERVER_STATE_SHUTDOWN);
     server_test_socket->waitForData ();
     CHECK (server_test_socket->transmittedString ().find ("TiA") != std::string::npos);
-    CHECK (server_test_socket->transmittedString ().find ("ServerShutdown") != std::string::npos);
+    CHECK (server_test_socket->transmittedString ().find ("ServerStateRunning") != std::string::npos);
+    CHECK (server_test_socket->transmittedString ().find ("ServerStateShutdown") == std::string::npos);
+
+    server->emitState (SERVER_STATE_SHUTDOWN);
+    server_test_socket->waitForData ();
+
+    CHECK (server_test_socket->transmittedString ().find ("TiA") != std::string::npos);
+    CHECK (server_test_socket->transmittedString ().find ("ServerStateShutdown") != std::string::npos);
+
+    server_test_socket->enableFailureIfSending (true);
+    string transmitted_string_before_disconnect = server_test_socket->transmittedString();
+    server->emitState (SERVER_STATE_RUNNING);
+    CHECK_EQUAL (transmitted_string_before_disconnect, server_test_socket->transmittedString());
 }
 
 //-----------------------------------------------------------------------------

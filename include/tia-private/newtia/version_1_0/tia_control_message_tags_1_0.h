@@ -30,6 +30,10 @@ namespace TiAControlMessageTags10
     std::string const GET_DATA_CONNECTION = "GetDataConnection";
     std::string const START_DATA_TRANSMISSION = "StartDataTransmission";
     std::string const STOP_DATA_TRANSMISSION = "StopDataTransmission";
+
+    std::string const SERVER_STATE_RUNNING = "ServerStateRunning";
+    std::string const SERVER_STATE_SHUTDOWN = "ServerStateShutdown";
+
     std::string const TCP = "TCP";
     std::string const UDP = "UDP";
 
