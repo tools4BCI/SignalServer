@@ -8,7 +8,7 @@
 #include "tia_control_message_builder.h"
 #include "tia_control_message_parser.h"
 #include "hardware_interface.h"
-#include "data_server.h"
+#include "server/data_server.h"
 
 #include <boost/thread.hpp>
 #include <map>

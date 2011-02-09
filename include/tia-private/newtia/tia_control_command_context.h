@@ -2,7 +2,7 @@
 #define TIA_CONTROL_COMMAND_CONTEXT_H
 
 #include "hardware_interface.h"
-#include "data_server.h"
+#include "server/data_server.h"
 
 namespace tia
 {

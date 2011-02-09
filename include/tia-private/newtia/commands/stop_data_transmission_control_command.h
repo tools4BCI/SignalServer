@@ -3,7 +3,7 @@
 
 #include "../tia_control_command.h"
 #include "../tia_control_command_context.h"
-#include "../data_server.h"
+#include "../server/data_server.h"
 
 namespace tia
 {
