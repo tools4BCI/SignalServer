@@ -51,4 +51,8 @@ Position (Byte) Length (Byte) Type                            Content
 Data
 ----
 
-Data starts at the position 33 + (4 * NoS).
+Data starts at the position 33 + (4 * NoS). Sample values are transmitted as a sequence of 32bit floats (IEEE 754).
+
+Samples are firstly ordered by their signal type number (:ref:`Singal Types <SignalTypes>`).
+
+
