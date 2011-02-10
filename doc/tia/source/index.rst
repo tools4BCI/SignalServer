@@ -3,6 +3,9 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+.. role:: raw-html(raw)
+   :format: html
+
 TiA - Documentation of TOBI Interface A Version
 ===============================================
 
