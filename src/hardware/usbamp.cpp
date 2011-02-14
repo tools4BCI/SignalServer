@@ -366,9 +366,16 @@ void USBamp::fillSyncBuffer()
 
 void USBamp::fillSampleBlock()
 {
+  unsigned int pos = 0;
   for(unsigned int k = 0; k < expected_values_/blocks_ ; k++)
     for(unsigned int j = 0; j < blocks_; j++)
-       samples_[ (k*blocks_) + j ] = *(reinterpret_cast<float*>(driver_buffer_[current_overlapped_] + HEADER_SIZE + (k +(j* expected_values_/blocks_) )*sizeof(float) ));
+    {
+      pos = (k*blocks_) + j;
+      samples_[ pos ] = *(reinterpret_cast<float*>(driver_buffer_[current_overlapped_] + HEADER_SIZE + (k +(j* expected_values_/blocks_) )*sizeof(float) ));
+
+      if( isnan( samples[pos] ) )
+         cerr << "Received NaNs at sample " << sample_count_ << "!" << endl;
+    }
 
   data_.setSamples(samples_);
 
