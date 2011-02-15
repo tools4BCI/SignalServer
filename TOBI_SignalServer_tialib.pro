@@ -65,10 +65,10 @@ HEADERS += include/tia/tia_server.h \
     include/tia-private/newtia/server/data_server.h \
     #include/tia-private/newtia/commands/start_data_transmission_server_command.h \
     include/tia-private/newtia/commands/get_data_connection_control_command.h \
-    include/tia-private/newtia/tia_control_message_parser.h \
-    include/tia-private/newtia/tia_control_message.h \
-    include/tia-private/newtia/tia_control_message_builder.h \
-    include/tia-private/newtia/version_1_0/tia_control_message_parser_1_0.h \
+    include/tia-private/newtia/messages/tia_control_message_parser.h \
+    include/tia-private/newtia/messages/tia_control_message.h \
+    include/tia-private/newtia/messages/tia_control_message_builder.h \
+    include/tia-private/newtia/messages_impl/tia_control_message_parser_1_0.h \
     include/tia-private/newtia/version_1_0/tia_control_message_tags_1_0.h \
     include/tia-private/newtia/tia_exceptions.h \
     include/tia-private/newtia/string_utils.h \
@@ -77,7 +77,7 @@ HEADERS += include/tia/tia_server.h \
     include/tia-private/newtia/messages/standard_control_messages.h \
     include/tia-private/newtia/network_impl/boost_socket_impl.h \
     include/tia-private/newtia/server_impl/fusty_data_server_impl.h \
-    include/tia-private/newtia/version_1_0/tia_control_message_builder_1_0.h \
+    include/tia-private/newtia/messages_impl/tia_control_message_builder_1_0.h \
     include/tia-private/newtia/tia_control_command_context.h \
     include/tia-private/newtia/commands/start_data_transmission_control_command.h \
     include/tia-private/newtia/commands/stop_data_transmission_control_command.h \
@@ -95,7 +95,6 @@ HEADERS += include/tia/tia_server.h \
     include/tia-private/newtia/network/new_connection_listener.h \
     include/tia-private/newtia/network_impl/boost_tcp_server_socket_impl.h \
     include/tia-private/newtia/network/server_state_server.h \
-    include/tia-private/newtia/messages/server_state_message.h \
     include/tia-private/newtia/server/server_states.h \
     include/tia-private/newtia/server/tia_server_state_server.h \
     include/tia-private/newtia/tia_server_state_server_impl.h

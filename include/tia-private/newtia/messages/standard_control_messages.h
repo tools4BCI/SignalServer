@@ -1,7 +1,7 @@
 #ifndef STANDARD_CONTROL_MESSAGES_H
 #define STANDARD_CONTROL_MESSAGES_H
 
-#include "../tia_control_message.h"
+#include "../messages/tia_control_message.h"
 #include "../version_1_0/tia_control_message_tags_1_0.h"
 
 namespace tia
