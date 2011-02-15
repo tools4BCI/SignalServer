@@ -36,8 +36,8 @@ void generateRawDataPacketVersion3 (unsigned char* target_memory,
     size_t data_position = datapacket_version_3::VARIABLE_HEADER_POS + variable_header_size;
     size_t data_size = 0;
 
-    boost::uint16_t number_channels[samples.size()];
-    boost::uint16_t samples_per_channel[samples.size()];
+    std::vector<boost::uint16_t> number_channels (samples.size());
+    std::vector<boost::uint16_t> samples_per_channel (samples.size());
     size_t samples_per_channel_pos = datapacket_version_3::VARIABLE_HEADER_POS + (2 * samples.size());
 
     for (size_t signal_index = 0; signal_index < samples.size (); ++signal_index)

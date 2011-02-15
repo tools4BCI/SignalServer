@@ -1,8 +1,8 @@
 #include "tia-private/client/tia_new_client_impl.h"
 
 #include "tia-private/newtia/tia_meta_info_parse_and_build_functions.h"
-#include "tia-private/newtia/version_1_0/tia_control_message_builder_1_0.h"
-#include "tia-private/newtia/version_1_0/tia_control_message_parser_1_0.h"
+#include "tia-private/newtia/messages_impl/tia_control_message_builder_1_0.h"
+#include "tia-private/newtia/messages_impl/tia_control_message_parser_1_0.h"
 #include "tia-private/newtia/messages/standard_control_messages.h"
 #include "tia-private/newtia/version_1_0/tia_control_message_tags_1_0.h"
 #include "tia-private/newtia/tia_meta_info_parse_and_build_functions.h"

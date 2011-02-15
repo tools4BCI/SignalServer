@@ -4,9 +4,9 @@
 #include "network/socket.h"
 #include "tia_control_command.h"
 #include "tia_control_command_context.h"
-#include "tia_control_message.h"
-#include "tia_control_message_builder.h"
-#include "tia_control_message_parser.h"
+#include "messages/tia_control_message.h"
+#include "messages/tia_control_message_builder.h"
+#include "messages/tia_control_message_parser.h"
 #include "hardware_interface.h"
 #include "server/data_server.h"
 
