@@ -1,7 +1,7 @@
 #ifndef TIA_CONTROL_MESSAGE_PARSER_1_0_H
 #define TIA_CONTROL_MESSAGE_PARSER_1_0_H
 
-#include "../tia_control_message_parser.h"
+#include "../messages/tia_control_message_parser.h"
 
 namespace tia
 {

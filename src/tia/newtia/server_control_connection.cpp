@@ -7,8 +7,8 @@
 #include "tia-private/newtia/commands/get_serverstate_connection_command.h"
 
 #include "tia-private/newtia/version_1_0/tia_control_message_tags_1_0.h"
-#include "tia-private/newtia/version_1_0/tia_control_message_parser_1_0.h"
-#include "tia-private/newtia/version_1_0/tia_control_message_builder_1_0.h"
+#include "tia-private/newtia/messages_impl/tia_control_message_parser_1_0.h"
+#include "tia-private/newtia/messages_impl/tia_control_message_builder_1_0.h"
 #include "tia-private/newtia/messages/standard_control_messages.h"
 #include "tia-private/newtia/tia_exceptions.h"
 

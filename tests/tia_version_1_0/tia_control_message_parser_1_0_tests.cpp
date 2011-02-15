@@ -1,7 +1,7 @@
 #include "../UnitTest++/UnitTest++.h"
 
 #include "../test_socket.h"
-#include "tia-private/newtia/version_1_0/tia_control_message_parser_1_0.h"
+#include "tia-private/newtia/messages_impl/tia_control_message_parser_1_0.h"
 #include "tia-private/newtia/tia_exceptions.h"
 
 using namespace tia;

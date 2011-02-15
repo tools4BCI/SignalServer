@@ -3,7 +3,7 @@
 
 #include "server/tia_server_state_server.h"
 #include "network/tcp_server_socket.h"
-#include "tia_control_message_builder.h"
+#include "messages/tia_control_message_builder.h"
 
 
 #include <boost/asio/io_service.hpp>

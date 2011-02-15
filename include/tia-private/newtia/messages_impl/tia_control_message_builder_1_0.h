@@ -1,8 +1,8 @@
 #ifndef TIA_CONTROL_MESSAGE_BUILDER_1_0_H
 #define TIA_CONTROL_MESSAGE_BUILDER_1_0_H
 
-#include "tia_control_message_tags_1_0.h"
-#include "../tia_control_message_builder.h"
+#include "../version_1_0/tia_control_message_tags_1_0.h"
+#include "../messages/tia_control_message_builder.h"
 #include "../tia_exceptions.h"
 
 #include <sstream>

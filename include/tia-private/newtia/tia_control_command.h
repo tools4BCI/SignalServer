@@ -1,7 +1,7 @@
 #ifndef TIA_CONTROL_COMMAND_H
 #define TIA_CONTROL_COMMAND_H
 
-#include "tia_control_message.h"
+#include "messages/tia_control_message.h"
 
 namespace tia
 {
