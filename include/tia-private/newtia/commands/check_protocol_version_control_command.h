@@ -2,7 +2,7 @@
 #define CHECK_PROTOCOL_VERSION_CONTROL_COMMAND_H
 
 #include "../tia_control_command.h"
-#include "../version_1_0/tia_control_message_tags_1_0.h"
+#include "../messages/tia_control_message_tags_1_0.h"
 #include "../messages/standard_control_messages.h"
 
 namespace tia
