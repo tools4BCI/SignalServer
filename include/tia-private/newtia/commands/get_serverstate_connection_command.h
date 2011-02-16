@@ -3,7 +3,7 @@
 
 #include "../tia_control_command.h"
 #include "../string_utils.h"
-#include "../version_1_0/tia_control_message_tags_1_0.h"
+#include "../messages/tia_control_message_tags_1_0.h"
 
 namespace tia
 {

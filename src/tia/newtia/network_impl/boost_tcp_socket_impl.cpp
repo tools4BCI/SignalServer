@@ -1,5 +1,5 @@
 #include "tia-private/newtia/network_impl/boost_socket_impl.h"
-#include "tia-private/newtia/version_1_0/tia_control_message_tags_1_0.h"
+#include "tia-private/newtia/messages/tia_control_message_tags_1_0.h"
 #include "tia-private/newtia/tia_exceptions.h"
 
 #include "tia-private/network/tcp_server.h"

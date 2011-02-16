@@ -1,9 +1,9 @@
 #ifndef TIA_SERVER_STATE_SERVER_IMPL_H
 #define TIA_SERVER_STATE_SERVER_IMPL_H
 
-#include "server/tia_server_state_server.h"
-#include "network/tcp_server_socket.h"
-#include "messages/tia_control_message_builder.h"
+#include "tia-private/newtia/server/tia_server_state_server.h"
+#include "tia-private/newtia/network/tcp_server_socket.h"
+#include "tia-private/newtia/messages/tia_control_message_builder.h"
 
 
 #include <boost/asio/io_service.hpp>

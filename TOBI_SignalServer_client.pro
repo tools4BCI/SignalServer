@@ -30,7 +30,7 @@ SOURCES += src/ssclient_main.cpp
 
 # -----------------------------------------------------------------------
 unix:LIBS += -L$$PWD/lib -L$$PWD/extern/lib/ticpp/linux \
-    -ltia -lboost_thread
+    $$PWD/lib/libtia.a -lboost_thread -lboost_system -lticpp
 win32:LIBS += lib/tia.lib
 
 # Note: It is assumed that the boost libraries can be automatically detected by the linker
