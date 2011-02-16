@@ -2,7 +2,7 @@
 #include "test_socket.h"
 
 #include "tia-private/newtia/server/tia_server_state_server.h"
-#include "tia-private/newtia/tia_server_state_server_impl.h"
+#include "tia-private/newtia/server_impl/tia_server_state_server_impl.h"
 
 #include <boost/thread.hpp>
 #include <boost/bind.hpp>

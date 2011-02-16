@@ -1,5 +1,5 @@
 #include "tia-private/newtia/network_impl/boost_udp_read_socket.h"
-#include "tia-private/newtia/version_1_0/tia_control_message_tags_1_0.h"
+#include "tia-private/newtia/messages/tia_control_message_tags_1_0.h"
 #include "tia-private/newtia/tia_exceptions.h"
 
 #include <boost/asio.hpp>
