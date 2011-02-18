@@ -17,8 +17,15 @@ public:
 
     //-------------------------------------------------------------------------
     /// only one listener is allowed
+    /// listen on the given port for new connections
     virtual void startListening (unsigned port,
                                  NewConnectionListener* new_connection_listener) = 0;
+
+    //-------------------------------------------------------------------------
+    /// only one listener is allowed
+    /// listen on an arbitrary port for new connections
+    /// @return the port number on which the server socket is listening
+    virtual unsigned startListening (NewConnectionListener* new_connection_listener) = 0;
 
     //-------------------------------------------------------------------------
     /// stops listening

@@ -8,15 +8,36 @@ namespace tia
 {
 
 //-----------------------------------------------------------------------------
+std::map<ServerState, std::string> TiAServerStateServerImpl::state_map_;
+
+//-----------------------------------------------------------------------------
+void TiAServerStateServerImpl::init ()
+{
+    state_map_[SERVER_STATE_RUNNING] = TiAControlMessageTags10::SERVER_STATE_RUNNING;
+    state_map_[SERVER_STATE_SHUTDOWN] = TiAControlMessageTags10::SERVER_STATE_SHUTDOWN;
+}
+
+
+//-----------------------------------------------------------------------------
 TiAServerStateServerImpl::TiAServerStateServerImpl (boost::shared_ptr<TCPServerSocket> server_socket, unsigned port)
     : server_socket_ (server_socket),
       message_builder_ (new TiAControlMessageBuilder10),
       port_ (port),
       current_state_ (SERVER_STATE_RUNNING)
 {
-    state_map_[SERVER_STATE_RUNNING] = TiAControlMessageTags10::SERVER_STATE_RUNNING;
-    state_map_[SERVER_STATE_SHUTDOWN] = TiAControlMessageTags10::SERVER_STATE_SHUTDOWN;
+    init ();
     server_socket_->startListening (port_, this);
+}
+
+//-----------------------------------------------------------------------------
+TiAServerStateServerImpl::TiAServerStateServerImpl (boost::shared_ptr<TCPServerSocket> server_socket)
+    : server_socket_ (server_socket),
+      message_builder_ (new TiAControlMessageBuilder10),
+      port_ (0),
+      current_state_ (SERVER_STATE_RUNNING)
+{
+    init ();
+    port_ = server_socket_->startListening (this);
 }
 
 //-----------------------------------------------------------------------------
@@ -56,6 +77,7 @@ void TiAServerStateServerImpl::newConnection (boost::shared_ptr<Socket> socket)
 {
     try
     {
+        // std::cout << __FUNCTION__ << " new client connected to server state server" << std::endl;
         emitStateViaSocket (socket, current_state_);
         server_to_client_sockets_.push_back (socket);
     }

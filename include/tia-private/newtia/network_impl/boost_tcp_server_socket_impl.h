@@ -23,6 +23,9 @@ public:
                                  NewConnectionListener* new_connection_listener);
 
     //-------------------------------------------------------------------------
+    virtual unsigned startListening (NewConnectionListener* new_connection_listener);
+
+    //-------------------------------------------------------------------------
     virtual void stopListening ();
 
 private:

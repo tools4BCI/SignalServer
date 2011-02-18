@@ -27,6 +27,20 @@ void BoostTCPServerSocketImpl::startListening (unsigned port,
     asyncAccept ();
 }
 
+//-----------------------------------------------------------------------------
+unsigned BoostTCPServerSocketImpl::startListening (NewConnectionListener* new_connection_listener)
+{
+    new_connection_listener_ = new_connection_listener;
+
+    tcp::endpoint endpoint(boost::asio::ip::tcp::v4(), 0);
+    acceptor_.open (endpoint.protocol());
+    acceptor_.set_option (boost::asio::ip::tcp::acceptor::reuse_address(true));
+    acceptor_.bind (endpoint);
+    acceptor_.listen ();
+    asyncAccept ();
+    return acceptor_.local_endpoint().port();
+}
+
 //-------------------------------------------------------------------------
 void BoostTCPServerSocketImpl::stopListening ()
 {

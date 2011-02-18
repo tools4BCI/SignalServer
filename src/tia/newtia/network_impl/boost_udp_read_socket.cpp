@@ -74,19 +74,25 @@ void BoostUDPReadSocket::readBytes (unsigned num_bytes)
     char* data = new char [allocating];
     socket_->receive (boost::asio::buffer (data, available), 0, error);
     if (error)
+    {
+        delete[] data;
         throw TiALostConnection ("BoostUDPReadSocket");
+    }
     buffered_string_.append (data, available);
 
     if (available < num_bytes)
     {
         socket_->receive (boost::asio::buffer (data, num_bytes - available), 0, error);
         if (error)
+        {
+            delete[] data;
             throw TiALostConnection ("BoostUDPReadSocket");
+        }
 
         buffered_string_.append (data, num_bytes - available);
     }
 
-    delete data;
+    delete[] data;
 }
 
 
