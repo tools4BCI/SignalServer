@@ -47,6 +47,11 @@
 class GDFWriter;
 #endif
 
+namespace tia
+{
+class TiAServerStateServer;
+}
+
 namespace tobiss
 {
 // forward declarations
@@ -95,7 +100,7 @@ class TiAServer : boost::noncopyable
     * @brief Constructor
     * \param the boost::asio::io_service to use
     */
-    TiAServer(boost::asio::io_service& io_service);
+    TiAServer(boost::asio::io_service& io_service, bool new_tia = false);
 
     /**
      * @brief Destructor
@@ -181,6 +186,8 @@ class TiAServer : boost::noncopyable
     TCPDataServer*                      tcp_data_server_; ///<
     UDPDataServer*                      udp_data_server_; ///<
     ControlConnectionServer*            control_connection_server_; ///<
+    tia::TiAServerStateServer*          server_state_server_;
+    bool const new_tia_;
 
     boost::uint32_t                                       master_blocksize_; ///<
     boost::uint32_t                                       master_samplingrate_; ///<

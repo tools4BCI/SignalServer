@@ -117,7 +117,10 @@ void BoostTCPSocketImpl::readBytes (unsigned num_bytes)
         socket_->read_some (boost::asio::buffer (data, available), error);
 
     if (error)
+    {
+        delete[] data;
         throw TiALostConnection ("BoostTCPSocketImpl: error read_some");
+    }
 
     buffered_string_.append (data, available);
 
@@ -129,7 +132,10 @@ void BoostTCPSocketImpl::readBytes (unsigned num_bytes)
             socket_->read_some (boost::asio::buffer (data, num_bytes - available), error);
 
         if (error)
+        {
+            delete[] data;
             throw TiALostConnection ("BoostTCPSocketImpl: error read_some 2");
+        }
 
         buffered_string_.append (data, num_bytes - available);
     }

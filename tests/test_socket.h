@@ -60,6 +60,13 @@ public:
     }
 
     //-------------------------------------------------------------------------
+    virtual unsigned startListening (tia::NewConnectionListener* new_connection_listener)
+    {
+        listener_ = new_connection_listener;
+        return 0;
+    }
+
+    //-------------------------------------------------------------------------
     virtual void stopListening ()
     {
         listener_ = 0;

@@ -19,6 +19,7 @@ class TiAServerStateServerImpl : public TiAServerStateServer, public NewConnecti
 {
 public:
     TiAServerStateServerImpl (boost::shared_ptr<TCPServerSocket> server_socket, unsigned port);
+    TiAServerStateServerImpl (boost::shared_ptr<TCPServerSocket> server_socket);
     virtual ~TiAServerStateServerImpl ();
 
     virtual unsigned getPort () const;
@@ -28,7 +29,8 @@ public:
 private:
     void emitStateViaSocket (boost::shared_ptr<Socket> socket, ServerState server_state);
 
-    std::map<ServerState, std::string> state_map_;
+    static std::map<ServerState, std::string> state_map_;
+    static void init ();
     boost::shared_ptr<TCPServerSocket> server_socket_;
     std::list<boost::shared_ptr<Socket> > server_to_client_sockets_;
     std::auto_ptr<TiAControlMessageBuilder> message_builder_;
