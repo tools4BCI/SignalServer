@@ -49,6 +49,7 @@ const string COMMENTS_XML_CONFIG = "server_config_comments.xml";
 
 const string XML_CONFIG_FILE_PARAM = "-f";
 const string LIST_HARDWARE_PARAM   = "-l";
+const string NEW_TIA_PARAM = "-n";
 
 #ifndef WIN32
 const string DEFAULT_XML_CONFIG_HOME_SUBDIR = string("/tobi_sigserver_cfg/");
@@ -159,6 +160,7 @@ int main(int argc, const char* argv[])
 
     string config_file;
     bool running = true;
+    bool use_new_tia = false;
 
     if(argc == 1)
     {
@@ -172,8 +174,18 @@ int main(int argc, const char* argv[])
         printPossibleHardware();
         return(0);
       }
-      cout << endl << "  ***  Loading XML configuration file: " << argv[1] << endl << endl;
-      config_file = argv[1];
+      else if (argv[1] == NEW_TIA_PARAM)
+      {
+        use_new_tia = true;
+        cout << endl << " *** Signal Server will start with TiA 1.0 ***" << endl;
+        config_file = getDefaultConfigFile ();
+        cout << endl << " ***  Loading default XML configuration file: " << config_file << endl << endl;
+      }
+      else
+      {
+        cout << endl << "  ***  Loading XML configuration file: " << argv[1] << endl << endl;
+        config_file = argv[1];
+      }
     }
     else if(argc == 3 && argv[1] == XML_CONFIG_FILE_PARAM)
     {
@@ -190,7 +202,7 @@ int main(int argc, const char* argv[])
 
       boost::asio::io_service io_service;
 
-      TiAServer server(io_service);
+      TiAServer server(io_service, use_new_tia);
 
 //      DataFileHandler data_file_handler(io_service, config.getFileReaderMap());
 

@@ -46,9 +46,9 @@ ConnectionID  FustyDataServerImpl::addConnection (bool udp)
     }
     else
     {
-        std::cout << "call addconneciton on tcp server" << std::endl;
+        // std::cout << "call addconneciton on tcp server" << std::endl;
         boost::asio::ip::tcp::endpoint tcp_endpoint = tcp_data_server_.addConnection ();
-        std::cout << "call addconneciton on tcp server done" << std::endl;
+        // std::cout << "call addconneciton on tcp server done" << std::endl;
         tcp_connections_.insert (new_connection_id);
         id_tcp_endpoint_map_[new_connection_id] = tcp_endpoint;
     }

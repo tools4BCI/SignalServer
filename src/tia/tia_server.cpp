@@ -49,6 +49,8 @@
 #include "tia/tia_server.h"
 #include "tia-private/network/tcp_data_server.h"
 #include "tia-private/network/udp_data_server.h"
+#include "tia-private/newtia/server_impl/tia_server_state_server_impl.h"
+#include "tia-private/newtia/network_impl/boost_tcp_server_socket_impl.h"
 
 #ifdef TIMING_TEST
   #include "LptTools/LptTools.h"
@@ -68,12 +70,14 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 
-TiAServer::TiAServer(boost::asio::io_service& io_service)
+TiAServer::TiAServer(boost::asio::io_service& io_service, bool new_tia)
   : io_service_(io_service),
 //  config_(0),
   tcp_data_server_(0),
   udp_data_server_(0),
   control_connection_server_(0),
+  server_state_server_(0),
+  new_tia_ (new_tia),
   write_file(0)
 #ifdef WRITE_GDF
   ,gdf_writer_(0)
@@ -111,6 +115,7 @@ TiAServer::~TiAServer()
   delete tcp_data_server_;
   delete udp_data_server_;
   delete control_connection_server_;
+  delete server_state_server_;
 
 #ifdef WRITE_GDF
   if(gdf_writer_)
@@ -150,6 +155,12 @@ void TiAServer::initialize(std::map<std::string,std::string> subject_info,
   port = lexical_cast<uint16_t>(server_settings_[Constants::ss_udp_port]);
   udp_data_server_ = new UDPDataServer(io_service_);
   udp_data_server_->setDestination(server_settings_[Constants::ss_udp_bc_addr], port);
+
+  if (new_tia_)
+  {
+    boost::shared_ptr<tia::TCPServerSocket> server_state_server_socket (new tia::BoostTCPServerSocketImpl (io_service_));
+    server_state_server_ = new tia::TiAServerStateServerImpl (server_state_server_socket);
+  }
   control_connection_server_->listen();
 
 #ifdef WRITE_GDF
