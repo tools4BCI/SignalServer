@@ -105,7 +105,7 @@ public:
    */
   void getConfig(ConfigMsg& config);
 
-  void checkConnections (boost::system::error_code& error);
+  void checkConnections (boost::system::error_code error);
 
 protected:
   typedef std::map<ControlConnection::ConnectionID, ControlConnection::pointer> CtrlConnHandlers;

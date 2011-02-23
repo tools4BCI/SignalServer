@@ -142,7 +142,7 @@ void TiANewClientImpl::waitForOKResponse ()
 //-----------------------------------------------------------------------------
 void TiANewClientImpl::waitForErrorResponse ()
 {
-    waitForControlMessage (TiAControlMessageTags10::ERROR);
+    waitForControlMessage (TiAControlMessageTags10::ERROR_STR);
 }
 
 //-----------------------------------------------------------------------------
