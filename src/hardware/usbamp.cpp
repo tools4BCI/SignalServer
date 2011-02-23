@@ -33,7 +33,6 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 
-
 namespace tobiss
 {
 using boost::uint8_t;
@@ -66,7 +65,7 @@ static const unsigned int USBAMP_MAX_NR_OF_CHANNELS   = 17;
 static const unsigned int USBAMP_NR_OF_CHANNEL_GROUPS = 4;
 static const unsigned int USBAMP_NOTCH_HALF_WIDTH = 2;   // to one side  ...  e.g.  f_center = 50 Hz -->  48/52 Hz
 static const unsigned int USBAMP_ERROR_MSG_SIZE = 256;
-static const unsigned int USBAMP_NR_OF_OVERLAPPED = 3;
+static const unsigned int USBAMP_NR_OF_OVERLAPPED = 8;
 
 
 const HWThreadBuilderTemplateRegistratorWithoutIOService<USBamp> USBamp::FACTORY_REGISTRATOR_ ("usbamp", "g.usbamp");
@@ -98,6 +97,13 @@ const string USBamp::hw_bipolar_("bipolar");
 const string USBamp::hw_bipolar_with_("with");
 const string USBamp::hw_drl_("driven_right_leg");
 const string USBamp::hw_drl_value_("value");
+
+//-----------------------------------------------------------------------------
+
+template<typename T> inline bool isnan(T value)
+{
+  return value != value;
+}
 
 //-----------------------------------------------------------------------------
 
@@ -373,7 +379,7 @@ void USBamp::fillSampleBlock()
       pos = (k*blocks_) + j;
       samples_[ pos ] = *(reinterpret_cast<float*>(driver_buffer_[current_overlapped_] + HEADER_SIZE + (k +(j* expected_values_/blocks_) )*sizeof(float) ));
 
-      if( isnan( samples[pos] ) )
+      if( isnan( samples_[pos] ) )
          cerr << "Received NaNs at sample " << sample_count_ << "!" << endl;
     }
 
