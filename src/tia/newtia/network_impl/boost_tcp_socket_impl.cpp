@@ -110,7 +110,7 @@ void BoostTCPSocketImpl::readBytes (unsigned num_bytes)
         throw TiALostConnection ("BoostTCPSocketImpl: error calling available: " + string (error.category().name()) + error.message());
     unsigned allocating = std::max<unsigned> (num_bytes, available);
 
-    char* data = new char [allocating];
+    std::vector<char> data (allocating);
     if (fusty_connection_)
         fusty_connection_->socket().read_some (boost::asio::buffer (data, available), error);
     else
@@ -118,11 +118,10 @@ void BoostTCPSocketImpl::readBytes (unsigned num_bytes)
 
     if (error)
     {
-        delete[] data;
         throw TiALostConnection ("BoostTCPSocketImpl: error read_some");
     }
 
-    buffered_string_.append (data, available);
+    buffered_string_.append (data.data(), available);
 
     if (available < num_bytes)
     {
@@ -133,14 +132,11 @@ void BoostTCPSocketImpl::readBytes (unsigned num_bytes)
 
         if (error)
         {
-            delete[] data;
             throw TiALostConnection ("BoostTCPSocketImpl: error read_some 2");
         }
 
-        buffered_string_.append (data, num_bytes - available);
+        buffered_string_.append (data.data(), num_bytes - available);
     }
-
-    delete[] data;
 }
 
 
