@@ -59,11 +59,8 @@ HEADERS += include/tia/tia_server.h \
     include/tia-private/datapacket/raw_mem3.h \
     include/tia-private/clock.h \
     include/tia-private/newtia/control_connection_server_2.h \
-    #include/tia-private/newtia/server_command.h \
     include/tia-private/newtia/network/socket.h \
-    #include/tia-private/newtia/commands/stop_data_transmission_server_command.h \
     include/tia-private/newtia/server/data_server.h \
-    #include/tia-private/newtia/commands/start_data_transmission_server_command.h \
     include/tia-private/newtia/commands/get_data_connection_control_command.h \
     include/tia-private/newtia/messages/tia_control_message_parser.h \
     include/tia-private/newtia/messages/tia_control_message.h \
@@ -117,10 +114,8 @@ SOURCES += src/tia/tia_server.cpp \
     src/tia/data_packet3.cpp \
     src/tia/datapacket/raw_mem3.cpp \
     src/tia/clock.cpp \
-    #src/tia/newtia/commands/stop_data_transmission_server_command.cpp \
     src/tia/newtia/commands/get_data_connection_control_command.cpp \
-    #src/tia/newtia/server_command.cpp \
-    src/tia/newtia/version_1_0/tia_control_message_parser_1_0.cpp \
+    src/tia/newtia/messages_impl/tia_control_message_parser_1_0.cpp \
     src/tia/newtia/server_control_connection.cpp \
     src/tia/newtia/network_impl/boost_tcp_socket_impl.cpp \
     src/tia/newtia/server_impl/fusty_data_server_impl.cpp \
