@@ -71,28 +71,24 @@ void BoostUDPReadSocket::readBytes (unsigned num_bytes)
         throw TiALostConnection ("BoostUDPReadSocket");
     unsigned allocating = std::max<unsigned> (num_bytes, available);
 
-    char* data = new char [allocating];
+    std::vector<char> data (allocating);
     socket_->receive (boost::asio::buffer (data, available), 0, error);
     if (error)
     {
-        delete[] data;
         throw TiALostConnection ("BoostUDPReadSocket");
     }
-    buffered_string_.append (data, available);
+    buffered_string_.append (data.data(), available);
 
     if (available < num_bytes)
     {
         socket_->receive (boost::asio::buffer (data, num_bytes - available), 0, error);
         if (error)
         {
-            delete[] data;
             throw TiALostConnection ("BoostUDPReadSocket");
         }
 
-        buffered_string_.append (data, num_bytes - available);
+        buffered_string_.append (data.data(), num_bytes - available);
     }
-
-    delete[] data;
 }
 
 
