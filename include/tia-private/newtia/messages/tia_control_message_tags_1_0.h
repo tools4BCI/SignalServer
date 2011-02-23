@@ -20,7 +20,7 @@ namespace TiAControlMessageTags10
     std::string const CONTENT_LENGTH = "Content-Length";
 
     std::string const OK = "OK";
-    std::string const ERROR = "Error";
+    std::string const ERROR_STR = "Error";
     std::string const METAINFO = "MetaInfo";
     std::string const CHECK_PROTOCOL_VERSION = "CheckProtocolVersion";
     std::string const GET_METAINFO = "GetMetaInfo";

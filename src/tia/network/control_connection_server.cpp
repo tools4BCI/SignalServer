@@ -282,13 +282,15 @@ void ControlConnectionServer::clientHasDisconnected(const ControlConnection::Con
 }
 
 //-----------------------------------------------------------------------------
-void ControlConnectionServer::checkConnections (boost::system::error_code& error)
+void ControlConnectionServer::checkConnections (boost::system::error_code error)
 {
   if (error)
       return;
   boost::unique_lock<boost::mutex> lock(mutex_);
   static unsigned blub = 0;
-  cout << " <- check connection "<< ++blub <<" -> " << endl;
+  #ifdef DEBUG
+    cout << " <- check connection "<< ++blub <<" -> " << endl;
+  #endif
   std::list<unsigned> to_be_removed;
   for (std::map<unsigned, tia::ServerControlConnection*>::iterator iter = new_connections_.begin();
        iter != new_connections_.end(); ++iter)

@@ -41,7 +41,7 @@
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">tmp\debug\</IntDir>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</IgnoreImportLibrary>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">tmp\release\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">bin\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">tmp\release\</IntDir>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</IgnoreImportLibrary>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
@@ -138,7 +138,7 @@
     </ProjectReference>
     <Link>
       <AdditionalDependencies>ticpp-msvc10.lib;SDL.lib;libusb0.lib;tia.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>bin\signalserver.exe</OutputFile>
+      <OutputFile>$(OutDir)signalserver.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>extern\lib\g.usbamp\win;extern\lib\sdl\win;extern\lib\ticpp\win;extern\lib\libgdf\win;extern\lib\libusb\win;lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
