@@ -146,7 +146,7 @@ BrainAmpSeries::BrainAmpSeries(ticpp::Iterator<ticpp::Element> hw)
   unsigned int nMajor = driver_version_ / 1000000;
 
 //  cout << endl;
-  cout << " --> Using Brainamp -- Mode: " << acqu_type_ <<;
+  cout << " --> Using Brainamp -- Mode: " << acqu_type_;
   cout << " -- driver version: " << nMajor << "." << nMinor << "." << nModule << endl;
 //  cout << "    fs: " << fs_ << "Hz, nr of channels: " << nr_ch_ << ", blocksize: " << blocks_ << endl;
 //  cout << endl;
