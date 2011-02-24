@@ -21,6 +21,7 @@ public:
 
     virtual void sendString (std::string const& string) throw (tia::TiALostConnection);
 
+    virtual void setReceiveBufferSize (unsigned) {}
     virtual std::string readString (unsigned number_bytes = 4000000000u);
     virtual std::string readLine (unsigned max_length);
     virtual char readCharacter ();

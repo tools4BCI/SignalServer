@@ -38,7 +38,7 @@ TEST(boostTCPSocketImpl)
 
     boost::asio::ip::tcp::endpoint connection_endpoint (boost::asio::ip::address_v4::from_string ("127.0.0.1"), 9007);
 
-    Socket* socket = new BoostTCPSocketImpl (io_service, connection_endpoint);
+    Socket* socket = new BoostTCPSocketImpl (io_service, connection_endpoint, 8000);
 
     boost::thread* io_thread = new boost::thread(boost::bind(&boost::asio::io_service::run, &io_service));
 

@@ -287,8 +287,8 @@ void ControlConnectionServer::checkConnections (boost::system::error_code error)
   if (error)
       return;
   boost::unique_lock<boost::mutex> lock(mutex_);
-  static unsigned blub = 0;
   #ifdef DEBUG
+    static unsigned blub = 0;
     cout << " <- check connection "<< ++blub <<" -> " << endl;
   #endif
   std::list<unsigned> to_be_removed;
@@ -302,12 +302,14 @@ void ControlConnectionServer::checkConnections (boost::system::error_code error)
   for (std::list<unsigned>::iterator iter = to_be_removed.begin();
        iter != to_be_removed.end(); ++iter)
   {
-    cout << " * remove client " << *iter << endl;
     delete new_connections_[*iter];
     delete new_sockets_[*iter];
     new_connections_.erase (*iter);
     new_sockets_.erase (*iter);
   }
+  if (to_be_removed.size())
+      cout << " # Connected clients: " << connections_.size() << endl;
+
   check_connections_timer_.cancel ();
   check_connections_timer_.expires_from_now (boost::posix_time::seconds (3));
   check_connections_timer_.async_wait(boost::bind(&ControlConnectionServer::checkConnections, this, boost::asio::placeholders::error));
