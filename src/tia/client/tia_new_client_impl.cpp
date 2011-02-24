@@ -52,7 +52,10 @@ bool TiANewClientImpl::connected () const
 //-----------------------------------------------------------------------------
 void TiANewClientImpl::disconnect ()
 {
-    stopReceiving ();
+    if (receiving_)
+        stopReceiving ();
+    if (data_socket_.get ())
+        data_socket_.reset (0);
     socket_.reset (0);
 }
 
