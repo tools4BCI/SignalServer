@@ -33,7 +33,7 @@ TEST(TiATCPServerSocket)
     server_socket->startListening (9008, testlistener.get());
 
     asio::ip::tcp::endpoint connection_endpoint (boost::asio::ip::address_v4::from_string ("127.0.0.1"), 9008);
-    auto_ptr<Socket> tcp_client_socket (new BoostTCPSocketImpl (io_service, connection_endpoint));
+    auto_ptr<Socket> tcp_client_socket (new BoostTCPSocketImpl (io_service, connection_endpoint, 9000));
 
     boost::thread* io_thread = new boost::thread (boost::bind(&boost::asio::io_service::run, &io_service));
 

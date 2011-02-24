@@ -13,7 +13,7 @@ namespace tia
 class TiADataPacketParser
 {
 public:
-    tobiss::DataPacket parseFustyDataPacketFromStream (InputStream& input_stream);
+    tobiss::DataPacket parseFustyDataPacketFromStream (InputStream& input_stream, bool& run);
     tobiss::DataPacket3 parseFustyDataPacket3FromStream (InputStream& input_stream);
 };
 

@@ -11,22 +11,20 @@ class TiAControlCommandContext
 {
 public:
     TiAControlCommandContext (HardwareInterface& hardware_interface)
-        : hardware_interface_ (hardware_interface),
-          has_connection_ (false)
+        : hardware_interface_ (hardware_interface)
     {}
 
-    bool hasDataConnection () const {return has_connection_;}
+    bool hasDataConnection () const {return data_connections_.size () > 0;}
 
-    ConnectionID getDataConnectionID () const {return data_connection_;}
+    std::vector<ConnectionID> getDataConnectionID () const {return data_connections_;}
 
     HardwareInterface& getHardwareInterface () {return hardware_interface_;}
 
-    void setDataConnectionID (ConnectionID id) {data_connection_ = id; has_connection_ = true;}
+    void addDataConnectionID (ConnectionID id) {data_connections_.push_back (id);}
 
 private:
     HardwareInterface& hardware_interface_;
-    ConnectionID data_connection_;
-    bool has_connection_;
+    std::vector<ConnectionID> data_connections_;
 };
 
 

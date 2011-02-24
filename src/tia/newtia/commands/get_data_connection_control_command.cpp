@@ -13,8 +13,6 @@ namespace tia
 TiAControlMessage GetDataConnectionControlCommand::execute (TiAControlMessage const& command)
 {
     string version = command.getVersion ();
-    if (command_context_.hasDataConnection ())
-        return ErrorControlMessage (version);
 
     string command_response = TiAControlMessageTags10::DATA_CONNECTION_PORT;
 
@@ -29,7 +27,7 @@ TiAControlMessage GetDataConnectionControlCommand::execute (TiAControlMessage co
     else
         return ErrorControlMessage (version);
 
-    command_context_.setDataConnectionID (data_connection);
+    command_context_.addDataConnectionID (data_connection);
     std::ostringstream oss;
     oss << data_server_.localPort (data_connection);
     parameter = oss.str ();

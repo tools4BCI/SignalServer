@@ -34,6 +34,16 @@ BoostTCPSocketImpl::~BoostTCPSocketImpl ()
 }
 
 //-----------------------------------------------------------------------------
+void BoostTCPSocketImpl::setReceiveBufferSize (unsigned size)
+{
+    boost::asio::socket_base::receive_buffer_size option(size);
+    if (socket_)
+        socket_->set_option (option);
+    else if (fusty_connection_)
+        fusty_connection_->socket().set_option (option);
+}
+
+//-----------------------------------------------------------------------------
 string BoostTCPSocketImpl::readLine (unsigned /*max_length*/)
 {
     string line;

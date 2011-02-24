@@ -1,4 +1,5 @@
 #include "tia-private/client/tia_new_client_impl.h"
+#include "tia/defines.h"
 
 #include "tia-private/newtia/tia_meta_info_parse_and_build_functions.h"
 #include "tia-private/newtia/messages_impl/tia_control_message_builder_1_0.h"
@@ -11,18 +12,21 @@
 #include "tia-private/newtia/network_impl/boost_udp_read_socket.h"
 #include "tia-private/newtia/tia_datapacket_parser.h"
 
+#include <iostream>
+
 using namespace tobiss;
 using namespace std;
 
 namespace tia
 {
 
-unsigned const MAX_LINE_LENGTH = 30;
+unsigned const MAX_LINE_LENGTH = 50;
 
 //-----------------------------------------------------------------------------
 TiANewClientImpl::TiANewClientImpl ()
     : MESSAGE_VERSION_ (TiAControlMessageTags10::VERSION),
       receiving_ (false),
+      buffer_size_ (BUFFER_SIZE),
       message_builder_ (new TiAControlMessageBuilder10),
       message_parser_ (new TiAControlMessageParser10)
 {
@@ -34,7 +38,7 @@ void TiANewClientImpl::connect (const std::string& address, short unsigned port)
 {
     server_ip_address_ = address;
     boost::asio::ip::tcp::endpoint server_address (boost::asio::ip::address_v4::from_string (address), port);
-    socket_.reset (new BoostTCPSocketImpl (io_service_, server_address));
+    socket_.reset (new BoostTCPSocketImpl (io_service_, server_address, buffer_size_));
     sendMessage (CheckProtocolVersionTiAControlMessage (MESSAGE_VERSION_));
     waitForOKResponse ();
 }
@@ -48,8 +52,7 @@ bool TiANewClientImpl::connected () const
 //-----------------------------------------------------------------------------
 void TiANewClientImpl::disconnect ()
 {
-    receiving_ = false;
-    data_socket_.reset (0);
+    stopReceiving ();
     socket_.reset (0);
 }
 
@@ -81,12 +84,12 @@ void TiANewClientImpl::startReceiving (bool use_udp_bc)
         if (use_udp_bc)
         {
             boost::asio::ip::udp::endpoint server_data_address (boost::asio::ip::address_v4::from_string (server_ip_address_), port);
-            data_socket_.reset (new BoostUDPReadSocket (io_service_, server_data_address));
+            data_socket_.reset (new BoostUDPReadSocket (io_service_, server_data_address, buffer_size_));
         }
         else
         {
             boost::asio::ip::tcp::endpoint server_data_address (boost::asio::ip::address_v4::from_string (server_ip_address_), port);
-            data_socket_.reset (new BoostTCPSocketImpl (io_service_, server_data_address));
+            data_socket_.reset (new BoostTCPSocketImpl (io_service_, server_data_address, buffer_size_));
         }
     }
 
@@ -109,21 +112,29 @@ void TiANewClientImpl::stopReceiving()
     {
         sendMessage (TiAControlMessage (MESSAGE_VERSION_, TiAControlMessageTags10::STOP_DATA_TRANSMISSION, "", ""));
         waitForOKResponse();
+        receiving_ = false;
     }
-    receiving_ = false;
 }
 
 //-----------------------------------------------------------------------------
 void TiANewClientImpl::getDataPacket (DataPacket& packet)
 {
-    TiADataPacketParser packet_builder;
-    packet = packet_builder.parseFustyDataPacketFromStream (*data_socket_);
+    if (!receiving_)
+        return;
+
+    if (!data_socket_.get ())
+        return;
+
+    TiADataPacketParser packet_parser;
+    packet = packet_parser.parseFustyDataPacketFromStream (*data_socket_, receiving_);
+    if (!receiving_)
+        data_socket_.reset (0);
 }
 
 //-----------------------------------------------------------------------------
-void TiANewClientImpl::setBufferSize (size_t /*size*/)
+void TiANewClientImpl::setBufferSize (size_t size)
 {
-    /// TODO: implement
+    buffer_size_ = size;
 }
 
 //-----------------------------------------------------------------------------

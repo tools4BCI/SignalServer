@@ -62,6 +62,7 @@ private:
     bool receiving_;
 
     tobiss::SSConfig config_;
+    unsigned buffer_size_;
 
     boost::asio::io_service io_service_;
     std::auto_ptr<Socket> socket_;

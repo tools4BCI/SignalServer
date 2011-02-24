@@ -12,6 +12,7 @@ class ReadSocket : public InputStream
 public:
     virtual ~ReadSocket () {}
     virtual void waitForData () = 0;
+    virtual void setReceiveBufferSize (unsigned size) = 0;
 };
 
 }
