@@ -19,10 +19,12 @@ namespace tia
 class BoostTCPSocketImpl : public Socket
 {
 public:
-    BoostTCPSocketImpl (boost::asio::io_service& io_service, boost::asio::ip::tcp::endpoint const& endpoint)
+    BoostTCPSocketImpl (boost::asio::io_service& io_service, boost::asio::ip::tcp::endpoint const& endpoint, unsigned buffer_size)
         : socket_ (new boost::asio::ip::tcp::socket (io_service))
     {
         socket_->connect (endpoint);
+        boost::asio::socket_base::receive_buffer_size option (buffer_size);
+        socket_->set_option (option);
     }
 
     BoostTCPSocketImpl (boost::shared_ptr<tobiss::TCPConnection> con);
@@ -31,6 +33,7 @@ public:
 
     virtual ~BoostTCPSocketImpl ();
 
+    virtual void setReceiveBufferSize (unsigned size);
     virtual std::string readLine (unsigned max_length);
     virtual std::string readString (unsigned length);
     virtual char readCharacter ();

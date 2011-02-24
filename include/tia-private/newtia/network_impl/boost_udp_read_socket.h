@@ -12,11 +12,9 @@ namespace tia
 class BoostUDPReadSocket : public ReadSocket
 {
 public:
-    BoostUDPReadSocket (boost::asio::io_service& io_service, boost::asio::ip::udp::endpoint const& endpoint)
-        : socket_ (new boost::asio::ip::udp::socket (io_service))
-    {
-        socket_->connect (endpoint);
-    }
+    BoostUDPReadSocket (boost::asio::io_service& io_service, boost::asio::ip::udp::endpoint const& endpoint, unsigned buffer_size);
+    virtual void setReceiveBufferSize (unsigned size);
+
 
     virtual std::string readLine (unsigned max_length);
     virtual std::string readString (unsigned length);
@@ -26,6 +24,8 @@ private:
     void readBytes (unsigned num_bytes);
     std::auto_ptr<boost::asio::ip::udp::socket> socket_;
     std::string buffered_string_;
+    unsigned buffer_size_;
+    std::vector<char> rec_buffer_;
 };
 
 }

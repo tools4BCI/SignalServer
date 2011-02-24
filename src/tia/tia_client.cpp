@@ -30,6 +30,8 @@
 #include "tia-private/client/tia_client_impl.h"
 #include "tia-private/client/tia_new_client_impl.h"
 
+#include <iostream>
+
 namespace tobiss
 {
 //-----------------------------------------------------------------------------
@@ -37,8 +39,8 @@ namespace tobiss
 TiAClient::TiAClient() :
   impl_(0)
 {
-  impl_ = new TiAClientImpl;
-  //impl_ = new tia::TiANewClientImpl;
+  impl_ = new tia::TiANewClientImpl;
+  //impl_ = new TiAClientImpl;
 }
 
 //-----------------------------------------------------------------------------
@@ -53,7 +55,17 @@ TiAClient::~TiAClient()
 
 void TiAClient::connect(const std::string& address, short unsigned port)
 {
-  impl_->connect(address, port);
+  try
+  {
+    impl_->connect(address, port);
+  }
+  catch (...)
+  {
+    std::cout << "TiAClient: switch to old implementation" << std::endl;
+    delete impl_;
+    impl_ = new TiAClientImpl;
+    impl_->connect (address, port);
+  }
 }
 
 //-----------------------------------------------------------------------------

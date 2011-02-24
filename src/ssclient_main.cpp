@@ -304,7 +304,7 @@ int main(int argc, const char* argv[])
     {
       cout << "Stop Receiving ..." << endl;
 
-      boost::unique_lock<boost::mutex> lock(mutex);
+      //boost::unique_lock<boost::mutex> lock(mutex);
 
       try {
         client.stopReceiving();

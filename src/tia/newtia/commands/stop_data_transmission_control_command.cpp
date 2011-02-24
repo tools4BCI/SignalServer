@@ -14,7 +14,10 @@ TiAControlMessage StopDataTransmissionControlCommand::execute (TiAControlMessage
     if (!command_context_.hasDataConnection ())
         return ErrorControlMessage (version);
 
-    data_server_.stopTransmission (command_context_.getDataConnectionID ());
+    std::vector<ConnectionID> connections = command_context_.getDataConnectionID();
+    for (size_t index = 0; index < connections.size(); ++index)
+        data_server_.stopTransmission (connections[index]);
+
     return OkControlMessage (version);
 }
 
