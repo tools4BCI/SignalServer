@@ -41,8 +41,17 @@
 	  </xsd:complexType>
 	</xsd:element>
 	
+	<!-- master signal info -->
+	<xsd:element name="masterSignal" minOccurs="0" maxOccurs="1">
+	  <xsd:complexType>
+	    <xsd:attribute name="samplingRate" type="xsd:float" use="required"/>
+	    <xsd:attribute name="blockSize" type="xsd:integer" use="required"/>
+	  </xsd:complexType>
+	</xsd:element>
+	  
+	
 	<!-- signal info -->
-	<xsd:element name="signalInfo" minOccurs="0" maxOccurs="unbounded">
+	<xsd:element name="signal" minOccurs="0" maxOccurs="unbounded">
 	  <xsd:complexType>
 	    
 	    <!-- channels -->
