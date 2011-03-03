@@ -308,7 +308,7 @@ void ControlConnectionServer::checkConnections (boost::system::error_code error)
     new_sockets_.erase (*iter);
   }
   if (to_be_removed.size())
-      cout << " # Connected clients: " << connections_.size() << endl;
+      cout << " # Connected clients: " << new_connections_.size() << endl;
 
   check_connections_timer_.cancel ();
   check_connections_timer_.expires_from_now (boost::posix_time::seconds (3));
