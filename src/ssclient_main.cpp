@@ -199,9 +199,17 @@ int main(int argc, const char* argv[])
   string   srv_addr = "127.0.0.1";
   boost::uint16_t srv_port = 9000;
 
+  bool new_tia = false;
+
   if(argc == 1)
   {
     cout << "Using default server " << srv_addr << ":" << srv_port << endl;
+  }
+  else if(argc == 2)
+  {
+    string param (argv[1]);
+    if (param == "-n")
+      new_tia = true;
   }
   else if(argc == 3)
   {
@@ -221,7 +229,7 @@ int main(int argc, const char* argv[])
 
   try
   {
-    client.connect(srv_addr, srv_port);
+    client.connect(srv_addr, srv_port, new_tia);
     client.requestConfig();
   }
   catch(std::exception& e)
@@ -249,6 +257,7 @@ int main(int argc, const char* argv[])
   known_commands.insert(make_pair("stop",     "Stops the data transmission"));
   known_commands.insert(make_pair("q",        "Quits the client."));
   known_commands.insert(make_pair("help",     "Prints this help text."));
+  known_commands.insert(make_pair("state", "Get the data receiving state of the client"));
 
   string command;
   cout << endl << ">>";
@@ -283,6 +292,14 @@ int main(int argc, const char* argv[])
              << "--> " << e.what() << endl;
       }
     }
+    else if (command == "state")
+    {
+        cout << "Client state: ";
+        if (client.receiving())
+            cout << "receiving data" << endl;
+        else
+            cout << "not receiving data" << endl;
+    }
     else if (command == "starttcp" || command == "startudp")
     {
       bool udp =  command == "startudp";
@@ -291,6 +308,8 @@ int main(int argc, const char* argv[])
 
       try {
         client.startReceiving(udp);
+        if (!client.receiving())
+            cerr << "Client did not block until data receiving..." << endl;
       }
       catch (std::exception& e)
       {

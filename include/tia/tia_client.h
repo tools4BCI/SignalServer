@@ -103,10 +103,11 @@ public:
    * The caller will be blocked until the connection has been made or an error has occurred.
    * @param address host name or the IPv4 address of the server
    * @param port the control connection port the server listens on
+   * @param use_new_tia if TiA 1.0 control commands should be used (or version 0.1)
    * @throw std::ios_base::failure if the client could not
    *   connect to the server or if the client is already connected.
    */
-  virtual void connect(const std::string& address, short unsigned port);
+  virtual void connect(const std::string& address, short unsigned port, bool use_new_tia = false);
 
   /**
    * @brief Tells if the client is connected to the server,

@@ -53,19 +53,16 @@ TiAClient::~TiAClient()
 
 //-----------------------------------------------------------------------------
 
-void TiAClient::connect(const std::string& address, short unsigned port)
+void TiAClient::connect(const std::string& address, short unsigned port, bool use_new_tia)
 {
-  try
+  if (!use_new_tia)
   {
-    impl_->connect(address, port);
-  }
-  catch (...)
-  {
-    std::cout << "TiAClient: switch to old implementation" << std::endl;
-    delete impl_;
+    if (impl_)
+      delete impl_;
     impl_ = new TiAClientImpl;
-    impl_->connect (address, port);
   }
+
+  impl_->connect(address, port);
 }
 
 //-----------------------------------------------------------------------------
