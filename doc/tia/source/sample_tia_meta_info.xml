@@ -4,6 +4,8 @@
   <subject id="WE2" firstName="Max" lastName="Mustermann" 
            handedness="r" />
 
+  <masterSignal sampleRate="100" blockSize="10" />
+  
   <signal type="eeg" blockSize="10" sampleRate="100" numChannels="3">
     <channel nr="1" label="Cz"/>
     <channel nr="2" label="C1"/>
