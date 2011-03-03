@@ -1,11 +1,17 @@
 
 c_files = ' ';
 c_files = [c_files ' ../../src/tia/data_packet.cpp ../../src/tia/datapacket/raw_mem.cpp'];
+c_files = [c_files ' ../../src/tia/data_packet3.cpp ../../src/tia/datapacket/raw_mem3.cpp ../../src/tia/clock.cpp'];
 c_files = [c_files ' ../../src/tia/constants.cpp ../../src/tia/config/control_message_decoder.cpp'];
 c_files = [c_files ' ../../src/tia/config/control_messages.cpp ../../src/tia/config/control_message_encoder.cpp'];
 c_files = [c_files ' ../../src/tia/tia_client.cpp ../../src/tia/client/tia_client_impl.cpp'];
+c_files = [c_files ' ../../src/tia/client/tia_new_client_impl.cpp'];
+c_files = [c_files ' ../../src/tia/newtia/network_impl/boost_tcp_socket_impl.cpp ../../src/tia/newtia/network_impl/boost_udp_read_socket.cpp'];
+c_files = [c_files ' ../../src/tia/newtia/tia_datapacket_parser.cpp ../../src/tia/newtia/tia_meta_info_parse_and_build_functions.cpp'];
+c_files = [c_files ' ../../src/tia/newtia/messages_impl/tia_control_message_parser_1_0.cpp'];
 
-unix_build_command = 'mex -v -O -DTIXML_USE_TICPP  -I../../include/  -I../../extern/include/  -lboost_thread -lboost_system -lstdc++ -outdir build';
+
+unix_build_command = 'mex -v -O -DTIXML_USE_TICPP  -I../../ -I../../include/  -I../../extern/include/  -lboost_thread -lboost_system -lstdc++ -outdir build';
 
 win_boost_path = 'C:\Programme\boost\boost_1_44';
 
