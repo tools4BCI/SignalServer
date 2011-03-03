@@ -24,6 +24,7 @@ namespace XML_TAGS
     std::string const SUBJECT_FIRSTNAME = "firstName";
     std::string const SUBJECT_SURNAME = "surname";
 
+    std::string const MASTER_SIGNAL = "masterSignal";
     std::string const SIGNAL = "signal";
     std::string const SIGNAL_TYPE = "type";
     std::string const SIGNAL_SAMPLINGRATE = "samplingRate";
@@ -75,6 +76,19 @@ tobiss::SSConfig parseTiAMetaInfoFromXMLString (std::string const& tia_meta_info
         if (attributes.count (XML_TAGS::SUBJECT_SURNAME))
             tia_meta_info.subject_info.setSurname (attributes.at(XML_TAGS::SUBJECT_SURNAME));
     }
+
+    // parse master signal info
+    rapidxml::xml_node<>* master_signal_node = 0;
+    master_signal_node = tia_metainfo_node->first_node (XML_TAGS::MASTER_SIGNAL.c_str());
+    if (master_signal_node)
+    {
+        std::map<string, string> attributes = getAttributes (master_signal_node);
+        if (attributes.count (XML_TAGS::SIGNAL_SAMPLINGRATE))
+            tia_meta_info.signal_info.setMasterSamplingRate (toUnsigned (attributes.at(XML_TAGS::SIGNAL_SAMPLINGRATE)));
+        if (attributes.count (XML_TAGS::SIGNAL_BLOCKSIZE))
+            tia_meta_info.signal_info.setMasterSamplingRate (toUnsigned (attributes.at(XML_TAGS::SIGNAL_BLOCKSIZE)));
+    }
+
 
     // parse signals
     rapidxml::xml_node<>* signal_node = 0;
@@ -134,6 +148,14 @@ std::string buildTiAMetaInfoXMLString (tobiss::SSConfig const& tia_meta_info)
     addAttribute (&xml_doc, subject_node, XML_TAGS::SUBJECT_SURNAME, tia_meta_info.subject_info.surname());
     // TODO: add further attributes
     tia_metainfo_node->append_node (subject_node);
+
+
+    // master signal data
+    char *master_signal_node_name = xml_doc.allocate_string (XML_TAGS::MASTER_SIGNAL.c_str ());
+    rapidxml::xml_node<>* master_signal_node = xml_doc.allocate_node (rapidxml::node_element, master_signal_node_name);
+    addAttribute (&xml_doc, master_signal_node, XML_TAGS::SIGNAL_SAMPLINGRATE, tia_meta_info.signal_info.masterSamplingRate());
+    addAttribute (&xml_doc, master_signal_node, XML_TAGS::SIGNAL_BLOCKSIZE, tia_meta_info.signal_info.masterBlockSize());
+    tia_metainfo_node->append_node (master_signal_node);
 
 
     // signals
