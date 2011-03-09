@@ -130,7 +130,7 @@
     <ClInclude Include="include\tia-private\newtia\commands\get_serverstate_connection_command.h" />
     <ClInclude Include="include\tia-private\newtia\commands\start_data_transmission_control_command.h" />
     <ClInclude Include="include\tia-private\newtia\commands\stop_data_transmission_control_command.h" />
-    <ClInclude Include="include\tia-private\newtia\control_connection_server_2.h" />
+    <ClInclude Include="include\tia-private\newtia\server_control_connection.h" />
     <ClInclude Include="include\tia-private\newtia\fusty_hardware_interface_impl.h" />
     <ClInclude Include="include\tia-private\newtia\hardware_interface.h" />
     <ClInclude Include="include\tia-private\newtia\messages\standard_control_messages.h" />

@@ -1,4 +1,4 @@
-#include "tia-private/newtia/control_connection_server_2.h"
+#include "tia-private/newtia/server_control_connection.h"
 #include "tia-private/newtia/commands/check_protocol_version_control_command.h"
 #include "tia-private/newtia/commands/get_data_connection_control_command.h"
 #include "tia-private/newtia/commands/start_data_transmission_control_command.h"

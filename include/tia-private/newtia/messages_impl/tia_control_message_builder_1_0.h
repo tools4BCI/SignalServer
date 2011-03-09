@@ -16,7 +16,7 @@ class TiAControlMessageBuilder10 : public TiAControlMessageBuilder
 public:
     virtual std::string buildTiAMessage (TiAControlMessage const& message)
     {
-        std::string str = "TiA ";
+        std::string str = TiAControlMessageTags10::ID + TiAControlMessageTags10::SPACE;
         str += message.getVersion ();
         str += TiAControlMessageTags10::NEW_LINE;
 

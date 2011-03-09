@@ -58,7 +58,7 @@ HEADERS += include/tia/tia_server.h \
     include/tia/data_packet3.h \
     include/tia-private/datapacket/raw_mem3.h \
     include/tia-private/clock.h \
-    include/tia-private/newtia/control_connection_server_2.h \
+    include/tia-private/newtia/server_control_connection.h \
     include/tia-private/newtia/network/socket.h \
     include/tia-private/newtia/server/data_server.h \
     include/tia-private/newtia/commands/get_data_connection_control_command.h \
