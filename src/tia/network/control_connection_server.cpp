@@ -40,7 +40,7 @@
 #include "tia-private/network/udp_data_server.h"
 
 #include "tia-private/newtia/network_impl/boost_socket_impl.h"
-#include "tia-private/newtia/control_connection_server_2.h"
+#include "tia-private/newtia/server_control_connection.h"
 #include "tia-private/newtia/server_impl/fusty_data_server_impl.h"
 #include "tia-private/newtia/fusty_hardware_interface_impl.h"
 
@@ -288,8 +288,8 @@ void ControlConnectionServer::checkConnections (boost::system::error_code error)
       return;
   boost::unique_lock<boost::mutex> lock(mutex_);
   #ifdef DEBUG
-    static unsigned blub = 0;
-    cout << " <- check connection "<< ++blub <<" -> " << endl;
+    static unsigned call_counter = 0;
+    cout << " <- check connection "<< ++call_counter <<" -> " << endl;
   #endif
   std::list<unsigned> to_be_removed;
   for (std::map<unsigned, tia::ServerControlConnection*>::iterator iter = new_connections_.begin();
