@@ -15,6 +15,7 @@ namespace TiAControlMessageTags10
 
     std::string const VERSION = "1.0";
     std::string const ID = "TiA";
+    std::string const SPACE = " ";
     std::string const ID_AND_VERSION = ID + std::string (" ") + VERSION;
 
     std::string const CONTENT_LENGTH = "Content-Length";
