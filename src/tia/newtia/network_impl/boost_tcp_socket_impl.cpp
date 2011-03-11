@@ -67,7 +67,7 @@ string BoostTCPSocketImpl::readLine (unsigned /*max_length*/)
 //-----------------------------------------------------------------------------
 string BoostTCPSocketImpl::readString (unsigned length)
 {
-    if (length > buffered_string_.size())
+    while (length > buffered_string_.size())
         readBytes (length - buffered_string_.size ());
 
     string str = buffered_string_.substr (0, length);
@@ -106,11 +106,12 @@ void BoostTCPSocketImpl::sendString (string const& str) throw (TiALostConnection
 }
 
 //-----------------------------------------------------------------------------
-void BoostTCPSocketImpl::readBytes (unsigned num_bytes)
+void BoostTCPSocketImpl::readBytes (unsigned requested_bytes)
 {
     boost::system::error_code error;
 
     unsigned available = 0;
+    unsigned read_bytes = 0;
     if (fusty_connection_)
         available = fusty_connection_->socket().available (error);
     else
@@ -118,34 +119,25 @@ void BoostTCPSocketImpl::readBytes (unsigned num_bytes)
 
     if (error)
         throw TiALostConnection ("BoostTCPSocketImpl: error calling available: " + string (error.category().name()) + error.message());
-    unsigned allocating = std::max<unsigned> (num_bytes, available);
+    unsigned allocating = std::max<unsigned> (requested_bytes, available);
 
     std::vector<char> data (allocating);
-    if (fusty_connection_)
-        fusty_connection_->socket().read_some (boost::asio::buffer (data, available), error);
-    else
-        socket_->read_some (boost::asio::buffer (data, available), error);
 
-    if (error)
+    while (read_bytes < requested_bytes)
     {
-        throw TiALostConnection ("BoostTCPSocketImpl: error read_some");
-    }
-
-    buffered_string_.append (data.data(), available);
-
-    if (available < num_bytes)
-    {
+        unsigned read_bytes_now = 0;
         if (fusty_connection_)
-            fusty_connection_->socket().read_some (boost::asio::buffer (data, num_bytes - available), error);
+            read_bytes_now += fusty_connection_->socket().read_some (boost::asio::buffer (data), error);
         else
-            socket_->read_some (boost::asio::buffer (data, num_bytes - available), error);
+            read_bytes_now += socket_->read_some (boost::asio::buffer (data), error);
 
         if (error)
         {
             throw TiALostConnection ("BoostTCPSocketImpl: error read_some 2");
         }
 
-        buffered_string_.append (data.data(), num_bytes - available);
+        buffered_string_.append (data.data(), read_bytes_now);
+        read_bytes += read_bytes_now;
     }
 }
 
