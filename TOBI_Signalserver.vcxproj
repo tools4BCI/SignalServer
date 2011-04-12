@@ -158,7 +158,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\hardware\brainampseries.cpp" />
     <ClCompile Include="src\signalserver\main.cpp" />
     <ClCompile Include="src\hardware\artificial_signal_source.cpp" />
     <ClCompile Include="src\hardware\eeg_simulator.cpp" />
@@ -182,7 +181,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\hardware\artificial_signal_source.h" />
-    <ClInclude Include="include\hardware\brainampseries.h" />
     <ClInclude Include="include\hardware\eeg_simulator.h" />
     <ClInclude Include="include\hardware\event_listener.h" />
     <ClInclude Include="include\hardware\g_mobilab.h" />
