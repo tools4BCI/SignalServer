@@ -44,10 +44,12 @@
 
 #include "ticpp/ticpp.h"
 
-#include "datapacket/data_packet.h"
-#include "definitions/constants.h"
-#include "signalserver-client/ssclient.h"
-#include "signalserver-client/ssconfig.h"
+#include "tia/constants.h"
+#include "tia/tia_client.h"
+#include "tia/ssconfig.h"
+#include "tia/data_packet.h"
+
+
 
 #ifdef WIN32
 #include <boost/cstdint.hpp>
@@ -80,8 +82,8 @@ using namespace tobiss;
 using namespace boost;
 #endif
 
-static SSClient* client = 0;    // Static value for the client. We need to save it to obtain the data after the first configuration.
-static std::map<uint32_t, Signal> *sig_types_map;   // The maps for the internal number of the signal type to the structure.
+static TiAClient* client = 0;    // Static value for the client. We need to save it to obtain the data after the first configuration.
+static std::map<uint32_t, tobiss::Signal> *sig_types_map;   // The maps for the internal number of the signal type to the structure.
 
 
 // ------------------------------------------------------------------------
@@ -156,8 +158,8 @@ void ssc_getConfig(int nlhs, mxArray *plhs[],
 
     cout << "Using server " << srv_addr << ":" << port << endl;
     // Connect to the server
-    client = new SSClient();
-    sig_types_map = new std::map<uint32_t, Signal>();
+    client = new TiAClient();
+    sig_types_map = new std::map<uint32_t, tobiss::Signal>();
     
     
     // connect to the server and get the config file
@@ -165,15 +167,15 @@ void ssc_getConfig(int nlhs, mxArray *plhs[],
 
     client->requestConfig();
     SSConfig config = client->config();
-    SignalInfo::SignalMap& signals(config.signal_info.signals());
+    tobiss::SignalInfo::SignalMap& signals(config.signal_info.signals());
     
-    SignalInfo::SignalMap::iterator iter(signals.begin());
+    tobiss::SignalInfo::SignalMap::iterator iter(signals.begin());
 
     for( ; iter != signals.end(); iter++) {
       sig_types_map->insert( make_pair(cst.getSignalFlag(iter->first), iter->second)  );
     }
 
-    std::map<uint32_t, Signal>::iterator it(sig_types_map->begin());
+    std::map<uint32_t, tobiss::Signal>::iterator it(sig_types_map->begin());
 
     vector<uint32_t> sig_types;
     vector<uint16_t> blocksizes;
@@ -312,7 +314,7 @@ void ssc_getData(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   {
     uint16_t nr_values = 0;
     vector<double> v;
-    DataPacket packet;
+    tobiss::DataPacket packet;
  
     if (!client->receiving())
     {
@@ -335,7 +337,7 @@ void ssc_getData(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
      mxSetField(infoStruct,0,"sampleNr",mxCreateDoubleScalar(packet.getSampleNr()));
      
      unsigned int cellIndex = 0;
-     for(map<uint32_t, Signal >::iterator it = sig_types_map->begin(); it != sig_types_map->end();  it++)
+     for(map<uint32_t, tobiss::Signal >::iterator it = sig_types_map->begin(); it != sig_types_map->end();  it++)
      {
        try {
 	
