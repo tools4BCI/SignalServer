@@ -37,7 +37,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">tmp\debug</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">tmp\debug\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">tmp\debug\</IntDir>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</IgnoreImportLibrary>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
@@ -159,6 +159,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\hardware\brainampseries.cpp" />
+    <ClCompile Include="src\hardware\eeg_sim_msg_parser.cpp" />
     <ClCompile Include="src\signalserver\main.cpp" />
     <ClCompile Include="src\hardware\artificial_signal_source.cpp" />
     <ClCompile Include="src\hardware\eeg_simulator.cpp" />
@@ -184,6 +185,7 @@
     <ClInclude Include="include\hardware\artificial_signal_source.h" />
     <ClInclude Include="include\hardware\brainampseries.h" />
     <ClInclude Include="include\hardware\eeg_simulator.h" />
+    <ClInclude Include="include\hardware\eeg_sim_msg_parser.h" />
     <ClInclude Include="include\hardware\event_listener.h" />
     <ClInclude Include="include\hardware\g_mobilab.h" />
     <ClInclude Include="include\hardware\gtec_usbamp_wrapper.h" />
