@@ -22,8 +22,6 @@
 * @file usbamp.cpp
 **/
 
-#ifdef WIN32
-
 #include "winsock2.h"
 #include "hardware/usbamp.h"
 
@@ -108,9 +106,14 @@ template<typename T> inline bool isnan(T value)
 //-----------------------------------------------------------------------------
 
 USBamp::USBamp(ticpp::Iterator<ticpp::Element> hw)
-  : HWThread(), enable_sc_(0), external_sync_(0), trigger_line_(0),
-    sample_count_(0), error_count_(0) ,error_code_(0), expected_values_(0),
-    first_run_(1), current_overlapped_(0)
+  : HWThread(), enable_sc_(0),
+    external_sync_(0), trigger_line_(0), trigger_line_sig_type_(SIG_UNDEFINED),
+    sample_count_(0), error_count_(0) ,error_code_(0), error_msg_(0),
+    driver_buffer_size_(0), timeout_(0), expected_values_(0),
+    first_run_(1), current_overlapped_(0),
+    h_(0), nr_of_bp_filters_(0), bp_filters_(0), nr_of_notch_filters_(0),
+    notch_filters_(0)
+
 {
   #ifdef DEBUG
     cout << "USBamp: Constructor" << endl;
@@ -1152,8 +1155,6 @@ void USBamp::setOperationMode(ticpp::Iterator<ticpp::Element>const &elem)
     cout << "USBamp: setOperationMode" << endl;
   #endif
 
-  //string op_mode( getUSBampOpMode( elem->GetText(true) ) );
-
   //FIXME   --  if needed, implementation of other operation modes
   if(elem->GetText(true) != "normal")
     throw(std::invalid_argument("USBamp::setOperationMode -- So far only normal operation mode supported!"));
@@ -1180,6 +1181,11 @@ void USBamp::setTriggerLine(ticpp::Iterator<ticpp::Element>const &elem)
   #endif
 
   trigger_line_ = equalsOnOrOff(elem->GetText(true));
+
+  Constants cst;
+
+  if(elem->HasAttribute(hw_ch_type_))
+    trigger_line_sig_type_ = cst.getSignalFlag( elem->GetAttribute(hw_ch_type_) );
 }
 
 //---------------------------------------------------------------------------------------
@@ -1606,11 +1612,11 @@ void USBamp::checkTriggerLineChannel()
     cout << "USBamp: checkTriggerLineChannel" << endl;
   #endif
 
-//   if(channel_info_.find(USBAMP_TRIGGER_LINE_CHANNEL) != channel_info_.end())
-
   if(trigger_line_)
   {
-    channel_info_[channel_info_.size() + 1] = make_pair(hw_trigger_line_, SIG_USER_1);
+    boost::uint32_t last_ch = (--channel_info_.end())->first;
+
+    channel_info_[last_ch + 1] = make_pair(hw_trigger_line_, trigger_line_sig_type_);
     nr_ch_ += 1;
     homogenous_signal_type_ = 0;
     setChannelTypes();
@@ -1725,7 +1731,6 @@ int USBamp::getUSBampBlockNr(const string& s)
 
 } // Namespace tobiss
 
-#endif // WIN32
 
 
 // DEBUG code from constructor

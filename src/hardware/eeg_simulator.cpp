@@ -57,7 +57,22 @@ const std::string EEGSimulator::xml_phase_("phase");
 static const float EEG_DIST_MEAN = 0;
 static const float EEG_DIST_STD  = 11;  // lt. Martin Billinger, BCI Comp4, Graz Dataset A, 4.11.2010
 
-static const unsigned int MESSAGE_BUFFER_SIZE_BYTE = 4096;
+
+//static const std::string EEGSIM_MSG_STRING("eegsimconfig");
+//static const std::string EEGSIM_EEG_STRING("eeg");
+//static const std::string EEGSIM_SINE_STRING("sine");
+
+//static const std::string EEGSIM_MSG_CMD_DELIMITER(":");
+//static const std::string EEGSIM_MSG_PARAM_DELIMITER("/");
+//static const std::string EEGSIM_MSG_CHANNEL_DELIMITER(",");
+
+//static const std::string EEGSIM_MSG_GETCONFIG("getconfig");
+//static const std::string EEGSIM_MSG_CONFIG("config");
+//static const std::string EEGSIM_MSG_OK("ok");
+//static const std::string EEGSIM_MSG_ERROR("error");
+
+
+//static const unsigned int MESSAGE_BUFFER_SIZE_BYTE = 4096;
 
 //-----------------------------------------------------------------------------
 
@@ -65,11 +80,14 @@ EEGSimulator::EEGSimulator(boost::asio::io_service& io,
                            ticpp::Iterator<ticpp::Element> hw)
  : ArtificialSignalSource(io, hw), twister_(static_cast<unsigned int>(std::time(0))),
    eeg_dist_(EEG_DIST_MEAN,EEG_DIST_STD), eeg_gen_(twister_,eeg_dist_),
-   acceptor_(io), socket_(io), port_(0), connected_(0)
+   acceptor_(io), socket_(io), port_(0), connected_(0), parser_(str_buffer_)
 {
 
+//  msg_types_map_.insert(std::make_pair( EEGSIM_MSG_GETCONFIG, GetConfig ) );
+//  msg_types_map_.insert(std::make_pair( EEGSIM_MSG_CONFIG, Config ) );
+
   setType("EEG Simulator");
-  message_buffer_.resize(MESSAGE_BUFFER_SIZE_BYTE);
+//  message_buffer_.resize(MESSAGE_BUFFER_SIZE_BYTE);
 
   setHardware(hw);
 
@@ -104,7 +122,7 @@ void EEGSimulator::generateSignal()
   boost::unique_lock<boost::shared_mutex> lock(rw_);
 
   // create EEG
-  std::map<boost::uint16_t, EEGConfig>::iterator eeg_it;
+  std::map<boost::uint16_t, EEGSimMsgParser::EEGConfig>::iterator eeg_it;
   for(boost::uint16_t n = 0; n < nr_ch_ ; n++)
   {
     if( (eeg_it = eeg_config_.find(n)) != eeg_config_.end() )
@@ -114,7 +132,7 @@ void EEGSimulator::generateSignal()
   }
 
   // add sine waves
-  std::multimap<boost::uint16_t, SineConfig>::iterator sine_it;
+  std::multimap<boost::uint16_t, EEGSimMsgParser::SineConfig>::iterator sine_it;
 
   for(boost::uint16_t n = 0; n < nr_ch_ ; n++)
   {
@@ -282,7 +300,7 @@ void EEGSimulator::setPort(ticpp::Iterator<ticpp::Element>const &elem)
 
 void EEGSimulator::setDeviceEEGConfig(ticpp::Iterator<ticpp::Element>const &elem)
 {
-  EEGConfig eeg_cfg = getEEGConfig(elem);
+  EEGSimMsgParser::EEGConfig eeg_cfg = getEEGConfig(elem);
 
   for(unsigned int n = 0; n < channel_info_.size(); n++)
     eeg_config_.insert(  make_pair(n, eeg_cfg) );
@@ -292,7 +310,7 @@ void EEGSimulator::setDeviceEEGConfig(ticpp::Iterator<ticpp::Element>const &elem
 
 void EEGSimulator::setDeviceSineConfig(ticpp::Iterator<ticpp::Element>const &elem)
 {
-  SineConfig sine_cfg = getSineConfig(elem);
+  EEGSimMsgParser::SineConfig sine_cfg = getSineConfig(elem);
 
   for(unsigned int n = 0; n < channel_info_.size(); n++)
     sine_configs_.insert(  make_pair(n, sine_cfg) );
@@ -372,10 +390,34 @@ void EEGSimulator::setChannelSineConfig(ticpp::Iterator<ticpp::Element>const &fa
         throw(std::invalid_argument(ex_str));
       }
 
-      sine_configs_.insert(  make_pair(ch-1, getSineConfig(elem) ) );
+      setSineConfigInMultimap(ch, getSineConfig(elem) );
     }
     else
       throw(std::invalid_argument("EEGSimulator::setChannelSineConfig -- Tag not equal to \""+hw_chset_ch_+"\"!"));
+}
+
+//---------------------------------------------------------------------------------------
+
+void EEGSimulator::setSineConfigInMultimap(boost::uint16_t ch, EEGSimMsgParser::SineConfig config)
+{
+
+  std::pair< std::multimap<boost::uint16_t,EEGSimMsgParser::SineConfig>::iterator,
+             std::multimap<boost::uint16_t,EEGSimMsgParser::SineConfig>::iterator > range(sine_configs_.equal_range(ch-1));
+
+  bool found = 0;
+  for(std::multimap<boost::uint16_t, EEGSimMsgParser::SineConfig> ::iterator it(range.first);
+      it != range.second; it++)
+  {
+    if(config.freq_ == it->second.freq_)
+    {
+      it->second = config;
+      found = 1;
+    }
+  }
+
+  if(!found)
+    sine_configs_.insert(  make_pair(ch-1, config ) );
+
 }
 
 //---------------------------------------------------------------------------------------
@@ -424,11 +466,11 @@ void EEGSimulator::checkSineConfigAttributes(ticpp::Iterator<ticpp::Element>cons
 
 //-----------------------------------------------------------------------------
 
-EEGSimulator::EEGConfig EEGSimulator::getEEGConfig(ticpp::Iterator<ticpp::Element>const &elem)
+EEGSimMsgParser::EEGConfig EEGSimulator::getEEGConfig(ticpp::Iterator<ticpp::Element>const &elem)
 {
   checkEEGConfigAttributes(elem);
 
-  EEGConfig eeg_cfg;
+  EEGSimMsgParser::EEGConfig eeg_cfg;
   try
   {
     eeg_cfg.scaling_ = lexical_cast<double>( elem.Get()->GetAttribute(xml_scaling_) );
@@ -446,12 +488,12 @@ EEGSimulator::EEGConfig EEGSimulator::getEEGConfig(ticpp::Iterator<ticpp::Elemen
 
 //-----------------------------------------------------------------------------
 
-EEGSimulator::SineConfig EEGSimulator::getSineConfig(ticpp::Iterator<ticpp::Element>const &elem)
+EEGSimMsgParser::SineConfig EEGSimulator::getSineConfig(ticpp::Iterator<ticpp::Element>const &elem)
 {
 
   checkSineConfigAttributes(elem);
 
-  SineConfig sine_cfg;
+  EEGSimMsgParser::SineConfig sine_cfg;
   try
   {
     sine_cfg.freq_ = lexical_cast<double>( elem.Get()->GetAttribute(xml_frequ_) );
@@ -473,20 +515,78 @@ EEGSimulator::SineConfig EEGSimulator::getSineConfig(ticpp::Iterator<ticpp::Elem
 void EEGSimulator::handleAsyncRead(const boost::system::error_code& ec,
                                      std::size_t bytes_transferred )
 {
-  std::cout << ec.message() << std::endl;
-  if(ec)
-    throw(std::runtime_error("EEGSimulator::handleAsyncRead() -- \
-                             Error handling async read -- bytes transferred: " + bytes_transferred));
+  try
+  {
+    if(ec)
+      throw(std::runtime_error("EEGSimulator::handleAsyncRead() -- Error handling async read -- bytes transferred: " + bytes_transferred));
 
-  // TODO: check if message is complete
-
-
-  boost::unique_lock<boost::shared_mutex> lock(rw_);
-
-  // TODO: modify sine- or eeg config maps
+    str_buffer_.clear();
+    std::istream is(&message_buffer_);
+    std::getline(is, str_buffer_);
+    is.get();
 
 
-  lock.unlock();
+    boost::system::error_code  ec;
+
+    parser_.parseMessage();
+    EEGSimMsgParser::MessageType msg_type = parser_.getMessageType();
+    std::map<boost::uint16_t, EEGSimMsgParser::EEGConfig> eeg;
+    std::multimap<boost::uint16_t, EEGSimMsgParser::SineConfig> sine;
+
+    switch (msg_type)
+    {
+    case EEGSimMsgParser::Invalid:
+      throw(std::invalid_argument("Error -- Got invalid message type!"));
+      break;
+    case EEGSimMsgParser::GetConfig:
+      socket_.send(boost::asio::buffer(parser_.buildConfigMsgString(eeg_config_, sine_configs_)),
+                   0,ec);
+      if(ec)
+        throw(std::runtime_error("Error -- " + ec.message()  ));
+      boost::asio::async_read_until(socket_,
+                                    message_buffer_, '\n',
+                                    boost::bind(&EEGSimulator::handleAsyncRead, this,
+                                                boost::asio::placeholders::error,
+                                                boost::asio::placeholders::bytes_transferred) );
+
+      return;
+
+    case EEGSimMsgParser::Config:
+
+      parser_.getConfigs(eeg, sine);
+      if(eeg.size())
+        updateEEGConfig(eeg);
+      if(sine.size())
+        updateSineConfig(sine);
+      break;
+
+    default:
+      throw(std::invalid_argument("Error -- Could not determine message type!"));
+      break;
+    }
+    socket_.send(boost::asio::buffer( parser_.getOKMsg() ), 0,ec);
+  }
+  catch(std::exception& e)
+  {
+    boost::system::error_code  ec;
+    socket_.send(boost::asio::buffer( parser_.getErrorMsg() + e.what() ), 0, ec);
+
+    std::cerr << "  *** EEG Simulator -- Connection closed to client: " << peer_ip_ << std::endl;
+
+    socket_.close(ec);
+    peer_ip_.clear();
+    acceptor_.async_accept(socket_, boost::bind(&EEGSimulator::acceptHandler, this,
+                                                boost::asio::placeholders::error));
+
+    return;
+  }
+
+  boost::asio::async_read_until(socket_,
+                          message_buffer_, '\n',
+                          boost::bind(&EEGSimulator::handleAsyncRead, this,
+                                      boost::asio::placeholders::error,
+                                      boost::asio::placeholders::bytes_transferred) );
+
 }
 
 //-----------------------------------------------------------------------------
@@ -498,21 +598,53 @@ void EEGSimulator::acceptHandler(const boost::system::error_code& error)
 
   if (!error)
   {
-    boost::asio::async_read(socket_,
-                            boost::asio::buffer(message_buffer_),
+    peer_ip_ = socket_.remote_endpoint().address().to_string();
+    boost::asio::async_read_until(socket_,
+                            message_buffer_, '\n',
                             boost::bind(&EEGSimulator::handleAsyncRead,
                                         this,
                                         boost::asio::placeholders::error,
                                         boost::asio::placeholders::bytes_transferred)
                             );
   }
+  else
+  {
+    std::cerr << "EEGSimulator::acceptHandler" << error << std::endl;
+  }
 
-  acceptor_.async_accept(socket_, boost::bind(&EEGSimulator::acceptHandler, this,
-                                              boost::asio::placeholders::error));
+  if(!socket_.is_open())
+    acceptor_.async_accept(socket_, boost::bind(&EEGSimulator::acceptHandler, this,
+                                                boost::asio::placeholders::error));
 }
-
 
 //-----------------------------------------------------------------------------
 
+void EEGSimulator::updateEEGConfig(std::map<boost::uint16_t, EEGSimMsgParser::EEGConfig>& eeg)
+{
+
+  boost::unique_lock<boost::shared_mutex> lock(rw_);
+
+  // TODO: modify sine- or eeg config maps
+  std::cout << "updateEEGConfig" << std::endl;
+  eeg_config_ = eeg;
+  lock.unlock();
+
+}
+
+//-----------------------------------------------------------------------------
+
+void EEGSimulator::updateSineConfig(std::multimap<boost::uint16_t, EEGSimMsgParser::SineConfig>& sine)
+{
+
+  boost::unique_lock<boost::shared_mutex> lock(rw_);
+
+  // TODO: modify sine- or eeg config maps
+  std::cout << "updateSineConfig" << std::endl;
+  sine_configs_ = sine;
+  lock.unlock();
+
+}
+
+//-----------------------------------------------------------------------------
 
 }  // tobiss

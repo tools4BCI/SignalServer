@@ -27,8 +27,6 @@
 * This file only compiles under Microsoft Windows with the Visual Studio Compiler.
 **/
 
-#ifdef WIN32
-
 #ifndef USBAMP_H
 #define USBAMP_H
 
@@ -198,6 +196,8 @@ class USBamp : public HWThread
     bool enable_sc_;
     bool external_sync_;
     bool trigger_line_;
+    boost::uint32_t  trigger_line_sig_type_;
+
     boost::uint64_t sample_count_;
 
     boost::uint64_t error_count_;
@@ -294,5 +294,4 @@ class USBamp : public HWThread
 
 #endif // USBAMP_H
 
-#endif // WIN32
 //-----------------------------------------------------------------------------
