@@ -38,10 +38,10 @@
 #include "tia/tia_server.h"
 #include "config/xml_parser.h"
 #include "hardware/hw_access.h"
+#include "signalserver/signalserver.h"
 #include "filereading/data_file_handler.h"
 
 using namespace std;
-
 using namespace tobiss;
 
 const string DEFAULT_XML_CONFIG = "server_config.xml";
@@ -52,44 +52,13 @@ const string LIST_HARDWARE_PARAM   = "-l";
 const string NEW_TIA_PARAM = "-n";
 
 #ifndef WIN32
-const string DEFAULT_XML_CONFIG_HOME_SUBDIR = string("/tobi_sigserver_cfg/");
-const string TEMPLATE_XML_CONFIG = string("/usr/share/signalserver/") + DEFAULT_XML_CONFIG;
-const string TEMPLATE_XML_CONFIG_COMMENTS = string("/usr/share/signalserver/") + COMMENTS_XML_CONFIG;
+  const string DEFAULT_XML_CONFIG_HOME_SUBDIR = string("/tobi_sigserver_cfg/");
+  const string TEMPLATE_XML_CONFIG = string("/usr/share/signalserver/") + DEFAULT_XML_CONFIG;
+  const string TEMPLATE_XML_CONFIG_COMMENTS = string("/usr/share/signalserver/") + COMMENTS_XML_CONFIG;
 #endif
 
-class DataPacketReader
-{
-  public:
-    DataPacketReader(HWAccess& hw_access, TiAServer& server) :
-        hw_access_(hw_access),
-        server_(server),
-        stop_reading_(false)
-    {}
-
-    void stop()
-    {
-      stop_reading_ = true;
-    }
-
-    void readPacket()
-    {
-      while (!stop_reading_)
-      {
-//         cout << "waiting... ";
-        cout.flush();
-        DataPacket p = hw_access_.getDataPacket();
-//         cout << " got packet :-) ";
-        server_.sendDataPacket(p);
-//         cout << "packet, ";
-      }
-    }
-  private:
-    HWAccess&                   hw_access_;
-    TiAServer&               server_;
-    bool                        stop_reading_;
-};
-
 //-----------------------------------------------------------------------------
+
 string getDefaultConfigFile ()
 {
     string default_xml_config = DEFAULT_XML_CONFIG;
@@ -137,6 +106,8 @@ void printVersion()
   cout << "Laboratory of Brain-Computer Interfaces" << endl;
   cout << "Graz University of Technology" << endl;
   cout << "http://bci.tugraz.at" << endl;
+  cout << "Important: This software comes with ABSOLUTELY NO WARRANTY, to the extent \
+          permitted by applicable law." << endl;
 }
 
 //-----------------------------------------------------------------------------
@@ -207,9 +178,9 @@ int main(int argc, const char* argv[])
 //      DataFileHandler data_file_handler(io_service, config.getFileReaderMap());
 
       HWAccess hw_access(io_service, config);
-      DataPacketReader reader(hw_access, server);
+      tobiss::SignalServer sig_server(hw_access, server);
       boost::thread* io_thread_ptr = 0;
-      boost::thread* data_reader_thread_ptr = 0;
+      boost::thread* sig_server_ptr = 0;
 
       if(config.usesDataFile())
       {
@@ -229,7 +200,7 @@ int main(int argc, const char* argv[])
         hw_access.startDataAcquisition();
 
         io_thread_ptr  = new boost::thread(boost::bind(&boost::asio::io_service::run, &io_service));
-        data_reader_thread_ptr = new boost::thread(boost::bind(&DataPacketReader::readPacket, &reader));
+        sig_server_ptr = new boost::thread(boost::bind(&SignalServer::readPackets, &sig_server));
 
         #ifdef WIN32
           SetPriorityClass(io_thread_ptr->native_handle(), REALTIME_PRIORITY_CLASS);
@@ -274,7 +245,7 @@ int main(int argc, const char* argv[])
           cout << endl << ">>";
       }
 
-      reader.stop();
+      sig_server.stop();
       io_service.stop();
       hw_access.stopDataAcquisition();
       if(io_thread_ptr)
@@ -282,10 +253,10 @@ int main(int argc, const char* argv[])
         io_thread_ptr->join();
         delete io_thread_ptr;
       }
-      if(data_reader_thread_ptr)
+      if(sig_server_ptr)
       {
-        data_reader_thread_ptr->join();
-        delete data_reader_thread_ptr;
+        sig_server_ptr->join();
+        delete sig_server_ptr;
       }
 
       if(running)

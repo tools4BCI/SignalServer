@@ -52,7 +52,9 @@ HEADERS += include/config/xml_parser.h \
     include/hardware/artificial_signal_source.h \
     include/hardware/eeg_simulator.h \
     extern/include/LptTools/LptTools.h \
-    include/hardware/mouse.h
+    include/hardware/mouse.h \
+    include/hardware/eeg_sim_msg_parser.h \
+    include/signalserver/signalserver.h
     #include/hardware/nirscout.h
     #include/hardware/brainampseries.h
 unix:HEADERS += include/hardware/mouse_linux.h
@@ -74,7 +76,9 @@ SOURCES += src/signalserver/main.cpp \
     src/sampleblock/sample_block.cpp \
     src/hardware/artificial_signal_source.cpp \
     src/hardware/eeg_simulator.cpp \
-    src/hardware/mouse.cpp
+    src/hardware/mouse.cpp \
+    src/hardware/eeg_sim_msg_parser.cpp \
+    src/signalserver/signalserver.cpp
     #src/hardware/nirscout.cpp
     #src/hardware/brainampseries.cpp
 unix:SOURCES += src/hardware/mouse_linux.cpp
@@ -102,12 +106,11 @@ unix {
         # 64-bit Linux
         LIBS += -L \
             $$PWD/extern/lib/ticpp/linux \
-            -lticpp_64
-    }
-
-    # -Lextern/lib/libgdf/linux \
-    # -llibgdf_64
-    else:: {
+            -lticpp_64\
+            $$PWD/extern/lib/TiDlib/libTiDserver.a\
+            $$PWD/extern/lib/TiDlib/libtobiid.a\
+            $$PWD/extern/lib/TiDlib/libtobicore.a
+    }else::{
         # 32-bit Linux
         message(Building 32 bit )
         LIBS += -L$$PWD/extern/lib/ticpp/linux \
