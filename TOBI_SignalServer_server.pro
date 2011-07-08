@@ -107,9 +107,9 @@ unix {
         LIBS += -L \
             $$PWD/extern/lib/ticpp/linux \
             -lticpp_64\
-            $$PWD/extern/lib/TiDlib/libTiDserver.a\
-            $$PWD/extern/lib/TiDlib/libtobiid.a\
-            $$PWD/extern/lib/TiDlib/libtobicore.a
+            $$PWD/extern/lib/TiDlib/linux/libTiDserver_64.a\
+            $$PWD/extern/lib/TiDlib/linux/libtobiid_64.a\
+            $$PWD/extern/lib/TiDlib/linux/libtobicore_64.a
     }else::{
         # 32-bit Linux
         message(Building 32 bit )
