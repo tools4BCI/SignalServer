@@ -23,8 +23,8 @@
 * @brief This file includes the TiAServer class.
 **/
 
-#ifndef SIGNALSERVER_H
-#define SIGNALSERVER_H
+#ifndef TIA_SERVER_H
+#define TIA_SERVER_H
 
 // STL
 #include <map>
@@ -43,9 +43,6 @@
 #include "tia/constants.h"
 
 // forward declarations
-#ifdef WRITE_GDF
-class GDFWriter;
-#endif
 
 namespace tia
 {
@@ -172,13 +169,6 @@ class TiAServer : boost::noncopyable
     void setChannelNames(const std::map<boost::uint32_t, std::vector<std::string> >& channels_per_sig_type)
       { channels_per_sig_type_ = channels_per_sig_type; }
 
-  private:
-    #ifdef WRITE_GDF
-    /**
-     * @brief Initialize writing acquired data into a .gdf file. (will be rewritten or removed in the future)
-     */
-    void initGdf();
-    #endif
 
   private:
     boost::asio::io_service&            io_service_; ///<
@@ -199,9 +189,6 @@ class TiAServer : boost::noncopyable
     Constants                           cst_; ///<
 
     bool                                write_file; ///<
-#ifdef WRITE_GDF
-	GDFWriter*                          gdf_writer_; ///<
-#endif
 
 #ifdef TIMING_TEST
     boost::posix_time::ptime timestamp_;
@@ -224,4 +211,4 @@ class TiAServer : boost::noncopyable
 
 //-----------------------------------------------------------------------------
 
-#endif // SIGNALSERVER_H
+#endif // TIA_SERVER_H

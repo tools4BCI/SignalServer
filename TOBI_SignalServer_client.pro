@@ -34,7 +34,7 @@ unix {
     $$PWD/lib/libtia.a -lboost_thread -lboost_system
 
     HARDWARE_PLATFORM = $$system(uname -m)
-    contains( HARDWARE_PLATFORM, x86_64 ):: {
+    contains( HARDWARE_PLATFORM, x86_64 )::{
         message(Building 64 bit )
 
         # 64-bit Linux
