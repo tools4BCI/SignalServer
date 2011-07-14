@@ -2,8 +2,8 @@
 #include "tia-private/newtia/tia_exceptions.h"
 
 #include "tia-private/newtia/string_utils.h"
-#include "extern/include/rapidxml/rapidxml.hpp"
-#include "extern/include/rapidxml/rapidxml_print.hpp"
+#include <rapidxml/rapidxml.hpp>
+#include <rapidxml/rapidxml_print.hpp>
 
 #include <sstream>
 #include <map>
