@@ -1,20 +1,29 @@
-#include "tia-private/newtia/network_impl/boost_socket_impl.h"
+#include "tia-private/newtia/network_impl/boost_tcp_socket_impl.h"
 #include "tia-private/newtia/messages/tia_control_message_tags_1_0.h"
 #include "tia-private/newtia/tia_exceptions.h"
 
 #include "tia-private/network/tcp_server.h"
 
 #include <boost/asio.hpp>
-#include <iostream>
+#include <boost/lexical_cast.hpp>
 
 using std::string;
 
 namespace tia
 {
+BoostTCPSocketImpl::BoostTCPSocketImpl (boost::asio::io_service& io_service,
+                                        boost::asio::ip::tcp::endpoint const& endpoint, unsigned buffer_size)
+    : socket_ (new boost::asio::ip::tcp::socket (io_service))
+{
+    socket_->connect (endpoint);
+    boost::asio::socket_base::receive_buffer_size option (buffer_size);
+    socket_->set_option (option);
+    remote_endpoint_str_ = endpoint.address().to_string() + ":" + boost::lexical_cast<std::string>( endpoint.port() );
+}
 
 //-----------------------------------------------------------------------------
 BoostTCPSocketImpl::BoostTCPSocketImpl (boost::shared_ptr<tobiss::TCPConnection> con)
-   : fusty_connection_ (con)
+  : fusty_connection_ (con), remote_endpoint_str_(con->endpointToString( con->socket().remote_endpoint() ))
 {
 }
 
@@ -22,14 +31,17 @@ BoostTCPSocketImpl::BoostTCPSocketImpl (boost::shared_ptr<tobiss::TCPConnection>
 BoostTCPSocketImpl::BoostTCPSocketImpl (boost::shared_ptr<boost::asio::ip::tcp::socket> boost_socket)
     : socket_ (boost_socket)
 {
-
+  remote_endpoint_str_ = socket_->remote_endpoint().address().to_string() + ":"
+      + boost::lexical_cast<std::string>( socket_->remote_endpoint().port() );
 }
 
 //-----------------------------------------------------------------------------
 BoostTCPSocketImpl::~BoostTCPSocketImpl ()
 {
     if (socket_)
+    {
         socket_->close ();
+    }
     buffered_string_.clear ();
 }
 
@@ -106,6 +118,7 @@ void BoostTCPSocketImpl::sendString (string const& str) throw (TiALostConnection
 }
 
 //-----------------------------------------------------------------------------
+
 void BoostTCPSocketImpl::readBytes (unsigned requested_bytes)
 {
     boost::system::error_code error;
@@ -141,5 +154,13 @@ void BoostTCPSocketImpl::readBytes (unsigned requested_bytes)
     }
 }
 
+//-----------------------------------------------------------------------------
+
+std::string BoostTCPSocketImpl::getRemoteEndPointAsString()
+{
+  return(remote_endpoint_str_);
+}
+
+//-----------------------------------------------------------------------------
 
 }

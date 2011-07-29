@@ -1,5 +1,7 @@
-#ifndef GBSAMP_UNIX_H
-#define GBSAMP_UNIX_H
+#ifdef WIN32
+
+#ifndef GBSAMP_WIN_H
+#define GBSAMP_WIN_H
 
 #include <vector>
 #include <map>
@@ -7,19 +9,21 @@
 #include <boost/thread/condition.hpp>  // for mutex and cond. variables
 #include <boost/thread/shared_mutex.hpp>
 #include <boost/cstdint.hpp>
-#include <comedilib.h>
 
+//#include "nidaqmx_wrapper.h"
+
+#include "hardware/gBsamp_base.h"
 #include "hardware/hw_thread_builder.h"
-#include "hardware/gBSamp_base.h"
+#include "extern/include/nidaqmx/nidaqmx.h"
 
 namespace tobiss
 {
 //-----------------------------------------------------------------------------
 /**
 * @class gBSamp
-* @brief This class is used to gain access to PCMCIA-cards.
+* @brief This class is used to gain access to National Instruments cards.
 *
-* This file is for Linux and uses the comedi-lib
+* This file is for Windows and uses the National Instruments library
 *
 */
 
@@ -28,6 +32,7 @@ class gBSamp : public gBSampBase
   public:
     /**
     * @brief Constructor for initialization with an XML object
+    * @param[in] parser Reference to XMLParser object
     * @param[in] hw ticpp::Element pointing to an \<hardware\> tag in the config file
     */
     gBSamp(ticpp::Iterator<ticpp::Element> hw);
@@ -45,7 +50,6 @@ class gBSamp : public gBSampBase
     * It is called only from the master device.
     */
     virtual SampleBlock<double> getSyncData();
-
     /**
     * @brief Method to achieve asynchronous data acquisition (method is non-blocking).
     * @return SampleBlock<double>
@@ -76,6 +80,16 @@ class gBSamp : public gBSampBase
     */
     int initCard();
 
+    /**
+    * @brief Stops the device if an error occurs
+    */
+    void stopDAQ(boost::int32_t error_, char errBuff[2048]);
+
+    /**
+    * @brief Starts reading from device
+    */
+    int readFromDAQCard();
+
 //-----------------------------------------------
 
   private:
@@ -97,24 +111,21 @@ class gBSamp : public gBSampBase
     */
     SampleBlock<double> buffer_;
 
-    boost::int32_t error;
-    boost::int32_t first_run_;
+  boost::int32_t error_;
+  TaskHandle taskHandle_;
+  int32 read;                     // give this variable a meaningful name
+  float64 data[1];                // this array is used nowhere!!
+  char errBuff[2048];
+  std::vector<float64> data_buffer;  // also not used!!
 
-    comedi_t* device_;
-    comedi_cmd comedi_cmd_;
-    comedi_range* range_info_;
-    int maxdata_;
-    unsigned int *channel_list_;
-    //    sampl_t* data_buffer_[10000];
-    //    unsigned int channel_list[0];
-    //    comedi_insn comedi_insn_;
-    //    comedi_insnlist insn_list_;
-    //    lsampl_t data_buf_[1000];
+  // get rid of this buffer mess !!!!
 
-    static const HWThreadBuilderTemplateRegistratorWithoutIOService<gBSamp> factory_registrator_;
+  static const HWThreadBuilderTemplateRegistratorWithoutIOService<gBSamp> factory_registrator_;
 
 };
 
 } // Namespace tobiss
 
-#endif // GBSAMP_UNIX_H
+#endif // GBSAMP_WIN_H
+
+#endif // WIN32

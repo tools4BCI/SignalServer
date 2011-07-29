@@ -24,6 +24,7 @@
 
 #include "winsock2.h"
 #include "hardware/usbamp.h"
+#include "tia/constants.h"
 
 #include <boost/bind.hpp>
 #include <boost/numeric/conversion/cast.hpp>
@@ -58,7 +59,7 @@ bool USBamp::is_usbamp_master_(0);
 USBamp* USBamp::master_device_(0);
 std::vector<USBamp*>  USBamp::slave_devices_;
 
-static const unsigned int USBAMP_MAX_NR_OF_AMPS   = 16;
+static const unsigned int USBAMP_MAX_NR_OF_AMPS   = 8;
 static const unsigned int USBAMP_MAX_NR_OF_CHANNELS   = 17;
 static const unsigned int USBAMP_NR_OF_CHANNEL_GROUPS = 4;
 static const unsigned int USBAMP_NOTCH_HALF_WIDTH = 2;   // to one side  ...  e.g.  f_center = 50 Hz -->  48/52 Hz
@@ -383,7 +384,7 @@ void USBamp::fillSampleBlock()
       samples_[ pos ] = *(reinterpret_cast<float*>(driver_buffer_[current_overlapped_] + HEADER_SIZE + (k +(j* expected_values_/blocks_) )*sizeof(float) ));
 
       if( isnan( samples_[pos] ) )
-         cerr << "Received NaNs at sample " << sample_count_ << "!" << endl;
+         cerr << "Received NaNs at block " << sample_count_ << "!" << endl;
     }
 
   data_.setSamples(samples_);

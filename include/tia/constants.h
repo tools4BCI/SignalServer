@@ -177,6 +177,8 @@ namespace tobiss
         static const std::string ss_udp_bc_addr;
         static const std::string ss_udp_port;
 
+        static const std::string ss_tid_port;
+
       static const std::string ss_store_data;
       static const std::string ss_filename;
       static const std::string ss_filetype;
@@ -191,9 +193,9 @@ namespace tobiss
       static const std::string fr_stop;
 
         //Mouse specific start
-          static const std::string hw_vid;
-          static const std::string hw_pid;
-          static const std::string usb_port;
+//          static const std::string hw_vid;
+//          static const std::string hw_pid;
+//          static const std::string usb_port;
         //Mouse specific end
 
     private:
