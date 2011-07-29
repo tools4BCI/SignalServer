@@ -19,7 +19,7 @@
 */
 
 /**
-* @file gtec_usbamp_wrapper.h
+* @file nidaqmx_wrapper.h
 **/
 
 #ifndef NIDAQMX_WRAPPER_H
@@ -30,7 +30,7 @@
 #include <exception>
 #include <iostream>
 
-namespace tobiss
+namespace nidaqmx
 {
 
 // NI-DAQmx Typedefs
@@ -3948,7 +3948,7 @@ class NIDaqmxWrapper
 
 };
 
-} // namespace tobiss
+} // namespace nidaqmx
 
 #endif // WIN32
 

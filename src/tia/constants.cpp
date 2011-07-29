@@ -52,6 +52,7 @@ const string Constants::ss("server_settings");
 const string Constants::ss_ctl_port("ctl_port");
 const string Constants::ss_udp_bc_addr("udp_bc_addr");
 const string Constants::ss_udp_port("udp_port");
+const string Constants::ss_tid_port("tid_port");
 
 const string Constants::ss_store_data("store-data");
 const string Constants::ss_filename("filename");
@@ -67,9 +68,9 @@ const string Constants::fr_speedup("speedup");
 const string Constants::fr_stop("stop_at_end");
 
 //Mouse specific start
-const string Constants::hw_vid("vendorid");
-const string Constants::hw_pid("productid");
-const string Constants::usb_port("usb_port");
+//const string Constants::hw_vid("vendorid");
+//const string Constants::hw_pid("productid");
+//const string Constants::usb_port("usb_port");
 //Mouse specific end
 
 //-----------------------------------------------------------------------------

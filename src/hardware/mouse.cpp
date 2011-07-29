@@ -41,7 +41,7 @@ const string MouseBase::usb_port("usb_port");
 
 //-----------------------------------------------------------------------------
 MouseBase::MouseBase(ticpp::Iterator<ticpp::Element> hw)
-  : HWThread()
+	: HWThread()
 {
 	#ifdef DEBUG
 		cout << "MouseBase: Constructor" << endl;
@@ -62,8 +62,8 @@ MouseBase::MouseBase(ticpp::Iterator<ticpp::Element> hw)
 
   //	cout << " * Mouse sucessfully initialized -- running as aperiodic: ";
   //	cout << (mode_ == APERIODIC) << ";  ";
-	cout << " --> Mouse ID: " << id_ << ",  Name: " << name_;
-	cout<<", vid: "<<vid_<<", pid: "<<pid_<<endl;
+  cout << " --> Mouse ID: " << id_ << ",  Name: " << name_;
+  cout<<", vid: "<<vid_<<", pid: "<<pid_<<endl;
 }
 
 //-----------------------------------------------------------------------------
@@ -209,10 +209,10 @@ SampleBlock<double> MouseBase::getAsyncData()
   {
           bool dirty = 0;
 
-          for(int n = 0; n < buttons_values_.size(); n++)
+          for(unsigned int n = 0; n < buttons_values_.size(); n++)
           {
             bool value = 0;
-			double base = 2;
+      double base = 2;
             int state_n = (async_data_buttons_ & (int)pow(base,n));
             if (state_n!=value)
                 value = 1;
@@ -285,7 +285,8 @@ void MouseBase::initMouse()
   axes_values_[0] = 0;
   axes_values_[1] = 0;
 
-  async_data_x_ = async_data_x_ = 0;
+  async_data_x_ = 0;
+  async_data_y_ = 0;
   async_data_buttons_ = 0;
 
   //ctx_ = NULL; //a libusb session
