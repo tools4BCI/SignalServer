@@ -199,7 +199,7 @@ int main(int argc, const char* argv[])
   string   srv_addr = "127.0.0.1";
   boost::uint16_t srv_port = 9000;
 
-  bool new_tia = false;
+  bool new_tia = true;
 
   if(argc == 1)
   {
@@ -208,8 +208,8 @@ int main(int argc, const char* argv[])
   else if(argc == 2)
   {
     string param (argv[1]);
-    if (param == "-n")
-      new_tia = true;
+    if (param == "-o")
+      new_tia = false;
   }
   else if(argc == 3)
   {

@@ -28,6 +28,7 @@
 #include "hardware/hw_access.h"
 #include "hardware/hw_thread_factory.h"
 #include "hardware/event_listener.h"
+#include "config/xml_parser.h"
 
 #ifdef TIMING_TEST
   #include "LptTools/LptTools.h"
@@ -332,9 +333,9 @@ void HWAccess::stopDataAcquisition()
 
 DataPacket HWAccess::getDataPacket()
 {
-  #ifdef DEBUG
-    cout << "HWAccess: getDataPacket" << endl;
-  #endif
+  //#ifdef DEBUG
+  //  cout << "HWAccess: getDataPacket" << endl;
+  //#endif
 
   packet_.reset();
 

@@ -222,10 +222,12 @@ class XMLParser
       return true;
     }
 
-//    /**
-//    * @brief TODO
-//    */
-//    void parseFileLocation(ticpp::Iterator<ticpp::Element> elem, std::map<std::string, std::string>& m);
+    bool equalsYesOrNo(const std::string& s);
+
+    /**
+    * @brief TODO -- move this method to other file
+    */
+    void parseFileLocation(ticpp::Iterator<ticpp::Element> elem, std::map<std::string, std::string>& m);
 
 //-----------------------------------------------
   private:

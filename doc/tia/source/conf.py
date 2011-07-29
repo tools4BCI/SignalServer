@@ -41,7 +41,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'TiA - Documentation of TOBI Interface A'
-copyright = u'2011, Christoph Eibel'
+copyright = u'2011, Christian Breitwieser, Christoph Eibel'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -179,7 +179,7 @@ latex_font_size = '10pt'
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
   ('index', 'TiA-DocumentationofTOBIInterfaceA.tex', u'TiA 1.0',
-   u'Christoph Eibel', 'howto'),
+   u'Christian Breitwieser, Christoph Eibel', 'howto'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -212,5 +212,5 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'tia-documentationoftobiinterfacea', u'TiA - Documentation of TOBI Interface A Documentation',
-     [u'Christoph Eibel'], 1)
+     [u'Christian Breitwieser, Christoph Eibel'], 1)
 ]

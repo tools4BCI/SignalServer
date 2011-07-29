@@ -1,7 +1,7 @@
 #include "../UnitTest++/UnitTest++.h"
 #include "tia-private/newtia/network/tcp_server_socket.h"
 #include "tia-private/newtia/network_impl/boost_tcp_server_socket_impl.h"
-#include "tia-private/newtia/network_impl/boost_socket_impl.h"
+#include "tia-private/newtia/network_impl/boost_tcp_socket_impl.h"
 
 #include <iostream>
 #include <boost/thread.hpp>
