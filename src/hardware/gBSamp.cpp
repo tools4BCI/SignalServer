@@ -1,7 +1,8 @@
 #ifdef WIN32
 
 #include "hardware/gBSamp.h"
-#include "extern/include/nidaqmx/nidaqmx.h"
+//#include "extern/include/nidaqmx/nidaqmx.h"
+#include "hardware/nidaqmx_wrapper.h"
 
 namespace tobiss
 {
@@ -95,8 +96,8 @@ gBSamp::~gBSamp()
 
   if( taskHandle!=0 )
   {
-    DAQmxStopTask(taskHandle);
-    DAQmxClearTask(taskHandle);
+    nidaqmx_.stopTask(taskHandle);
+	nidaqmx_.clearTask(taskHandle);
   }
 
 }
@@ -112,7 +113,7 @@ void gBSamp::run()
   running_ = 1;
 
   if(readFromDAQCard() != 0)
-    DAQmxGetExtendedErrorInfo(errBuff,2048);
+	  nidaqmx_.getExtendedErrorInfo(errBuff,2048);
 
   cout << " * gBSamp sucessfully started" << endl;
 }
@@ -141,7 +142,7 @@ void gBSamp::stop()
 
 int gBSamp::readFromDAQCard()
 {
-  DAQmxErrChk (DAQmxStartTask(taskHandle));
+	DAQmxErrChk (nidaqmx_.startTask(taskHandle));
   return error;
 }
 
@@ -167,7 +168,7 @@ SampleBlock<double> gBSamp::getSyncData()
 
   boost::shared_lock<boost::shared_mutex> lock(rw_);
 
-  DAQmxReadAnalogF64(taskHandle,blocks_,-1,DAQmx_Val_GroupByChannel,data,1000,&read,NULL);
+  nidaqmx_.readAnalogF64(taskHandle,blocks_,-1,DAQmx_Val_GroupByChannel,data,1000,&read,NULL);
   //DAQmxReadAnalogF64(taskHandle,1, -1, DAQmx_Val_GroupByChannel,
   //                   recv_buffer, 1, &nr_samples_received, NULL);
   
@@ -198,7 +199,7 @@ SampleBlock<double> gBSamp::getAsyncData()
     cout << "gBSamp: getAsyncData" << endl;
   #endif
   boost::shared_lock<boost::shared_mutex> lock(rw_);
-  DAQmxReadAnalogF64(taskHandle,blocks_,-1,DAQmx_Val_GroupByChannel,data,10000,&read,NULL);
+  nidaqmx_.readAnalogF64(taskHandle,blocks_,-1,DAQmx_Val_GroupByChannel,data,10000,&read,NULL);
 
   for(int i=0; i < nr_ch_; i++)
     for(int j=0; j < blocks_; j++)
@@ -216,11 +217,11 @@ SampleBlock<double> gBSamp::getAsyncData()
 void gBSamp::stopDAQ(boost::int32_t error, TaskHandle taskHandle, char errBuff[2048])
 {
   if( DAQmxFailed(error) )
-    DAQmxGetExtendedErrorInfo(errBuff,2048);
+	  nidaqmx_.getExtendedErrorInfo(errBuff,2048);
   if( taskHandle!=0 )
   {
-    DAQmxStopTask(taskHandle);
-    DAQmxClearTask(taskHandle);
+	  nidaqmx_.stopTask(taskHandle);
+	  nidaqmx_.clearTask(taskHandle);
   }
   if( DAQmxFailed(error) )
     cout << "DAQmx Error: " << errBuff << endl;
@@ -237,13 +238,30 @@ int gBSamp::initCard()
 
   //TODO: make a list with needed channels
   // now just uses first channels
-  const char channel_list[] = "Dev1/ai0";
+  //const char channel_list[] = "Dev1/ai0";
+
+  std::stringstream str_of_channels;
+
+  map<uint16_t, std::pair<string, uint32_t> >::iterator it = channel_info_.begin();
+
+  for(int i = 0; i < nr_ch_; it++)
+  {
+	  int temp_channel = (it->first - 1);
+	  str_of_channels << "Dev1/ai" << temp_channel;
+	  i++;
+  }
+
+  int channs;
+  char *channel_list;
+  std::string chann = str_of_channels.str();
+  channel_list = new char[(channs * 8) + 1];
+  strcpy(channel_list, chann.c_str());
 
   // DAQmx Configure Code
-  DAQmxErrChk (DAQmxCreateTask("",&taskHandle));
-  DAQmxErrChk (DAQmxCreateAIVoltageChan(taskHandle,channel_list,"",DAQmx_Val_RSE,-10.0,10.0,DAQmx_Val_Volts,NULL));
+  DAQmxErrChk (nidaqmx_.createTask("",&taskHandle));
+  DAQmxErrChk (nidaqmx_.createAIVoltageChan(taskHandle,channel_list,"",DAQmx_Val_RSE,-10.0,10.0,DAQmx_Val_Volts,NULL));
   //  DAQmxErrChk (DAQmxCfgSampClkTiming(taskHandle, NULL, fs_, DAQmx_Val_Rising, DAQmx_Val_ContSamps, 1));
-  DAQmxErrChk (DAQmxCfgSampClkTiming(taskHandle, NULL, fs_, DAQmx_Val_Rising, DAQmx_Val_HWTimedSinglePoint, 1));
+  DAQmxErrChk (nidaqmx_.cfgSampClkTiming(taskHandle, NULL, fs_, DAQmx_Val_Rising, DAQmx_Val_HWTimedSinglePoint, 1));
   //DAQmx_Val_HWTimedSinglePoint 
 
   return error;

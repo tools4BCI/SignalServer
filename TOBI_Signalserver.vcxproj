@@ -37,8 +37,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">tmp\debug\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">tmp\debug\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">bin\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">bin\</IntDir>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</IgnoreImportLibrary>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">bin\</OutDir>
@@ -46,6 +46,12 @@
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</IgnoreImportLibrary>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">signalserver_debug</TargetName>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\boost\boost_1_44\;$(IncludePath)</IncludePath>
+    <ReferencePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\boost\boost_1_44\lib;$(ReferencePath)</ReferencePath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Program Files\National Instruments\Shared\ExternalCompilerSupport\C\lib32\msvc;D:\boost\boost_1_44\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\boost\boost_1_44\;$(IncludePath)</IncludePath>
+    <ReferencePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\boost\boost_1_44\lib;$(ReferencePath)</ReferencePath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Program Files\National Instruments\Shared\ExternalCompilerSupport\C\lib32\msvc;D:\boost\boost_1_44\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>
@@ -159,6 +165,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\hardware\eeg_sim_msg_parser.cpp" />
+    <ClCompile Include="src\hardware\gBSamp.cpp" />
     <ClCompile Include="src\signalserver\main.cpp" />
     <ClCompile Include="src\hardware\artificial_signal_source.cpp" />
     <ClCompile Include="src\hardware\eeg_simulator.cpp" />
@@ -185,6 +192,7 @@
     <ClInclude Include="include\hardware\eeg_simulator.h" />
     <ClInclude Include="include\hardware\eeg_sim_msg_parser.h" />
     <ClInclude Include="include\hardware\event_listener.h" />
+    <ClInclude Include="include\hardware\gBSamp.h" />
     <ClInclude Include="include\hardware\g_mobilab.h" />
     <ClInclude Include="include\hardware\gtec_usbamp_wrapper.h" />
     <ClInclude Include="include\hardware\hw_access.h" />
@@ -194,6 +202,7 @@
     <ClInclude Include="include\hardware\jstick.h" />
     <ClInclude Include="include\hardware\mouse.h" />
     <ClInclude Include="include\hardware\mouse_win.h" />
+    <ClInclude Include="include\hardware\nidaqmx_wrapper.h" />
     <ClInclude Include="include\hardware\serial_port_base.h" />
     <ClInclude Include="include\hardware\sine_generator.h" />
     <ClInclude Include="include\hardware\usbamp.h" />
