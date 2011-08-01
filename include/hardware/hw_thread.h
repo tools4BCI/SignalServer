@@ -38,12 +38,12 @@
 
 #include "ticpp/ticpp.h"
 
-#include "config/xml_parser.h"
 #include "tia/defines.h"
 #include "sampleblock/sample_block.h"
 
 namespace tobiss
 {
+
 //-----------------------------------------------------------------------------
 
 /**

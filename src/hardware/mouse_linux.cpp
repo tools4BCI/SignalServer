@@ -24,86 +24,84 @@
 
 namespace tobiss
 {
+const HWThreadBuilderTemplateRegistratorWithoutIOService<Mouse> Mouse::FACTORY_REGISTRATOR_ ("mouse");
 
-    const HWThreadBuilderTemplateRegistratorWithoutIOService<Mouse> Mouse::FACTORY_REGISTRATOR_ ("mouse");
-
-    Mouse::Mouse(ticpp::Iterator<ticpp::Element> hw)
-     : MouseBase(hw)
-    {
-        int ret = blockKernelDriver();
-        if(ret)
-          throw(std::runtime_error("MouseBase::initMouse -- Mouse device could not be connected!"));
-    }
+Mouse::Mouse(ticpp::Iterator<ticpp::Element> hw)
+: MouseBase(hw)
+{
+  int ret = blockKernelDriver();
+  if(ret)
+    throw(std::runtime_error("MouseBase::initMouse -- Mouse device could not be connected!"));
+}
 
 //
-    Mouse::~Mouse()
-    {
-        running_ = false;
-        async_acqu_thread_->join();
-        if(async_acqu_thread_)
-          delete async_acqu_thread_;
-        freeKernelDriver();
-    }
+Mouse::~Mouse()
+{
+  running_ = false;
+  async_acqu_thread_->join();
+  if(async_acqu_thread_)
+    delete async_acqu_thread_;
+  freeKernelDriver();
+}
 
-    //-----------------------------------------------------------------------------
-    //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
-    int Mouse::blockKernelDriver()
-    {
-        int ret;
-        ret = libusb_init(&ctx_);
-        if(ret < 0) {
-          return -1;
-        }
-        dev_handle_ = libusb_open_device_with_vid_pid(ctx_, vid_, pid_);
-        if(dev_handle_ == NULL)
-            return -2;
+int Mouse::blockKernelDriver()
+{
+  int ret;
+  ret = libusb_init(&ctx_);
+  if(ret < 0) {
+    return -1;
+  }
+  dev_handle_ = libusb_open_device_with_vid_pid(ctx_, vid_, pid_);
+  if(dev_handle_ == NULL)
+    return -2;
 
-        if(libusb_kernel_driver_active(dev_handle_, 0) == 1) {
-            libusb_detach_kernel_driver(dev_handle_, 0);
-        }
-        ret = libusb_claim_interface(dev_handle_, 0);
-        if(ret)
-            return -3;
-        return 0;
-    }
+  if(libusb_kernel_driver_active(dev_handle_, 0) == 1) {
+    libusb_detach_kernel_driver(dev_handle_, 0);
+  }
+  ret = libusb_claim_interface(dev_handle_, 0);
+  if(ret)
+    return -3;
+  return 0;
+}
 
-    //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
-    int Mouse::freeKernelDriver()
-    {
-        int ret;
-        ret = libusb_release_interface(dev_handle_, 0);
-        if(ret)
-            return -1;
-        ret = libusb_attach_kernel_driver(dev_handle_, 0);
-        if(ret)
-            return -2;
-        libusb_close(dev_handle_);
-        libusb_exit(ctx_);
-        return 0;
-    }
+int Mouse::freeKernelDriver()
+{
+  int ret;
+  ret = libusb_release_interface(dev_handle_, 0);
+  if(ret)
+    return -1;
+  ret = libusb_attach_kernel_driver(dev_handle_, 0);
+  if(ret)
+    return -2;
+  libusb_close(dev_handle_);
+  libusb_exit(ctx_);
+  return 0;
+}
 
-    //-----------------------------------------------------------------------------
-
+//-----------------------------------------------------------------------------
 
 
-    void Mouse::acquireData()
-    {
-      while(running_)
-      {
-        boost::unique_lock<boost::shared_mutex> lock(rw_);
-        int actual_length;
-        unsigned char async_data_[10];
-        int r = libusb_interrupt_transfer(dev_handle_, usb_port_, async_data_, sizeof(async_data_), &actual_length, 0);
-        if(r)
-          throw(std::runtime_error("Mouse::acquireData -- Mouse device could not be connected! Check usb-port!"));
-        async_data_buttons_ = (int)(char)async_data_[0];
-        async_data_x_ = (int)(char)async_data_[1];
-        async_data_y_ = (int)(char)async_data_[2];
-        lock.unlock();
-      }
-    }
+
+void Mouse::acquireData()
+{
+  while(running_)
+  {
+    boost::unique_lock<boost::shared_mutex> lock(rw_);
+    int actual_length;
+    unsigned char async_data_[10];
+    int r = libusb_interrupt_transfer(dev_handle_, usb_port_, async_data_, sizeof(async_data_), &actual_length, 10000);
+    if(r)
+      throw(std::runtime_error("Mouse::acquireData -- Mouse device could not be connected! Check usb-port!"));
+    async_data_buttons_ = static_cast<int>(static_cast<char>(async_data_[0]));
+    async_data_x_ = static_cast<int>(static_cast<char>(async_data_[1]));
+    async_data_y_ = static_cast<int>(static_cast<char>(async_data_[2]));
+    lock.unlock();
+  }
+}
 
 //-----------------------------------------------------------------------------
 

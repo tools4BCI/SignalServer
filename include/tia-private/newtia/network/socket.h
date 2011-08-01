@@ -13,17 +13,19 @@ namespace tia
 /// base class for any socket that could write data
 class WriteSocket
 {
-public:
+  public:
     virtual ~WriteSocket () {}
-    virtual void sendString (std::string const& string) throw (TiALostConnection) = 0;
+    virtual void sendString (std::string const& string)  = 0;
+  //throw (TiALostConnection)
 };
 
 //-----------------------------------------------------------------------------
 /// base class for any socket
 class Socket : public WriteSocket, public ReadSocket
 {
-public:
+  public:
     virtual ~Socket () {}
+    virtual std::string getRemoteEndPointAsString() = 0;
 
 };
 

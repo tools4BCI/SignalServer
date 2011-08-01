@@ -29,6 +29,7 @@
 #include "hardware/hw_thread.h"
 #include "hardware/artificial_signal_source.h"
 #include "hardware/hw_thread_builder.h"
+#include "hardware/eeg_sim_msg_parser.h"
 
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/normal_distribution.hpp>
@@ -61,6 +62,9 @@ namespace tobiss
 class EEGSimulator : public ArtificialSignalSource
 {
   public:
+
+//  static const unsigned int MESSAGE_VERSION = 1;
+
     /**
     * @brief Constructor
     */
@@ -74,28 +78,35 @@ class EEGSimulator : public ArtificialSignalSource
 //------------------------------------------
 
   private:
-    /**
-    * @struct EEGConfig
-    * @brief Simple struct holding parameters to configure the EEG signal.
-    */
-    struct EEGConfig
-    {
-      public:
-        double scaling_;
-        double offset_;
-    };
+//    /**
+//    * @struct EEGConfig
+//    * @brief Simple struct holding parameters to configure the EEG signal.
+//    */
+//    struct EEGConfig
+//    {
+//      public:
+//        double scaling_;
+//        double offset_;
+//    };
 
-    /**
-    * @struct SineConfig
-    * @brief Simple struct holding parameters to configure the sine waves.
-    */
-    struct SineConfig
-    {
-      public:
-        double freq_;
-        double amplitude_;
-        double phase_;
-    };
+//    /**
+//    * @struct SineConfig
+//    * @brief Simple struct holding parameters to configure the sine waves.
+//    */
+//    struct SineConfig
+//    {
+//      public:
+//        double freq_;
+//        double amplitude_;
+//        double phase_;
+//    };
+
+//    enum MessageType
+//    {
+//      Invalid,
+//      GetConfig,
+//      Config
+//    };
 
     /**
     * @brief Implementation of the abstract method creating the signals (sine and EEG).
@@ -159,12 +170,12 @@ class EEGSimulator : public ArtificialSignalSource
     * @brief Get an EEGConfig object out of the XML node.
     * @throws std::invalid_argument
     */
-    EEGConfig getEEGConfig(ticpp::Iterator<ticpp::Element>const &elem);
+    EEGSimMsgParser::EEGConfig getEEGConfig(ticpp::Iterator<ticpp::Element>const &elem);
     /**
     * @brief Get a SineConfig object out of the XML node.
     * @throws std::invalid_argument
     */
-    SineConfig getSineConfig(ticpp::Iterator<ticpp::Element>const &elem);
+    EEGSimMsgParser::SineConfig getSineConfig(ticpp::Iterator<ticpp::Element>const &elem);
 
     /**
     * @brief NOT IMPLEMENTED YET! (Handle incomming network packets asynchronously.)
@@ -178,6 +189,17 @@ class EEGSimulator : public ArtificialSignalSource
     */
     void acceptHandler(const boost::system::error_code& error);
 
+//    void checkMessage();
+//    MessageType getMessageType();
+//    void parseConfigMessage(std::map<boost::uint16_t, EEGConfig>& eeg,
+//                      std::multimap<boost::uint16_t, SineConfig>& sine);
+
+    void updateEEGConfig(std::map<boost::uint16_t, EEGSimMsgParser::EEGConfig>& eeg);
+    void updateSineConfig(std::multimap<boost::uint16_t, EEGSimMsgParser::SineConfig>& sine);
+
+//    std::string buildConfigString();
+    void setSineConfigInMultimap(boost::uint16_t ch, EEGSimMsgParser::SineConfig config);
+
 //------------------------------------------
 
   private:
@@ -189,13 +211,19 @@ class EEGSimulator : public ArtificialSignalSource
     boost::asio::ip::tcp::acceptor acceptor_;
     boost::asio::ip::tcp::socket socket_;
     boost::uint32_t port_;
+    std::string     peer_ip_;
     bool connected_;
 
 
-    std::vector<boost::uint8_t> message_buffer_;
+    boost::asio::streambuf message_buffer_;
+    std::string str_buffer_;
 
-    std::map<boost::uint16_t, EEGConfig>  eeg_config_;       /// <ch_nr, EEGCfg>
-    std::multimap<boost::uint16_t, SineConfig> sine_configs_;     /// <ch_nr, SineCfg>
+//    std::map<std::string, MessageType>            msg_types_map_;
+
+    std::map<boost::uint16_t, EEGSimMsgParser::EEGConfig>          eeg_config_;       /// <ch_nr, EEGCfg>
+    std::multimap<boost::uint16_t, EEGSimMsgParser::SineConfig>    sine_configs_;     /// <ch_nr, SineCfg>
+
+    EEGSimMsgParser                               parser_;
 
     //--------------------------------------
     // Constants:

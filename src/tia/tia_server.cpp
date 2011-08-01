@@ -38,11 +38,6 @@
 // TICPP
 #include "ticpp/ticpp.h"
 
-// LibGdf
-#ifdef WRITE_GDF
-#include "libgdf/gdfwriter.h"
-#endif
-
 // local
 #include "tia/data_packet.h"
 #include "tia-private/network/control_connection_server.h"
@@ -79,9 +74,6 @@ TiAServer::TiAServer(boost::asio::io_service& io_service, bool new_tia)
   server_state_server_(0),
   new_tia_ (new_tia),
   write_file(0)
-#ifdef WRITE_GDF
-  ,gdf_writer_(0)
-#endif
 {
   #ifdef TIMING_TEST
     timestamp_ = boost::posix_time::microsec_clock::local_time();
@@ -117,14 +109,6 @@ TiAServer::~TiAServer()
   delete control_connection_server_;
   delete server_state_server_;
 
-#ifdef WRITE_GDF
-  if(gdf_writer_)
-  {
-    gdf_writer_->close();
-    delete gdf_writer_;
-  }
-#endif
-
   #ifdef TIMING_TEST
     LptExit();
   #endif
@@ -132,8 +116,8 @@ TiAServer::~TiAServer()
 
 //-----------------------------------------------------------------------------
 
-void TiAServer::initialize(std::map<std::string,std::string> subject_info,
-                              std::map<std::string,std::string> server_settings)
+void TiAServer::initialize(std::map<std::string,std::string>& subject_info,
+                              std::map<std::string,std::string>& server_settings)
 {
 //  assert(config != 0);
 //  config_ = config;
@@ -163,23 +147,6 @@ void TiAServer::initialize(std::map<std::string,std::string> subject_info,
   }
   control_connection_server_->listen();
 
-#ifdef WRITE_GDF
-  try
-  {
-	if(server_settings_[Constants::ss_filetype] == "gdf")
-    {
-      gdf_writer_ =
-        new GDFWriter( server_settings_[Constants::ss_filename] + ".gdf" );
-      initGdf();
-      write_file = true;
-    }
-  }
-  catch( StrException &e )
-  {
-    cout << "Exception: " << e.msg << endl;
-  }
-#endif
-
 }
 
 //-----------------------------------------------------------------------------
@@ -188,54 +155,6 @@ void TiAServer::sendDataPacket(DataPacket& packet)
 {
   tcp_data_server_->sendDataPacket(packet);
   udp_data_server_->sendDataPacket(packet);
-
-#ifdef WRITE_GDF
-  if(write_file)
-  {
-    uint32_t nr_values = 0;
-    uint32_t nr_blocks = 0;
-    vector<double> v;
-    uint32_t ch_start = 0;
-
-    for(map<uint32_t, vector<string> >::iterator it(channels_per_sig_type_.begin());
-      it != channels_per_sig_type_.end();  it++)
-    {
-      if(gdf_writer_)
-      {
-//         cout << "Writing Samples for SigType: " << it->first << endl;
-        try
-        {
-          v = packet.getSingleDataBlock(it->first);
-          nr_values = packet.getNrOfValues(it->first);
-          nr_blocks = packet.getNrOfBlocks(it->first);
-
-//           cout << "Nr_Values: " << nr_values << ";  Nr_Blocks: " << nr_blocks << endl;
-
-          for(uint32_t n = 0; n < nr_values/nr_blocks; n++)
-            for(uint32_t m = 0; m < nr_blocks; m++)
-            {
-//               cout << "n: " << n << ";  m: " << m << endl;
-              gdf_writer_->addSample(ch_start + n, v[ (n*nr_blocks) + m]);
-            }
-
-        }
-        catch(std::invalid_argument&)
-        {
-
-        }
-        catch( StrException &e )
-        {
-          cout << "Exception: " << e.msg << endl;
-          throw;
-        }
-
-      }
-
-      ch_start += it->second.size();
-    }
-  }
-#endif
-
 
   #ifdef TIMING_TEST
     timestamp_ = boost::posix_time::microsec_clock::local_time();
@@ -284,50 +203,6 @@ void TiAServer::sendDataPacket(DataPacket& packet)
 
 }
 
-//-----------------------------------------------------------------------------
-#ifdef WRITE_GDF
-void SignalServer::initGdf()
-{
-
-  std::map<uint32_t, std::vector<std::string> >::iterator it(channels_per_sig_type_.begin());
-
-  for(uint32_t n = 0 ; it != channels_per_sig_type_.end(); it++)
-    gdf_writer_->addSignal(GDF_FLOAT32_TYPE, fs_per_sig_type_[n++], it->second.size());
-
-
-  gdf_writer_->forceRecordDuration( true, 1 , 1 );
-
-  gdf_writer_->createHeader();
-
-  it = channels_per_sig_type_.begin();
-  for(uint32_t m = 0 ; it != channels_per_sig_type_.end(); it++)
-  {
-    for(uint32_t n = 0; n < it->second.size(); n++)
-    {
-      gdf_writer_->getSignalHeader( )->digmin[m]  = -1;
-      gdf_writer_->getSignalHeader( )->digmax[m]  =  1;
-      gdf_writer_->getSignalHeader( )->physmin[m] = -1;
-      gdf_writer_->getSignalHeader( )->physmax[m] =  1;
-
-      string label = cst_.getSignalName(it->first) + ":" + it->second[n];
-
-      // FIXME: len ... better methods will be provided by libgdf
-      uint16_t len = 0;
-      for( ; (len != 15) || (len < label.size()); len++ )
-        gdf_writer_->getSignalHeader( )->label[m][len] =  label.c_str()[len];
-
-      gdf_writer_->getSignalHeader( )->label[m][len] =  0;
-
-      m++;
-    }
-  }
-
-  gdf_writer_->setEventMode( 1, master_samplingrate_ );     // FIXME: 1 ... EventMode 1 (gdf)
-
-  gdf_writer_->open();
-
-}
-#endif
 //-----------------------------------------------------------------------------
 
 
