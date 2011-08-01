@@ -19,7 +19,9 @@ INCLUDEPATH += . \
     include \
     extern/include/LptTools
 DEPENDPATH += $$INCLUDEPATH
-INCLUDEPATH += extern/include
+INCLUDEPATH += extern/include\
+extern/include/TiDlib
+
 win32:INCLUDEPATH += extern/include/SDL-1.2.14-VC8
 unix {
     QMAKE_CXXFLAGS += -pedantic
@@ -44,17 +46,21 @@ HEADERS += include/config/xml_parser.h \
     include/hardware/g_mobilab.h \
     include/hardware/hw_thread_factory.h \
     include/hardware/hw_thread_builder.h \
-    include/filereading/data_file_handler.h \
-    include/filereading/file_reader_factory.h \
-    include/filereading/file_reader.h \
-    include/filereading/gdf_file_reader.h \
     include/sampleblock/sample_block.h \
     include/hardware/artificial_signal_source.h \
     include/hardware/eeg_simulator.h \
     extern/include/LptTools/LptTools.h \
     include/hardware/mouse.h \
     include/hardware/eeg_sim_msg_parser.h \
-    include/signalserver/signalserver.h
+    include/signalserver/signalserver.h\
+    include/hardware/nidaqmx_wrapper.h \
+    include/hardware/gBSamp_base.h \
+    include/hardware/gBSamp_unix.h
+    #include/hardware/gBSamp_win.h \
+    #    include/filereading/data_file_handler.h \
+    #    include/filereading/file_reader_factory.h \
+    #    include/filereading/file_reader.h \
+    #    include/filereading/gdf_file_reader.h \
     #include/hardware/nirscout.h
     #include/hardware/brainampseries.h
 unix:HEADERS += include/hardware/mouse_linux.h
@@ -69,16 +75,19 @@ SOURCES += src/signalserver/main.cpp \
     src/hardware/serial_port_base.cpp \
     src/hardware/g_mobilab.cpp \
     src/hardware/hw_thread_factory.cpp \
-    src/filereading/data_file_handler.cpp \
-    src/filereading/file_reader_factory.cpp \
-    src/filereading/file_reader.cpp \
-    src/filereading/gdf_file_reader.cpp \
     src/sampleblock/sample_block.cpp \
     src/hardware/artificial_signal_source.cpp \
     src/hardware/eeg_simulator.cpp \
     src/hardware/mouse.cpp \
     src/hardware/eeg_sim_msg_parser.cpp \
-    src/signalserver/signalserver.cpp
+    src/signalserver/signalserver.cpp \
+    src/hardware/gBSamp_base.cpp \
+    src/hardware/gBSamp_unix.cpp
+    #src/hardware/gBSamp_win .cpp
+    #    src/filereading/data_file_handler.cpp \
+    #    src/filereading/file_reader_factory.cpp \
+    #    src/filereading/file_reader.cpp \
+    #    src/filereading/gdf_file_reader.cpp \
     #src/hardware/nirscout.cpp
     #src/hardware/brainampseries.cpp
 unix:SOURCES += src/hardware/mouse_linux.cpp
@@ -96,9 +105,12 @@ unix {
     LIBS += -lboost_thread \
         -lboost_system \
         -lboost_filesystem \
+        -lboost_program_options\
         -lSDL \
-        -Lextern/lib/libusb/linux \
-        -lusb-1.0
+        -lusb-1.0 \
+        -ltobicore \
+        -ltobiid \
+        -lcomedi
     HARDWARE_PLATFORM = $$system(uname -m)
     contains( HARDWARE_PLATFORM, x86_64 ):: {
         message(Building 64 bit )
@@ -108,13 +120,14 @@ unix {
             $$PWD/extern/lib/ticpp/linux \
             -lticpp_64\
             $$PWD/extern/lib/TiDlib/linux/libTiDserver_64.a\
-            $$PWD/extern/lib/TiDlib/linux/libtobiid_64.a\
-            $$PWD/extern/lib/TiDlib/linux/libtobicore_64.a
+            $$PWD/extern/lib/libgdf/linux/libGDF_64.a
     }else::{
         # 32-bit Linux
         message(Building 32 bit )
         LIBS += -L$$PWD/extern/lib/ticpp/linux \
-            -lticpp
+            -lticpp\
+            $$PWD/extern/lib/TiDlib/linux/libTiDserver.a\
+            $$PWD/extern/lib/libgdf/linux/libGDF_64.a
     }
 }
 

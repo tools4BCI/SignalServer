@@ -39,7 +39,7 @@
 #include "tia-private/network/tcp_data_server.h"
 #include "tia-private/network/udp_data_server.h"
 
-#include "tia-private/newtia/network_impl/boost_socket_impl.h"
+#include "tia-private/newtia/network_impl/boost_tcp_socket_impl.h"
 #include "tia-private/newtia/server_control_connection.h"
 #include "tia-private/newtia/server_impl/fusty_data_server_impl.h"
 #include "tia-private/newtia/fusty_hardware_interface_impl.h"
@@ -55,6 +55,8 @@ using std::endl;
 
 using boost::uint16_t;
 using boost::uint32_t;
+
+static const int SECONDS_TO_RE_CHECK_CONNECTIONS = 1;
 
 //-----------------------------------------------------------------------------
 
@@ -233,7 +235,7 @@ void ControlConnectionServer::handleAccept(const TCPConnection::pointer& new_con
     checkConnections (err);
   }
 
-  // lock the connection list  
+  // lock the connection list
   boost::unique_lock<boost::mutex> lock(mutex_);
 
   unsigned short local_port = new_connection->socket().local_endpoint().port();
@@ -260,7 +262,7 @@ void ControlConnectionServer::handleAccept(const TCPConnection::pointer& new_con
     cout << " Client @" << id.second << " has connected." <<  endl;
 
 
-    CtrlConnHandlers::iterator it = connections_.insert(make_pair(id, connection)).first;
+    connections_.insert(make_pair(id, connection)).first;
 
     cout << " # Connected clients: " << connections_.size() << endl;
 
@@ -302,6 +304,7 @@ void ControlConnectionServer::checkConnections (boost::system::error_code error)
   for (std::list<unsigned>::iterator iter = to_be_removed.begin();
        iter != to_be_removed.end(); ++iter)
   {
+    cout << "  -- Removing connection to: " << new_sockets_[*iter]->getRemoteEndPointAsString() << endl;
     delete new_connections_[*iter];
     delete new_sockets_[*iter];
     new_connections_.erase (*iter);
@@ -311,7 +314,7 @@ void ControlConnectionServer::checkConnections (boost::system::error_code error)
       cout << " # Connected clients: " << new_connections_.size() << endl;
 
   check_connections_timer_.cancel ();
-  check_connections_timer_.expires_from_now (boost::posix_time::seconds (3));
+  check_connections_timer_.expires_from_now (boost::posix_time::seconds (SECONDS_TO_RE_CHECK_CONNECTIONS));
   check_connections_timer_.async_wait(boost::bind(&ControlConnectionServer::checkConnections, this, boost::asio::placeholders::error));
 }
 

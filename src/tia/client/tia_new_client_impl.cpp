@@ -8,7 +8,7 @@
 #include "tia-private/newtia/messages/tia_control_message_tags_1_0.h"
 #include "tia-private/newtia/tia_meta_info_parse_and_build_functions.h"
 #include "tia-private/newtia/string_utils.h"
-#include "tia-private/newtia/network_impl/boost_socket_impl.h"
+#include "tia-private/newtia/network_impl/boost_tcp_socket_impl.h"
 #include "tia-private/newtia/network_impl/boost_udp_read_socket.h"
 #include "tia-private/newtia/tia_datapacket_parser.h"
 

@@ -31,11 +31,11 @@
 #include <vector>
 #include <map>
 
-#include <boost/asio.hpp>
-#include <boost/thread/condition.hpp>  // for mutex and cond. variables
-#include <boost/thread/shared_mutex.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/cstdint.hpp>
+//#include <boost/asio.hpp>
+//#include <boost/thread/condition.hpp>  // for mutex and cond. variables
+//#include <boost/thread/shared_mutex.hpp>
+//#include <boost/date_time/posix_time/posix_time.hpp>
+//#include <boost/cstdint.hpp>
 
 
 #include "tia/defines.h"
@@ -59,7 +59,7 @@ class DataFileHandler
     /**
     *
     */
-    DataFileHandler(boost::asio::io_service& io, std::map<std::string, std::string> config);
+    //DataFileHandler(boost::asio::io_service& io, std::map<std::string, std::string> config);
 
     /**
     * @brief Destructor
@@ -90,22 +90,22 @@ class DataFileHandler
 
   private:
 
-    boost::asio::io_service&                  io_service_;
+    //boost::asio::io_service&                  io_service_;
     std::map<std::string, std::string>        config_;
 
-    FileReader*                               current_reader_;
+    //FileReader*                               current_reader_;
 
-    FileReaderFactory                         reader_factory_;
+    //FileReaderFactory                         reader_factory_;
 
 
 
-    boost::asio::deadline_timer* t_;   ///< timer object for accurate timing
-    double step_;        ///< needed for sine generation
-    double cycle_dur_;   ///< needed for sine generation
-    boost::posix_time::microseconds td_;   ///< time period for the timer
+    //boost::asio::deadline_timer* t_;   ///< timer object for accurate timing
+    //double step_;        ///< needed for sine generation
+    //double cycle_dur_;   ///< needed for sine generation
+    //boost::posix_time::microseconds td_;   ///< time period for the timer
 
-    boost::mutex sync_mut_;  ///< mutex neede for synchronisation
-    boost::condition_variable_any cond_;   ///< condition variable to wake up getSyncData()
+    //boost::mutex sync_mut_;  ///< mutex neede for synchronisation
+    //boost::condition_variable_any cond_;   ///< condition variable to wake up getSyncData()
 
 };
 

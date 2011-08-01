@@ -116,8 +116,8 @@ class TiAServer : boost::noncopyable
     * @todo Check if wrong configuration is checked within this code.
     * @todo Is it a good idea to use maps for configuration (especially server config)?
     */
-    void initialize(std::map<std::string,std::string> subject_info,
-                    std::map<std::string,std::string> server_settings);
+    void initialize(std::map<std::string,std::string>& subject_info,
+                    std::map<std::string,std::string>& server_settings);
 
     /**
     * @brief Sends a DataPacket to connected clients

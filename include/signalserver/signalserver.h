@@ -10,11 +10,15 @@ namespace TiD
   class TiDServer;
 }
 
-class GDFWriter;
+namespace gdf
+{
+  class Writer;
+}
 
 namespace tobiss
 {
 
+class XMLParser;
 class HWAccess;
 class TiAServer;
 
@@ -23,7 +27,7 @@ class TiAServer;
 class SignalServer
 {
   public:
-    SignalServer(HWAccess& hw_access, TiAServer& server);
+    SignalServer(HWAccess& hw_access, TiAServer& server, XMLParser& config_parser);
     virtual ~SignalServer();
 
     void stop();
@@ -37,11 +41,20 @@ class SignalServer
 
     HWAccess&                   hw_access_;
     TiAServer&                  tia_server_;
-    TiD::TiDServer*              tid_server_;
+    XMLParser&                  config_parser_;
 
-    GDFWriter*                          gdf_writer_; ///<
+    TiD::TiDServer*             tid_server_;
 
-    bool                        stop_reading_;
+    gdf::Writer*                gdf_writer_;
+
+    bool                                stop_reading_;
+    bool                                write_file_;
+    boost::uint32_t                     master_blocksize_;
+    boost::uint32_t                     master_samplingrate_;
+    std::map<std::string,std::string>   subject_info_;
+    std::map<std::string,std::string>   server_settings_;
+    std::map<boost::uint32_t, std::vector<std::string> >    channels_per_sig_type_;
+    std::vector<boost::uint32_t>                            sampling_rate_per_sig_type_;
 };
 
 //-----------------------------------------------------------------------------
