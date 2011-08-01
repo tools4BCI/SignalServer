@@ -449,6 +449,8 @@ the mouse cursor. The data is directly fed into the Signal Server.
 The IntegraMouse (LifeTool, Linz, Austria) is also supported via this configuration.
 
 Only aperiodic mode is supported yet.
+
+To configure the mouse device, the VendorID and the ProductID of the device which define it uniquly. On Linux one can find them with the command 'lsusb -v'.
 ::
   <hardware name="mouse" version="1.0" serial="">
     <mode> aperiodic </mode>

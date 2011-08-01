@@ -38,96 +38,120 @@ namespace tobiss
 {
 //-----------------------------------------------------------------------------
 
+/**
+* @class MouseBase
+*
+* @brief Base class to connected mouse devices.
+*/
 class MouseBase : public HWThread
-    {
-    public:
-      MouseBase(ticpp::Iterator<ticpp::Element> hw);
+{
+public:
 
-      /**
-      * @brief Destructor
-      */
-      virtual ~MouseBase();
+  /**
+  * @brief Constructor
+  */
+  MouseBase(ticpp::Iterator<ticpp::Element> hw);
 
-      /**
-      * @brief Method to achieve asynchronous data acquisition (method is non-blocking).
-      * @return SampleBlock<double>
-      *
-      * This method return immediately after calling with a copy of the data stored in the device's
-      * buffer.
-      * It is called from all slave devices.
-      */
-      virtual SampleBlock<double> getAsyncData();
-      /**
-      * @brief Method to start data acquisition.
-      */
-      virtual void run();
-      /**
-      * @brief Method to stop data acquisition.
-      */
-      virtual void stop();
+  /**
+  * @brief Destructor
+  */
+  virtual ~MouseBase();
 
-      //-----------------------------------------------
-    protected:
+  /**
+  * @brief Method to achieve asynchronous data acquisition (method is non-blocking).
+  * @return SampleBlock<double>
+  *
+  * This method return immediately after calling with a copy of the data stored in the device's
+  * buffer.
+  * It is called from all slave devices.
+  */
+  virtual SampleBlock<double> getAsyncData();
+  /**
+  * @brief Method to start data acquisition.
+  */
+  virtual void run();
+  /**
+  * @brief Method to stop data acquisition.
+  */
+  virtual void stop();
 
-      boost::uint32_t vid_;
-      boost::uint32_t pid_;
-      boost::uint32_t usb_port_;
-	  ticpp::Iterator<ticpp::Element> DS;
+  //-----------------------------------------------
+  protected:
 
-      static const std::string hw_vid;
-      static const std::string hw_pid;
-      static const std::string usb_port;
+  boost::uint32_t vid_;
+  boost::uint32_t pid_;
+  boost::uint32_t usb_port_;
+    ticpp::Iterator<ticpp::Element> DS;
 
-      /**
-      * @brief Sets vendorId for Mousedevice.
-      */
-      void setVendorId(ticpp::Iterator<ticpp::Element>const &elem);
+  static const std::string hw_vid;
+  static const std::string hw_pid;
+  static const std::string usb_port;
 
-      /**
-      * @brief Sets productId for Mousedevice.
-      */
-      void setProductId(ticpp::Iterator<ticpp::Element>const &elem);
+  /**
+  * @brief Sets vendorId for Mousedevice.
+  */
+  void setVendorId(ticpp::Iterator<ticpp::Element>const &elem);
 
-          /**
-      * @brief Sets setUsbPort for Mousedevice.
-      */
-      void setUsbPort(ticpp::Iterator<ticpp::Element>const &elem);
+  /**
+  * @brief Sets productId for Mousedevice.
+  */
+  void setProductId(ticpp::Iterator<ticpp::Element>const &elem);
 
-      virtual void setDeviceSettings(ticpp::Iterator<ticpp::Element>const &father);
+  /**
+  * @brief Sets setUsbPort for Mousedevice.
+  */
+  void setUsbPort(ticpp::Iterator<ticpp::Element>const &elem);
 
-      virtual void setChannelSettings(ticpp::Iterator<ticpp::Element>const &father);
+  virtual void setDeviceSettings(ticpp::Iterator<ticpp::Element>const &father);
 
-      virtual SampleBlock<double> getSyncData()   {return data_; }
+  virtual void setChannelSettings(ticpp::Iterator<ticpp::Element>const &father);
 
-      virtual void initMouse();
-      virtual int blockKernelDriver();
-      virtual int freeKernelDriver();
-      virtual void acquireData();
+  virtual SampleBlock<double> getSyncData()   {return data_; }
 
-      //-----------------------------------------------
+  /**
+  * @brief Init Mouse settings.
+  */
+  virtual void initMouse();
 
-      static std::set<boost::uint16_t> used_ids_;
+  /**
+  * @brief Method to detach kernel driver from the system and open connection to the mouse device.
+  */
+  virtual int blockKernelDriver();
 
-      boost::uint16_t id_;
+  /**
+  * @brief Method to attatch kernel driver to the system and close connection to the mouse device.
+  */
+  virtual int freeKernelDriver();
 
-      boost::uint16_t buttons_;
-      std::vector<bool> buttons_values_;
+  /**
+  * @brief Method to acquire data from the mouse device.
+  */
+  virtual void acquireData();
 
-      boost::uint16_t axes_;
-      std::vector<boost::int16_t> axes_values_;
+  //-----------------------------------------------
 
-      std::string name_;
+  static std::set<boost::uint16_t> used_ids_;
 
-      bool user_interrupt_;
+  boost::uint16_t id_;
 
-      SampleBlock<double> empty_block_;
+  boost::uint16_t buttons_;
+  std::vector<bool> buttons_values_;
 
-      boost::thread*  async_acqu_thread_;
-      std::vector<boost::int16_t>  raw_data_;
-      int async_data_x_;
-      int async_data_y_;
-      int async_data_buttons_;
-  };
+  boost::uint16_t axes_;
+  std::vector<boost::int16_t> axes_values_;
+
+  std::string name_;
+
+  bool user_interrupt_;
+
+  SampleBlock<double> empty_block_;
+
+  boost::thread*  async_acqu_thread_;
+  std::vector<boost::int16_t>  raw_data_;
+  int async_data_x_;
+  int async_data_y_;
+  int async_data_buttons_;
+};
 
 } // Namespace tobiss
 

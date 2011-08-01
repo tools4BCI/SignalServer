@@ -32,88 +32,93 @@ const HWThreadBuilderTemplateRegistratorWithoutIOService<Mouse> Mouse::FACTORY_R
 //-----------------------------------------------------------------------------
 
 Mouse::Mouse(ticpp::Iterator<ticpp::Element> hw)
-     : MouseBase(hw)
-    {
-		Constants cst;
-		ticpp::Iterator<ticpp::Element> elem(DS->FirstChildElement(dc_path,true));
-		devcon_path_ = elem->GetText(true);
-		
-		string VID,PID;
-		std::ostringstream v,p;
-		v << setw(4) << setfill('0') << hex << vid_;
-		p << setw(4) << setfill('0') << hex << pid_;
-		VID = v.str();
-		PID = p.str();
-		hw_id_ = "\"USB\\VID_"+VID+"&PID_"+PID+"\"";
-			
-		int ret = blockKernelDriver();
-        if(ret)
-          throw(std::runtime_error("MouseBase::initMouse -- Mouse device could not be connected!"));
-    }
+: MouseBase(hw)
+{
+  Constants cst;
+  ticpp::Iterator<ticpp::Element> elem(DS->FirstChildElement(dc_path,true));
+  devcon_path_ = elem->GetText(true);
+
+  string VID,PID;
+  std::ostringstream v,p;
+  v << setw(4) << setfill('0') << hex << vid_;
+  p << setw(4) << setfill('0') << hex << pid_;
+  VID = v.str();
+  PID = p.str();
+  hw_id_ = "\"USB\\VID_"+VID+"&PID_"+PID+"\"";
+
+  int ret = blockKernelDriver();
+  if(ret)
+    throw(std::runtime_error("MouseBase::initMouse -- Mouse device could not be connected!"));
+}
 
 //-----------------------------------------------------------------------------
 
 Mouse::~Mouse()
 {
-        running_ = false;
-        async_acqu_thread_->join();
-        if(async_acqu_thread_)
-          delete async_acqu_thread_;
-        freeKernelDriver();
+  running_ = false;
+  async_acqu_thread_->join();
+  if(async_acqu_thread_)
+    delete async_acqu_thread_;
+  freeKernelDriver();
 }
 
 //-----------------------------------------------------------------------------
 
 int Mouse::blockKernelDriver()
 {
-	STARTUPINFO         siStartupInfo;
-    PROCESS_INFORMATION piProcessInfo;
-    memset(&siStartupInfo, 0, sizeof(siStartupInfo));
-    memset(&piProcessInfo, 0, sizeof(piProcessInfo));
-    siStartupInfo.cb = sizeof(siStartupInfo);
+  STARTUPINFO         siStartupInfo;
+  PROCESS_INFORMATION piProcessInfo;
+  memset(&siStartupInfo, 0, sizeof(siStartupInfo));
+  memset(&piProcessInfo, 0, sizeof(piProcessInfo));
+  siStartupInfo.cb = sizeof(siStartupInfo);
 
-	string command = " disable -r "+hw_id_;
-    CreateProcess(const_cast<LPCSTR>(devcon_path_.c_str()),
-         const_cast<LPSTR>(command.c_str()),
-		 0,0,FALSE,CREATE_DEFAULT_ERROR_MODE,0,0,&siStartupInfo,&piProcessInfo);
-    WaitForSingleObject(piProcessInfo.hProcess, 1000);
+  FILE * f= fopen(const_cast<LPCSTR>(devcon_path_.c_str()),"r");
+  if(!f)
+    throw(std::invalid_argument("Mouse::blockKernelDriver -- Devcon-path does not exist!"));
+  else
+    fclose(f);
 
-	const char *inf_file = "libusb/mouse.inf";
-  
-	int ret = usb_install_driver_np(inf_file);
-	if(ret<0)
-          throw(std::runtime_error("Mouse::blockKernelDriver -- No 'mouse.inf' file found in 'bin\\libusb\\' !"));
-	
-	struct usb_bus *UsbBus = NULL;
-    struct usb_device *UsbDevice = NULL;
-    usb_find_busses();
-    usb_find_devices();
+  string command = "disable -r "+hw_id_;
+  CreateProcess(const_cast<LPCSTR>(devcon_path_.c_str()),
+  const_cast<LPSTR>(command.c_str()),
+  0,0,FALSE,CREATE_NEW_CONSOLE,0,0,&siStartupInfo,&piProcessInfo);
+  WaitForSingleObject(piProcessInfo.hProcess, 1000);
 
-    for (UsbBus = usb_get_busses(); UsbBus; UsbBus = UsbBus->next) {
-		for (UsbDevice = UsbBus->devices; UsbDevice; UsbDevice = UsbDevice->next) {
-			if (UsbDevice->descriptor.idVendor == vid_ && UsbDevice->descriptor.idProduct== pid_) {
-				break;
-            }
-        }
+  const char *inf_file = "libusb/mouse.inf";
+
+  int ret = usb_install_driver_np(inf_file);
+  if(ret<0)
+    throw(std::runtime_error("Mouse::blockKernelDriver -- No 'mouse.inf' file found in 'bin\\libusb\\' !"));
+
+  struct usb_bus *UsbBus = NULL;
+  struct usb_device *UsbDevice = NULL;
+  usb_find_busses();
+  usb_find_devices();
+
+  for (UsbBus = usb_get_busses(); UsbBus; UsbBus = UsbBus->next) {
+    for (UsbDevice = UsbBus->devices; UsbDevice; UsbDevice = UsbDevice->next) {
+      if (UsbDevice->descriptor.idVendor == vid_ && UsbDevice->descriptor.idProduct== pid_) {
+        break;
+      }
     }
-	if (!UsbDevice) 
-		return -1;
-	dev_handle_ = usb_open(UsbDevice);
-    if(!dev_handle_)
-		return -11;
+  }
+  if (!UsbDevice)
+    return -1;
+  dev_handle_ = usb_open(UsbDevice);
+  if(!dev_handle_)
+    return -11;
 
-	if (usb_set_configuration (dev_handle_, 1) < 0) {
-		usb_close(dev_handle_);
-		return -2;
-	}
+  if (usb_set_configuration (dev_handle_, 1) < 0) {
+    usb_close(dev_handle_);
+    return -2;
+  }
 
-	if (usb_claim_interface (dev_handle_, 0) < 0) {
-		usb_close(dev_handle_);
-		return -3;
-	}
+  if (usb_claim_interface (dev_handle_, 0) < 0) {
+    usb_close(dev_handle_);
+    return -3;
+  }
 
-	cout<< "MouseDevice successfully connected "<<endl;
-	return 0;
+  return 0;
 
 }
 
@@ -121,28 +126,27 @@ int Mouse::blockKernelDriver()
 
 int Mouse::freeKernelDriver()
 {
-	usb_release_interface(dev_handle_,0);
-	usb_close(dev_handle_);
+  usb_release_interface(dev_handle_,0);
+  usb_close(dev_handle_);
 
-	STARTUPINFO         siStartupInfo;
-    PROCESS_INFORMATION piProcessInfo;
-	memset(&siStartupInfo, 0, sizeof(siStartupInfo));
-    memset(&piProcessInfo, 0, sizeof(piProcessInfo));
-	siStartupInfo.cb = sizeof(siStartupInfo);
+  STARTUPINFO         siStartupInfo;
+  PROCESS_INFORMATION piProcessInfo;
+  memset(&siStartupInfo, 0, sizeof(siStartupInfo));
+  memset(&piProcessInfo, 0, sizeof(piProcessInfo));
+  siStartupInfo.cb = sizeof(siStartupInfo);
 
-	string command = " remove -r ";
-	command += hw_id_;
-    CreateProcess(const_cast<LPCSTR>(devcon_path_.c_str()),
-         const_cast<LPSTR>(command.c_str()),
-		 0,0,FALSE,CREATE_DEFAULT_ERROR_MODE,0,0,&siStartupInfo,&piProcessInfo);
-    WaitForSingleObject(piProcessInfo.hProcess, 1000);
+  string command = " remove -r ";
+  command += hw_id_;
+  CreateProcess(const_cast<LPCSTR>(devcon_path_.c_str()),
+  const_cast<LPSTR>(command.c_str()),
+  0,0,FALSE,CREATE_NEW_CONSOLE,0,0,&siStartupInfo,&piProcessInfo);
+  WaitForSingleObject(piProcessInfo.hProcess, 1000);
 
-	CreateProcess(const_cast<LPCSTR>(devcon_path_.c_str()),
-         " rescan",0,0,FALSE,CREATE_DEFAULT_ERROR_MODE,0,0,&siStartupInfo,&piProcessInfo);
-    WaitForSingleObject(piProcessInfo.hProcess, 1000);    
-	
-	cout<< "MouseDevice disconnected"<<endl;
-	return 0;
+  CreateProcess(const_cast<LPCSTR>(devcon_path_.c_str()),
+  " rescan",0,0,FALSE,CREATE_NEW_CONSOLE,0,0,&siStartupInfo,&piProcessInfo);
+  WaitForSingleObject(piProcessInfo.hProcess, 1000);
+
+  return 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -152,17 +156,17 @@ void Mouse::acquireData()
 {
   while(running_)
   {
-	    boost::unique_lock<boost::shared_mutex> lock(rw_);
-        unsigned char async_data_[10];
-		int r = usb_bulk_read(dev_handle_,usb_port_, (char *)async_data_, sizeof(async_data_), 100);
-		if(r<0){
-			cout<<"usb-device could not be read, please check usb_port"<<endl;
-			break;
-		}
-		async_data_buttons_ = (int)(char)async_data_[0];
-        async_data_x_ = (int)(char)async_data_[1];
-        async_data_y_ = (int)(char)async_data_[2];
-        lock.unlock();
+    boost::unique_lock<boost::shared_mutex> lock(rw_);
+    char async_data_[5];
+    int r = usb_interrupt_read(dev_handle_,usb_port_, async_data_, sizeof(async_data_), 100000);
+    if(r<0){
+      cout<<"   usb-device cannot be read, please check usb_port! (ret="<<r<<")"<<endl;
+      break;
+    }
+    async_data_buttons_ = static_cast<int>(static_cast<char>(async_data_[0]));
+    async_data_x_ = static_cast<int>(static_cast<char>(async_data_[1]));
+    async_data_y_ = static_cast<int>(static_cast<char>(async_data_[2]));
+    lock.unlock();
   }
 }
 
