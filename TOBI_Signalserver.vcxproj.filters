@@ -1,0 +1,155 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\hardware">
+      <UniqueIdentifier>{6ce89d0e-60b2-4f9a-8952-8f52ea58bd9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sampleblock">
+      <UniqueIdentifier>{f81132cc-8fd1-4e37-a62b-aeb3b8a94501}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\config">
+      <UniqueIdentifier>{93a945fd-5774-4d02-92d8-69cebcd784e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files\hardware">
+      <UniqueIdentifier>{46379667-da41-4892-a60c-16b24035f281}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sampleblock">
+      <UniqueIdentifier>{0ac2447b-44ef-411d-9194-b125f20daa21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\config">
+      <UniqueIdentifier>{9964e67b-c53e-4098-8e6f-7a066ab16f35}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\signalserver\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hardware\artificial_signal_source.cpp">
+      <Filter>Source Files\hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hardware\eeg_simulator.cpp">
+      <Filter>Source Files\hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hardware\event_listener.cpp">
+      <Filter>Source Files\hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hardware\hw_access.cpp">
+      <Filter>Source Files\hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hardware\hw_thread.cpp">
+      <Filter>Source Files\hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hardware\hw_thread_factory.cpp">
+      <Filter>Source Files\hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hardware\jstick.cpp">
+      <Filter>Source Files\hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hardware\mouse.cpp">
+      <Filter>Source Files\hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hardware\mouse_win.cpp">
+      <Filter>Source Files\hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hardware\serial_port_base.cpp">
+      <Filter>Source Files\hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hardware\sine_generator.cpp">
+      <Filter>Source Files\hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hardware\usbamp.cpp">
+      <Filter>Source Files\hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sampleblock\sample_block.cpp">
+      <Filter>Source Files\sampleblock</Filter>
+    </ClCompile>
+    <ClCompile Include="src\config\xml_parser.cpp">
+      <Filter>Source Files\config</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hardware\eeg_sim_msg_parser.cpp">
+      <Filter>Source Files\hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="src\signalserver\signalserver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hardware\gBSamp_base.cpp">
+      <Filter>Source Files\hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hardware\gBSamp_win.cpp">
+      <Filter>Source Files\hardware</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\hardware\artificial_signal_source.h">
+      <Filter>Header Files\hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="include\hardware\eeg_simulator.h">
+      <Filter>Header Files\hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="include\hardware\event_listener.h">
+      <Filter>Header Files\hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="include\hardware\gtec_usbamp_wrapper.h">
+      <Filter>Header Files\hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="include\hardware\hw_access.h">
+      <Filter>Header Files\hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="include\hardware\hw_thread.h">
+      <Filter>Header Files\hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="include\hardware\hw_thread_builder.h">
+      <Filter>Header Files\hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="include\hardware\hw_thread_factory.h">
+      <Filter>Header Files\hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="include\hardware\jstick.h">
+      <Filter>Header Files\hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="include\hardware\mouse.h">
+      <Filter>Header Files\hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="include\hardware\mouse_win.h">
+      <Filter>Header Files\hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="include\hardware\serial_port_base.h">
+      <Filter>Header Files\hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="include\hardware\sine_generator.h">
+      <Filter>Header Files\hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="include\hardware\usbamp.h">
+      <Filter>Header Files\hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sampleblock\sample_block.h">
+      <Filter>Header Files\sampleblock</Filter>
+    </ClInclude>
+    <ClInclude Include="include\config\xml_parser.h">
+      <Filter>Header Files\config</Filter>
+    </ClInclude>
+    <ClInclude Include="include\hardware\eeg_sim_msg_parser.h">
+      <Filter>Header Files\hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="include\signalserver\signalserver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\hardware\gBSamp_base.h">
+      <Filter>Header Files\hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="include\hardware\gBSamp_win.h">
+      <Filter>Header Files\hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="include\hardware\nidaqmx_wrapper.h">
+      <Filter>Header Files\hardware</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
