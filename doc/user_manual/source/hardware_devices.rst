@@ -450,7 +450,35 @@ The IntegraMouse (LifeTool, Linz, Austria) is also supported via this configurat
 
 Only aperiodic mode is supported yet.
 
-To configure the mouse device, the VendorID and the ProductID of the device which define it uniquly. On Linux one can find them with the command 'lsusb -v'.
+Linux:
+To configure the mouse device, the VendorID and the ProductID of the device which define it
+uniquly are needed. On Linux one can find them by the command ``lsusb -v``.
+Both IDs are written in the first line of the device-block. Further the right
+usb-port needs to be stated. One can find it also there, it is named
+``bEndpointAddress`` and is listed in the ``Interface Descriptor``
+of the device-block. All numbers must be added decimally.
+
+Windows:
+When using a mouse device on a Windows system, there is an additional tool needed.
+Therefore the ``devcon``-tool included in the Windows Driver Kit
+(`WinDDK`_) has to be installed first. Further ``libusb-win32``
+(`libusb-win32`_)  must be installed on the system. It is used to
+decouple the used mouse device from the opterating system. The full
+path to this tool must be stated.
+When configuring the TOBI SignalServer for a mouse device, one need
+to generate a ``mouse.inf`` file in the directory ``bin/libusb``.
+Therefore the  ``INF Wizard`` (included in libusb-win32) can be used. The
+right configuration for VendorID, ProductID and Usb-Port
+(``bEndpointAddress`` in the ``Interface Descriptor`` of the device-block)
+can be found using the ``Test (Win) Program`` (also included in libusb-win32).
+All numbers must be added decimally.
+
+The following example of a configuration includes the data for a Mouse.  The usb-port might vary, depending on the used port.
+
+**Important**
+
+Entered values have to be in **decimal** format! Therefore a hexadecimal representation
+given by ``lsusb -v`` has to be converted to its decimal equivalent.
 ::
   <hardware name="mouse" version="1.0" serial="">
     <mode> aperiodic </mode>
@@ -465,11 +493,5 @@ To configure the mouse device, the VendorID and the ProductID of the device whic
   </hardware>
 
 
-``<vendorid> 1351 </vendorid>``
-
-``<productid> 4136 </productid>``
-
-``<usb_port> 130 </usb_port>``
-
-``<devcon_path> C:\WinDDK\7600.16385.1\tools\devcon\i386\devcon.exe </devcon_path>``
-
+.. _WinDDK: http://msdn.microsoft.com/en-us/windows/hardware/gg487428
+.. _libusb-win32: http://sourceforge.net/apps/trac/libusb-win32

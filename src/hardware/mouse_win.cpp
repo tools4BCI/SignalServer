@@ -22,10 +22,12 @@
 
 #include "hardware/mouse_win.h"
 #include "tia/constants.h"
+#include "boost/filesystem.hpp"
 
 namespace tobiss
 {
-
+static const int LIBUSB_ERROR_PORT  = -22;      // by trial, no definitions where found in libusb-win32
+static const int LIBUSB_ERROR_TIMEOUT  = -116;  // by trial, no definitions where found in libusb-win32
 const string Mouse::dc_path("devcon_path");
 const HWThreadBuilderTemplateRegistratorWithoutIOService<Mouse> Mouse::FACTORY_REGISTRATOR_ ("mouse");
 
@@ -37,6 +39,9 @@ Mouse::Mouse(ticpp::Iterator<ticpp::Element> hw)
   Constants cst;
   ticpp::Iterator<ticpp::Element> elem(DS->FirstChildElement(dc_path,true));
   devcon_path_ = elem->GetText(true);
+  size_t found = devcon_path_.find(" ");
+  if(found != string::npos)
+    throw(std::runtime_error("MouseBase::initMouse -- Spaces in the devcon_path are forbidden!"));
 
   string VID,PID;
   std::ostringstream v,p;
@@ -72,11 +77,14 @@ int Mouse::blockKernelDriver()
   memset(&piProcessInfo, 0, sizeof(piProcessInfo));
   siStartupInfo.cb = sizeof(siStartupInfo);
 
-  FILE * f= fopen(const_cast<LPCSTR>(devcon_path_.c_str()),"r");
-  if(!f)
-    throw(std::invalid_argument("Mouse::blockKernelDriver -- Devcon-path does not exist!"));
-  else
-    fclose(f);
+  //FILE * f= fopen(const_cast<LPCSTR>(devcon_path_.c_str()),"r");
+  //if(!f)
+  //  throw(std::invalid_argument("Mouse::blockKernelDriver -- Devcon-path does not exist!"));
+  //else
+  //  fclose(f);
+  
+  if(!boost::filesystem::exists(devcon_path_.c_str()))
+	  throw(std::invalid_argument("Mouse::blockKernelDriver -- Devcon-path does not exist!"));
 
   string command = "disable -r "+hw_id_;
   CreateProcess(const_cast<LPCSTR>(devcon_path_.c_str()),
@@ -158,9 +166,16 @@ void Mouse::acquireData()
   {
     boost::unique_lock<boost::shared_mutex> lock(rw_);
     char async_data_[5];
-    int r = usb_interrupt_read(dev_handle_,usb_port_, async_data_, sizeof(async_data_), 100000);
-    if(r<0){
-      cout<<"   usb-device cannot be read, please check usb_port! (ret="<<r<<")"<<endl;
+    int r = usb_interrupt_read(dev_handle_,usb_port_, async_data_, sizeof(async_data_), 10000);
+    if(r == LIBUSB_ERROR_TIMEOUT){
+      //cout<<"   Mouse: Timeout!"<<endl;
+    }
+    else if(r == LIBUSB_ERROR_PORT){
+      cout<<"   Mouse: usb-device cannot be read, please check usb_port!"<<endl;
+      break;
+    }
+    else if(r<0){
+      cout<<"   Mouse: usb-device cannot be read, problem in libusb! (ret="<<r<<")"<<endl;
       break;
     }
     async_data_buttons_ = static_cast<int>(static_cast<char>(async_data_[0]));
