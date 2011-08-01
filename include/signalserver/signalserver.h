@@ -5,15 +5,19 @@
 #include <boost/thread.hpp>
 
 
-namespace TiD
-{
-  class TiDServer;
-}
+#ifdef USE_TID_SERVER
+  namespace TiD
+  {
+    class TiDServer;
+  }
+#endif
 
-namespace gdf
-{
-  class Writer;
-}
+#ifdef USE_GDF_SAVER
+  namespace gdf
+  {
+    class Writer;
+  }
+#endif
 
 namespace tobiss
 {
@@ -43,9 +47,13 @@ class SignalServer
     TiAServer&                  tia_server_;
     XMLParser&                  config_parser_;
 
-    TiD::TiDServer*             tid_server_;
+    #ifdef USE_TID_SERVER
+      TiD::TiDServer*             tid_server_;
+    #endif
 
-    gdf::Writer*                gdf_writer_;
+    #ifdef USE_GDF_SAVER
+      gdf::Writer*                gdf_writer_;
+    #endif
 
     bool                                stop_reading_;
     bool                                write_file_;
