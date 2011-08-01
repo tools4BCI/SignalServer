@@ -97,7 +97,7 @@ class gBSamp : public gBSampBase
     */
     SampleBlock<double> buffer_;
 
-    boost::int32_t error;
+    boost::int32_t error_;
     boost::int32_t first_run_;
 
     comedi_t* device_;
