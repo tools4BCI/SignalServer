@@ -11,7 +11,8 @@
 #include <boost/thread/shared_mutex.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/cstdint.hpp>
-#include "extern/include/nidaqmx/nidaqmx.h"
+//#include "extern/include/nidaqmx/nidaqmx.h"
+#include "nidaqmx_wrapper.h"
 
 #include "hw_thread.h"
 #include "hardware/hw_thread_builder.h"
@@ -171,6 +172,7 @@ class gBSamp : public HWThread
 
     static const HWThreadBuilderTemplateRegistratorWithoutIOService<gBSamp> factory_registrator_;
 
+	NIDaqmxWrapper nidaqmx_;
 };
 
 } // Namespace tobiss
