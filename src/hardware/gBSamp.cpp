@@ -49,10 +49,10 @@ const string gBSamp::hw_cs_name("name");
 
 const HWThreadBuilderTemplateRegistratorWithoutIOService<gBSamp> gBSamp::factory_registrator_ ("gbsamp", "g.bsamp");
 
-#define DAQmxErrChk(functionCall)\
-  if( DAQmxFailed(error=(functionCall)) )\
-   {stopDAQ(error, taskHandle, errBuff); return(-1);}\
-  else
+//#define DAQmxErrChk(functionCall)\
+//  if( DAQmxFailed(error=(functionCall)) )\
+//   {stopDAQ(error, taskHandle, errBuff); return(-1);}\
+//  else
 
 //-----------------------------------------------------------------------------
 
@@ -142,7 +142,7 @@ void gBSamp::stop()
 
 int gBSamp::readFromDAQCard()
 {
-	DAQmxErrChk (nidaqmx_.startTask(taskHandle));
+	nidaqmx_.startTask(taskHandle);
   return error;
 }
 
@@ -251,17 +251,16 @@ int gBSamp::initCard()
 	  i++;
   }
 
-  int channs;
   char *channel_list;
   std::string chann = str_of_channels.str();
-  channel_list = new char[(channs * 8) + 1];
+  channel_list = new char[(nr_ch_ * 8) + 1];
   strcpy(channel_list, chann.c_str());
 
   // DAQmx Configure Code
-  DAQmxErrChk (nidaqmx_.createTask("",&taskHandle));
-  DAQmxErrChk (nidaqmx_.createAIVoltageChan(taskHandle,channel_list,"",DAQmx_Val_RSE,-10.0,10.0,DAQmx_Val_Volts,NULL));
+  nidaqmx_.createTask("",&taskHandle);
+  nidaqmx_.createAIVoltageChan(taskHandle,channel_list,"",DAQmx_Val_RSE,-10.0,10.0,DAQmx_Val_Volts,NULL);
   //  DAQmxErrChk (DAQmxCfgSampClkTiming(taskHandle, NULL, fs_, DAQmx_Val_Rising, DAQmx_Val_ContSamps, 1));
-  DAQmxErrChk (nidaqmx_.cfgSampClkTiming(taskHandle, NULL, fs_, DAQmx_Val_Rising, DAQmx_Val_HWTimedSinglePoint, 1));
+  nidaqmx_.cfgSampClkTiming(taskHandle, NULL, fs_, DAQmx_Val_Rising, DAQmx_Val_HWTimedSinglePoint, 1);
   //DAQmx_Val_HWTimedSinglePoint 
 
   return error;
