@@ -10,6 +10,8 @@ CONFIG += console \
 QT -= core \
     gui
 DEFINES += TIXML_USE_TICPP
+#        USE_TID_SERVER\
+#        USE_GDF_SAVER
 
 # TIMING_TEST
 TARGET = signalserver
