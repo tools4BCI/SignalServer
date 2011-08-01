@@ -1,11 +1,15 @@
 #ifdef WIN32
 
-#include "hardware/gBSamp_win.h"
-//#include "extern/include/nidaqmx/nidaqmx.h"
 #include <Windows.h>
+
+#include "hardware/gBSamp_win.h"
+#include "hardware/nidaqmx_wrapper.h"
 
 namespace tobiss
 {
+
+using namespace nidaqmx;
+  
 using boost::uint8_t;
 using boost::uint16_t;
 using boost::uint32_t;
@@ -20,22 +24,6 @@ using std::endl;
 //-----------------------------------------------------------------------------
 
 const HWThreadBuilderTemplateRegistratorWithoutIOService<gBSamp> gBSamp::factory_registrator_ ("gbsamp", "g.bsamp");
-
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-
-// THIS IS A VERY VERY BAD CONSTRUCT!!!
-// NEVER EVER USE DEFINE-STUFF FOR FUNCTIONS-LIKE BEHAVIOUR
-
-#define DAQmxErrChk(functionCall)\
-  if( DAQmxFailed(error_=(functionCall)) )\
-   {stopDAQ(error_, errBuff); return(-1);}\
-  else
-  
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-
 
 //-----------------------------------------------------------------------------
 
@@ -79,8 +67,8 @@ gBSamp::~gBSamp()
 
   if( taskHandle_!=0 )
   {
-    DAQmxStopTask(taskHandle_);
-    DAQmxClearTask(taskHandle_);
+    nidaqmx_.stopTask(taskHandle_);
+    nidaqmx_.clearTask(taskHandle_);
   }
 
 }
@@ -95,10 +83,10 @@ void gBSamp::run()
 
   running_ = 1;
 
-  if(readFromDAQCard() != 0)
-    DAQmxGetExtendedErrorInfo(errBuff,2048);
+	if(readFromDAQCard() != 0)
+		nidaqmx_.getExtendedErrorInfo(errBuff,2048);
 
-  cout << " * gBSamp sucessfully started" << endl;
+	cout << " * gBSamp sucessfully started" << endl;
 }
 
 //-----------------------------------------------------------------------------
@@ -113,8 +101,8 @@ void gBSamp::stop()
 
   //if( taskHandle!=0 )
   //{
-  //  DAQmxStopTask(taskHandle);
-  //  DAQmxClearTask(taskHandle);
+  //  DAQmxStopTask(taskHandle_);
+  //  DAQmxClearTask(taskHandle_);
   //}
 
   cond_.notify_all();
@@ -125,7 +113,7 @@ void gBSamp::stop()
 
 int gBSamp::readFromDAQCard()
 {
-  DAQmxErrChk (DAQmxStartTask(taskHandle_));
+  nidaqmx_.startTask(taskHandle_);
   return error_;
 }
 
@@ -151,11 +139,7 @@ SampleBlock<double> gBSamp::getSyncData()
 
   boost::shared_lock<boost::shared_mutex> lock(rw_);
 
-  DAQmxReadAnalogF64(taskHandle_,blocks_,-1,DAQmx_Val_GroupByChannel,recv_buffer,1000,&read,NULL);
-
-  //  What is read used for?? -- it is just initialized to 0 and then ignored!
-
-
+  nidaqmx_.readAnalogF64(taskHandle_,blocks_,-1,DAQmx_Val_GroupByChannel,data,1000,&read,NULL);
   //DAQmxReadAnalogF64(taskHandle,1, -1, DAQmx_Val_GroupByChannel,
   //                   recv_buffer, 1, &nr_samples_received, NULL);
 
@@ -193,15 +177,15 @@ SampleBlock<double> gBSamp::getAsyncData()
 
 void gBSamp::stopDAQ(boost::int32_t error, char errBuff[2048])
 {
-  if( DAQmxFailed(error) )
-    DAQmxGetExtendedErrorInfo(errBuff,2048);
-  if( taskHandle_!=0 )
-  {
-    DAQmxStopTask(taskHandle_);
-    DAQmxClearTask(taskHandle_);
-  }
-  if( DAQmxFailed(error) )
-    cout << "DAQmx Error: " << errBuff << endl;
+	if( DAQmxFailed(error) )
+		nidaqmx_.getExtendedErrorInfo(errBuff,2048);
+	if( taskHandle_!=0 )
+	{
+		nidaqmx_.stopTask(taskHandle_);
+		nidaqmx_.clearTask(taskHandle_);
+	}
+	if( DAQmxFailed(error) )
+		cout << "DAQmx Error: " << errBuff << endl;
 }
 
 //-----------------------------------------------------------------------------
@@ -215,13 +199,29 @@ int gBSamp::initCard()
 
   //TODO: make a list with needed channels
   // now just uses first channels
-  const char channel_list[] = "Dev1/ai0";
+  //const char channel_list[] = "Dev1/ai0";
+
+  std::stringstream str_of_channels;
+
+  map<uint16_t, std::pair<string, uint32_t> >::iterator it = channel_info_.begin();
+
+  for(int i = 0; i < nr_ch_; it++)
+  {
+    int temp_channel = (it->first - 1);
+    str_of_channels << "Dev1/ai" << temp_channel;
+    i++;
+  }
+
+  char *channel_list;
+  std::string chann = str_of_channels.str();
+  channel_list = new char[(nr_ch_ * 8) + 1];
+  strcpy(channel_list, chann.c_str());
 
   // DAQmx Configure Code
-  DAQmxErrChk (DAQmxCreateTask("",&taskHandle_));
-  DAQmxErrChk (DAQmxCreateAIVoltageChan(taskHandle_,channel_list,"",DAQmx_Val_RSE,-10.0,10.0,DAQmx_Val_Volts,NULL));
+  nidaqmx_.createTask("",&taskHandle_);
+  nidaqmx_.createAIVoltageChan(taskHandle_,channel_list,"",DAQmx_Val_RSE,-10.0,10.0,DAQmx_Val_Volts,NULL);
   //  DAQmxErrChk (DAQmxCfgSampClkTiming(taskHandle, NULL, fs_, DAQmx_Val_Rising, DAQmx_Val_ContSamps, 1));
-  DAQmxErrChk (DAQmxCfgSampClkTiming(taskHandle_, NULL, fs_, DAQmx_Val_Rising, DAQmx_Val_HWTimedSinglePoint, 1));
+  nidaqmx_.cfgSampClkTiming(taskHandle_, NULL, fs_, DAQmx_Val_Rising, DAQmx_Val_HWTimedSinglePoint, 1);
   //DAQmx_Val_HWTimedSinglePoint
 
   return error_;
