@@ -3852,13 +3852,13 @@ class NIDaqmxWrapper
   public:
   NIDaqmxWrapper () : dll_handle_ (NULL)
   {
-    dll_handle_ = LoadLibrary("NIDAQmx.lib");
+    dll_handle_ = LoadLibrary("nicaiu.dll");
     if (dll_handle_ == NULL)
       throw std::runtime_error ("Can't load NIDAQmx.lib");
 
     setupDLLFunction (ni_DAQmxStartTask_ptr_, "DAQmxStartTask");
     setupDLLFunction (ni_DAQmxStopTask_ptr_,  "DAQmxStopTask");
-    setupDLLFunction (ni_DAQmxClearTask_ptr_, "DAQmxclearTask");
+    setupDLLFunction (ni_DAQmxClearTask_ptr_, "DAQmxClearTask");
     setupDLLFunction (ni_DAQmxCreateTask_ptr_, "DAQmxCreateTask");
     setupDLLFunction (ni_DAQmxGetErrorString_ptr_, "DAQmxGetErrorString");
     setupDLLFunction (ni_DAQmxGetExtendedErrorInfo_ptr_, "DAQmxGetExtendedErrorInfo");
