@@ -37,14 +37,13 @@
 #include <boost/asio.hpp>
 #include <boost/cstdint.hpp>
 
-#include "config/xml_parser.h"
 #include "tia/data_packet.h"
-
 #include "hw_thread.h"
 
 namespace tobiss
 {
 
+class XMLParser;
 
 //---------------------------------------------------------------------------------------
 
@@ -277,8 +276,6 @@ class HWAccess
     std::map<boost::uint32_t, double > fs_info_;  ///< map containing ( type, sampling rate )
 
     std::map<boost::uint32_t, std::vector<std::string> > channel_naming_;  ///< map containing ( type,  channel names )
-
-    Constants cst_;  ///< A static object containing constants.
 
   #ifdef TIMING_TEST
   private:

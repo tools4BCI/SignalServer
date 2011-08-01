@@ -4,15 +4,13 @@
 #include <vector>
 #include <map>
 
-#include <boost/asio.hpp>
 #include <boost/thread/condition.hpp>  // for mutex and cond. variables
 #include <boost/thread/shared_mutex.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/cstdint.hpp>
 #include <comedilib.h>
 
-#include "hw_thread.h"
 #include "hardware/hw_thread_builder.h"
+#include "hardware/gBSamp_base.h"
 
 namespace tobiss
 {
@@ -25,7 +23,7 @@ namespace tobiss
 *
 */
 
-class gBSamp : public HWThread
+class gBSamp : public gBSampBase
 {
   public:
     /**
@@ -72,35 +70,11 @@ class gBSamp : public HWThread
 
 //-----------------------------------------------
   private:
-    /**
-    * @brief Set the configuration of the device with a XML object
-    * @param[in] hw ticpp::Element pointing to an \<hardware\> tag in the config file
-    * @throw ticpp::exception if \<channel_settings\> is defined multiple times.
-    */
-    void setHardware(ticpp::Iterator<ticpp::Element>const &hw);
 
     /**
     * @brief Initialize device
     */
     int initCard();
-
-    /**
-    * @brief Set configuration listed in the \<device_settings\> section in the XML file.
-    * @param[in] hw ticpp::Element pointing to an \<device_settings\> tag in the config file
-    * @throw ticpp::exception
-    */
-    virtual void setDeviceSettings(ticpp::Iterator<ticpp::Element>const &father);
-    /**
-    * @brief Set configuration listed in the \<channel_settings\> section in the XML file.
-    * @param[in] hw ticpp::Element pointing to an \<channel_settings\> tag in the config file
-    * @throw ticpp::exception
-    */
-    virtual void setChannelSettings(ticpp::Iterator<ticpp::Element>const &father);
-
-    void setDeviceFilterSettings(ticpp::Iterator<ticpp::Element>const &elem);
-    void checkFilterAttributes(ticpp::Iterator<ticpp::Element>const &elem);
-    void getFilterParams(ticpp::Iterator<ticpp::Element>const &elem,\
-      unsigned int &type, bool &notch, float &f_low, float &f_high, float &sense);
 
 //-----------------------------------------------
 
@@ -131,37 +105,11 @@ class gBSamp : public HWThread
     comedi_range* range_info_;
     int maxdata_;
     unsigned int *channel_list_;
-//    sampl_t* data_buffer_[10000];
-//    unsigned int channel_list[0];
-//    comedi_insn comedi_insn_;
-//    comedi_insnlist insn_list_;
-//    lsampl_t data_buf_[1000];
-
-    static const std::string hardware;
-    static const std::string hardware_name;
-    static const std::string hardware_version;
-    static const std::string hardware_serial;
-    static const std::string hw_mode;
-    static const std::string hw_ds;   ///< xml-tag hardware: device_settings
-    static const std::string hw_fs;   ///< xml-tag hardware: sampling_rate
-    static const std::string hw_channels;   ///< xml-tag hardware: measurement_channels
-    static const std::string hw_ch_nr;   ///< xml-tag hardware: nr
-    static const std::string hw_ch_names;   ///< xml-tag hardware: names
-    static const std::string hw_ch_type;   ///< xml-tag hardware: channel type
-    static const std::string hw_buffer;   ///< xml-tag hardware: blocksize
-    static const std::string hw_fil;   ///< xml-tag hardware: filter
-    static const std::string hw_fil_type;   ///< xml-tag hardware: filter type
-    static const std::string hw_fil_order;   ///< xml-tag hardware: filter order
-    static const std::string hw_fil_low;   ///< xml-tag hardware: filter lower cutoff freq.
-    static const std::string hw_fil_high;   ///< xml-tag hardware: filter upper cutoff freq.
-    static const std::string hw_fil_sense;   ///< xml-tag hardware: mV for gBSamp
-    static const std::string hw_notch;   ///< xml-tag hardware: notch_filter
-    static const std::string hw_notch_center;    ///< xml-tag hardware: notch center freq.
-    static const std::string hw_cs;   ///< xml-tag hardware -- channel_settings
-    static const std::string hw_sel;   ///< xml-tag hardware: selection
-    static const std::string hw_cs_ch;   ///< xml-tag hardware: ch
-    static const std::string hw_cs_nr;   ///< xml-tag hardware: nr
-    static const std::string hw_cs_name;   ///< xml-tag hardware: name
+    //    sampl_t* data_buffer_[10000];
+    //    unsigned int channel_list[0];
+    //    comedi_insn comedi_insn_;
+    //    comedi_insnlist insn_list_;
+    //    lsampl_t data_buf_[1000];
 
     static const HWThreadBuilderTemplateRegistratorWithoutIOService<gBSamp> factory_registrator_;
 

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70010" creator="Ipe 7.0.10">
-<info created="D:20090528102321" modified="D:20110202193059"/>
+<info created="D:20090528102321" modified="D:20110405174231"/>
 <ipestyle name="ipe6">
 <symbol name="mark/circle(sx)" transformations="translations">
 <path fill="sym-stroke">
@@ -346,7 +346,7 @@ h
 360 544 l
 h
 </path>
-<path stroke="black" fill="gray6" pen="heavier">
+<path matrix="1.33333 0 0 1 -120 0" stroke="black" fill="gray6" pen="heavier">
 408 544 m
 360 544 l
 360 528 l
@@ -372,51 +372,25 @@ h
 168 544 l
 h
 </path>
-<path stroke="black" fill="gray7" pen="heavier">
-88 512 m
-104 512 l
-104 496 l
-88 496 l
-</path>
-<path stroke="black" fill="gray7" pen="heavier">
-408 528 m
-360 528 l
-360 512 l
-408 512 l
-</path>
 <path stroke="black" dash="dash dotted" pen="heavier">
 328 528 m
 328 512 l
 </path>
-<path stroke="black" dash="dash dotted" pen="heavier">
-392 528 m
-392 512 l
-</path>
-<path matrix="1 0 0 1 0 -32" stroke="black" fill="white" dash="dotted" pen="heavier">
+<path matrix="1 0 0 1 -16 -32" stroke="black" fill="white" dash="dotted" pen="heavier">
 104 544 m
 104 528 l
 168 528 l
 168 544 l
 h
 </path>
-<path stroke="black" dash="dotted" pen="heavier">
+<path matrix="1 0 0 1 -16 0" stroke="black" dash="dotted" pen="heavier">
 168 512 m
 168 496 l
 232 496 l
 232 512 l
 h
 </path>
-<path stroke="black" pen="ultrafat">
-104 512 m
-104 496 l
-</path>
-<path stroke="black" fill="gray6">
-408 544 m
-411.982 537.302
-405.788 534.34
-408 528 s
-</path>
-<path matrix="1 0 0 1 0 -16" stroke="black" fill="gray7">
+<path matrix="1 0 0 1 16 0" stroke="black" fill="gray6">
 408 544 m
 411.982 537.302
 405.788 534.34
@@ -428,29 +402,27 @@ h
 <text matrix="1 0 0 1 64 0" transformations="translations" pos="175.864 532" stroke="black" type="label" width="71.012" height="6.918" depth="0" valign="baseline">uint64 PacketNr</text>
 <text matrix="1 0 0 1 248 0" transformations="translations" pos="96 552" stroke="black" type="label" width="120.271" height="6.918" depth="0" valign="baseline">uint64 ConnectionPacketNr</text>
 <text matrix="1 0 0 1 0 -16" transformations="translations" pos="175.864 532" stroke="black" type="label" width="80.033" height="6.815" depth="1.93" valign="baseline">uint64 Timestamp</text>
-<text matrix="1 0 0 1 -48 0" transformations="translations" pos="312 488" stroke="black" type="label" width="87.533" height="7.473" depth="2.49" valign="baseline">uint16[] NrChannels</text>
-<text matrix="1 0 0 1 56 0" transformations="translations" pos="312 488" stroke="black" type="label" width="122.541" height="7.473" depth="2.49" valign="baseline">uint16[] SamplesPerChannel</text>
-<path stroke="black">
+<path matrix="0.675824 0 0 1.02208 111.517 -11.4811" stroke="black">
 344 520 m
 320 496 l
 </path>
-<path stroke="black">
+<path matrix="1.91673 0 0 1.00216 -278.685 -1.1223" stroke="black">
 304 520 m
 312 496 l
 </path>
-<path stroke="black">
+<path matrix="1.70179 0 0 1.0088 -263.875 -4.57524" stroke="black">
 376 520 m
 384 496 l
 </path>
-<path stroke="black">
+<path matrix="0.441612 0 0 1.00216 223.355 -1.1223" stroke="black">
 400 520 m
 392 496 l
 </path>
-<text matrix="1 0 0 1 0 -32" transformations="translations" pos="112.117 532" stroke="black" type="label" width="19.372" height="6.918" depth="0" valign="baseline">data</text>
-<text matrix="1 0 0 1 64 -32" transformations="translations" pos="112.117 532" stroke="black" type="label" width="19.372" height="6.918" depth="0" valign="baseline">data</text>
-<use name="mark/disk(sx)" pos="240 504" size="normal" stroke="black"/>
-<use name="mark/disk(sx)" pos="248 504" size="normal" stroke="black"/>
-<use name="mark/disk(sx)" pos="256 504" size="normal" stroke="black"/>
+<text matrix="1 0 0 1 -16 -32" transformations="translations" pos="112.117 532" stroke="black" type="label" width="19.372" height="6.918" depth="0" valign="baseline">data</text>
+<text matrix="1 0 0 1 48 -32" transformations="translations" pos="112.117 532" stroke="black" type="label" width="19.372" height="6.918" depth="0" valign="baseline">data</text>
+<use matrix="1 0 0 1 -16 0" name="mark/disk(sx)" pos="240 504" size="normal" stroke="black"/>
+<use matrix="1 0 0 1 -16 0" name="mark/disk(sx)" pos="248 504" size="normal" stroke="black"/>
+<use matrix="1 0 0 1 -16 0" name="mark/disk(sx)" pos="256 504" size="normal" stroke="black"/>
 <path stroke="black" fill="gray5">
 376 536 m
 383.957 550.705 l
@@ -465,11 +437,111 @@ h
 88.9634 517.248
 88 512 s
 </path>
-<path matrix="1 0 0 1 0 -16" stroke="black" fill="gray7">
-88 528 m
-85.1386 523.304
-88.9634 517.248
-88 512 s
+<path stroke="black">
+408 544 m
+88 544 l
+88 528 l
+408 528 l
+</path>
+<path stroke="black" pen="ultrafat">
+256 528 m
+296 528 l
+296 512 l
+256 512 l
+</path>
+<path stroke="black" pen="ultrafat">
+128 544 m
+88 544 l
+88 528 l
+128 528 l
+</path>
+<path stroke="black" pen="ultrafat">
+336 528 m
+296 528 l
+296 512 l
+336 512 l
+</path>
+<text matrix="1 0 0 1 14.0051 -2.10077" transformations="translations" pos="368 496" stroke="black" type="minipage" width="80" height="13.164" depth="8.2" valign="top">uint16\,[]\\
+SamplesPerChannel</text>
+<text matrix="1 0 0 1 20.3074 -2.45089" transformations="translations" pos="288 496" stroke="black" type="minipage" width="64" height="12.197" depth="7.23" valign="top">uint16\,[]\\
+NrChannels</text>
+<path matrix="1 0 0 1.4 0 -204.801" stroke="black" dash="dashed">
+296 512 m
+296 472 l
+</path>
+<path matrix="1 0 0 1 0 -16" stroke="black" pen="fat" rarrow="normal/normal">
+256 480 m
+296 480 l
+</path>
+<path matrix="3.2 0 0 1 -523.201 -32" stroke="black" pen="fat" arrow="normal/normal" rarrow="normal/normal">
+256 480 m
+296 480 l
+</path>
+<path matrix="0.973274 0 0 2.06682 7.91085 -502.471" stroke="black" pen="fat">
+296 472 m
+296 456 l
+</path>
+<path matrix="1 0 0 1 -168 0" stroke="black" pen="fat" arrow="normal/normal">
+256 480 m
+296 480 l
+</path>
+<path matrix="1 0 0 1 -208 16" stroke="black" pen="fat">
+296 472 m
+296 456 l
+</path>
+<text matrix="1 0 0 1 48 -64" transformations="translations" pos="175.864 532" stroke="black" type="label" width="52.158" height="6.926" depth="1.93" valign="baseline">\textit{fixed header}</text>
+<text matrix="1 0 0 1 150.884 -80" transformations="translations" pos="175.864 532" stroke="black" type="label" width="66.504" height="6.918" depth="0" valign="baseline">\textit{variable header}</text>
+<text matrix="1 0 0 1 -64 -48" transformations="translations" pos="175.864 532" stroke="black" type="label" width="19.35" height="6.918" depth="0" valign="baseline">\textit{data}</text>
+<path stroke="black" dash="dashed">
+360 528 m
+360 512 l
+</path>
+<path matrix="1 0 0 1 1.61732 0" stroke="black" pen="ultrafat">
+296 528 m
+296 512 l
+</path>
+<path matrix="1 0 0 1 -1.79165 0" stroke="black" pen="ultrafat">
+296 528 m
+296 512 l
+</path>
+<path matrix="1 0 0 1 256 -16" stroke="black" fill="gray6" pen="heavier">
+104 544 m
+104 528 l
+168 528 l
+168 544 l
+h
+</path>
+<path matrix="1 0 0 1 64 0" stroke="black" dash="dash dotted" pen="heavier">
+328 528 m
+328 512 l
+</path>
+<path stroke="black">
+396.467 495.948 m
+400 520 l
+</path>
+<path stroke="black">
+389.614 495.789 m
+376 520 l
+</path>
+<path stroke="black" dash="dashed">
+424 512 m
+424 485.725 l
+</path>
+<path stroke="black" dash="dashed">
+424 440 m
+424 472 l
+</path>
+<path stroke="black" pen="ultrafat">
+384 528 m
+424 528 l
+424 512 l
+384 512 l
+</path>
+<path stroke="black" pen="ultrafat">
+128 512 m
+88 512 l
+88 496 l
+128 496 l
 </path>
 </page>
 </ipe>

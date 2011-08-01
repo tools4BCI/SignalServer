@@ -33,7 +33,8 @@
 
 #include <usb.h>
 #include "mouse.h"
-#include "extern/include/libusb/libusb.h"
+//#include "extern/include/libusb/libusb.h"
+#include <libusb-1.0/libusb.h>
 
 namespace tobiss
 {

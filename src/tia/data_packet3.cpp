@@ -263,7 +263,7 @@ uint64_t DataPacket3::getConnectionPacketNr()
   return(connection_packet_nr_);
 }
 
-//------connection_packet_nr_-------------------------------------------------------------
+//-------------------------------------------------------------------
 
 void DataPacket3::setTimestamp()
 {
