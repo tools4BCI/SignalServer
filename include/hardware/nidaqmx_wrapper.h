@@ -3854,7 +3854,7 @@ class NIDaqmxWrapper
   {
     dll_handle_ = LoadLibrary("nicaiu.dll");
     if (dll_handle_ == NULL)
-      throw std::runtime_error ("Can't load NIDAQmx.lib");
+      throw std::runtime_error ("Can't load nicaiu.dll");
 
     setupDLLFunction (ni_DAQmxStartTask_ptr_, "DAQmxStartTask");
     setupDLLFunction (ni_DAQmxStopTask_ptr_,  "DAQmxStopTask");
@@ -3931,7 +3931,7 @@ class NIDaqmxWrapper
   {
     pointer = (T)GetProcAddress (dll_handle_, name.c_str());
     if (pointer == NULL)
-      throw std::runtime_error (std::string ("NIDAQmx.lib: missing function ").append (name));
+      throw std::runtime_error (std::string ("nicaiu.dll: missing function ").append (name));
   }
 
   HINSTANCE dll_handle_;
