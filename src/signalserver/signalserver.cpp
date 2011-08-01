@@ -8,6 +8,7 @@
 #include "hardware/hw_access.h"
 #include "config/xml_parser.h"
 
+
 #include <tobiid/IDMessage.hpp>
 #include "TiDlib/tid_server.h"
 
@@ -20,7 +21,13 @@ namespace tobiss
 
 SignalServer::SignalServer(HWAccess& hw_access, TiAServer& tia_server, XMLParser& config_parser)
   : hw_access_(hw_access), tia_server_(tia_server), config_parser_(config_parser),
-    tid_server_(0), gdf_writer_(0), stop_reading_(false), write_file_(false),
+    #ifdef USE_TID_SERVER
+      tid_server_(0),
+    #endif
+    #ifdef USE_GDF_SAVER
+      gdf_writer_(0),
+    #endif
+    stop_reading_(false), write_file_(false),
     master_blocksize_( hw_access.getMastersBlocksize() ),
     master_samplingrate_( hw_access.getMastersSamplingRate() )
 {
@@ -40,25 +47,30 @@ SignalServer::SignalServer(HWAccess& hw_access, TiAServer& tia_server, XMLParser
   server_settings_ = config_parser_.parseServerSettings();
   tia_server_.initialize(subject_info_, server_settings_);
 
-  tid_server_ = new TiD::TiDServer(io_);
-  tid_server_->bind ( boost::lexical_cast<unsigned int>(server_settings_[Constants::ss_tid_port]));
-  tid_server_->listen();
+  #ifdef USE_TID_SERVER
+    tid_server_ = new TiD::TiDServer(io_);
+    tid_server_->bind ( boost::lexical_cast<unsigned int>(server_settings_[Constants::ss_tid_port]));
+    tid_server_->listen();
+  #endif
+
   io_service_thread_ = new boost::thread(boost::bind(&boost::asio::io_service::run, &io_));
 
-  try
-  {
-    if(server_settings_[Constants::ss_filetype] == "gdf")
+  #ifdef USE_GDF_SAVER
+    try
     {
-      gdf_writer_ = new gdf::Writer();
-      initGdf();
-      write_file_ = true;
+      if(server_settings_[Constants::ss_filetype] == "gdf")
+      {
+        gdf_writer_ = new gdf::Writer();
+        initGdf();
+        write_file_ = true;
+      }
     }
-  }
-  catch( std::exception &e )
-  {
-    std::cerr << "  -- Caught exception from GDF writer!"  << std::endl;
-    throw;
-  }
+    catch( std::exception &e )
+    {
+      std::cerr << "  -- Caught exception from GDF writer!"  << std::endl;
+      throw;
+    }
+  #endif
 }
 
 //-----------------------------------------------------------------------------
@@ -75,14 +87,18 @@ SignalServer::~SignalServer()
   if(io_service_thread_)
     delete(io_service_thread_);
 
-  if(tid_server_)
-    delete(tid_server_);
+  #ifdef USE_TID_SERVER
+    if(tid_server_)
+      delete(tid_server_);
+  #endif
 
-  if(gdf_writer_)
-  {
-    gdf_writer_->close();
-    delete gdf_writer_;
-  }
+  #ifdef USE_GDF_SAVER
+    if(gdf_writer_)
+    {
+      gdf_writer_->close();
+      delete gdf_writer_;
+    }
+  #endif
 }
 
 //-----------------------------------------------------------------------------
@@ -96,10 +112,14 @@ void SignalServer::stop()
 
 void SignalServer::readPackets()
 {
-  std::vector<IDMessage> msgs;
-  msgs.reserve(100);
+  #ifdef USE_TID_SERVER
+    std::vector<IDMessage> msgs;
+    msgs.reserve(100);
+    std::ofstream events_file;
+  #endif
+
   boost::uint64_t sample_count = 0;
-  std::ofstream events_file;
+
 
   while (!stop_reading_)
   {
@@ -108,9 +128,12 @@ void SignalServer::readPackets()
     DataPacket packet = hw_access_.getDataPacket();
     tia_server_.sendDataPacket(packet);
 
+    #ifdef USE_TID_SERVER
     if(tid_server_->newMessagesAvailable())
       tid_server_->getLastMessages(msgs);
+    #endif
 
+    #ifdef USE_GDF_SAVER
     if(write_file_)
     {
       uint32_t nr_values = 0;
@@ -141,7 +164,7 @@ void SignalServer::readPackets()
         ch_start += it->second.size();
       }
 
-
+      #ifdef USE_TID_SERVER
       for(unsigned int n = 0; n < msgs.size(); n++)
       {
         if(msgs[n].GetFamilyType() == IDMessage::FamilyBiosig)
@@ -181,18 +204,25 @@ void SignalServer::readPackets()
           events_file << "0" << std::endl;
         }
       }
+      #endif
     }
+    #endif
 
-    if(msgs.size())
-      msgs.clear();
+    #ifdef USE_TID_SERVER
+      if(msgs.size())
+        msgs.clear();
+    #endif
   }
 
-  if(!events_file.is_open())
-    events_file.close();
+  #ifdef USE_TID_SERVER
+    if(!events_file.is_open())
+      events_file.close();
+  #endif
+
 }
 
 //-----------------------------------------------------------------------------
-
+#ifdef USE_GDF_SAVER
 void SignalServer::initGdf()
 {
   std::map<uint32_t, std::vector<std::string> >::iterator it(channels_per_sig_type_.begin());
@@ -241,6 +271,7 @@ void SignalServer::initGdf()
 
   gdf_writer_->open( server_settings_[Constants::ss_filename] + ".gdf" );
 }
+#endif
 
 //-----------------------------------------------------------------------------
 
