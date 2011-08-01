@@ -73,6 +73,8 @@
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">tiad</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">tia</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">tia</TargetName>
+    <ReferencePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\boost\boost_1_44\lib;$(ReferencePath)</ReferencePath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\boost\boost_1_44\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
