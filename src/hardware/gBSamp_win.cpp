@@ -7,6 +7,9 @@
 
 namespace tobiss
 {
+
+using namespace nidaqmx;
+  
 using boost::uint8_t;
 using boost::uint16_t;
 using boost::uint32_t;
@@ -111,7 +114,7 @@ void gBSamp::stop()
 int gBSamp::readFromDAQCard()
 {
   nidaqmx_.startTask(taskHandle_);
-  return error;
+  return error_;
 }
 
 //-----------------------------------------------------------------------------
