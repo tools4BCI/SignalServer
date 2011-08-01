@@ -41,11 +41,7 @@ const string MouseBase::usb_port("usb_port");
 
 //-----------------------------------------------------------------------------
 MouseBase::MouseBase(ticpp::Iterator<ticpp::Element> hw)
-<<<<<<< HEAD
-: HWThread()
-=======
-	: HWThread()
->>>>>>> 6145405b26edb32fe216be155226e25df5e09396
+        : HWThread()
 {
   #ifdef DEBUG
     cout << "MouseBase: Constructor" << endl;
@@ -66,13 +62,8 @@ MouseBase::MouseBase(ticpp::Iterator<ticpp::Element> hw)
 
   //	cout << " * Mouse sucessfully initialized -- running as aperiodic: ";
   //	cout << (mode_ == APERIODIC) << ";  ";
-<<<<<<< HEAD
 
-
-  cout << "   Mouse ID: " << id_ << ",  Name: " << name_;
-=======
   cout << " --> Mouse ID: " << id_ << ",  Name: " << name_;
->>>>>>> 6145405b26edb32fe216be155226e25df5e09396
   cout<<", vid: "<<vid_<<", pid: "<<pid_<<endl;
 }
 
