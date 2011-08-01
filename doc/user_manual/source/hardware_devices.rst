@@ -134,7 +134,7 @@ Possible messages, warnings and known issues:
 
 * Received not enough data:
 
-  Staring the signal server with a connected g.UABamp, sometimes this message occurs for the first sample(s).
+  Starting the signal server with a connected g.UABamp, sometimes this message occurs for the first sample(s).
   This could happen, because the amplifier returns a not completely filled buffer, especially at startup.
   If this message occurs during runtime, often the signal servers process priority is too low or the used
   blocksize is too small.
@@ -148,7 +148,7 @@ Possible messages, warnings and known issues:
 
 * Unable to set filter settings:
 
-  Setting wring filter settings or also a wrong sampling rate (e.g. 500 Hz) produces errors setting the
+  Setting wrong filter settings or also a wrong sampling rate (e.g. 500 Hz) produces errors setting the
   hardware filter. Please re-check your settings if the desired filter is really supported.
 
 
@@ -396,9 +396,9 @@ from the BrainAmp Series are supported.
     <channel_settings>
       <selection>
         <ch nr="01" name="eeg" type="eeg" />
-        <ch nr="01" name="eog" type="eog" />
-        <ch nr="01" name="emg" type="emg" />
-        <ch nr="01" name="bp"  type="bp" />
+        <ch nr="02" name="eog" type="eog" />
+        <ch nr="03" name="emg" type="emg" />
+        <ch nr="04" name="emg"  type="emg" />
       </selection>
 
       <lowpass_250Hz>
@@ -449,6 +449,8 @@ the mouse cursor. The data is directly fed into the Signal Server.
 The IntegraMouse (LifeTool, Linz, Austria) is also supported via this configuration.
 
 Only aperiodic mode is supported yet.
+
+To configure the mouse device, the VendorID and the ProductID of the device which define it uniquly. On Linux one can find them with the command 'lsusb -v'.
 ::
   <hardware name="mouse" version="1.0" serial="">
     <mode> aperiodic </mode>

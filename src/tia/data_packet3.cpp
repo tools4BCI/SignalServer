@@ -263,7 +263,7 @@ uint64_t DataPacket3::getConnectionPacketNr()
   return(connection_packet_nr_);
 }
 
-//------connection_packet_nr_-------------------------------------------------------------
+//-------------------------------------------------------------------
 
 void DataPacket3::setTimestamp()
 {
@@ -529,7 +529,7 @@ boost::uint32_t DataPacket3::getRequiredRawMemorySize(void* mem, boost::int32_t 
 
   uint32_t* ui32_ptr = reinterpret_cast<uint32_t*>(++version_ptr);
 
-  *ui32_ptr++;      // FIXME:  size field is skipped
+  *ui32_ptr++;      ///< FIXME:  size field is skipped
 
   uint32_t flags  = *ui32_ptr;
 

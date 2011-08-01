@@ -32,65 +32,168 @@
 #include <boost/thread/thread.hpp>
 #include <boost/exception/all.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/program_options.hpp>
 
 // local
 #include "version.h"
 #include "tia/tia_server.h"
 #include "config/xml_parser.h"
 #include "hardware/hw_access.h"
-#include "filereading/data_file_handler.h"
+#include "signalserver/signalserver.h"
 
 using namespace std;
-
 using namespace tobiss;
+namespace po = boost::program_options;
 
 const string DEFAULT_XML_CONFIG = "server_config.xml";
 const string COMMENTS_XML_CONFIG = "server_config_comments.xml";
 
-const string XML_CONFIG_FILE_PARAM = "-f";
-const string LIST_HARDWARE_PARAM   = "-l";
-const string NEW_TIA_PARAM = "-n";
+const string XML_CONFIG_FILE_PARAM = "server-config";
+const string LIST_HARDWARE_PARAM   = "list-hardware";
+const string OLD_TIA_PARAM = "use-old-tia";
+const string HELP_PARAM = "help";
 
 #ifndef WIN32
-const string DEFAULT_XML_CONFIG_HOME_SUBDIR = string("/tobi_sigserver_cfg/");
-const string TEMPLATE_XML_CONFIG = string("/usr/share/signalserver/") + DEFAULT_XML_CONFIG;
-const string TEMPLATE_XML_CONFIG_COMMENTS = string("/usr/share/signalserver/") + COMMENTS_XML_CONFIG;
+  const string DEFAULT_XML_CONFIG_HOME_SUBDIR = string("/tobi_sigserver_cfg/");
+  const string TEMPLATE_XML_CONFIG = string("/usr/share/signalserver/") + DEFAULT_XML_CONFIG;
+  const string TEMPLATE_XML_CONFIG_COMMENTS = string("/usr/share/signalserver/") + COMMENTS_XML_CONFIG;
 #endif
 
-class DataPacketReader
-{
-  public:
-    DataPacketReader(HWAccess& hw_access, TiAServer& server) :
-        hw_access_(hw_access),
-        server_(server),
-        stop_reading_(false)
-    {}
+template<class T> ostream& operator<<(ostream& os, const vector<T>& v);
+string getDefaultConfigFile ();
+void printPossibleHardware();
+void printVersion();
+int parseInput(int argc, const char* argv[], string& config_file, bool& use_new_tia);
+void printRuntimeCommands();
 
-    void stop()
-    {
-      stop_reading_ = true;
-    }
-
-    void readPacket()
-    {
-      while (!stop_reading_)
-      {
-//         cout << "waiting... ";
-        cout.flush();
-        DataPacket p = hw_access_.getDataPacket();
-//         cout << " got packet :-) ";
-        server_.sendDataPacket(p);
-//         cout << "packet, ";
-      }
-    }
-  private:
-    HWAccess&                   hw_access_;
-    TiAServer&               server_;
-    bool                        stop_reading_;
-};
 
 //-----------------------------------------------------------------------------
-string getDefaultConfigFile ()
+//-----------------------------------------------------------------------------
+
+int main(int argc, const char* argv[])
+{
+  try
+  {
+    printVersion();
+
+    string config_file;
+    bool use_new_tia = true;
+
+    if( parseInput(argc, argv, config_file, use_new_tia) )
+      return 0;
+
+    bool running = true;
+    while(running)
+    {
+      XMLParser config(config_file);
+
+      boost::asio::io_service io_service;
+
+      TiAServer tia_server(io_service, use_new_tia);
+      HWAccess hw_access(io_service, config);
+      tobiss::SignalServer sig_server(hw_access, tia_server, config);
+      boost::thread* io_thread_ptr = 0;
+      boost::thread* sig_server_ptr = 0;
+
+      hw_access.startDataAcquisition();
+
+      io_thread_ptr  = new boost::thread(boost::bind(&boost::asio::io_service::run, &io_service));
+      sig_server_ptr = new boost::thread(boost::bind(&SignalServer::readPackets, &sig_server));
+
+      #ifdef WIN32
+        SetPriorityClass(io_thread_ptr->native_handle(), REALTIME_PRIORITY_CLASS);
+        SetThreadPriority(io_thread_ptr->native_handle(), THREAD_PRIORITY_TIME_CRITICAL );
+        SetPriorityClass(sig_server_ptr->native_handle(),     HIGH_PRIORITY_CLASS);
+        SetThreadPriority(sig_server_ptr->native_handle(), THREAD_PRIORITY_HIGHEST );
+      #endif
+
+      #ifdef WIN32
+        SetPriorityClass(GetCurrentProcess(), REALTIME_PRIORITY_CLASS);
+      #endif
+
+      string str;
+      cout << endl << ">>";
+
+      while(cin >> str)
+      {
+        if(str == "q" || str == "quit" || str == "exit")
+        {
+          running = false;
+          break;
+        }
+        else if(str == "r")
+        {
+          break;
+        }
+        else if(str == "h" || str == "help")
+        {
+          printRuntimeCommands();
+          cout << endl << ">>";
+        }
+        else if(str == "l" || str == "list")
+        {
+          printPossibleHardware();
+          cout << endl << ">>";
+        }
+        else
+          cout << endl << ">>";
+      }
+
+      sig_server.stop();
+      io_service.stop();
+      hw_access.stopDataAcquisition();
+      if(io_thread_ptr)
+      {
+        io_thread_ptr->join();
+        delete io_thread_ptr;
+      }
+      if(sig_server_ptr)
+      {
+        sig_server_ptr->join();
+        delete sig_server_ptr;
+      }
+
+      if(running)
+      {
+        cout << endl;
+        cout << "   ...  Restarting and reloading SignalServer!" << endl;
+        cout << endl;
+        boost::this_thread::sleep(boost::posix_time::seconds(1));
+      }
+    }
+  }
+  catch(ticpp::Exception& ex)
+  {
+   cerr << endl << " ***** TICPP Exception caught! *****" << endl;
+   cerr << " --> " << ex.what() << endl << endl;
+   std::cin.peek();
+  }
+  catch(std::exception& e)
+  {
+   cerr << endl << " ***** STL Exception caught! *****" << endl;
+   cerr << " --> " << e.what() << endl << endl;
+   std::cin.peek();
+  }
+  catch(boost::exception& e)
+  {
+   cerr << endl << " ***** Boost Exception caught! *****" << endl;
+   cerr << " --> " << boost::diagnostic_information(e) << endl << endl;
+   std::cin.peek();
+  }
+  catch(...)
+  {
+   cerr << endl << " ***** Caught unknown exception! *****" << endl;
+   std::cin.peek();
+  }
+
+   cerr.flush();
+   return(0);
+}
+
+//-----------------------------------------------------------------------------
+
+
+std::string getDefaultConfigFile ()
 {
     string default_xml_config = DEFAULT_XML_CONFIG;
 #ifdef WIN32
@@ -137,6 +240,8 @@ void printVersion()
   cout << "Laboratory of Brain-Computer Interfaces" << endl;
   cout << "Graz University of Technology" << endl;
   cout << "http://bci.tugraz.at" << endl;
+  cout << "Important: This software comes with ABSOLUTELY NO WARRANTY, to the extent ";
+  cout << "permitted by applicable law." << endl;
 }
 
 //-----------------------------------------------------------------------------
@@ -149,210 +254,120 @@ void printPossibleHardware()
     cout << "  * " << hw_names[n] << endl;
 }
 
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------
 
-int main(int argc, const char* argv[])
+template<class T>
+ostream& operator<<(ostream& os, const vector<T>& v)
 {
-  try
-  {
-    printVersion();
-
-    string config_file;
-    bool running = true;
-    bool use_new_tia = false;
-
-    if(argc == 1)
-    {
-      config_file = getDefaultConfigFile ();
-      cout << endl << " ***  Loading default XML configuration file: " << config_file << endl << endl;
-    }
-    else if(argc == 2)
-    {
-      if(argv[1] == LIST_HARDWARE_PARAM)
-      {
-        printPossibleHardware();
-        return(0);
-      }
-      else if (argv[1] == NEW_TIA_PARAM)
-      {
-        use_new_tia = true;
-        cout << endl << " *** Signal Server will start with TiA 1.0 ***" << endl;
-        config_file = getDefaultConfigFile ();
-        cout << endl << " ***  Loading default XML configuration file: " << config_file << endl << endl;
-      }
-      else
-      {
-        cout << endl << "  ***  Loading XML configuration file: " << argv[1] << endl << endl;
-        config_file = argv[1];
-      }
-    }
-    else if(argc == 3 && argv[1] == XML_CONFIG_FILE_PARAM)
-    {
-      cout << endl << "  ***  Loading XML configuration file: " << argv[2] << endl << endl;
-      config_file = argv[2];
-    }
-    else
-      throw(std::invalid_argument(" ERROR -- Failure parsing input arguments!") );
-
-    while(running)
-    {
-      XMLParser config(config_file);
-
-
-      boost::asio::io_service io_service;
-
-      TiAServer server(io_service, use_new_tia);
-
-//      DataFileHandler data_file_handler(io_service, config.getFileReaderMap());
-
-      HWAccess hw_access(io_service, config);
-      DataPacketReader reader(hw_access, server);
-      boost::thread* io_thread_ptr = 0;
-      boost::thread* data_reader_thread_ptr = 0;
-
-      if(config.usesDataFile())
-      {
-        // get DataPackets from FileReader and give it to the networking part
-      }
-      else
-      {
-        // TODO: find a better way to pass this information to the server
-        server.setMasterBlocksize(hw_access.getMastersBlocksize());
-        server.setMasterSamplingRate(hw_access.getMastersSamplingRate());
-        server.setAcquiredSignalTypes(hw_access.getAcquiredSignalTypes());
-        server.setBlockSizesPerSignalType(hw_access.getBlockSizesPerSignalType());
-        server.setSamplingRatePerSignalType(hw_access.getSamplingRatePerSignalType());
-        server.setChannelNames(hw_access.getChannelNames());
-
-        server.initialize(config.parseSubject(),config.parseServerSettings());
-        hw_access.startDataAcquisition();
-
-        io_thread_ptr  = new boost::thread(boost::bind(&boost::asio::io_service::run, &io_service));
-        data_reader_thread_ptr = new boost::thread(boost::bind(&DataPacketReader::readPacket, &reader));
-
-        #ifdef WIN32
-          SetPriorityClass(io_thread_ptr->native_handle(), REALTIME_PRIORITY_CLASS);
-          SetThreadPriority(io_thread_ptr->native_handle(), THREAD_PRIORITY_TIME_CRITICAL );
-          SetPriorityClass(data_reader_thread_ptr->native_handle(), REALTIME_PRIORITY_CLASS);
-          SetThreadPriority(data_reader_thread_ptr->native_handle(), THREAD_PRIORITY_TIME_CRITICAL );
-        #endif
-      }
-
-      #ifdef WIN32
-        SetPriorityClass(GetCurrentProcess(), ABOVE_NORMAL_PRIORITY_CLASS);
-      #endif
-
-      string str;
-      cout << endl << ">>";
-
-      while(cin >> str)
-      {
-        if(str == "q" || str == "quit" || str == "exit")
-        {
-          running = false;
-          break;
-        }
-        else if(str == "r")
-        {
-          break;
-        }
-        else if(str == "h" || str == "help")
-        {
-          cout << "q (quit)    ... Quit the signalserver" << endl;
-          cout << "r (restart) ... Restart the signalserver (WARNING: malfunction with certain amplifiers possible)" << endl;
-          cout << "l (list)    ... List possible hardware devices" << endl;
-          cout << "h (help)    ... Print this help" << endl;
-          cout << endl << ">>";
-        }
-        else if(str == "l" || str == "list")
-        {
-          printPossibleHardware();
-          cout << endl << ">>";
-        }
-        else
-          cout << endl << ">>";
-      }
-
-      reader.stop();
-      io_service.stop();
-      hw_access.stopDataAcquisition();
-      if(io_thread_ptr)
-      {
-        io_thread_ptr->join();
-        delete io_thread_ptr;
-      }
-      if(data_reader_thread_ptr)
-      {
-        data_reader_thread_ptr->join();
-        delete data_reader_thread_ptr;
-      }
-
-      if(running)
-      {
-        cout << endl;
-        cout << "   ...  Restarting and reloading SignalServer!" << endl;
-        cout << endl;
-        boost::this_thread::sleep(boost::posix_time::seconds(1));
-      }
-    }
-  }
-  catch(ticpp::Exception& ex)
-  {
-   cerr << endl << " ***** TICPP Exception caught! *****" << endl;
-   cerr << " --> " << ex.what() << endl << endl;
-   std::cin.peek();
-  }
-  catch(std::invalid_argument& e)
-  {
-   cerr << endl << " ***** STL Exception -- Invalid argument -- caught! *****" << endl;
-   cerr << " --> " << e.what() << endl << endl;
-   std::cin.peek();
-  }
-  catch(std::length_error& e)
-  {
-   cerr << endl << " ***** STL Exception -- Length error -- caught! *****" << endl;
-   cerr << " --> " << e.what() << endl << endl;
-   std::cin.peek();
-  }
-  catch(std::logic_error& e)
-  {
-   cerr << endl << " ***** STL Exception -- Logic error -- caught! *****" << endl;
-   cerr << " --> " << e.what() << endl << endl;
-   std::cin.peek();
-  }
-  catch(std::range_error& e)
-  {
-   cerr << endl << " ***** STL Exception -- Range error -- caught! *****" << endl;
-   cerr << " --> " << e.what() << endl << endl;
-   std::cin.peek();
-  }
-  catch(std::runtime_error& e)
-  {
-   cerr << endl << " ***** STL Exception -- Runtime error -- caught! *****" << endl;
-   cerr << " --> " << e.what() << endl << endl;
-   std::cin.peek();
-  }
-  catch(std::exception& e)
-  {
-   cerr << endl << " ***** STL Exception caught! *****" << endl;
-   cerr << " --> " << e.what() << endl << endl;
-   std::cin.peek();
-  }
-  catch(boost::exception& e)
-  {
-   cerr << endl << " ***** Boost Exception caught! *****" << endl;
-   cerr << " --> " << boost::diagnostic_information(e) << endl << endl;
-   std::cin.peek();
-  }
-  catch(...)
-  {
-   cerr << endl << " ***** Caught unknown exception! *****" << endl;
-   std::cin.peek();
-  }
-
-   cerr.flush();
-   return(0);
+  std::copy(v.begin(), v.end(), ostream_iterator<T>(cout, " "));
+    return os;
 }
 
 //-----------------------------------------------------------------------------
+
+int parseInput(int argc, const char* argv[], std::string& config_file, bool& use_new_tia)
+{
+  po::options_description desc("Allowed options");
+
+  string str(HELP_PARAM +            ",h");
+  desc.add_options() (str.c_str() ,  "   ... produce help message");
+
+  str = LIST_HARDWARE_PARAM +   ",l";
+  desc.add_options() (str.c_str() ,  "   ... list supported hardware");
+
+  str = OLD_TIA_PARAM +         ",o";
+  desc.add_options() (str.c_str() ,  "   ... use old version of TiA (undocumented)");
+
+  str = XML_CONFIG_FILE_PARAM + ",f";
+  desc.add_options() (str.c_str() ,  po::value< string >() , "   ... signal server config file path");
+
+  po::positional_options_description p;
+  p.add(XML_CONFIG_FILE_PARAM.c_str(), -1);
+
+  po::variables_map vm;
+  po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
+  po::notify(vm);
+
+  if(vm.count(HELP_PARAM))
+  {
+    cout << endl << "Usage: " << argv[0] << " [options]\n" << desc;
+    cout << endl << "Runtime Commands: " << endl;
+    printRuntimeCommands();
+    return 1;
+  }
+
+  if(vm.count( LIST_HARDWARE_PARAM ))
+  {
+    printPossibleHardware();
+    return 1;
+  }
+
+  if(vm.count( OLD_TIA_PARAM ))
+  {
+    use_new_tia = false;
+    cout << endl << " *** Signal Server will start with TiA 0.1 ***" << endl;
+    vm.erase( OLD_TIA_PARAM );
+  }
+  else
+    cout << endl << " *** Signal Server will start with TiA 0.2 ***" << endl;
+
+  if(vm.size() == 0)
+  {
+    config_file = getDefaultConfigFile ();
+    cout << endl << " ***  Loading default XML configuration file: " << config_file << endl << endl;
+  }
+
+  if(vm.count( XML_CONFIG_FILE_PARAM ))
+  {
+    config_file = vm[ XML_CONFIG_FILE_PARAM ].as< string >();
+    cout << endl << "  ***  Loading XML configuration file: " << config_file << endl << endl;
+  }
+  return 0;
+}
+
+//-----------------------------------------------------------------------------
+
+void printRuntimeCommands()
+{
+  cout << " q (quit)    ... Quit the signalserver" << endl;
+  cout << " r (restart) ... Restart the signalserver (WARNING: malfunction with certain amplifiers possible)" << endl;
+  cout << " l (list)    ... List possible hardware devices" << endl;
+  cout << " h (help)    ... Print this help" << endl;
+}
+
+//-----------------------------------------------------------------------------
+
+//    cout << "  -- Input files are: " << vm["input-files"].as< vector<string> >() << endl;
+//    if(argc == 1)
+//    {
+//      config_file = getDefaultConfigFile ();
+//      cout << endl << " ***  Loading default XML configuration file: " << config_file << endl << endl;
+//    }
+//    else if(argc == 2)
+//    {
+//      if(argv[1] == LIST_HARDWARE_PARAM)
+//      {
+//        printPossibleHardware();
+//        return(0);
+//      }
+//      else if (argv[1] == NEW_TIA_PARAM)
+//      {
+//        use_new_tia = true;
+//        cout << endl << " *** Signal Server will start with TiA 1.0 ***" << endl;
+//        config_file = getDefaultConfigFile ();
+//        cout << endl << " ***  Loading default XML configuration file: " << config_file << endl << endl;
+//      }
+//      else
+//      {
+//        cout << endl << "  ***  Loading XML configuration file: " << argv[1] << endl << endl;
+//        config_file = argv[1];
+//      }
+//    }
+//    else if(argc == 3 && argv[1] == XML_CONFIG_FILE_PARAM)
+//    {
+//      cout << endl << "  ***  Loading XML configuration file: " << argv[2] << endl << endl;
+//      config_file = argv[2];
+//    }
+//    else
+//      throw(std::invalid_argument(" ERROR -- Failure parsing input arguments!") );
+

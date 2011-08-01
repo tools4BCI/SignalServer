@@ -365,7 +365,7 @@ void ssc_getData(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
        }
      }
   }
-  catch(bad_numeric_cast& e)
+  catch(boost::numeric::bad_numeric_cast& e)
   {
     string ex_str("mexSSClient:  ***** Boost Numeric Cast Exception caught! *****\n  -->");
     ex_str += boost::diagnostic_information(e);

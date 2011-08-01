@@ -12,13 +12,19 @@ c_files = [c_files ' ../../src/tia/newtia/messages_impl/tia_control_message_pars
 
 
 unix_build_command = 'mex -v -O -DTIXML_USE_TICPP  -I../../ -I../../include/  -I../../extern/include/  -lboost_thread -lboost_system -lstdc++ -outdir build';
+if(~isunix)
+  win_boost_path = 'C:\Program Files\boost\boost_1_46_1';
 
-win_boost_path = 'C:\Programme\boost\boost_1_44';
-
-win_build_command  = ['mex -v -O -DTIXML_USE_TICPP -DWIN32 -D_WIN32_WINNT=0x0501 -I' win_boost_path ' '];
-win_build_command  = [ win_build_command ' -I../../include/  -I../../extern/include/ -L' win_boost_path '\lib -outdir build'];
-win_libs = ' -llibboost_system-vc100-mt-1_44 -llibboost_date_time-vc100-mt-1_44 -llibboost_regex-vc100-mt-1_44 -llibboost_thread-vc100-mt-1_44';
-
+  if(~exist(win_boost_path,'dir'))    
+      disp('Boost not found!');
+      win_boost_path = uigetdir;
+  end
+  win_boost_path = ['''' win_boost_path ''''];
+  
+  win_build_command  = ['mex -v -O -DTIXML_USE_TICPP -DWIN32 -D_WIN32_WINNT=0x0501 -I' win_boost_path ' '];
+  win_build_command  = [ win_build_command ' -I../../include/  -I../../extern/include/ -L' win_boost_path '\lib -outdir build'];
+  win_libs = ' -llibboost_system-vc100-mt-1_46_1 -llibboost_date_time-vc100-mt-1_46_1 -llibboost_regex-vc100-mt-1_46_1 -llibboost_thread-vc100-mt-1_46_1';
+end
 ticpp_files = ' ../../extern/include/ticpp/tinyxmlparser.cpp ../../extern/include/ticpp/tinyxmlerror.cpp';
 ticpp_files = [ticpp_files ' ../../extern/include/ticpp/tinystr.cpp ../../extern/include/ticpp/tinyxml.cpp ../../extern/include/ticpp/ticpp.cpp'];
 
@@ -34,16 +40,23 @@ if(isunix)
 
     eval([unix_build_command  ' src/simulink_get_data.cpp ' ...
       c_files ' ../../extern/lib/ticpp/linux/libticpp.a']);
+
+    eval([unix_build_command  ' src/mexSSClient.cpp ' ...
+      c_files ' ../../extern/lib/ticpp/linux/libticpp.a']);
+    
   else
     eval([unix_build_command  ' src/mex_get_config.cpp ' ... 
       c_files ' ../../extern/lib/ticpp/linux/libticpp_64.a']);
         
     eval([unix_build_command  ' src/simulink_get_data.cpp ' ...
       c_files ' ../../extern/lib/ticpp/linux/libticpp_64.a']);
+
+    eval([unix_build_command  ' src/mexSSClient.cpp ' ...
+      c_files ' ../../extern/lib/ticpp/linux/libticpp_64.a']);
   end
 
 else
-  if(~exist(win_boost_path,'dir'))    error('Boost not found!');  end
+
   
   eval([win_build_command  ' src/mex_get_config.cpp ' ...
     c_files ticpp_files ' ../../extern/lib/ticpp/linux/libticpp.a' win_libs]);
@@ -51,6 +64,8 @@ else
   eval([win_build_command  ' src/simulink_get_data.cpp ' ...
     c_files ticpp_files ' ../../extern/lib/ticpp/linux/libticpp.a' win_libs]);
   
+  eval([win_build_command  ' src/mexSSClient.cpp ' ...
+    c_files ticpp_files ' ../../extern/lib/ticpp/linux/libticpp.a' win_libs]);  
 end
 
 
