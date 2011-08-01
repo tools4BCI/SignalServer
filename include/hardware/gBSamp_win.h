@@ -10,11 +10,9 @@
 #include <boost/thread/shared_mutex.hpp>
 #include <boost/cstdint.hpp>
 
-//#include "nidaqmx_wrapper.h"
-
 #include "hardware/gBsamp_base.h"
+#include "hardware/nidaqmx_wrapper.h"
 #include "hardware/hw_thread_builder.h"
-#include "extern/include/nidaqmx/nidaqmx.h"
 
 namespace tobiss
 {
@@ -112,14 +110,15 @@ class gBSamp : public gBSampBase
     SampleBlock<double> buffer_;
 
   boost::int32_t error_;
-  TaskHandle taskHandle_;
-  int32 read;                     // give this variable a meaningful name
-  float64 data[1];                // this array is used nowhere!!
+  nidaqmx::TaskHandle taskHandle_;
+  nidaqmx::int32 read;                     // give this variable a meaningful name
+  nidaqmx::float64 data[1];                // this array is used nowhere!!
   char errBuff[2048];
-  std::vector<float64> data_buffer;  // also not used!!
+  std::vector<nidaqmx::float64> data_buffer;  // also not used!!
 
   // get rid of this buffer mess !!!!
 
+  nidaqmx::NIDaqmxWrapper                                                 nidaqmx_;
   static const HWThreadBuilderTemplateRegistratorWithoutIOService<gBSamp> factory_registrator_;
 
 };

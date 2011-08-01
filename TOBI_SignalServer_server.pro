@@ -57,8 +57,8 @@ HEADERS += include/config/xml_parser.h \
     include/signalserver/signalserver.h\
     include/hardware/nidaqmx_wrapper.h \
     include/hardware/gBSamp_base.h \
-    include/hardware/gBSamp_unix.h
-    #include/hardware/gBSamp_win.h \
+    include/hardware/gBSamp_unix.h \
+    include/hardware/gBSamp_win.h
     #    include/filereading/data_file_handler.h \
     #    include/filereading/file_reader_factory.h \
     #    include/filereading/file_reader.h \
@@ -84,8 +84,8 @@ SOURCES += src/signalserver/main.cpp \
     src/hardware/eeg_sim_msg_parser.cpp \
     src/signalserver/signalserver.cpp \
     src/hardware/gBSamp_base.cpp \
-    src/hardware/gBSamp_unix.cpp
-    #src/hardware/gBSamp_win .cpp
+    src/hardware/gBSamp_unix.cpp \
+    src/hardware/gBSamp_win.cpp
     #    src/filereading/data_file_handler.cpp \
     #    src/filereading/file_reader_factory.cpp \
     #    src/filereading/file_reader.cpp \
