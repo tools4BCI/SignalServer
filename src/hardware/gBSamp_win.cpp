@@ -9,7 +9,7 @@ namespace tobiss
 {
 
 using namespace nidaqmx;
-  
+
 using boost::uint8_t;
 using boost::uint16_t;
 using boost::uint32_t;
@@ -34,10 +34,6 @@ gBSamp::gBSamp(ticpp::Iterator<ticpp::Element> hw)
     cout << "gBSamp: Constructor" << endl;
   #endif
 
-  #pragma comment(lib,"NIDAQmx.lib")
-
-  cout << " dsffgfdsg " << endl;
-
   setHardware(hw);
 
   expected_values_ = nr_ch_ * blocks_;
@@ -49,7 +45,6 @@ gBSamp::gBSamp(ticpp::Iterator<ticpp::Element> hw)
   buffer_.init(blocks_ , nr_ch_ , channel_types_);
   data_.init(blocks_, nr_ch_, channel_types_);
   samples_.resize(expected_values_, 0);
-  cout << " dsffgfdsg " << endl;
   initCard();
 
   cout << " * gBSamp sucessfully initialized" << endl;

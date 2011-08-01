@@ -1,4 +1,5 @@
 #include "hardware/gBSamp_unix.h"
+
 #include "hardware/hw_thread_builder.h"
 #include "tia/constants.h"
 
@@ -230,26 +231,26 @@ int gBSamp::initCard()
   int i=10;
   while(first_run_ && i>0)
   {
-    error = comedi_command_test(device_, &comedi_cmd_);
-    if (error >= 0)
+    error_ = comedi_command_test(device_, &comedi_cmd_);
+    if (error_ >= 0)
     {
-      cerr << "gBSamp: Error for 1st comedi_command_test: " << error << endl;
+      cerr << "gBSamp: Error for 1st comedi_command_test: " << error_ << endl;
     }
-    error = comedi_command_test(device_, &comedi_cmd_);
-    if (error >= 0)
+    error_ = comedi_command_test(device_, &comedi_cmd_);
+    if (error_ >= 0)
     {
-      cerr << "gBSamp: Error for 2nd comedi_command_test: " << error << endl;
+      cerr << "gBSamp: Error for 2nd comedi_command_test: " << error_ << endl;
     }
-    error = comedi_command_test(device_, &comedi_cmd_);
-    if (error >= 0)
+    error_ = comedi_command_test(device_, &comedi_cmd_);
+    if (error_ >= 0)
     {
-      cerr << "gBSamp: Error for 3nd comedi_command_test: " << error << endl;
+      cerr << "gBSamp: Error for 3nd comedi_command_test: " << error_ << endl;
     }
-    error = comedi_command(device_, &comedi_cmd_);
+    error_ = comedi_command(device_, &comedi_cmd_);
     first_run_ = 0;
-    if (error < 0)
+    if (error_ < 0)
     {
-      cerr << "gBSamp: Error for comedi_command: " << error << endl;
+      cerr << "gBSamp: Error for comedi_command: " << error_ << endl;
       first_run_=1;
       i--;
     }
@@ -257,7 +258,7 @@ int gBSamp::initCard()
       cout << "gBSamp: comedi_command successful" << endl;
   }
 
-  return error;
+  return error_;
 }
 
 //-----------------------------------------------------------------------------

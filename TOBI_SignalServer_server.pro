@@ -4,18 +4,19 @@ CONFIG += console \
     release \
     thread \
     warn_on \
-    static \
     exceptions \
     stl
+
 QT -= core \
     gui
+
 DEFINES += TIXML_USE_TICPP
 #        USE_TID_SERVER\
 #        USE_GDF_SAVER
+#        TIMING_TEST
 
-# TIMING_TEST
 TARGET = signalserver
-DESTDIR = $$PWD/bin
+DESTDIR = bin
 OBJECTS_DIR = tmp
 INCLUDEPATH += . \
     include \
@@ -30,7 +31,7 @@ unix {
     versiontarget.target = ./update-version.sh
     versiontarget.commands = ./update-version.sh
     versiontarget.depends = FORCE
-    PRE_TARGETDEPS += $$PWD/update-version.sh
+    PRE_TARGETDEPS += update-version.sh
     QMAKE_EXTRA_TARGETS += versiontarget
 }
 QMAKE_CXXFLAGS_WARN_ON = -Wall \
@@ -57,8 +58,8 @@ HEADERS += include/config/xml_parser.h \
     include/signalserver/signalserver.h\
     include/hardware/nidaqmx_wrapper.h \
     include/hardware/gBSamp_base.h \
-    include/hardware/gBSamp_unix.h \
-    include/hardware/gBSamp_win.h
+    include/hardware/gBSamp_unix.h
+    #include/hardware/gBSamp_win.h
     #    include/filereading/data_file_handler.h \
     #    include/filereading/file_reader_factory.h \
     #    include/filereading/file_reader.h \
@@ -84,8 +85,8 @@ SOURCES += src/signalserver/main.cpp \
     src/hardware/eeg_sim_msg_parser.cpp \
     src/signalserver/signalserver.cpp \
     src/hardware/gBSamp_base.cpp \
-    src/hardware/gBSamp_unix.cpp \
-    src/hardware/gBSamp_win.cpp
+    src/hardware/gBSamp_unix.cpp
+    #src/hardware/gBSamp_win.cpp
     #    src/filereading/data_file_handler.cpp \
     #    src/filereading/file_reader_factory.cpp \
     #    src/filereading/file_reader.cpp \
@@ -100,10 +101,6 @@ LIBS += $$PWD/lib/libtia.a
 
 # -----------------------------------------------------------------------
 unix {
-    # LIBS += /usr/lib/libboost_thread.a \
-    # /usr/lib/libboost_system.a \
-    # /usr/lib/libboost_filesystem.a \
-    # -lSDL
     LIBS += -lboost_thread \
         -lboost_system \
         -lboost_filesystem \
@@ -124,6 +121,7 @@ unix {
             $$PWD/extern/lib/TiDlib/linux/libTiDserver_64.a\
             $$PWD/extern/lib/libgdf/linux/libGDF_64.a
     }else::{
+
         # 32-bit Linux
         message(Building 32 bit )
         LIBS += -L$$PWD/extern/lib/ticpp/linux \
@@ -133,8 +131,7 @@ unix {
     }
 }
 
-# -Lextern/lib/libgdf/linux \
-# -llibgdf
+
 win32:LIBS += extern\lib\sdl\win\SDL.lib \
     extern\lib\sdl\win\SDLmain.lib \
     extern\lib\ticpp\win\ticpp.lib \
