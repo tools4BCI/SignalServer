@@ -94,8 +94,12 @@ void Mouse::acquireData()
     int actual_length;
     unsigned char async_data_[10];
     int r = libusb_interrupt_transfer(dev_handle_, usb_port_, async_data_, sizeof(async_data_), &actual_length, 10000);
-    if(r)
+    if(r == LIBUSB_ERROR_TIMEOUT)
+      throw(std::runtime_error("Mouse::acquireData -- TimeOut"));
+    else if (r == LIBUSB_ERROR_NO_DEVICE)
       throw(std::runtime_error("Mouse::acquireData -- Mouse device could not be connected! Check usb-port!"));
+    else if(r<0)
+      throw(std::runtime_error("Mouse::acquireData -- Mouse device could not be connected! Problem with libusb!"));
     async_data_buttons_ = static_cast<int>(static_cast<char>(async_data_[0]));
     async_data_x_ = static_cast<int>(static_cast<char>(async_data_[1]));
     async_data_y_ = static_cast<int>(static_cast<char>(async_data_[2]));
