@@ -27,6 +27,12 @@ public:
     virtual char readCharacter ();
     virtual void waitForData ();
 
+    virtual std::string getRemoteEndPointAsString()
+    {
+      return("RemoteIP:Port");
+    }
+
+
     std::string transmittedString () {return sent_string_;}
     void setStringToBeRead (std::string const& read_string) {string_to_return_on_read_ = read_string;}
     void reset () {sent_string_.clear (); string_to_return_on_read_.clear ();}

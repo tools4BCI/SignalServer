@@ -53,7 +53,7 @@ XMLParser::XMLParser(string xml_file)
   doc_.LoadFile();
   ticpp::Iterator<ticpp::Element> config(doc_.FirstChildElement(cst_.tobi, true));
 
-  //    Save as gdf part  --> TODO and move to other file
+  //    Filereader part  --> TODO and move to other file
   //  file_reader_ = config->FirstChildElement(cst_.file_reader, false);
 
   //  if( file_reader_ != file_reader_.end() )
@@ -97,6 +97,21 @@ XMLParser::XMLParser(string xml_file)
 
       hardware_.push_back(make_pair(m.find("name")->second,it));
     }
+}
+
+//---------------------------------------------------------------------------------------
+
+bool XMLParser::equalsYesOrNo(const std::string& s)
+{
+  if(to_lower_copy(s) == "yes"  || s == "1")
+    return(true);
+  if(to_lower_copy(s) == "no" || s == "0")
+    return(false);
+  else
+  {
+    string e = s + " -- Value equals neiter \"yes, no, 0 or 1\"!";
+    throw std::invalid_argument(e);
+  }
 }
 
 //---------------------------------------------------------------------------------------
@@ -161,27 +176,31 @@ map<string,string> XMLParser::parseServerSettings()
   elem = server_settings_->FirstChildElement(cst_.ss_udp_port, true);
   m.insert(pair<string, string>(elem->Value(), elem->GetText(false)));
 
+  elem = server_settings_->FirstChildElement(cst_.ss_tid_port, true);
+  m.insert(pair<string, string>(elem->Value(), elem->GetText(false)));
+
   for(elem = server_settings_->FirstChildElement(true) ; elem != elem.end(); elem++)
   {
     string tmp(elem->Value());
-    if(tmp == cst_.ss_ctl_port || tmp == cst_.ss_udp_bc_addr || tmp == cst_.ss_udp_port)
+    if(tmp == cst_.ss_ctl_port || tmp == cst_.ss_udp_bc_addr || tmp == cst_.ss_udp_port
+       || tmp == cst_.ss_tid_port)
       continue;
 
-    //    Save as gdf part  --> TODO and move to other file
-    //    if(tmp == cst_.ss_store_data)
-    //    {
-    //      parseFileLocation(elem, m);
-    //
-    //      string overwrite(cst_.ss_file_overwrite_default);
-    //      ticpp::Iterator<ticpp::Element>  child = elem->FirstChildElement(cst_.ss_file_overwrite, false);
-    //
-    //      if(child != child.end())
-    //        overwrite = lexical_cast<string>( cst_.equalsYesOrNo(child->GetText(false)) );
-    //
-    //      m.insert(pair<string, string>(cst_.ss_file_overwrite, overwrite));
-    //
-    //      continue;
-    //    }
+    //    Save as gdf part
+    if(tmp == cst_.ss_store_data) ///< TODO: and move to other file
+    {
+      parseFileLocation(elem, m);
+
+      string overwrite(cst_.ss_file_overwrite_default);
+      ticpp::Iterator<ticpp::Element>  child = elem->FirstChildElement(cst_.ss_file_overwrite, false);
+
+      if(child != child.end())
+        overwrite = lexical_cast<string>( equalsYesOrNo(child->GetText(false)) );
+
+      m.insert(pair<string, string>(cst_.ss_file_overwrite, overwrite));
+
+      continue;
+    }
 
     if(elem->GetText(false) != "")
       m.insert(pair<string, string>(elem->Value(), elem->GetText(false)));
@@ -256,45 +275,45 @@ void XMLParser::checkHardwareAttributes(std::map<std::string,std::string>& m)
 
 //---------------------------------------------------------------------------------------
 
-//void XMLParser::parseFileLocation(ticpp::Iterator<ticpp::Element> elem, map<string,string>& m)
-//{
-//
-//  string filename;
-//  string filetype;
-//  string filepath(cst_.ss_filepath_default);
-//  string tmp_filetype;
-//
-//  ticpp::Iterator<ticpp::Element> child(elem->FirstChildElement(cst_.ss_filename, true));
-//  filename = child->GetText(false);
-//
-//  child = elem->FirstChildElement(cst_.ss_filepath, false);
-//  if(child != child.end())
-//    filepath = child->GetText(false);
-//
-//  size_t pos = filename.rfind(".");
-//
-//  if(pos != string::npos)
-//    tmp_filetype = to_lower_copy(filename.substr(pos + 1, filename.length()-pos ));
-//
-//  child = elem->FirstChildElement(cst_.ss_filetype, false);
-//  if(child != child.end())
-//    filetype = to_lower_copy(child->GetText(false));
-//
-//  if(filetype == "" && tmp_filetype != "")
-//    filetype = tmp_filetype;
-//  if(filetype == tmp_filetype)
-//    filename = filename.substr(0, pos);
-//
-//
-//  if(filename == "")
-//    throw(ticpp::Exception("Error in " + cst_.ss + " -- No filename given!"));
-//  if(filetype == "")
-//    throw(ticpp::Exception("Error in " + cst_.ss + " -- No filetype given!"));
-//
-//  m.insert(pair<string, string>(cst_.ss_filename, filename));
-//  m.insert(pair<string, string>(cst_.ss_filetype, filetype));
-//  m.insert(pair<string, string>(cst_.ss_filepath, filepath));
-//}
+void XMLParser::parseFileLocation(ticpp::Iterator<ticpp::Element> elem, map<string,string>& m)
+{
+
+  string filename;
+  string filetype;
+  string filepath(cst_.ss_filepath_default);
+  string tmp_filetype;
+
+  ticpp::Iterator<ticpp::Element> child(elem->FirstChildElement(cst_.ss_filename, true));
+  filename = child->GetText(false);
+
+  child = elem->FirstChildElement(cst_.ss_filepath, false);
+  if(child != child.end())
+    filepath = child->GetText(false);
+
+  size_t pos = filename.rfind(".");
+
+  if(pos != string::npos)
+    tmp_filetype = to_lower_copy(filename.substr(pos + 1, filename.length()-pos ));
+
+  child = elem->FirstChildElement(cst_.ss_filetype, false);
+  if(child != child.end())
+    filetype = to_lower_copy(child->GetText(false));
+
+  if(filetype == "" && tmp_filetype != "")
+    filetype = tmp_filetype;
+  if(filetype == tmp_filetype)
+    filename = filename.substr(0, pos);
+
+
+  if(filename == "")
+    throw(ticpp::Exception("Error in " + cst_.ss + " -- No filename given!"));
+  if(filetype == "")
+    throw(ticpp::Exception("Error in " + cst_.ss + " -- No filetype given!"));
+
+  m.insert(pair<string, string>(cst_.ss_filename, filename));
+  m.insert(pair<string, string>(cst_.ss_filetype, filetype));
+  m.insert(pair<string, string>(cst_.ss_filepath, filepath));
+}
 
 } // Namespace tobiss
 

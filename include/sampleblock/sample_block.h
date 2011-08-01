@@ -35,11 +35,10 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <iostream>
 #include <stdexcept>
 
 #include <boost/cstdint.hpp>
-
+#include <boost/lexical_cast.hpp>
 
 namespace tobiss
 {
@@ -520,9 +519,9 @@ template<class T> void SampleBlock<T>::setSamples(std::vector<T> v)
 template<class T> void SampleBlock<T>::sort(std::vector<T>& v,
     std::vector<boost::uint32_t> order, boost::uint32_t nr_blocks)
 {
-  #ifdef DEBUG
-    std::cout << "SampleBlock: sort" << std::endl;
-  #endif
+  //#ifdef DEBUG
+  //  std::cout << "SampleBlock: sort" << std::endl;
+  //#endif
 
   double v_tmp;
   boost::uint32_t o_tmp;

@@ -35,7 +35,7 @@
  * xml-config: specify channel positions
  * get rid of master/slave ratio in HWAccess
  * port to CMake build tool
- * file-saving inside the SigServer
+ * file-saving inside the SigServer    ---> first attempt done   ... breidi 27.7.2011
  * Windows exception bugfixes (e.g. starting a 2nd SigServer)
  *** automatic tests
  *** downsampling + channel selection
@@ -48,17 +48,17 @@
  *** xml message refactoring
  ** Provide meta Information from hardware (e.g. phys range, device ID, ...)
 
- *** List registered hardware at the hwBuilder (command: "l")
- *** Implement "help" command ("h")
+ *** List registered hardware at the hwBuilder (command: "l")  ----> done   ... breidi 27.7.2011
+ *** Implement "help" command ("h")    ---> done  ... breidi 27.7.2011
 
- * TiD
+ * TiD   ---> nearly done   ... breidi 27.7.2011
 
   Hardware stuff:
 
   * USBamp --> LinuxApi
   * File streaming
   * NIRx
-  * EEG Simulator
+  * EEG Simulator   ---> done   ... breidi 27.7.2011
   * Dry electrodes API (Berlin)
   - Neurosky
   * Generic keyboards

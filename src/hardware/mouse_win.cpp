@@ -21,6 +21,7 @@
 #ifdef _WIN32
 
 #include "hardware/mouse_win.h"
+#include "tia/constants.h"
 
 namespace tobiss
 {

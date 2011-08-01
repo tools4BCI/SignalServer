@@ -45,6 +45,7 @@ class TiDServer : public TCPServer
    */
     virtual ~TiDServer();
 
+    bool newMessagesAvailable();
     void getLastMessages(std::vector<IDMessage>& messages);
 
   protected:
