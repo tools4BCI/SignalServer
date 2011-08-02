@@ -66,13 +66,14 @@ HEADERS += include/config/xml_parser.h \
 unix {
   HEADERS += include/hardware/mouse_linux.h\
              include/hardware/nidaqmx_wrapper.h \
-             include/hardware/gBSamp_unix.h \
-             include/hardware/gtec_usbamp_wrapper.h
+             include/hardware/gBSamp_unix.h
 }
 win32 {
   HEADERS += include/hardware/mouse_win.h \
              include/hardware/brainampseries.h \
-             include/hardware/gBSamp_win.h
+             include/hardware/gBSamp_win.h \
+             include/hardware/gtec_usbamp_wrapper.h \
+             include/hardware/usbamp.h
 }
 contains( DEFINES, TIMING_TEST )::HEADERS += extern/include/LptTools/LptTools.h
 
@@ -112,7 +113,8 @@ unix {
 win32 {
   SOURCES += src/hardware/mouse_win.cpp \
              src/hardware/gBSamp_win.cpp \
-             src/hardware/brainampseries.cpp
+             src/hardware/brainampseries.cpp \
+             src/hardware/usbamp.cpp
   contains( DEFINES, TIMING_TEST )::SOURCES += extern/include/LptTools/LptTools_.cpp
 }
 

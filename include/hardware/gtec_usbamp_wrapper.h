@@ -25,10 +25,7 @@
 #ifndef GTEC_USBAMP_WRAPPER_H
 #define GTEC_USBAMP_WRAPPER_H
 
-#ifdef WIN32
-
 #include <exception>
-#include <iostream>
 
 namespace tobiss
 {
@@ -54,7 +51,7 @@ namespace tobiss
 
 #define HEADER_SIZE		38
 
-	//_____________________________________________________________________________
+  //_____________________________________________________________________________
 //
 //							DATA STRUCTURES
 //_____________________________________________________________________________
@@ -288,7 +285,7 @@ public:
 		return get_last_error_ptr_ (wErrorCode, pLastError);
 	}
 
-  HANDLE openDevice (int portNr)
+	HANDLE openDevice (int portNr)
 	{
 		return open_device_ptr_ (portNr);
 	}
@@ -480,7 +477,5 @@ private:
 };
 
 } // namespace tobiss
-
-#endif // WIN32
 
 #endif // GTEC_USBAMP_WRAPPER_H
