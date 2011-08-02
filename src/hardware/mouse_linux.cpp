@@ -31,7 +31,7 @@ Mouse::Mouse(ticpp::Iterator<ticpp::Element> hw)
 {
   int ret = blockKernelDriver();
   if(ret)
-    throw(std::runtime_error("MouseBase::initMouse -- Mouse device could not be connected!"));
+    throw(std::runtime_error("MouseBase::initMouse -- Mouse device could not be connected (check rights)!"));
 }
 
 //
@@ -49,10 +49,12 @@ Mouse::~Mouse()
 int Mouse::blockKernelDriver()
 {
   int ret;
+  // setup interface
   ret = libusb_init(&ctx_);
   if(ret < 0) {
     return -1;
   }
+  // create an interface to the right usb device
   dev_handle_ = libusb_open_device_with_vid_pid(ctx_, vid_, pid_);
   if(dev_handle_ == NULL)
     return -2;
@@ -90,19 +92,28 @@ void Mouse::acquireData()
 {
   while(running_)
   {
+    bool unchanged = false;
     boost::unique_lock<boost::shared_mutex> lock(rw_);
     int actual_length;
     unsigned char async_data_[10];
     int r = libusb_interrupt_transfer(dev_handle_, usb_port_, async_data_, sizeof(async_data_), &actual_length, 10000);
-    if(r == LIBUSB_ERROR_TIMEOUT)
-      throw(std::runtime_error("Mouse::acquireData -- TimeOut"));
-    else if (r == LIBUSB_ERROR_NO_DEVICE)
-      throw(std::runtime_error("Mouse::acquireData -- Mouse device could not be connected! Check usb-port!"));
-    else if(r<0)
-      throw(std::runtime_error("Mouse::acquireData -- Mouse device could not be connected! Problem with libusb!"));
-    async_data_buttons_ = static_cast<int>(static_cast<char>(async_data_[0]));
-    async_data_x_ = static_cast<int>(static_cast<char>(async_data_[1]));
-    async_data_y_ = static_cast<int>(static_cast<char>(async_data_[2]));
+    if(r == LIBUSB_ERROR_TIMEOUT){
+      //cout<<"   Mouse: Timeout!"<<endl;
+      unchanged = true;
+    }
+    else if (r == LIBUSB_ERROR_NO_DEVICE){
+      lock.unlock();
+      throw(std::runtime_error("Mouse::acquireData -- Mouse device could not be read! Check usb-port!"));
+    }
+    else if(r<0){
+      lock.unlock();
+      throw(std::runtime_error("Mouse::acquireData -- Mouse device could not be read! Problem with libusb!"));
+    }
+    if(!unchanged){
+      async_data_buttons_ = static_cast<int>(static_cast<char>(async_data_[0]));
+      async_data_x_ = static_cast<int>(static_cast<char>(async_data_[1]));
+      async_data_y_ = static_cast<int>(static_cast<char>(async_data_[2]));
+    }
     lock.unlock();
   }
 }
