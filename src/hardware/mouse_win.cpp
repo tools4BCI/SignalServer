@@ -28,7 +28,7 @@ namespace tobiss
 {
 static const int LIBUSB_ERROR_PORT  = -22;      // by trial, no definitions where found in libusb-win32
 static const int LIBUSB_ERROR_TIMEOUT  = -116;  // by trial, no definitions where found in libusb-win32
-const string Mouse::dc_path("devcon_path");
+const string Mouse::dc_path_("devcon_path");
 const HWThreadBuilderTemplateRegistratorWithoutIOService<Mouse> Mouse::FACTORY_REGISTRATOR_ ("mouse");
 
 //-----------------------------------------------------------------------------
@@ -37,7 +37,7 @@ Mouse::Mouse(ticpp::Iterator<ticpp::Element> hw)
 : MouseBase(hw)
 {
   Constants cst;
-  ticpp::Iterator<ticpp::Element> elem(DS->FirstChildElement(dc_path,true));
+  ticpp::Iterator<ticpp::Element> elem(DS->FirstChildElement(dc_path_,true));
   devcon_path_ = elem->GetText(true);
   size_t found = devcon_path_.find(" ");
   if(found != string::npos)
@@ -53,7 +53,7 @@ Mouse::Mouse(ticpp::Iterator<ticpp::Element> hw)
 
   int ret = blockKernelDriver();
   if(ret)
-    throw(std::runtime_error("MouseBase::initMouse -- Mouse device could not be connected!"));
+    throw(std::runtime_error("MouseBase::initMouse -- Mouse device could not be connected (check rights)!"));
 }
 
 //-----------------------------------------------------------------------------
@@ -71,38 +71,34 @@ Mouse::~Mouse()
 
 int Mouse::blockKernelDriver()
 {
+  // create all parameter needed to open an extern tool (CreateProcess)
   STARTUPINFO         siStartupInfo;
   PROCESS_INFORMATION piProcessInfo;
   memset(&siStartupInfo, 0, sizeof(siStartupInfo));
   memset(&piProcessInfo, 0, sizeof(piProcessInfo));
   siStartupInfo.cb = sizeof(siStartupInfo);
 
-  //FILE * f= fopen(const_cast<LPCSTR>(devcon_path_.c_str()),"r");
-  //if(!f)
-  //  throw(std::invalid_argument("Mouse::blockKernelDriver -- Devcon-path does not exist!"));
-  //else
-  //  fclose(f);
-  
   if(!boost::filesystem::exists(devcon_path_.c_str()))
-	  throw(std::invalid_argument("Mouse::blockKernelDriver -- Devcon-path does not exist!"));
+    throw(std::invalid_argument("Mouse::blockKernelDriver -- Devcon-path does not exist!"));
 
+  //disable the standard windows driver for the specific mouse device
   string command = "disable -r "+hw_id_;
   CreateProcess(const_cast<LPCSTR>(devcon_path_.c_str()),
   const_cast<LPSTR>(command.c_str()),
   0,0,FALSE,CREATE_NEW_CONSOLE,0,0,&siStartupInfo,&piProcessInfo);
   WaitForSingleObject(piProcessInfo.hProcess, 1000);
 
+  //load the new driver from the mouse.inf file
   const char *inf_file = "libusb/mouse.inf";
-
   int ret = usb_install_driver_np(inf_file);
   if(ret<0)
     throw(std::runtime_error("Mouse::blockKernelDriver -- No 'mouse.inf' file found in 'bin\\libusb\\' !"));
 
+  // find the right usb-device and open it
   struct usb_bus *UsbBus = NULL;
   struct usb_device *UsbDevice = NULL;
   usb_find_busses();
   usb_find_devices();
-
   for (UsbBus = usb_get_busses(); UsbBus; UsbBus = UsbBus->next) {
     for (UsbDevice = UsbBus->devices; UsbDevice; UsbDevice = UsbDevice->next) {
       if (UsbDevice->descriptor.idVendor == vid_ && UsbDevice->descriptor.idProduct== pid_) {
@@ -134,15 +130,18 @@ int Mouse::blockKernelDriver()
 
 int Mouse::freeKernelDriver()
 {
+  // release the interface end close the usb-handle
   usb_release_interface(dev_handle_,0);
   usb_close(dev_handle_);
 
+  // create all parameter needed to open an extern tool (CreateProcess)
   STARTUPINFO         siStartupInfo;
   PROCESS_INFORMATION piProcessInfo;
   memset(&siStartupInfo, 0, sizeof(siStartupInfo));
   memset(&piProcessInfo, 0, sizeof(piProcessInfo));
   siStartupInfo.cb = sizeof(siStartupInfo);
 
+  // remove the temporal driver from the mouse device
   string command = " remove -r ";
   command += hw_id_;
   CreateProcess(const_cast<LPCSTR>(devcon_path_.c_str()),
@@ -150,6 +149,7 @@ int Mouse::freeKernelDriver()
   0,0,FALSE,CREATE_NEW_CONSOLE,0,0,&siStartupInfo,&piProcessInfo);
   WaitForSingleObject(piProcessInfo.hProcess, 1000);
 
+  // rescan for standard driver of the mouse device
   CreateProcess(const_cast<LPCSTR>(devcon_path_.c_str()),
   " rescan",0,0,FALSE,CREATE_NEW_CONSOLE,0,0,&siStartupInfo,&piProcessInfo);
   WaitForSingleObject(piProcessInfo.hProcess, 1000);
@@ -164,23 +164,27 @@ void Mouse::acquireData()
 {
   while(running_)
   {
+    bool unchanged = false;
     boost::unique_lock<boost::shared_mutex> lock(rw_);
     char async_data_[5];
     int r = usb_interrupt_read(dev_handle_,usb_port_, async_data_, sizeof(async_data_), 10000);
     if(r == LIBUSB_ERROR_TIMEOUT){
       //cout<<"   Mouse: Timeout!"<<endl;
+      unchanged = true;
     }
     else if(r == LIBUSB_ERROR_PORT){
-      cout<<"   Mouse: usb-device cannot be read, please check usb_port!"<<endl;
-      break;
+      lock.unlock();
+      throw(std::runtime_error("Mouse::acquireData -- Mouse device could not be read! Check usb-port!"));
     }
     else if(r<0){
-      cout<<"   Mouse: usb-device cannot be read, problem in libusb! (ret="<<r<<")"<<endl;
-      break;
+      lock.unlock();
+      throw(std::runtime_error("Mouse::acquireData -- Mouse device could not be read! Problem with libusb!"));
     }
-    async_data_buttons_ = static_cast<int>(static_cast<char>(async_data_[0]));
-    async_data_x_ = static_cast<int>(static_cast<char>(async_data_[1]));
-    async_data_y_ = static_cast<int>(static_cast<char>(async_data_[2]));
+    if(!unchanged){
+      async_data_buttons_ = static_cast<int>(static_cast<char>(async_data_[0]));
+      async_data_x_ = static_cast<int>(static_cast<char>(async_data_[1]));
+      async_data_y_ = static_cast<int>(static_cast<char>(async_data_[2]));
+    }
     lock.unlock();
   }
 }

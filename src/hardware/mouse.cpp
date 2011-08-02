@@ -35,9 +35,9 @@ using std::set;
 
 set<boost::uint16_t> MouseBase::used_ids_;
 
-const string MouseBase::hw_vid("vendorid");
-const string MouseBase::hw_pid("productid");
-const string MouseBase::usb_port("usb_port");
+const string MouseBase::str_hw_vid_("vendorid");
+const string MouseBase::str_hw_pid_("productid");
+const string MouseBase::str_usb_port_("usb_port");
 
 //-----------------------------------------------------------------------------
 MouseBase::MouseBase(ticpp::Iterator<ticpp::Element> hw)
@@ -152,13 +152,13 @@ void MouseBase::setDeviceSettings(ticpp::Iterator<ticpp::Element>const& father)
     cout << "MouseBase: setDeviceSettings" << endl;
   #endif
 
-  ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(hw_vid,true));
+  ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(str_hw_vid_,true));
   setVendorId(elem);
 
-  ticpp::Iterator<ticpp::Element> elem2(father->FirstChildElement(hw_pid,true));
+  ticpp::Iterator<ticpp::Element> elem2(father->FirstChildElement(str_hw_pid_,true));
   setProductId(elem2);
 
-  ticpp::Iterator<ticpp::Element> elem3(father->FirstChildElement(usb_port,true));
+  ticpp::Iterator<ticpp::Element> elem3(father->FirstChildElement(str_usb_port_,true));
   setUsbPort(elem3);
 
   string naming;

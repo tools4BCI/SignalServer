@@ -55,7 +55,7 @@ class Mouse : public MouseBase
     /**
     * @brief Destructor
     */
-    ~Mouse();
+    virtual ~Mouse();
 
   //-----------------------------------------------
   protected:

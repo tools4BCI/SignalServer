@@ -34,7 +34,7 @@ class Mouse : public MouseBase
     /**
     * @brief Destructor
     */
-    ~Mouse();
+    virtual ~Mouse();
 
   protected:
     /**
@@ -52,7 +52,7 @@ class Mouse : public MouseBase
     */
     virtual void acquireData();
 
-    static const string dc_path;
+    static const string dc_path_;
 
     usb_dev_handle *dev_handle_; //a device handle
     string hw_id_;
