@@ -2,23 +2,27 @@
 TEMPLATE = lib
 VERSION = 0.1
 CONFIG += thread \
+    release \
     warn_on \
     exceptions \
     stl
 QT -= core \
     gui
-DEFINES += TIXML_USE_TICPP
 
-# TIMING_TEST
+DEFINES += TIXML_USE_TICPP
+#DEFINES += TIMING_TEST
+
 TARGET = tia
-DESTDIR = $$PWD/lib
+DESTDIR = lib
 OBJECTS_DIR = tmp
-INCLUDEPATH += $$PWD/. \
-    $$PWD/include \
-    $$PWD/extern/include/LptTools
+INCLUDEPATH += . \
+    include \
+    extern/include/LptTools
+
 DEPENDPATH += $$INCLUDEPATH
-INCLUDEPATH += $$PWD/extern/include
-win32:INCLUDEPATH += $$PWD/extern/include/SDL-1.2.14-VC8
+INCLUDEPATH += extern/include
+win32:INCLUDEPATH += extern/include/SDL-1.2.14-VC8
+
 unix:QMAKE_CXXFLAGS += -pedantic
 QMAKE_CXXFLAGS_WARN_ON = -Wall \
     -pedantic
@@ -43,7 +47,6 @@ HEADERS += include/tia/tia_server.h \
     include/tia-private/client/tia_client_impl.h \
     include/tia-private/client/tia_client_impl_base.h \
     include/tia/ssconfig.h \
-    extern/include/LptTools/LptTools.h \
     include/tia/data_packet3.h \
     include/tia-private/datapacket/raw_mem3.h \
     include/tia-private/clock.h \
@@ -84,6 +87,11 @@ HEADERS += include/tia/tia_server.h \
     include/tia-private/newtia/server/tia_server_state_server.h \
     include/tia-private/newtia/server_impl/tia_server_state_server_impl.h \
     include/tia-private/newtia/network_impl/boost_tcp_socket_impl.h
+
+contains( DEFINES, TIMING_TEST )::HEADERS += extern/include/LptTools/LptTools.h
+
+#---------------------------
+
 SOURCES += src/tia/tia_server.cpp \
     src/tia/constants.cpp \
     src/tia/config/control_message_decoder.cpp \
@@ -116,15 +124,21 @@ SOURCES += src/tia/tia_server.cpp \
     src/tia/newtia/tia_datapacket_parser.cpp \
     src/tia/newtia/network_impl/boost_tcp_server_socket_impl.cpp \
     src/tia/newtia/server_impl/tia_server_state_server_impl.cpp
-unix:SOURCES += extern/include/LptTools/LptToolsLinux.cpp
-win32:SOURCES += extern/include/LptTools/LptTools_.cpp
+
+unix {
+  contains( DEFINES, TIMING_TEST )::SOURCES += extern/include/LptTools/LptToolsLinux.cpp
+}
+
+win32 {
+  contains( DEFINES, TIMING_TEST )::SOURCES += extern/include/LptTools/LptTools_.cpp
+}
 
 # -----------------------------------------------------------------------
+
 unix {
-    # LIBS += /usr/lib/libboost_thread.a \
-    # /usr/lib/libboost_system.a
     LIBS += -lboost_thread \
         -lboost_system
+
     HARDWARE_PLATFORM = $$system(uname -m)
     contains( HARDWARE_PLATFORM, x86_64 ):: {
         message(Building 64 bit )
