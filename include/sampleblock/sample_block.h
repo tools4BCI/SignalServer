@@ -53,6 +53,10 @@
 #include <boost/cstdint.hpp>
 #include <boost/lexical_cast.hpp>
 
+#ifdef DEBUG
+  #include <iostream>
+#endif
+
 namespace tobiss
 {
 
@@ -209,7 +213,7 @@ template<class T> class SampleBlock
     * @throw  std::length_error if v.size does not equal channels or trying to append more blocks than defined.
     * @todo If needed: Possibility to append already blocked data.
     */
-    void appendBlock(std::vector<T> v, boost::uint16_t nr_blocks = 1);
+    void appendBlock(std::vector<T> v, boost::uint16_t nr_blocks);
 
     /**
     * @brief Directly set samples into the SampleBlock.
@@ -232,7 +236,7 @@ template<class T> class SampleBlock
     * are used to order both v and order.
     * Bubble-sort is used as a sorting algorithm.
     */
-    void sort(std::vector<T>& v, std::vector<boost::uint32_t> order, boost::uint32_t nr_blocks = 1);
+    void sort(std::vector<T>& v, std::vector<boost::uint32_t> order, boost::uint32_t nr_blocks);
 
     /**
     * @brief Check the block integrity (if number of samples equals equals blocks_ *channels_).
@@ -477,7 +481,7 @@ template<class T> void SampleBlock<T>::appendBlock(std::vector<T> v, boost::uint
     if(blocks_  < curr_block_)
       throw(std::length_error("SampleBlock<T>::appendBlock: Tried to append more blocks than specified!"));
 
-    sort(v,types_input_);
+    sort(v,types_input_,nr_blocks);
 
     for(unsigned int n = 0; n < channels_; n++)
       samples_[ (n*blocks_ ) + curr_block_ ] = v[n];
@@ -522,7 +526,7 @@ template<class T> void SampleBlock<T>::setSamples(std::vector<T> v)
     samples_.assign(v.begin(),v.end());
   else
   {
-    sort(v,types_input_);
+    sort(v,types_input_, blocks_);
     samples_.assign(v.begin(),v.end());
   }
 }

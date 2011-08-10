@@ -180,7 +180,7 @@ void EEGSimulator::generateSignal()
   }
   else
   {
-    buffer_.appendBlock(samples_);
+    buffer_.appendBlock(samples_, 1);
     current_block_++;
 
     if(current_block_ == blocks_ )
