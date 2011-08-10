@@ -15,6 +15,7 @@ DEPENDPATH += $$INCLUDEPATH
 PRE_TARGETDEPS += $$PWD/lib/libtia.a
 
 DEFINES += TIXML_USE_TICPP
+#DEFINES += DEBUG
 
 #QMAKE_CXXFLAGS += -fprofile-arcs -ftest-coverage
 #QMAKE_LFLAGS += -fprofile-arcs -ftest-coverage
@@ -61,7 +62,8 @@ SOURCES += \
     tests/boost_socket_tests.cpp \
     tests/control_commands/get_data_transmission.cpp \
     tests/tia_version_1_0/tia_tcp_server_socket_tests.cpp \
-    tests/tia_server_state_server_tests.cpp
+    tests/tia_server_state_server_tests.cpp \
+    tests/sampleblock_tests.cpp
 
 HEADERS += \
     tests/datapacket_tests_fixtures.h \

@@ -163,11 +163,11 @@ SampleBlock<double> gBSamp::getSyncData()
     acquiring_ = 1;
 
     int32 nr_samples_received;
-    float64 recv_buffer[1];
+    float64 recv_buffer[1000];
 
   boost::shared_lock<boost::shared_mutex> lock(rw_);
 
-  nidaqmx_.readAnalogF64(taskHandle_,blocks_,-1,DAQmx_Val_GroupByChannel,data,1000,&read,NULL);
+  nidaqmx_.readAnalogF64(taskHandle_,blocks_,-1,DAQmx_Val_GroupByChannel,recv_buffer,1000,&read,NULL);
   //DAQmxReadAnalogF64(taskHandle,1, -1, DAQmx_Val_GroupByChannel,
   //                   recv_buffer, 1, &nr_samples_received, NULL);
 
