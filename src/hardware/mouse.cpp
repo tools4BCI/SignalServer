@@ -33,7 +33,6 @@
 
 #include "hardware/mouse.h"
 
-
 namespace tobiss
 {
 using boost::lexical_cast;
@@ -59,7 +58,7 @@ MouseBase::MouseBase(ticpp::Iterator<ticpp::Element> hw)
   #ifdef DEBUG
     cout << "MouseBase: Constructor" << endl;
   #endif
-  setType("Mouse");
+
   checkMandatoryHardwareTags(hw);
   if(mode_ != APERIODIC)
     throw(std::invalid_argument("Mouse has to be started as aperiodic device!"));
@@ -67,7 +66,7 @@ MouseBase::MouseBase(ticpp::Iterator<ticpp::Element> hw)
 
   ticpp::Iterator<ticpp::Element> ds(hw->FirstChildElement(hw_devset_, true));
   setDeviceSettings(ds);
-  DS = ds;
+//  DS = ds;
   data_.init(1, channel_types_.size() , channel_types_);
 
   vector<boost::uint32_t> v;
@@ -75,9 +74,6 @@ MouseBase::MouseBase(ticpp::Iterator<ticpp::Element> hw)
 
   //	cout << " * Mouse sucessfully initialized -- running as aperiodic: ";
   //	cout << (mode_ == APERIODIC) << ";  ";
-
-  cout << " --> Mouse ID: " << id_ << ",  Name: " << name_;
-  cout<<", vid: "<<vid_<<", pid: "<<pid_<<endl;
 }
 
 //-----------------------------------------------------------------------------
@@ -96,11 +92,11 @@ void MouseBase::setVendorId(ticpp::Iterator<ticpp::Element>const &elem)
 
   try
   {
-    vid_ = lexical_cast<int>(elem->GetText(true));
+    vid_ = giveDecimalRepresentation(elem->GetText(true));
   }
   catch(bad_lexical_cast &)
   {
-    string ex_str(type_ + " -- VendorId: value is not a number!");
+    string ex_str(type_ + " -- VendorId: value is not a decimal or hxadecimal number!");
     throw(std::invalid_argument(ex_str));
   }
   if(blocks_ == 0)
@@ -119,11 +115,11 @@ void MouseBase::setProductId(ticpp::Iterator<ticpp::Element>const &elem)
 
   try
   {
-    pid_ = lexical_cast<int>(elem->GetText(true));
+    pid_ = giveDecimalRepresentation( elem->GetText(true) );
   }
   catch(bad_lexical_cast &)
   {
-    string ex_str(type_ + " -- ProductId: value is not a number!");
+    string ex_str(type_ + " -- ProductId: value is not a decimal or hxadecimal number!");
     throw(std::invalid_argument(ex_str));
   }
   if(blocks_ == 0)
@@ -143,11 +139,11 @@ void MouseBase::setUsbPort(ticpp::Iterator<ticpp::Element>const &elem)
 
   try
   {
-    usb_port_ = lexical_cast<int>(elem->GetText(true));
+    usb_port_ = giveDecimalRepresentation( elem->GetText(true) );
   }
   catch(bad_lexical_cast &)
   {
-    string ex_str(type_ + " -- Usb port: value is not a number!");
+    string ex_str(type_ + " -- Usb port: value is not a decimal or hxadecimal number!");
     throw(std::invalid_argument(ex_str));
   }
   if(blocks_ == 0)
@@ -206,9 +202,9 @@ void MouseBase::setDeviceSettings(ticpp::Iterator<ticpp::Element>const& father)
 
 void MouseBase::setChannelSettings(ticpp::Iterator<ticpp::Element>const& )
 {
-  //  #ifdef DEBUG
-  cout << "MouseBase: setChannelSettings" << endl;
-  //  #endif
+  #ifdef DEBUG
+    std::cout << "MouseBase: setChannelSettings" << std::endl;
+  #endif
 
 }
 
@@ -219,58 +215,59 @@ SampleBlock<double> MouseBase::getAsyncData()
   #ifdef DEBUG
   cout << "MouseBase: getAsyncData" << endl;
   #endif
-  if(running_)
+
+  if(!running_)
+    return(empty_block_);
+
+  bool dirty = 0;
+
+  for(unsigned int n = 0; n < buttons_values_.size(); n++)
   {
-    bool dirty = 0;
+    bool value = 0;
+    int state_n = (async_data_buttons_ & static_cast<int>( 1 << n ));
 
-    for(int n = 0; n < buttons_values_.size(); n++)
-    {
-      bool value = 0;
-      double base = 2;
-      int state_n = (async_data_buttons_ & static_cast<int>(pow(base,n)));
-      if (state_n!=value)
-        value = 1;
-      if( value != buttons_values_[n])
-      {
-        dirty = 1;
-        buttons_values_[n] = value;
-      }
-    }
+    if (state_n != value)
+      value = 1;
 
-    if(async_data_x_!=0 || async_data_y_!=0)
+    if( value != buttons_values_[n])
     {
       dirty = 1;
-      axes_values_[0]+=async_data_x_;
-      axes_values_[1]+=async_data_y_;
-
+      buttons_values_[n] = value;
     }
-
-    if(!dirty)
-      return(empty_block_);
-
-    vector<double> v;
-
-    if(buttons_)
-      v.push_back(id_);
-    for(boost::uint8_t n = 0; n < buttons_values_.size(); n++)
-      v.push_back(buttons_values_[n]);
-
-    if(axes_)
-      v.push_back(id_);
-    for(boost::uint8_t n = 0; n < axes_values_.size(); n++)
-      v.push_back(axes_values_[n]);
-
-    data_.setSamples(v);
-
-    return(data_);
   }
-  else
+
+  if(async_data_x_!=0 || async_data_y_!=0)
+  {
+    dirty = 1;
+    axes_values_[0]+=async_data_x_;
+    axes_values_[1]+=async_data_y_;
+
+  }
+
+  if(!dirty)
     return(empty_block_);
+
+  vector<double> v;
+
+  if(buttons_)
+    v.push_back(id_);
+  for(boost::uint8_t n = 0; n < buttons_values_.size(); n++)
+    v.push_back(buttons_values_[n]);
+
+  if(axes_)
+    v.push_back(id_);
+  for(boost::uint8_t n = 0; n < axes_values_.size(); n++)
+    v.push_back(axes_values_[n]);
+
+  data_.setSamples(v);
+
+  return(data_);
 }
 
 //-----------------------------------------------------------------------------
 
-void MouseBase::run()  {
+void MouseBase::run()
+{
   if(mode_ == APERIODIC)
   {
     async_acqu_thread_ = new boost::thread( boost::bind(&MouseBase::acquireData, this) );
@@ -302,30 +299,27 @@ void MouseBase::initMouse()
   async_data_x_ = 0;
   async_data_y_ = 0;
   async_data_buttons_ = 0;
-
-  //ctx_ = NULL; //a libusb session
-  user_interrupt_ = false;
 }
 
 //-----------------------------------------------------------------------------
 
-int MouseBase::blockKernelDriver(){
-  return 0;
+
+int MouseBase::giveDecimalRepresentation(std::string str)
+{
+  if( !str.compare(0, 2, "0x") )
+  {
+    int val = 0;
+    if(!fromString(val, str.substr( 2, std::string::npos ),  std::hex))
+      throw boost::bad_lexical_cast();
+
+    return(val);
+  }
+  else
+     return( lexical_cast<int>(str) );
 }
 
 //-----------------------------------------------------------------------------
 
-int MouseBase::freeKernelDriver(){
-  return 0;
-}
-
-//-----------------------------------------------------------------------------
-
-void MouseBase::acquireData(){
-
-}
-
-//-----------------------------------------------------------------------------
 
 
 

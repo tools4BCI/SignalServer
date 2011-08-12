@@ -43,6 +43,7 @@
 
 #include <boost/cstdint.hpp>
 #include <set>
+#include <sstream>
 
 #include "hw_thread.h"
 #include "hw_thread_builder.h"
@@ -58,112 +59,125 @@ namespace tobiss
 */
 class MouseBase : public HWThread
 {
-public:
+  public:
 
-  /**
-  * @brief Constructor
-  */
-  MouseBase(ticpp::Iterator<ticpp::Element> hw);
+    /**
+    * @brief Constructor
+    */
+    MouseBase(ticpp::Iterator<ticpp::Element> hw);
 
   /**
   * @brief Destructor
   */
-  virtual ~MouseBase();
+    virtual ~MouseBase();
 
-  /**
-  * @brief Method to achieve asynchronous data acquisition (method is non-blocking).
-  * @return SampleBlock<double>
-  *
-  * This method return immediately after calling with a copy of the data stored in the device's
-  * buffer.
-  * It is called from all slave devices.
-  */
-  virtual SampleBlock<double> getAsyncData();
-  /**
-  * @brief Method to start data acquisition.
-  */
-  virtual void run();
-  /**
-  * @brief Method to stop data acquisition.
-  */
-  virtual void stop();
+    /**
+    * @brief Method to achieve asynchronous data acquisition (method is non-blocking).
+    * @return SampleBlock<double>
+    *
+    * This method return immediately after calling with a copy of the data stored in the device's
+    * buffer.
+    * It is called from all slave devices.
+    */
+    virtual SampleBlock<double> getAsyncData();
+
+    /**
+    * @brief Method to start data acquisition.
+    */
+    virtual void run();
+
+    /**
+    * @brief Method to stop data acquisition.
+    */
+    virtual void stop();
 
   //-----------------------------------------------
   protected:
 
-  boost::uint32_t vid_;
-  boost::uint32_t pid_;
-  boost::uint32_t usb_port_;
-    ticpp::Iterator<ticpp::Element> DS;
+    virtual void setDeviceSettings(ticpp::Iterator<ticpp::Element>const &father);
 
-  static const std::string str_hw_vid_;
-  static const std::string str_hw_pid_;
-  static const std::string str_usb_port_;
+    virtual void setChannelSettings(ticpp::Iterator<ticpp::Element>const &father);
 
-  /**
-  * @brief Sets vendorId for Mousedevice.
-  */
-  void setVendorId(ticpp::Iterator<ticpp::Element>const &elem);
+    virtual SampleBlock<double> getSyncData()   {return data_; }
 
-  /**
-  * @brief Sets productId for Mousedevice.
-  */
-  void setProductId(ticpp::Iterator<ticpp::Element>const &elem);
 
-  /**
-  * @brief Sets setUsbPort for Mousedevice.
-  */
-  void setUsbPort(ticpp::Iterator<ticpp::Element>const &elem);
+    /**
+    * @brief Method to detach kernel driver from the system and open connection to the mouse device.
+    */
+    virtual int blockKernelDriver() = 0;
 
-  virtual void setDeviceSettings(ticpp::Iterator<ticpp::Element>const &father);
+    /**
+    * @brief Method to attatch kernel driver to the system and close connection to the mouse device.
+    */
+    virtual int freeKernelDriver() = 0;
 
-  virtual void setChannelSettings(ticpp::Iterator<ticpp::Element>const &father);
+    /**
+    * @brief Method to acquire data from the mouse device.
+    */
+    virtual void acquireData() = 0;
 
-  virtual SampleBlock<double> getSyncData()   {return data_; }
+  private:
 
-  /**
-  * @brief Init Mouse settings.
-  */
-  virtual void initMouse();
+    /**
+    * @brief Init Mouse settings.
+    */
+    void initMouse();
 
-  /**
-  * @brief Method to detach kernel driver from the system and open connection to the mouse device.
-  */
-  virtual int blockKernelDriver();
+    /**
+    * @brief Sets vendorId for Mousedevice.
+    */
+    void setVendorId(ticpp::Iterator<ticpp::Element>const &elem);
 
-  /**
-  * @brief Method to attatch kernel driver to the system and close connection to the mouse device.
-  */
-  virtual int freeKernelDriver();
+    /**
+    * @brief Sets productId for Mousedevice.
+    */
+    void setProductId(ticpp::Iterator<ticpp::Element>const &elem);
 
-  /**
-  * @brief Method to acquire data from the mouse device.
-  */
-  virtual void acquireData();
+    /**
+    * @brief Sets setUsbPort for Mousedevice.
+    */
+    void setUsbPort(ticpp::Iterator<ticpp::Element>const &elem);
 
-  //-----------------------------------------------
+    int giveDecimalRepresentation(std::string);
 
-  static std::set<boost::uint16_t> used_ids_;
+    template <class T> bool fromString( T& t, const std::string& s,
+                                        std::ios_base& (*f)(std::ios_base&) )
+    {
+        std::istringstream iss(s);
+        return !(iss >> f >> t).fail();
+    }
 
-  boost::uint16_t id_;
+    //-----------------------------------------------
 
-  boost::uint16_t buttons_;
-  std::vector<bool> buttons_values_;
+  protected:
 
-  boost::uint16_t axes_;
-  std::vector<boost::int16_t> axes_values_;
+    boost::uint32_t vid_;
+    boost::uint32_t pid_;
+    boost::uint32_t usb_port_;
 
-  std::string name_;
+    SampleBlock<double> empty_block_;
 
-  bool user_interrupt_;
+    boost::thread*  async_acqu_thread_;
+    //    std::vector<boost::int16_t>  raw_data_;
+    int async_data_x_;
+    int async_data_y_;
+    int async_data_buttons_;
 
-  SampleBlock<double> empty_block_;
+  private:
 
-  boost::thread*  async_acqu_thread_;
-  std::vector<boost::int16_t>  raw_data_;
-  int async_data_x_;
-  int async_data_y_;
-  int async_data_buttons_;
+    static std::set<boost::uint16_t> used_ids_;
+    boost::uint16_t id_;
+
+    static const std::string str_hw_vid_;
+    static const std::string str_hw_pid_;
+    static const std::string str_usb_port_;
+
+    boost::uint16_t buttons_;
+    std::vector<bool> buttons_values_;
+
+    boost::uint16_t axes_;
+    std::vector<boost::int16_t> axes_values_;
+
 };
 
 } // Namespace tobiss

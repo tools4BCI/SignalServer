@@ -39,9 +39,14 @@
 
 namespace tobiss
 {
+using std::string;
+
 static const int LIBUSB_ERROR_PORT  = -22;      // by trial, no definitions where found in libusb-win32
 static const int LIBUSB_ERROR_TIMEOUT  = -116;  // by trial, no definitions where found in libusb-win32
-const string Mouse::dc_path_("devcon_path");
+
+const std::string Mouse::hw_dc_path_("devcon_path");
+const std::string Mouse::hw_inf_file_path_("inf_file_path");
+
 const HWThreadBuilderTemplateRegistratorWithoutIOService<Mouse> Mouse::FACTORY_REGISTRATOR_ ("mouse");
 
 //-----------------------------------------------------------------------------
@@ -50,16 +55,28 @@ Mouse::Mouse(ticpp::Iterator<ticpp::Element> hw)
 : MouseBase(hw)
 {
   Constants cst;
-  ticpp::Iterator<ticpp::Element> elem(DS->FirstChildElement(dc_path_,true));
+  ticpp::Iterator<ticpp::Element> ds(hw->FirstChildElement(hw_devset_, true));
+
+  ticpp::Iterator<ticpp::Element> elem(ds->FirstChildElement(hw_dc_path_,true));
   devcon_path_ = elem->GetText(true);
   size_t found = devcon_path_.find(" ");
-  if(found != string::npos)
-    throw(std::runtime_error("MouseBase::initMouse -- Spaces in the devcon_path are forbidden!"));
 
-  string VID,PID;
+  if(found != string::npos)
+    throw(std::runtime_error("MouseBase::Constructor -- Spaces in the devcon_path are forbidden!"));
+
+  if(!boost::filesystem::exists(devcon_path_.c_str()))
+    throw(std::invalid_argument("Mouse::Constructor -- Devcon-path does not exist!"));
+
+  elem = ds->FirstChildElement(inf_file_path_,true);
+  inf_file_path_ = elem->GetText(true);
+
+  if(!boost::filesystem::exists(inf_file_path_.c_str()))
+    throw(std::invalid_argument("Mouse::Constructor -- Inf-file path does not exist!"));
+
+  string VID, PID;
   std::ostringstream v,p;
-  v << setw(4) << setfill('0') << hex << vid_;
-  p << setw(4) << setfill('0') << hex << pid_;
+  v << std::setw(4) << std::setfill('0') << std::hex << vid_;
+  p << std::setw(4) << std::setfill('0') << std::hex << pid_;
   VID = v.str();
   PID = p.str();
   hw_id_ = "\"USB\\VID_"+VID+"&PID_"+PID+"\"";
@@ -67,6 +84,9 @@ Mouse::Mouse(ticpp::Iterator<ticpp::Element> hw)
   int ret = blockKernelDriver();
   if(ret)
     throw(std::runtime_error("MouseBase::initMouse -- Mouse device could not be connected (check rights)!"));
+
+  setType("Mouse");
+
 }
 
 //-----------------------------------------------------------------------------
@@ -91,9 +111,6 @@ int Mouse::blockKernelDriver()
   memset(&piProcessInfo, 0, sizeof(piProcessInfo));
   siStartupInfo.cb = sizeof(siStartupInfo);
 
-  if(!boost::filesystem::exists(devcon_path_.c_str()))
-    throw(std::invalid_argument("Mouse::blockKernelDriver -- Devcon-path does not exist!"));
-
   //disable the standard windows driver for the specific mouse device
   string command = "disable -r "+hw_id_;
   CreateProcess(const_cast<LPCSTR>(devcon_path_.c_str()),
@@ -102,10 +119,12 @@ int Mouse::blockKernelDriver()
   WaitForSingleObject(piProcessInfo.hProcess, 1000);
 
   //load the new driver from the mouse.inf file
-  const char *inf_file = "libusb/mouse.inf";
-  int ret = usb_install_driver_np(inf_file);
+
+  //  const char *inf_file = "libusb/mouse.inf";
+
+  int ret = usb_install_driver_np( inf_file_path_.c_str() );
   if(ret<0)
-    throw(std::runtime_error("Mouse::blockKernelDriver -- No 'mouse.inf' file found in 'bin\\libusb\\' !"));
+    throw(std::runtime_error("Mouse::blockKernelDriver -- Could not install given .inf file!"));
 
   // find the right usb-device and open it
   struct usb_bus *UsbBus = NULL;

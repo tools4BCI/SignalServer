@@ -11,18 +11,21 @@ participating in the measurement.
 (Self-explanatory tags are not described here, e.g. birthday)
 
 *Exactly one <subject> tag has to be inside the XML configuration file.*
-::
-  <subject>
-    <id> asd52 </id>
-    <first_name> Nobody </first_name>
-    <surname> Nowhereman </surname>
-    <sex> m </sex>
-    <birthday> 31.12.1900 </birthday>
-    <handedness> r </handedness>
-    <medication> none </medication>
 
-    <optional glasses="yes" smoker="no" />
-  </subject>
+  ..  code-block:: xml
+      :linenos:
+
+      <subject>
+        <id> asd52 </id>
+        <first_name> Nobody </first_name>
+        <surname> Nowhereman </surname>
+        <sex> m </sex>
+        <birthday> 31.12.1900 </birthday>
+        <handedness> r </handedness>
+        <medication> none </medication>
+
+        <optional glasses="yes" smoker="no" />
+      </subject>
 
 
 * ID
@@ -39,12 +42,15 @@ Server Settings
 Inside this tag the Signal Server except its attached hardware is configured.
 
 *Exactly one <server_settings> tag has to be inside the XML configuration file.*
-::
-  <server_settings>
-    <ctl_port> 9000 </ctl_port>
-    <udp_port> 9998 </udp_port>
-    <udp_bc_addr> 127.0.0.255 </udp_bc_addr>
-  </server_settings>
+
+  ..  code-block:: xml
+      :linenos:
+
+      <server_settings>
+        <ctl_port> 9000 </ctl_port>
+        <udp_port> 9998 </udp_port>
+        <udp_bc_addr> 127.0.0.255 </udp_bc_addr>
+      </server_settings>
 
 * ctl_port
 
@@ -77,23 +83,26 @@ The Hardware sections
 The Signal Server supports data acquision from multiple devices at the same time. For this reason every
 device has its own hardware tag. Thus more than one hardware section is allowed inside the XML
 configuration file.
-::
-  <hardware name="sinegenerator" version="1.0" serial="">
-    <mode> master </mode>
-    <device_settings>
-      <sampling_rate> 512 </sampling_rate>
-      <measurement_channels nr="1" names="eeg" type="eeg" />
-      <blocksize> 8 </blocksize>
-    </device_settings>
 
-   <channel_settings>
-      <selection>
-        <ch nr="01" name="C3" type="eeg" />
-        <ch nr="02" name="Cz" type="eeg" />
-        <ch nr="03" name="Hand" type="emg" />
-      </selection>
-    </channel_settings>
-  </hardware>
+  ..  code-block:: xml
+      :linenos:
+
+      <hardware name="sinegenerator" version="1.0" serial="">
+        <mode> master </mode>
+        <device_settings>
+          <sampling_rate> 512 </sampling_rate>
+          <measurement_channels nr="1" names="eeg" type="eeg" />
+          <blocksize> 8 </blocksize>
+        </device_settings>
+
+      <channel_settings>
+          <selection>
+            <ch nr="01" name="C3" type="eeg" />
+            <ch nr="02" name="Cz" type="eeg" />
+            <ch nr="03" name="Hand" type="emg" />
+          </selection>
+        </channel_settings>
+      </hardware>
 
 Hardware
 --------
@@ -202,9 +211,11 @@ in the device settings section.
   the settings done in measurement_channels in device_settings. Settings here override the prior
   channel selection!
 
-  ``<ch nr="01" name="Cz" type="eeg" />``
+  ..  code-block:: xml
 
-  ``<ch nr="02" name="C3" type="eeg" />``
+      <ch nr="01" name="Cz" type="eeg" />
+
+      <ch nr="02" name="C3" type="eeg" />
 
   * nr
 

@@ -318,22 +318,22 @@ int parseInput(int argc, const char* argv[], std::string& config_file, bool& use
   if(vm.count( OLD_TIA_PARAM ))
   {
     use_new_tia = false;
-    cout << endl << " *** Signal Server will start with TiA 0.1 ***" << endl;
+    cout << endl << " ***  Signal Server will start with TiA 0.1 ***" << endl;
     vm.erase( OLD_TIA_PARAM );
   }
   else
-    cout << endl << " *** Signal Server will start with TiA 0.2 ***" << endl;
+    cout << endl << " ***  Signal Server will start with TiA 0.2 ***" << endl;
 
   if(vm.size() == 0)
   {
     config_file = getDefaultConfigFile ();
-    cout << endl << " ***  Loading default XML configuration file: " << config_file << endl << endl;
+    cout << " ***  Loading default XML configuration file: " << config_file << endl << endl;
   }
 
   if(vm.count( XML_CONFIG_FILE_PARAM ))
   {
     config_file = vm[ XML_CONFIG_FILE_PARAM ].as< string >();
-    cout << endl << "  ***  Loading XML configuration file: " << config_file << endl << endl;
+    cout << " ***  Loading XML configuration file: " << config_file << endl << endl;
   }
   return 0;
 }

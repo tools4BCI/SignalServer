@@ -32,7 +32,7 @@
 */
 
 /**
-* @file mouse.h
+* @file mouse_win.h
 *
 * @brief
 *
@@ -47,8 +47,6 @@
 
 #include "mouse.h"
 #include "extern\include\libusb\usb.h"
-
-using namespace std;
 
 namespace tobiss
 {
@@ -68,7 +66,7 @@ class Mouse : public MouseBase
     */
     virtual ~Mouse();
 
-  protected:
+  private:
     /**
     * @brief Block Windows kernel driver using devcon tool of WinDDK, load driver of libusb.
     */
@@ -84,11 +82,17 @@ class Mouse : public MouseBase
     */
     virtual void acquireData();
 
-    static const string dc_path_;
 
-    usb_dev_handle *dev_handle_; //a device handle
-    string hw_id_;
-    string devcon_path_;
+
+
+  private:
+    usb_dev_handle    *dev_handle_; //a device handle
+    std::string       hw_id_;
+    std::string       devcon_path_;
+    std::string       inf_file_path_;
+
+    static const std::string      hw_dc_path_;
+    static const std::string      hw_inf_file_path_;
 
     static const HWThreadBuilderTemplateRegistratorWithoutIOService<Mouse> FACTORY_REGISTRATOR_;
   };
