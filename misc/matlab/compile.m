@@ -6,6 +6,7 @@ c_files = [c_files ' ../../src/tia/constants.cpp ../../src/tia/config/control_me
 c_files = [c_files ' ../../src/tia/config/control_messages.cpp ../../src/tia/config/control_message_encoder.cpp'];
 c_files = [c_files ' ../../src/tia/tia_client.cpp ../../src/tia/client/tia_client_impl.cpp'];
 c_files = [c_files ' ../../src/tia/client/tia_new_client_impl.cpp'];
+c_files = [c_files ' ../../src/tia/network/tcp_server.cpp'];
 c_files = [c_files ' ../../src/tia/newtia/network_impl/boost_tcp_socket_impl.cpp ../../src/tia/newtia/network_impl/boost_udp_read_socket.cpp'];
 c_files = [c_files ' ../../src/tia/newtia/tia_datapacket_parser.cpp ../../src/tia/newtia/tia_meta_info_parse_and_build_functions.cpp'];
 c_files = [c_files ' ../../src/tia/newtia/messages_impl/tia_control_message_parser_1_0.cpp'];
@@ -13,7 +14,7 @@ c_files = [c_files ' ../../src/tia/newtia/messages_impl/tia_control_message_pars
 
 unix_build_command = 'mex -v -O -DTIXML_USE_TICPP  -I../../ -I../../include/  -I../../extern/include/  -lboost_thread -lboost_system -lstdc++ -outdir build';
 if(~isunix)
-  win_boost_path = 'C:\Program Files\boost\boost_1_46_1';
+  win_boost_path = 'C:\Programme\boost\boost_1_46_1';
 
   if(~exist(win_boost_path,'dir'))    
       disp('Boost not found!');
@@ -56,8 +57,6 @@ if(isunix)
   end
 
 else
-
-  
   eval([win_build_command  ' src/mex_get_config.cpp ' ...
     c_files ticpp_files ' ../../extern/lib/ticpp/linux/libticpp.a' win_libs]);
   
@@ -65,7 +64,7 @@ else
     c_files ticpp_files ' ../../extern/lib/ticpp/linux/libticpp.a' win_libs]);
   
   eval([win_build_command  ' src/mexSSClient.cpp ' ...
-    c_files ticpp_files ' ../../extern/lib/ticpp/linux/libticpp.a' win_libs]);  
+    c_files ticpp_files ' ../../extern/lib/ticpp/linux/libticpp.a' win_libs]); 
 end
 
 
