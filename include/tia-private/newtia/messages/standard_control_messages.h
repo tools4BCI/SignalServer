@@ -59,6 +59,18 @@ public:
 };
 
 //-----------------------------------------------------------------------------
+class CustomErrorControlMessage : public TiAControlMessage
+{
+public:
+    CustomErrorControlMessage (std::string const& version,
+                               std::string const& text)
+      : TiAControlMessage (version, "Error -- " + text, "", "")
+    {}
+    virtual ~CustomErrorControlMessage () {}
+};
+
+
+//-----------------------------------------------------------------------------
 class CheckProtocolVersionTiAControlMessage : public TiAControlMessage
 {
 public:

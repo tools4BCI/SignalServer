@@ -80,6 +80,8 @@ public:
    */
   void setDestination(const std::string& address, boost::uint16_t port);
 
+  std::string getTargetIP(){return(target_.address ().to_string ());}
+
   /**
    * @brief Returns the DataPacket destination
    * @sa setDestination()

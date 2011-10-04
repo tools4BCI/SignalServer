@@ -50,6 +50,7 @@ public:
     virtual ~DataServer () {}
 
     virtual Port localPort (ConnectionID connection) const = 0;
+    virtual std::string getTargetIP() const = 0;
 
     virtual ConnectionID addConnection (bool udp) = 0;
 

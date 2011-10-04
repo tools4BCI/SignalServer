@@ -119,7 +119,7 @@ tobiss::SSConfig parseTiAMetaInfoFromXMLString (std::string const& tia_meta_info
         if (attributes.count (XML_TAGS::SIGNAL_SAMPLINGRATE))
             tia_meta_info.signal_info.setMasterSamplingRate (toUnsigned (attributes.at(XML_TAGS::SIGNAL_SAMPLINGRATE)));
         if (attributes.count (XML_TAGS::SIGNAL_BLOCKSIZE))
-            tia_meta_info.signal_info.setMasterSamplingRate (toUnsigned (attributes.at(XML_TAGS::SIGNAL_BLOCKSIZE)));
+            tia_meta_info.signal_info.setMasterBlockSize (toUnsigned (attributes.at(XML_TAGS::SIGNAL_BLOCKSIZE)));
     }
 
 

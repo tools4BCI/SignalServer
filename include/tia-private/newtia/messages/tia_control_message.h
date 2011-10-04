@@ -46,20 +46,25 @@ public:
     TiAControlMessage (std::string const& version, std::string const& command,
                        std::string const& parameters, std::string const& content)
                            : version_ (version), command_ (command),
-                             parameters_ (parameters), content_ (content)
+                             parameters_ (parameters), content_ (content),
+                             remote_endpoint_ip_("0.0.0.0")
     {}
     virtual ~TiAControlMessage () {}
+
+    void setRemoteEndpointIP (std::string ip) {remote_endpoint_ip_ = ip;}
 
     std::string getVersion () const {return version_;}
     std::string getCommand () const {return command_;}
     std::string getParameters () const {return parameters_;}
     std::string getContent () const {return content_;}
+    std::string getRemoteEndpointIP () const {return remote_endpoint_ip_;}
 
 private:
     std::string version_;
     std::string command_;
     std::string parameters_;
     std::string content_;
+    std::string remote_endpoint_ip_;
 };
 
 }

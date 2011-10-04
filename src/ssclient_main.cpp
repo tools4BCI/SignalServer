@@ -121,6 +121,12 @@ class SSClientDataReader
                 nr_values = packet.getNrOfValues(SIG_MBUTTON);
                 cout<<" ... buttons: "<<packet.getSingleDataBlock(SIG_MBUTTON)[1]<<packet.getSingleDataBlock(SIG_MBUTTON)[2]<<packet.getSingleDataBlock(SIG_MBUTTON)[3]<<endl;
               }
+              if( ((client_.config().signal_info.masterSamplingRate()/client_.config().signal_info.masterBlockSize()) < 1) ||
+                (counter%(
+                (client_.config().signal_info.masterSamplingRate()/client_.config().signal_info.masterBlockSize()) *2 ) == 0) )
+              {
+                std::cout << " -- Nr:" << packet.getPacketNr () << std::endl;
+              }
 
               sample_nr_old = sample_nr;
               packet_nr_old = packet_nr;
@@ -143,8 +149,9 @@ class SSClientDataReader
             }
             catch (std::exception& e)
             {
-              cerr << e.what() << endl;
-              continue;
+
+              cerr << "*** " << e.what() << endl;
+              break;
             }
 
             #ifdef TIMING_TEST

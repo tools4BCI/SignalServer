@@ -36,6 +36,7 @@
 #include "tia-private/newtia/messages/standard_control_messages.h"
 
 #include <sstream>
+#include <iostream>
 
 using std::string;
 
@@ -54,7 +55,21 @@ TiAControlMessage GetDataConnectionControlCommand::execute (TiAControlMessage co
 
     ConnectionID data_connection;
     if (command.getParameters() == TiAControlMessageTags10::UDP)
+    {
+      std::string remote(command.getRemoteEndpointIP () );
+      size_t pos = remote.rfind ('.');
+      remote.erase (pos);
+
+      std::string target(data_server_.getTargetIP () );
+      pos = target.rfind ('.');
+      target.erase (pos);
+
+      if(target != remote)
+        return CustomErrorControlMessage (version,
+                                          "Target and remote subnet do not match!");
+      else
         data_connection = data_server_.addConnection (true);
+    }
     else if (command.getParameters() == TiAControlMessageTags10::TCP)
         data_connection = data_server_.addConnection (false);
     else

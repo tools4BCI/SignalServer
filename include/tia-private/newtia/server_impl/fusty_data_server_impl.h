@@ -55,6 +55,7 @@ public:
     virtual ~FustyDataServerImpl ();
 
     virtual Port localPort (ConnectionID connection) const;
+    virtual std::string getTargetIP () const;
 
     virtual ConnectionID addConnection (bool udp);
 

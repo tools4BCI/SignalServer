@@ -40,6 +40,7 @@
 
 // STL
 #include <sstream>
+#include <iostream>
 
 // Boost
 #include <boost/bind.hpp>

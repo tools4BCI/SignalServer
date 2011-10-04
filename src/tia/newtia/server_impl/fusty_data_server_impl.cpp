@@ -65,6 +65,12 @@ Port FustyDataServerImpl::localPort (ConnectionID connection) const
 }
 
 //-----------------------------------------------------------------------------
+ std::string FustyDataServerImpl::getTargetIP () const
+{
+   return(udp_data_server_.getTargetIP ());
+}
+
+//-----------------------------------------------------------------------------
 ConnectionID  FustyDataServerImpl::addConnection (bool udp)
 {
     ConnectionID new_connection_id = next_free_connection_id_;

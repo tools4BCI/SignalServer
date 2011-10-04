@@ -298,7 +298,7 @@ int parseInput(int argc, const char* argv[], std::string& config_file, bool& use
   p.add(XML_CONFIG_FILE_PARAM.c_str(), -1);
 
   po::variables_map vm;
-  po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
+  po::store(po::command_line_parser(argc, const_cast<char **>(argv)).options(desc).positional(p).run(), vm);
   po::notify(vm);
 
   if(vm.count(HELP_PARAM))

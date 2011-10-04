@@ -113,6 +113,7 @@ void ServerControlConnection::run ()
             //std::cout << "ServerControlConnection::run " << std::endl;
 
             TiAControlMessage message = parser_->parseMessage (socket_);
+            message.setRemoteEndpointIP (socket_.getRemoteEndPointAsString());
 
             //std::cout << "ServerControlConnection::run received message: " << message.getVersion()  << "; command = \"" << message.getCommand() << "\""<< std::endl;
 

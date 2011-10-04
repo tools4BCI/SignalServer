@@ -52,7 +52,8 @@ TiAControlMessage TiAControlMessageParser10::parseMessage (InputStream& stream) 
     string version = readVersion (stream);
     pair<string, string> command_and_parameter = readCommandAndParameter (stream);
     string content = readContent (stream);
-    return TiAControlMessage (version, command_and_parameter.first, command_and_parameter.second, content);
+    return TiAControlMessage (version, command_and_parameter.first,
+                              command_and_parameter.second, content);
 }
 
 //-----------------------------------------------------------------------------
