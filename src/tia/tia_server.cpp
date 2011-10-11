@@ -59,6 +59,10 @@
 #include "tia-private/network/udp_data_server.h"
 #include "tia-private/newtia/server_impl/tia_server_state_server_impl.h"
 #include "tia-private/newtia/network_impl/boost_tcp_server_socket_impl.h"
+#include "tia-private/newtia/server_impl/control_connection_server_2_impl.h"
+
+#include "tia-private/newtia/server_impl/fusty_data_server_impl.h"
+#include "tia-private/newtia/fusty_hardware_interface_impl.h"
 
 #ifdef TIMING_TEST
   #include "LptTools/LptTools.h"
@@ -86,7 +90,8 @@ TiAServer::TiAServer(boost::asio::io_service& io_service, bool new_tia)
   control_connection_server_(0),
   server_state_server_(0),
   new_tia_ (new_tia),
-  write_file(0)
+  control_connection_server_2_(0),
+    data_server_(0), hardware_interface_(0)
 {
   #ifdef TIMING_TEST
     timestamp_ = boost::posix_time::microsec_clock::local_time();
@@ -116,11 +121,26 @@ TiAServer::TiAServer(boost::asio::io_service& io_service, bool new_tia)
 
 TiAServer::~TiAServer()
 {
-//   delete config_;
-  delete tcp_data_server_;
-  delete udp_data_server_;
-  delete control_connection_server_;
-  delete server_state_server_;
+  if(tcp_data_server_)
+    delete tcp_data_server_;
+
+  if(udp_data_server_)
+    delete udp_data_server_;
+
+  if(control_connection_server_)
+    delete control_connection_server_;
+
+  if(control_connection_server_2_)
+    delete control_connection_server_2_;
+
+  if(server_state_server_)
+    delete server_state_server_;
+
+  if(data_server_)
+    delete data_server_;
+
+  if(hardware_interface_)
+    delete hardware_interface_;
 
   #ifdef TIMING_TEST
     LptExit();
@@ -129,37 +149,47 @@ TiAServer::~TiAServer()
 
 //-----------------------------------------------------------------------------
 
-void TiAServer::initialize(std::map<std::string,std::string>& subject_info,
+void TiAServer::initialize(std::map<std::string,std::string>& subject_info_map,
                               std::map<std::string,std::string>& server_settings)
 {
-//  assert(config != 0);
-//  config_ = config;
   server_settings_ = server_settings;
-  uint16_t port = 0;
 
-//   map<string,string>::iterator it(server_settings_.begin());
+  createSubjectInfo(subject_info_map);
+  createSignalInfo();
 
-//   for( ; it != server_settings_.end(); it++)
-//     cout << "First: " << it->first << ";  Second: " << it->second << endl;
+  uint16_t ctl_port = lexical_cast<uint16_t>(server_settings_[Constants::ss_ctl_port]);
 
-
-  port = lexical_cast<uint16_t>(server_settings_[Constants::ss_ctl_port]);
-  control_connection_server_ = new ControlConnectionServer(subject_info,
-                                                           io_service_, *this);
-  control_connection_server_->bind(port);
   tcp_data_server_ = new TCPDataServer(io_service_);
 
-  port = lexical_cast<uint16_t>(server_settings_[Constants::ss_udp_port]);
+  uint16_t udp_port = lexical_cast<uint16_t>(server_settings_[Constants::ss_udp_port]);
   udp_data_server_ = new UDPDataServer(io_service_);
-  udp_data_server_->setDestination(server_settings_[Constants::ss_udp_bc_addr], port);
+  udp_data_server_->setDestination(server_settings_[Constants::ss_udp_bc_addr], udp_port);
 
   if (new_tia_)
   {
-    boost::shared_ptr<tia::TCPServerSocket> server_state_server_socket (new tia::BoostTCPServerSocketImpl (io_service_));
-    server_state_server_ = new tia::TiAServerStateServerImpl (server_state_server_socket);
-  }
-  control_connection_server_->listen();
+    hardware_interface_ = new tia::FustyHardwareInterfaceImpl(subject_info_, signal_info_);
 
+    boost::shared_ptr<tia::TCPServerSocket>
+        server_state_server_socket(new tia::BoostTCPServerSocketImpl (io_service_));
+    server_state_server_ = new tia::TiAServerStateServerImpl(server_state_server_socket);
+
+    data_server_ = new tia::FustyDataServerImpl(*tcp_data_server_, *udp_data_server_);
+
+
+    boost::shared_ptr<tia::TCPServerSocket>
+        control_connection_server2_socket(new tia::BoostTCPServerSocketImpl (io_service_));
+    control_connection_server_2_ =
+        new tia::ControlConnectionServer2Impl(control_connection_server2_socket, ctl_port,
+                   data_server_, server_state_server_, hardware_interface_);
+
+  }
+  else
+  {
+    control_connection_server_ = new ControlConnectionServer(subject_info_map,
+                                                             io_service_, *this);
+    control_connection_server_->bind(ctl_port);
+    control_connection_server_->listen();
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -214,6 +244,98 @@ void TiAServer::sendDataPacket(DataPacket& packet)
 
   #endif
 
+}
+
+//-----------------------------------------------------------------------------
+
+void TiAServer::createSubjectInfo(std::map<std::string,std::string> subject_map)
+{
+  subject_info_.setId(subject_map["id"]);
+  subject_info_.setFirstName(subject_map["first_name"]);
+  subject_info_.setSurname(subject_map["surname"]);
+  subject_info_.setBirthday(subject_map["birthday"]);
+  subject_info_.setMedication(subject_map["medication"]);
+
+  std::string value = subject_map["sex"];
+  if (value == "m")
+    subject_info_.setSex(SubjectInfo::Male);
+  else if (value == "f")
+    subject_info_.setSex(SubjectInfo::Female);
+
+  value = subject_map["handedness"];
+  if (value == "r")
+    subject_info_.setHandedness(SubjectInfo::RightHanded);
+  else if (value == "l")
+    subject_info_.setHandedness(SubjectInfo::LeftHanded);
+
+  value = subject_map["glasses"];
+  if (value == "y")
+    subject_info_.setShortInfo(SubjectInfo::Glasses, SubjectInfo::Yes);
+  else if (value == "n")
+    subject_info_.setShortInfo(SubjectInfo::Glasses, SubjectInfo::No);
+  else
+    subject_info_.setShortInfo(SubjectInfo::Glasses, SubjectInfo::Unknown);
+
+  value = subject_map["smoker"];
+  if (value == "y")
+    subject_info_.setShortInfo(SubjectInfo::Smoking, SubjectInfo::Yes);
+  else if (value == "n")
+    subject_info_.setShortInfo(SubjectInfo::Smoking, SubjectInfo::No);
+  else
+    subject_info_.setShortInfo(SubjectInfo::Smoking, SubjectInfo::Unknown);
+}
+
+//-----------------------------------------------------------------------------
+
+void TiAServer::createSignalInfo()
+{
+  const std::vector<uint32_t>& sig_types       = sig_types_;
+  const std::vector<uint16_t>& blocksizes      = blocksizes_;
+  const std::vector<uint32_t>& fs_per_sig_type = fs_per_sig_type_;
+
+  const std::map<uint32_t, std::vector<std::string> >& channel_map = channels_per_sig_type_;
+
+  assert(sig_types.size() == blocksizes.size() && sig_types.size() == fs_per_sig_type.size());
+
+  cout << endl;
+  cout << " Sent Signal Types: (ordered)" << endl;
+
+  for (vector<uint32_t>::size_type index = 0; index < sig_types.size(); ++index)
+  {
+    Signal signal;
+
+    uint32_t sig_num_type = sig_types[index];
+    std::string sig_str_type = Constants().getSignalName(sig_num_type);
+    signal.setType(sig_str_type);
+    cout << "   ... Signal type " << sig_str_type << endl;
+
+    uint16_t block_size = blocksizes[index];
+    signal.setBlockSize(block_size);
+
+    uint32_t fs = fs_per_sig_type[index];
+    signal.setSamplingRate(fs);
+
+    std::map<uint32_t, std::vector<std::string> >::const_iterator it_channel_map =
+      channel_map.find(sig_num_type);
+
+    if (it_channel_map != channel_map.end())
+    {
+      const std::vector<std::string>& channel_names = (*it_channel_map).second;
+      std::vector<std::string>::const_iterator it_channels = channel_names.begin();
+      std::vector<std::string>::const_iterator end_channels = channel_names.end();
+      for (; it_channels != end_channels; ++it_channels)
+      {
+        Channel channel;
+        channel.setId(*it_channels);
+        signal.channels().push_back(channel);
+      }
+    }
+
+    signal_info_.signals().insert(make_pair(sig_str_type,signal));
+  }
+
+  signal_info_.setMasterBlockSize(master_blocksize_);
+  signal_info_.setMasterSamplingRate(master_samplingrate_);
 }
 
 //-----------------------------------------------------------------------------

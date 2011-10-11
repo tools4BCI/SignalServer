@@ -1,6 +1,38 @@
+/*
+    This file is part of the TOBI SignalServer.
+
+    Commercial Usage
+    Licensees holding valid Graz University of Technology Commercial
+    licenses may use this file in accordance with the Graz University
+    of Technology Commercial License Agreement provided with the
+    Software or, alternatively, in accordance with the terms contained in
+    a written agreement between you and Graz University of Technology.
+
+    --------------------------------------------------
+
+    GNU General Public License Usage
+    Alternatively, this file may be used under the terms of the GNU
+    General Public License version 3.0 as published by the Free Software
+    Foundation and appearing in the file gpl.txt included in the
+    packaging of this file.  Please review the following information to
+    ensure the GNU General Public License version 3.0 requirements will be
+    met: http://www.gnu.org/copyleft/gpl.html.
+
+    In case of GNU General Public License Usage ,the TOBI SignalServer
+    is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with the TOBI SignalServer. If not, see <http://www.gnu.org/licenses/>.
+
+    Copyright 2010 Graz University of Technology
+    Contact: SignalServer@tobi-project.org
+*/
 
 #define S_FUNCTION_LEVEL 2
-#define S_FUNCTION_NAME  simulink_get_data_v2
+#define S_FUNCTION_NAME  TiA_simulink_get_data
 
 #include "simstruc.h"
 
@@ -8,6 +40,7 @@
 #include <string>
 #include <map>
 #include <stdexcept>
+#include <iostream>
 
 
 #include <boost/lexical_cast.hpp>
@@ -36,7 +69,7 @@ using boost::numeric::negative_overflow;
 
 enum
 {
-  SIGNAL_TYPES_MAP_POSITION,
+  SIGNAL_TYPES_MAP_POSITION = 0,
   TiAClient_POSITION,
   START_TIME_POSITION,
   NUM_WORK_POINTERS 	// must be last
@@ -44,97 +77,150 @@ enum
 
 enum
 {
-  FS_BS_POS = 0,
+  MASTER_FS_POS = 0,
+  MASTER_BLOCKSIZE_POS,
   SIG_TYPES_POS,
   IP_POS,
   PORT_POS,
   PROTOCOL_POS,
+  TIA_VERSION_POS,
   NUM_PARAMS	// must be last
 };
 
 #define NR_SIG_TYPES_INFO   4
 
-// #define BUFFER_SIZE 16777216     ...  defined in defines.h
-#define ITERATIONS_THROW_AWAY   0
 #define MAX_NR_OF_EVENTS_AT_ONCE  128
 
 //---------------------------------------------------------------------------------------
 
 void calcSizes(const mxArray* sig_types, vector<int>& width, vector< pair<uint16_t,uint16_t> >& dims)
 {
-  //   Signal Types Info:  (Flag, Type, BS, NrCh)
-  //   [1]    'eeg'    [1]    [1]
-  //   [4]    'eog'    [1]    [4]
-  //   [8]    'ecg'    [2]    [1]
+  //   Signal Types Info:  (Flag, BS, NrCh, fs)
+  //   [1]      [1]    [1]    [100]
+  //   [4]      [1]    [4]    [10]
+  //   [8]      [2]    [1]    [50]
 
   uint16_t nr_sig_types = mxGetM(sig_types);
   vector<uint16_t> channels(nr_sig_types);
   vector<uint16_t> blocks(nr_sig_types);
 
+  
   for(uint32_t n = 0; n < nr_sig_types; n++)
   {
-    channels[n] = mxGetPr(sig_types)[ 2*nr_sig_types +n ];
     blocks[n]   = mxGetPr(sig_types)[   nr_sig_types +n ];
+    channels[n] = mxGetPr(sig_types)[ 2*nr_sig_types +n ];
   }
 
   for(unsigned int n = 0; n < channels.size(); n++)
     width.push_back(channels[n]*blocks[n]);
 
   for(unsigned int n = 0; n < width.size(); n++)
-    dims.push_back( make_pair(channels[n], blocks[n] ) );
+    dims.push_back( make_pair(channels[n], blocks[n] ) ); 
+}
+
+
+//---------------------------------------------------------------------------------------
+
+void setStaticOutputPorts(SimStruct *S, double fs_master, double bs_master)
+{
+  int dimensions[2];
+
+  // set events output port
+  ssSetOutputPortFrameData(S, 0, FRAME_NO);
+  ssSetOutputPortMatrixDimensions(S, 0, DYNAMICALLY_SIZED, DYNAMICALLY_SIZED);
+  DECL_AND_INIT_DIMSINFO(di);
+  di.width   = MAX_NR_OF_EVENTS_AT_ONCE;
+  di.numDims = 2;
+  dimensions[0] = 1;    //  rows
+  dimensions[1] = MAX_NR_OF_EVENTS_AT_ONCE;     //  columns
+  di.dims    = dimensions;
+  if(!ssSetOutputPortDimensionInfo(S, 0, &di))
+    return;
+  ssSetOutputPortSampleTime(S, 0, bs_master/fs_master);
+  ssSetOutputPortOffsetTime(S, 0, 0);
+
+  // set sample nr, timestamp and sys/simtime port
+
+
+  
+  for(unsigned int n = 1; n <= 3; n++ )
+  {
+    di.width   = 1;
+    di.numDims = 2;
+    dimensions[0] = 1;    //  rows
+    dimensions[1] = 1;     //  columns
+    di.dims    = dimensions;
+    ssSetOutputPortFrameData(S, n, FRAME_NO);
+    ssSetOutputPortMatrixDimensions(S, n, DYNAMICALLY_SIZED, DYNAMICALLY_SIZED);
+
+    if(!ssSetOutputPortDimensionInfo(S, n, &di))
+      return;
+    ssSetOutputPortSampleTime(S, n, bs_master/fs_master);
+    ssSetOutputPortOffsetTime(S, n, 0);
+  }
 
 }
 
 //---------------------------------------------------------------------------------------
-
+// master_fs, master_bs, sig_info, ip, port, proto, tia_version
 static void mdlInitializeSizes(SimStruct *S)
 {
-
   ssAllowSignalsWithMoreThan2D(S);
 
   ssSetNumSFcnParams(S,  NUM_PARAMS);
   if (ssGetNumSFcnParams(S) != ssGetSFcnParamsCount(S))
     return;
 
-  if(mxIsEmpty(ssGetSFcnParam(S,FS_BS_POS)) || !mxIsNumeric( ssGetSFcnParam(S,FS_BS_POS))
-    || (mxGetM(ssGetSFcnParam(S,FS_BS_POS)) > 1) || (mxGetN(ssGetSFcnParam(S,FS_BS_POS)) != 2) )
+  if(mxIsEmpty(ssGetSFcnParam(S,MASTER_FS_POS)) || !mxIsNumeric( ssGetSFcnParam(S,MASTER_FS_POS))
+    || (mxGetM(ssGetSFcnParam(S,MASTER_FS_POS)) > 1) || (mxGetN(ssGetSFcnParam(S,MASTER_FS_POS)) > 1) )
   {
-    ssSetErrorStatus(S,"Parameter 1 must be two single integer!");
+    ssSetErrorStatus(S,"Parameter 1 must be an integer representing the masters sampling rate!");
+    return;
+  }
+
+  if(mxIsEmpty(ssGetSFcnParam(S,MASTER_BLOCKSIZE_POS)) || !mxIsNumeric( ssGetSFcnParam(S,MASTER_BLOCKSIZE_POS))
+    || (mxGetM(ssGetSFcnParam(S,MASTER_BLOCKSIZE_POS)) > 1) || (mxGetN(ssGetSFcnParam(S,MASTER_BLOCKSIZE_POS)) > 1) )
+  {
+    ssSetErrorStatus(S,"Parameter 2 must be an integer representing the masters blocksize!");
     return;
   }
 
   if(mxIsEmpty(ssGetSFcnParam(S,SIG_TYPES_POS)) || !mxIsNumeric( ssGetSFcnParam(S,SIG_TYPES_POS))
     || (mxGetN(ssGetSFcnParam(S,SIG_TYPES_POS)) != NR_SIG_TYPES_INFO) )
   {
-    ssSetErrorStatus(S,"Parameter 2 not correct!");
+    ssSetErrorStatus(S,"Parameter 3 not correct!");
     return;
   }
 
-//  if(mxIsEmpty(ssGetSFcnParam(S,IP_POS)) || !mxIsChar( ssGetSFcnParam(S,IP_POS)) )
-//  {
-//    ssSetErrorStatus(S,"Parameter 3 not correct!");
-//    return;
-//  }
+ if(mxIsEmpty(ssGetSFcnParam(S,IP_POS)) || !mxIsChar( ssGetSFcnParam(S,IP_POS)) )
+ {
+   ssSetErrorStatus(S,"Parameter 4 not correct!");
+   return;
+ }
   if(mxIsEmpty(ssGetSFcnParam(S,PORT_POS)) || !mxIsNumeric( ssGetSFcnParam(S,PORT_POS)) )
   {
-    ssSetErrorStatus(S,"Parameter 4 not correct!");
+    ssSetErrorStatus(S,"Parameter 5 not correct!");
     return;
   }
-//  if(mxIsEmpty(ssGetSFcnParam(S,PROTOCOL_POS)) || !mxIsChar( ssGetSFcnParam(S,PROTOCOL_POS)) )
-//  {
-//    ssSetErrorStatus(S,"Parameter 5 not correct!");
-//    return;
-//  }
+ if(mxIsEmpty(ssGetSFcnParam(S,PROTOCOL_POS)) || !mxIsChar( ssGetSFcnParam(S,PROTOCOL_POS)) )
+ {
+   ssSetErrorStatus(S,"Parameter 6 not correct!");
+   return;
+ }
+ if(mxIsEmpty(ssGetSFcnParam(S,TIA_VERSION_POS)) || !mxIsChar( ssGetSFcnParam(S,PROTOCOL_POS)) )
+ {
+   ssSetErrorStatus(S,"Parameter 7 not correct!");
+   return;
+ }
 
   ssSetNumPWork(S, NUM_WORK_POINTERS);
 
   if (ssGetNumSFcnParams(S) != ssGetSFcnParamsCount(S))
     return;
 
-  const mxArray* fs_bs = ssGetSFcnParam(S, FS_BS_POS);
   const mxArray* sig_types = ssGetSFcnParam(S, SIG_TYPES_POS);
-  double fs_master = mxGetPr(fs_bs)[0];
-  double bs_master = mxGetPr(fs_bs)[1];
+  double fs_master = mxGetScalar( ssGetSFcnParam(S, MASTER_FS_POS));
+  double bs_master = mxGetScalar( ssGetSFcnParam(S, MASTER_BLOCKSIZE_POS));
 
   vector<int> width;
   vector< pair<uint16_t,uint16_t> > dims;
@@ -149,26 +235,31 @@ static void mdlInitializeSizes(SimStruct *S)
   //-----------------------------
   // set output ports sizes
 
-  if (!ssSetNumOutputPorts(S, width.size() +4))    // events, samplenr, timestamp and system/model time difference ... last 4 ports
+  if (!ssSetNumInputPorts(S, 0))
     return;
+  
+  if (!ssSetNumOutputPorts(S, width.size() + 4))    // events, samplenr, timestamp and system/model time difference ... last 4 ports
+    return;
+
+  ssSetOptions(S, SS_OPTION_DISALLOW_CONSTANT_SAMPLE_TIME );
+  ssSetNumSampleTimes(S, PORT_BASED_SAMPLE_TIMES);
+  
+  setStaticOutputPorts(S, fs_master, bs_master);
 
   for(unsigned int n = 0; n < width.size(); n++)
   {
     if(dims[n].second > 1 )
-      ssSetOutputPortFrameData(S, n, FRAME_YES);
+      ssSetOutputPortFrameData(S, n+4, FRAME_YES);
     else
-      ssSetOutputPortFrameData(S, n, FRAME_NO);
+      ssSetOutputPortFrameData(S, n+4, FRAME_NO);
 
-    ssSetOutputPortMatrixDimensions(S, n, DYNAMICALLY_SIZED, DYNAMICALLY_SIZED);
+    ssSetOutputPortMatrixDimensions(S, n+4, DYNAMICALLY_SIZED, DYNAMICALLY_SIZED);
   }
-  //   ssSetOptions(S, SS_OPTION_ALLOW_CONSTANT_PORT_SAMPLE_TIME);
-  ssSetOptions(S, SS_OPTION_DISALLOW_CONSTANT_SAMPLE_TIME );
-
-  ssSetNumSampleTimes(S, PORT_BASED_SAMPLE_TIMES);
 
   int dimensions[2];
   for(unsigned int n = 0; n < width.size(); n++)
   {
+
     DECL_AND_INIT_DIMSINFO(di);
 
     di.width   = width[n];
@@ -178,85 +269,31 @@ static void mdlInitializeSizes(SimStruct *S)
 
     di.dims    = dimensions;
 
-    if(!ssSetOutputPortDimensionInfo(S, n, &di))
+    if(!ssSetOutputPortDimensionInfo(S, n+4, &di))
       return;
 
     if(fs[n])
-      ssSetOutputPortSampleTime(S, n, numeric_cast<double>(dims[n].second) / numeric_cast<double>(fs[n]) );
+      ssSetOutputPortSampleTime(S, n+4, numeric_cast<double>(dims[n].second) / numeric_cast<double>(fs[n]) );
     else
-      ssSetOutputPortSampleTime(S, n, bs_master/fs_master );
+      ssSetOutputPortSampleTime(S, n+4, bs_master/fs_master );
 
-    ssSetOutputPortOffsetTime(S, n, 0);
+    ssSetOutputPortOffsetTime(S, n+4, 0);
 
     ///     FIXME: If blocked transmission is used, data is delayed by "n"  samples --
     ///        now solved by a delay-block, maybe possible through ssSetOutputPortOffsetTime
     //     ssSetOutputPortOffsetTime(S, n, -dims[n].second/fs[n]);
   }
-
-  // set events output port
-  ssSetOutputPortFrameData(S, width.size(), FRAME_NO);
-  ssSetOutputPortMatrixDimensions(S, width.size(), DYNAMICALLY_SIZED, DYNAMICALLY_SIZED);
-  DECL_AND_INIT_DIMSINFO(di);
-  di.width   = 128;
-  di.numDims = 2;
-  dimensions[0] = 1;    //  rows
-  dimensions[1] = 128;     //  columns
-  di.dims    = dimensions;
-  if(!ssSetOutputPortDimensionInfo(S, width.size(), &di))
-    return;
-  ssSetOutputPortSampleTime(S, width.size(), bs_master/fs_master);
-  ssSetOutputPortOffsetTime(S, width.size(), 0);
-
-  // set sample nr port
-  ssSetOutputPortFrameData(S, width.size() +1, FRAME_NO);
-  ssSetOutputPortMatrixDimensions(S, width.size() +1, DYNAMICALLY_SIZED, DYNAMICALLY_SIZED);
-  //   DECL_AND_INIT_DIMSINFO(di);
-  di.width   = 1;
-  di.numDims = 2;
-  dimensions[0] = 1;    //  rows
-  dimensions[1] = 1;     //  columns
-  di.dims    = dimensions;
-  if(!ssSetOutputPortDimensionInfo(S, width.size() +1, &di))
-    return;
-  ssSetOutputPortSampleTime(S, width.size() +1, bs_master/fs_master);
-  ssSetOutputPortOffsetTime(S, width.size() +1, 0);
-
-  // set timestamp port
-  ssSetOutputPortFrameData(S, width.size() +2, FRAME_NO);
-  ssSetOutputPortMatrixDimensions(S, width.size() +2, DYNAMICALLY_SIZED, DYNAMICALLY_SIZED);
-  di.width   = 1;
-  di.numDims = 2;
-  dimensions[0] = 1;    //  rows
-  dimensions[1] = 1;     //  columns
-  di.dims    = dimensions;
-  if(!ssSetOutputPortDimensionInfo(S, width.size() +2, &di))
-    return;
-  ssSetOutputPortSampleTime(S, width.size() +2, bs_master/fs_master);
-  ssSetOutputPortOffsetTime(S, width.size() +2, 0);
-
-  // set timestamp port
-  ssSetOutputPortFrameData(S, width.size() +3, FRAME_NO);
-  ssSetOutputPortMatrixDimensions(S, width.size() +3, DYNAMICALLY_SIZED, DYNAMICALLY_SIZED);
-  di.width   = 1;
-  di.numDims = 2;
-  dimensions[0] = 1;    //  rows
-  dimensions[1] = 1;     //  columns
-  di.dims    = dimensions;
-  if(!ssSetOutputPortDimensionInfo(S, width.size() +3, &di))
-    return;
-  ssSetOutputPortSampleTime(S, width.size() +3, bs_master/fs_master);
-  ssSetOutputPortOffsetTime(S, width.size() +3, 0);
 }
 
 //---------------------------------------------------------------------------------------
 
 static void mdlInitializeSampleTimes(SimStruct *S)
 {
-  //   ssSetSampleTime(S, 0, mxGetPr(ssGetSFcnParam(S,FS_BS_POS))[1] );  //  ... has to be the same as the number of blocks of the master (rows)
-  //   ssSetSampleTime(S, 0, ssGetOutputPortDimensions(S, 0)[0] );   // temporary ... will be given as parameter from config while initialization
-  //   ssSetSampleTime(S, 0, 1/256 );
-  //   ssSetOffsetTime(S, 0, 0.0);
-  //   ssSetModelReferenceSampleTimeDefaultInheritance(S);
+//   //   ssSetSampleTime(S, 0, mxGetPr(ssGetSFcnParam(S,FS_BS_POS))[1] );  //  ... has to be the same as the number of blocks of the master (rows)
+//   //   ssSetSampleTime(S, 0, ssGetOutputPortDimensions(S, 0)[0] );   // temporary ... will be given as parameter from config while initialization
+//   //   ssSetSampleTime(S, 0, 1/256 );
+//   //   ssSetOffsetTime(S, 0, 0.0);
+//   //   ssSetModelReferenceSampleTimeDefaultInheritance(S);
 }
 
 //---------------------------------------------------------------------------------------
@@ -266,21 +303,17 @@ static void mdlStart(SimStruct *S)
 {
   try
   {
-    const mxArray* ip_info = ssGetSFcnParam(S, IP_POS);
-    const mxArray* port_info = ssGetSFcnParam(S, PORT_POS);
-    const mxArray* proto_info = ssGetSFcnParam(S, PROTOCOL_POS);
+    string ip = mxArrayToString( ssGetSFcnParam(S, IP_POS) );
+    string protocol = mxArrayToString( ssGetSFcnParam(S, PROTOCOL_POS) );
+    string tia_version( mxArrayToString( ssGetSFcnParam(S, TIA_VERSION_POS)) );
+    uint32_t ctrl_port = mxGetScalar( ssGetSFcnParam(S, PORT_POS) );
 
-    char str_tmp[129];
+    bool use_new_tia = true;
 
-
-    mxGetString(proto_info, str_tmp, 128);
-    string protocol(str_tmp);
-    boost::algorithm::to_lower(protocol);
-
-    mxGetString(ip_info, str_tmp, 128);
-    string ip(str_tmp);
-
-    uint32_t ctrl_port(mxGetScalar( port_info ));
+    if(tia_version == "0.1")
+      use_new_tia = false;
+    else if(tia_version != "0.2")
+      ssSetErrorStatus(S, "Unknown TiA version!");
 
     map<uint32_t, pair<uint16_t, uint16_t> >* sig_info =
         new map<uint32_t, pair<uint16_t, uint16_t> >;  // (flag, (channels,blocks) )
@@ -307,7 +340,7 @@ static void mdlStart(SimStruct *S)
 
     TiAClient* client = new TiAClient;
     ssGetPWork(S)[TiAClient_POSITION] = client;
-    client->connect(ip, ctrl_port);
+    client->connect(ip, ctrl_port, use_new_tia);
 
     boost::posix_time::ptime* start_time =
           new boost::posix_time::ptime( boost::posix_time::microsec_clock::local_time() );
@@ -352,7 +385,7 @@ static void mdlStart(SimStruct *S)
 //---------------------------------------------------------------------------------------
 
 static void mdlOutputs(SimStruct *S, int_T tid)
-{
+{  
   TiAClient* client = static_cast<TiAClient* >(ssGetPWork(S)[TiAClient_POSITION]);
 
   map<uint32_t, pair<uint16_t, uint16_t> >* sig_info =
@@ -364,8 +397,8 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 
   try
   {
-   uint16_t nr_values = 0;
-   vector<double> v;
+    uint16_t nr_values = 0;
+    vector<double> v;
     DataPacket packet;
 
     if (!client->receiving())
@@ -375,10 +408,46 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 
     client->getDataPacket(packet);
     unsigned int port = 0;
+    real_T *y = 0;
+
+    //     get possible event
+    y = ssGetOutputPortRealSignal(S, port);
+    try
+    {
+      //TODO -- implement TiD stuff
+      y[0] = 0;
+    }
+    catch(std::invalid_argument& e)
+    {
+      y[0] = 0;
+    }
+
+    //     get sample nr
+    y = ssGetOutputPortRealSignal(S, ++port);
+    y[0] = packet.getSampleNr();
+
+    //     get timestamp
+    y = ssGetOutputPortRealSignal(S, ++port);
+    boost::posix_time::ptime timestamp = packet.getTimestamp();
+
+    y[0] = *(reinterpret_cast<real_T*>(&timestamp));
+
+    //     calc difference of system time and the master-port simulation time
+    y = ssGetOutputPortRealSignal(S, ++port);
+    boost::posix_time::time_duration sys_time =
+      boost::posix_time::microsec_clock::local_time() - *start_time;
+
+    boost::posix_time::time_duration diff =
+      sys_time - boost::posix_time::time_duration(0, 0, numeric_cast<uint64_t>(ssGetT(S)),
+                  numeric_cast<uint64_t>((ssGetT(S)-floor(ssGetT(S)))*1000000) );
+
+    y[0] = lexical_cast<double>( to_iso_string(diff) );
+
+
     for(map<uint32_t, pair<uint16_t, uint16_t> >::iterator it = sig_info->begin();
         it != sig_info->end();  it++)
     {
-      real_T *y = ssGetOutputPortRealSignal(S, port);
+      y = ssGetOutputPortRealSignal(S, port);
 
       try{
         v = packet.getSingleDataBlock(it->first);
@@ -395,56 +464,6 @@ static void mdlOutputs(SimStruct *S, int_T tid)
       }
       port++;
     }
-
-    //     get possible event
-    real_T *y = ssGetOutputPortRealSignal(S, port);
-    try
-    {
-      v = packet.getSingleDataBlock(SIG_EVENT);
-      nr_values = packet.getNrOfValues(SIG_EVENT);
-
-      y[0] = nr_values;
-
-      for(unsigned int n = 0; n < nr_values; n++)
-        y[n+1] = v[n];
-    }
-    catch(std::invalid_argument& e)
-    {
-      y[0] = 0;
-    }
-
-    //     get sample nr
-    y = ssGetOutputPortRealSignal(S, ++port);
-    y[0] = packet.getSampleNr();
-
-    //     get timestamp
-    y = ssGetOutputPortRealSignal(S, ++port);
-    boost::posix_time::ptime timestamp = packet.getTimestamp();
-
-    // calculate a timeformat readable for matlab
-
-    // string str = to_iso_string(timestamp);
-    // int pos = str.find("T");
-    // string str2 = str.substr (pos+1);
-    //
-    // double hour = lexical_cast<double>(str2.substr (0,2));
-    // double min  = lexical_cast<double>(str2.substr (2,2));
-    // double sec  = lexical_cast<double>(str2.substr (4));
-    //
-    // y[0] = (3600*hour) + (60*min) + sec;
-
-    y[0] = *(reinterpret_cast<real_T*>(&timestamp));
-
-    //     calc difference of system time and the master-port simulation time
-    y = ssGetOutputPortRealSignal(S, ++port);
-    boost::posix_time::time_duration sys_time =
-      boost::posix_time::microsec_clock::local_time() - *start_time;
-
-    boost::posix_time::time_duration diff =
-      sys_time - boost::posix_time::time_duration(0, 0, numeric_cast<uint64_t>(ssGetT(S)),
-                  numeric_cast<uint64_t>((ssGetT(S)-floor(ssGetT(S)))*1000000) );
-
-    y[0] = lexical_cast<double>( to_iso_string(diff) );
 
   }
   catch(bad_numeric_cast& e)
@@ -491,15 +510,17 @@ static void mdlTerminate(SimStruct *S)
       delete(start_time);
 
     TiAClient* client = static_cast<TiAClient* >(ssGetPWork(S)[TiAClient_POSITION]);
-    client->stopReceiving();
-
-    if (client->receiving())
-    {
-//      mexPrintf("Cannot Stop Receiving! \n");
-    }
-
     if(client)
+    {
+      client->stopReceiving();
+
+      if (client->receiving())
+      {
+        mexPrintf("Cannot Stop Receiving! \n");
+      }
+
       delete(client);
+    }
   }
   catch(...)
   {
@@ -515,3 +536,20 @@ static void mdlTerminate(SimStruct *S)
   #else
   #include "cg_sfun.h"       /* Code generation registration function */
   #endif
+
+
+
+    // former code:
+
+    
+    // calculate a timeformat readable for matlab  -- used at timestamp port
+
+    // string str = to_iso_string(timestamp);
+    // int pos = str.find("T");
+    // string str2 = str.substr (pos+1);
+    //
+    // double hour = lexical_cast<double>(str2.substr (0,2));
+    // double min  = lexical_cast<double>(str2.substr (2,2));
+    // double sec  = lexical_cast<double>(str2.substr (4));
+    //
+    // y[0] = (3600*hour) + (60*min) + sec;

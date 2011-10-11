@@ -35,10 +35,9 @@
 #include "tia-private/newtia/messages/tia_control_message_tags_1_0.h"
 #include "tia-private/newtia/tia_exceptions.h"
 
-#include "tia-private/network/tcp_server.h"
-
 #include <boost/asio.hpp>
 #include <boost/lexical_cast.hpp>
+#include <iostream>
 
 using std::string;
 
@@ -55,10 +54,10 @@ BoostTCPSocketImpl::BoostTCPSocketImpl (boost::asio::io_service& io_service,
 }
 
 //-----------------------------------------------------------------------------
-BoostTCPSocketImpl::BoostTCPSocketImpl (boost::shared_ptr<tobiss::TCPConnection> con)
-  : fusty_connection_ (con), remote_endpoint_str_(con->endpointToString( con->socket().remote_endpoint() ))
-{
-}
+//BoostTCPSocketImpl::BoostTCPSocketImpl (boost::shared_ptr<tobiss::TCPConnection> con)
+//  : fusty_connection_ (con), remote_endpoint_str_(con->endpointToString( con->socket().remote_endpoint() ))
+//{
+//}
 
 //-----------------------------------------------------------------------------
 BoostTCPSocketImpl::BoostTCPSocketImpl (boost::shared_ptr<boost::asio::ip::tcp::socket> boost_socket)
@@ -66,6 +65,9 @@ BoostTCPSocketImpl::BoostTCPSocketImpl (boost::shared_ptr<boost::asio::ip::tcp::
 {
   remote_endpoint_str_ = socket_->remote_endpoint().address().to_string() + ":"
       + boost::lexical_cast<std::string>( socket_->remote_endpoint().port() );
+
+  local_endpoint_str_ = socket_->local_endpoint().address().to_string() + ":"
+      + boost::lexical_cast<std::string>( socket_->local_endpoint().port() );
 }
 
 //-----------------------------------------------------------------------------
@@ -84,8 +86,8 @@ void BoostTCPSocketImpl::setReceiveBufferSize (unsigned size)
     boost::asio::socket_base::receive_buffer_size option(size);
     if (socket_)
         socket_->set_option (option);
-    else if (fusty_connection_)
-        fusty_connection_->socket().set_option (option);
+//    else if (fusty_connection_)
+//        fusty_connection_->socket().set_option (option);
 }
 
 //-----------------------------------------------------------------------------
@@ -142,10 +144,10 @@ void BoostTCPSocketImpl::waitForData ()
 void BoostTCPSocketImpl::sendString (string const& str) throw (TiALostConnection)
 {
     boost::system::error_code error;
-    if (fusty_connection_)
-        fusty_connection_->socket().send (boost::asio::buffer (str), 0, error);
-    else
-        socket_->send (boost::asio::buffer (str), 0, error);
+//    if (fusty_connection_)
+//        fusty_connection_->socket().send (boost::asio::buffer (str), 0, error);
+//    else
+    socket_->send (boost::asio::buffer (str), 0, error);
     if (error)
         throw TiALostConnection ("BoostTCPSocketImpl: sending string failed");
 }
@@ -158,9 +160,12 @@ void BoostTCPSocketImpl::readBytes (unsigned requested_bytes)
 
     unsigned available = 0;
     unsigned read_bytes = 0;
-    if (fusty_connection_)
-        available = fusty_connection_->socket().available (error);
-    else
+//    if (fusty_connection_)
+//    {
+//        available = fusty_connection_->socket().available (error);
+//        std::cout << "BoostTCPSocketImpl::readBytes -- Using Fusty Connection!" << std::endl;
+//    }
+//    else
         available = socket_->available (error);
 
     if (error)
@@ -172,10 +177,10 @@ void BoostTCPSocketImpl::readBytes (unsigned requested_bytes)
     while (read_bytes < requested_bytes)
     {
         unsigned read_bytes_now = 0;
-        if (fusty_connection_)
-            read_bytes_now += fusty_connection_->socket().read_some (boost::asio::buffer (data), error);
-        else
-            read_bytes_now += socket_->read_some (boost::asio::buffer (data), error);
+//        if (fusty_connection_)
+//            read_bytes_now += fusty_connection_->socket().read_some (boost::asio::buffer (data), error);
+//        else
+        read_bytes_now += socket_->read_some (boost::asio::buffer (data), error);
 
         if (error)
         {
@@ -192,6 +197,13 @@ void BoostTCPSocketImpl::readBytes (unsigned requested_bytes)
 std::string BoostTCPSocketImpl::getRemoteEndPointAsString()
 {
   return(remote_endpoint_str_);
+}
+
+//-----------------------------------------------------------------------------
+
+std::string BoostTCPSocketImpl::getLocalEndPointAsString()
+{
+  return(local_endpoint_str_);
 }
 
 //-----------------------------------------------------------------------------

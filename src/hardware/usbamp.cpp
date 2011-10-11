@@ -121,7 +121,7 @@ template<typename T> inline bool isnan(T value)
 
 USBamp::USBamp(ticpp::Iterator<ticpp::Element> hw)
   : HWThread(), enable_sc_(0),
-    external_sync_(0), trigger_line_(0), trigger_line_sig_type_(SIG_UNDEFINED),
+    external_sync_(0), trigger_line_(0), trigger_line_sig_type_(SIG_USER_1),
     sample_count_(0), error_count_(0) ,error_code_(0), error_msg_(0),
     driver_buffer_size_(0), timeout_(0), expected_values_(0),
     first_run_(1), current_overlapped_(0),

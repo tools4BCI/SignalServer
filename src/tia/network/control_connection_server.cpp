@@ -52,10 +52,10 @@
 #include "tia-private/network/tcp_data_server.h"
 #include "tia-private/network/udp_data_server.h"
 
-#include "tia-private/newtia/network_impl/boost_tcp_socket_impl.h"
-#include "tia-private/newtia/server_control_connection.h"
-#include "tia-private/newtia/server_impl/fusty_data_server_impl.h"
-#include "tia-private/newtia/fusty_hardware_interface_impl.h"
+//#include "tia-private/newtia/network_impl/boost_tcp_socket_impl.h"
+//#include "tia-private/newtia/server_impl/control_connection_2.h"
+//#include "tia-private/newtia/server_impl/fusty_data_server_impl.h"
+//#include "tia-private/newtia/fusty_hardware_interface_impl.h"
 
 namespace tobiss
 {
@@ -79,14 +79,14 @@ ControlConnectionServer::ControlConnectionServer(std::map<std::string,std::strin
   : TCPServer(io_service),
   server_(server),
   subject_info_(0),
-  signal_info_(0),
-  data_server_ (0),
-  hardware_interface_ (0),
-  check_connections_timer_ (io_service)
+  signal_info_(0)
+//  data_server_ (0),
+//  hardware_interface_ (0),
+//  check_connections_timer_ (io_service)
 {
   signal_info_ = new SignalInfo;
   subject_info_ = new SubjectInfo;
-  hardware_interface_ = new tia::FustyHardwareInterfaceImpl (*this);
+//  hardware_interface_ = new tia::FustyHardwareInterfaceImpl (*this);
 
   createSubjectInfo(subject_info);
   createSignalInfo();
@@ -98,21 +98,21 @@ ControlConnectionServer::~ControlConnectionServer()
 {
   delete signal_info_;
   delete subject_info_;
-  delete hardware_interface_;
-  delete data_server_;
-  for (std::map<unsigned, tia::ServerControlConnection*>::iterator iter = new_connections_.begin();
-       iter != new_connections_.end(); ++iter)
-  {
-    delete iter->second;
-  }
-  for (std::map<unsigned, tia::Socket*>::iterator iter = new_sockets_.begin();
-       iter != new_sockets_.end(); ++iter)
-  {
-    delete iter->second;
-  }
+//  delete hardware_interface_;
+//  delete data_server_;
+//  for (std::map<unsigned, tia::ControlConnection2*>::iterator iter = new_connections_.begin();
+//       iter != new_connections_.end(); ++iter)
+//  {
+//    delete iter->second;
+//  }
+//  for (std::map<unsigned, tia::Socket*>::iterator iter = new_sockets_.begin();
+//       iter != new_sockets_.end(); ++iter)
+//  {
+//    delete iter->second;
+//  }
 }
 
-//-----------------------------------------------------------------------------
+////-----------------------------------------------------------------------------
 
 TCPDataServer* ControlConnectionServer::tcpDataServer() const
 {
@@ -221,7 +221,7 @@ void ControlConnectionServer::createSignalInfo()
       }
     }
 
-    signal_info_->signals().insert(make_pair(sig_str_type,signal));
+    signal_info_->signals().insert(make_pair(sig_str_type, signal));
   }
 
   signal_info_->setMasterBlockSize(server_.master_blocksize_);
@@ -240,32 +240,32 @@ void ControlConnectionServer::handleAccept(const TCPConnection::pointer& new_con
     return;
   }
 
-  if (!data_server_)
-    data_server_ = new tia::FustyDataServerImpl (*(server_.tcp_data_server_), *(server_.udp_data_server_));
+//  if (!data_server_)
+//    data_server_ = new tia::FustyDataServerImpl (*(server_.tcp_data_server_), *(server_.udp_data_server_));
 
-  {
-    boost::system::error_code err;
-    checkConnections (err);
-  }
+//  {
+//    boost::system::error_code err;
+//    checkConnections (err);
+//  }
 
   // lock the connection list
   boost::unique_lock<boost::mutex> lock(mutex_);
 
   unsigned short local_port = new_connection->socket().local_endpoint().port();
 
-  if (server_.new_tia_)
-  {
-    tia::Socket* new_socket = new tia::BoostTCPSocketImpl (new_connection);
-    tia::ServerControlConnection* new_control_connection = new tia::ServerControlConnection (*new_socket, *data_server_, *hardware_interface_, *(server_.server_state_server_));
-    unsigned id = new_control_connection->getId();
-    new_connections_[id] = new_control_connection;
-    new_sockets_[id] = new_socket;
-    cout << " Client " << id <<" @" << new_connection->socket().remote_endpoint() << " has connected. (local: "  << new_connection->socket().local_endpoint() << ")"<< endl;
-    cout << " # Connected clients: " << new_connections_.size () << endl;
-    new_control_connection->asyncStart ();
-  }
-  else
-  {
+//  if (server_.new_tia_)
+//  {
+//    tia::Socket* new_socket = new tia::BoostTCPSocketImpl (new_connection);
+//    tia::ControlConnection2* new_control_connection = new tia::ControlConnection2 (*new_socket, *data_server_, *hardware_interface_, *(server_.server_state_server_));
+//    unsigned id = new_control_connection->getId();
+//    new_connections_[id] = new_control_connection;
+//    new_sockets_[id] = new_socket;
+//    cout << " Client " << id <<" @" << new_connection->socket().remote_endpoint() << " has connected. (local: "  << new_connection->socket().local_endpoint() << ")"<< endl;
+//    cout << " # Connected clients: " << new_connections_.size () << endl;
+//    new_control_connection->asyncStart ();
+//  }
+//  else
+//  {
     ControlConnection::ConnectionID id = make_pair(local_port, TCPConnection::endpointToString(
                                 new_connection->socket().remote_endpoint()));
 
@@ -280,7 +280,7 @@ void ControlConnectionServer::handleAccept(const TCPConnection::pointer& new_con
     cout << " # Connected clients: " << connections_.size() << endl;
 
     connection->start();
-  }
+//  }
   startAccept ();
 }
 
@@ -297,39 +297,39 @@ void ControlConnectionServer::clientHasDisconnected(const ControlConnection::Con
 }
 
 //-----------------------------------------------------------------------------
-void ControlConnectionServer::checkConnections (boost::system::error_code error)
-{
-  if (error)
-      return;
-  boost::unique_lock<boost::mutex> lock(mutex_);
-  #ifdef DEBUG
-    static unsigned call_counter = 0;
-    cout << " <- check connection "<< ++call_counter <<" -> " << endl;
-  #endif
-  std::list<unsigned> to_be_removed;
-  for (std::map<unsigned, tia::ServerControlConnection*>::iterator iter = new_connections_.begin();
-       iter != new_connections_.end(); ++iter)
-  {
-    if (!(iter->second->isRunning()))
-      to_be_removed.push_back (iter->first);
-  }
+//void ControlConnectionServer::checkConnections (boost::system::error_code error)
+//{
+//  if (error)
+//      return;
+//  boost::unique_lock<boost::mutex> lock(mutex_);
+//  #ifdef DEBUG
+//    static unsigned call_counter = 0;
+//    cout << " <- check connection "<< ++call_counter <<" -> " << endl;
+//  #endif
+//  std::list<unsigned> to_be_removed;
+//  for (std::map<unsigned, tia::ControlConnection2*>::iterator iter = new_connections_.begin();
+//       iter != new_connections_.end(); ++iter)
+//  {
+//    if (!(iter->second->isRunning()))
+//      to_be_removed.push_back (iter->first);
+//  }
 
-  for (std::list<unsigned>::iterator iter = to_be_removed.begin();
-       iter != to_be_removed.end(); ++iter)
-  {
-    cout << "  -- Removing connection to: " << new_sockets_[*iter]->getRemoteEndPointAsString() << endl;
-    delete new_connections_[*iter];
-    delete new_sockets_[*iter];
-    new_connections_.erase (*iter);
-    new_sockets_.erase (*iter);
-  }
-  if (to_be_removed.size())
-      cout << " # Connected clients: " << new_connections_.size() << endl;
+//  for (std::list<unsigned>::iterator iter = to_be_removed.begin();
+//       iter != to_be_removed.end(); ++iter)
+//  {
+//    cout << "  -- Removing connection to: " << new_sockets_[*iter]->getRemoteEndPointAsString() << endl;
+//    delete new_connections_[*iter];
+//    delete new_sockets_[*iter];
+//    new_connections_.erase (*iter);
+//    new_sockets_.erase (*iter);
+//  }
+//  if (to_be_removed.size())
+//      cout << " # Connected clients: " << new_connections_.size() << endl;
 
-  check_connections_timer_.cancel ();
-  check_connections_timer_.expires_from_now (boost::posix_time::seconds (SECONDS_TO_RE_CHECK_CONNECTIONS));
-  check_connections_timer_.async_wait(boost::bind(&ControlConnectionServer::checkConnections, this, boost::asio::placeholders::error));
-}
+//  check_connections_timer_.cancel ();
+//  check_connections_timer_.expires_from_now (boost::posix_time::seconds (SECONDS_TO_RE_CHECK_CONNECTIONS));
+//  check_connections_timer_.async_wait(boost::bind(&ControlConnectionServer::checkConnections, this, boost::asio::placeholders::error));
+//}
 
 
 //-----------------------------------------------------------------------------

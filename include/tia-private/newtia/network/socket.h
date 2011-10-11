@@ -60,6 +60,8 @@ class Socket : public WriteSocket, public ReadSocket
     virtual ~Socket () {}
     virtual std::string getRemoteEndPointAsString() = 0;
 
+    virtual std::string getLocalEndPointAsString() = 0;
+
 };
 
 }

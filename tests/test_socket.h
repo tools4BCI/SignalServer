@@ -52,6 +52,11 @@ public:
       return("RemoteIP:Port");
     }
 
+    virtual std::string getLocalEndPointAsString()
+    {
+      return("LocalIP:Port");
+    }
+
 
     std::string transmittedString () {return sent_string_;}
     void setStringToBeRead (std::string const& read_string) {string_to_return_on_read_ = read_string;}

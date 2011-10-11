@@ -52,7 +52,8 @@ void TiAServerStateServerImpl::init ()
 
 
 //-----------------------------------------------------------------------------
-TiAServerStateServerImpl::TiAServerStateServerImpl (boost::shared_ptr<TCPServerSocket> server_socket, unsigned port)
+TiAServerStateServerImpl::TiAServerStateServerImpl(
+  boost::shared_ptr<TCPServerSocket> server_socket, unsigned port)
     : server_socket_ (server_socket),
       message_builder_ (new TiAControlMessageBuilder10),
       port_ (port),

@@ -38,10 +38,10 @@
 
 #include <boost/asio.hpp>
 
-namespace tobiss
-{
-class TCPConnection;
-}
+//namespace tobiss
+//{
+//class TCPConnection;
+//}
 
 namespace tia
 {
@@ -54,7 +54,7 @@ class BoostTCPSocketImpl : public Socket
                         boost::asio::ip::tcp::endpoint const& endpoint, unsigned buffer_size);
 
 
-    BoostTCPSocketImpl (boost::shared_ptr<tobiss::TCPConnection> con);
+//    BoostTCPSocketImpl (boost::shared_ptr<tobiss::TCPConnection> con);
 
     BoostTCPSocketImpl (boost::shared_ptr<boost::asio::ip::tcp::socket> boost_socket);
 
@@ -68,13 +68,16 @@ class BoostTCPSocketImpl : public Socket
     virtual void sendString (std::string const& str) throw (TiALostConnection);
 
     virtual std::string getRemoteEndPointAsString();
+    virtual std::string getLocalEndPointAsString();
 
   private:
     void readBytes (unsigned num_bytes);
-    boost::shared_ptr<tobiss::TCPConnection> fusty_connection_;
+//    boost::shared_ptr<tobiss::TCPConnection> fusty_connection_;
     boost::shared_ptr<boost::asio::ip::tcp::socket> socket_;
     std::string buffered_string_;
+
     std::string remote_endpoint_str_;
+    std::string local_endpoint_str_;
 };
 
 }

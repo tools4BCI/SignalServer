@@ -54,12 +54,16 @@
 
 // local
 #include "tia/constants.h"
+#include "tia/ss_meta_info.h"
 
 // forward declarations
 
 namespace tia
 {
-class TiAServerStateServer;
+  class TiAServerStateServer;
+  class ControlConnectionServer2;
+  class DataServer;
+  class HardwareInterface;
 }
 
 namespace tobiss
@@ -181,6 +185,17 @@ class TiAServer : boost::noncopyable
     void setChannelNames(const std::map<boost::uint32_t, std::vector<std::string> >& channels_per_sig_type)
       { channels_per_sig_type_ = channels_per_sig_type; }
 
+  private:
+    /**
+     * @brief Creates the SubjectInfo object
+     */
+    void createSubjectInfo(std::map<std::string,std::string> subject_info_map);
+
+    /**
+     * @brief Creates the SignalInfo object
+     */
+    void createSignalInfo();
+
 
   private:
     boost::asio::io_service&            io_service_; ///<
@@ -188,8 +203,13 @@ class TiAServer : boost::noncopyable
     TCPDataServer*                      tcp_data_server_; ///<
     UDPDataServer*                      udp_data_server_; ///<
     ControlConnectionServer*            control_connection_server_; ///<
+
+
     tia::TiAServerStateServer*          server_state_server_;
     bool const new_tia_;
+    tia::ControlConnectionServer2*            control_connection_server_2_; ///<
+    tia::DataServer*                          data_server_;
+    tia::HardwareInterface*                   hardware_interface_;
 
     boost::uint32_t                                       master_blocksize_; ///<
     boost::uint32_t                                       master_samplingrate_; ///<
@@ -198,9 +218,12 @@ class TiAServer : boost::noncopyable
     std::vector<boost::uint32_t>                          fs_per_sig_type_; ///<
     std::map<boost::uint32_t, std::vector<std::string> >  channels_per_sig_type_; ///<
 
+    tobiss::SubjectInfo                 subject_info_;
+    tobiss::SignalInfo                  signal_info_;
+
+
     Constants                           cst_; ///<
 
-    bool                                write_file; ///<
 
 #ifdef TIMING_TEST
     boost::posix_time::ptime timestamp_;

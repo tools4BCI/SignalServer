@@ -66,8 +66,9 @@ enum
   NUM_OUTPUTS	// must be last
 };
 
+#define NR_SIG_TYPES_INFO   5
+#define NR_CH_INFO   2
 
-using boost::asio::ip::udp;
 using boost::uint16_t;
 using boost::uint32_t;
 
@@ -83,7 +84,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
   uint32_t port;
 
   if(nrhs != NUM_INPUTS)  // IP, port, protocol
-    mexErrMsgTxt("2 input arguments required.");
+    mexErrMsgTxt("3 input arguments required.");
   if(nlhs != NUM_OUTPUTS)
     mexErrMsgTxt("3 output arguments required.");
 
@@ -101,24 +102,25 @@ void mexFunction( int nlhs, mxArray *plhs[],
     mexErrMsgTxt("IP must be a string.");
   if (mxGetM(prhs[TIA_VERSION_POS]) !=1 )
     mexErrMsgTxt("IP must be a row vector.");
-  
+
+  string tia_version( mxArrayToString(prhs[TIA_VERSION_POS]) );
+
+  bool use_new_tia = true;
+
+  if(tia_version == "0.1")
+    use_new_tia = false;
+  else if(tia_version != "0.2")
+    mexErrMsgTxt("Unknown TiA version!");
   
   try
   {
     string srv_addr(mxArrayToString(prhs[IP_POS]));
     port = mxGetScalar(prhs[PORT_POS]);
-    string tia_version( mxArrayToString(prhs[TIA_VERSION_POS]) );
-
-    bool use_new_tia = true;
-    
-    if(tia_version == "0.1")
-      use_new_tia = false;
-    else if(tia_version != "0.2")
-      mexErrMsgTxt("Unknown TiA version!");
 
     Constants cst;
 
-    cout << "Using server " << srv_addr << ":" << port << endl;
+    cout << "Using server " << srv_addr << ":" << port;
+    cout << "  (TiA version: " << tia_version << ")"<< endl;
     TiAClient client;
     client.connect(srv_addr, port, use_new_tia);
 
@@ -157,10 +159,11 @@ void mexFunction( int nlhs, mxArray *plhs[],
       naming.insert( make_pair(it->first ,names) );
     }
 
-    plhs[FS_BS_POS] = mxCreateDoubleMatrix(1,2, mxREAL);
-    double* master_info = mxGetPr(plhs[FS_BS_POS]);
-    master_info[0] = config.signal_info.masterSamplingRate();
-    master_info[1] = config.signal_info.masterBlockSize();
+    plhs[MASTER_FS_POS] =
+      mxCreateDoubleScalar( config.signal_info.masterSamplingRate() );
+    plhs[MASTER_BLOCKSIZE_POS] =
+      mxCreateDoubleScalar( config.signal_info.masterBlockSize() );
+    
 
     mxArray* sig_types_info = mxCreateCellMatrix(sig_types.size(), NR_SIG_TYPES_INFO);
     for(uint32_t n = 0; n < sig_types.size(); n++)
@@ -170,49 +173,19 @@ void mexFunction( int nlhs, mxArray *plhs[],
       mxSetCell(sig_types_info, n + 2 * sig_types.size(), mxCreateDoubleScalar(blocksizes[n]) );
       mxSetCell(sig_types_info, n + 3 * sig_types.size(), mxCreateDoubleScalar(ch_per_sig_type[n]) );
       mxSetCell(sig_types_info, n + 4 * sig_types.size(), mxCreateDoubleScalar(fs_per_sig_type[n]) );
-
-//       sig_types_info[n] = sig_types[n];
-//       sig_types_info[ n + 2 * sig_types.size()] = blocksizes[n];
-//       sig_types_info[ n + 3 * sig_types.size()] = ch_per_sig_type[n];
     }
 
     plhs[SIG_TYPES_POS] = sig_types_info;
 
-//    mxArray* ch_info  = mxCreateCellMatrix(nr_ch, NR_CH_INFO);
-//    uint32_t channel = 0;
-//    for(map<uint32_t, vector<string> >::iterator it(naming.begin()); it != naming.end(); it++)
-//      for(uint32_t n = 0; n < it->second.size(); n++)
-//      {
-//        mxSetCell(ch_info, channel, mxCreateString(it->second[n].c_str()));
-//        mxSetCell(ch_info, channel + nr_ch, mxCreateString( cst.getSignalName(it->first).c_str() ));
-//        channel++;
-//      }
-
-//    mxArray* ch_info  = mxCreateCharArray(nr_ch, NR_CH_INFO);
-    string empty_str(16, ' ');
-    string tmp_str;
-    string sig_types_str;
-    string sig_names_str;
-
-    for(map<uint32_t, vector<string> >::iterator it(naming.begin()); it != naming.end(); it++)
-      for(uint32_t n = 0; n < it->second.size(); n++)
-      {
-        tmp_str = empty_str;
-        tmp_str.replace(0, it->second[n].size(), it->second[n] );
-        sig_names_str += tmp_str;
-        sig_names_str += ";";
-
-        tmp_str = empty_str;
-        tmp_str.replace(0, cst.getSignalName(it->first).size(), cst.getSignalName(it->first) );
-
-        sig_types_str += tmp_str;
-        sig_types_str += ";";
-      }
-
-    string end_str(sig_names_str, 0, sig_names_str.size());
-    end_str.append( sig_types_str, 0, sig_types_str.size());
-
-    mxArray* ch_info  = mxCreateString(end_str.c_str());
+   mxArray* ch_info  = mxCreateCellMatrix(nr_ch, NR_CH_INFO);
+   uint32_t channel = 0;
+   for(map<uint32_t, vector<string> >::iterator it(naming.begin()); it != naming.end(); it++)
+     for(uint32_t n = 0; n < it->second.size(); n++)
+     {
+       mxSetCell(ch_info, channel, mxCreateString(it->second[n].c_str()));
+       mxSetCell(ch_info, channel + nr_ch, mxCreateString( cst.getSignalName(it->first).c_str() ));
+       channel++;
+     }
 
     plhs[CH_INFO_POS]  = ch_info;
   }

@@ -114,8 +114,6 @@ Constants::Constants()
   signaltypes.insert(pair <string,uint32_t>("user3", SIG_USER_3));
   signaltypes.insert(pair <string,uint32_t>("user4", SIG_USER_4));
   signaltypes.insert(pair <string,uint32_t>("undefined", SIG_UNDEFINED));
-  signaltypes.insert(pair <string,uint32_t>("undef", SIG_UNDEFINED));
-  signaltypes.insert(pair <string,uint32_t>("", SIG_UNDEFINED));
   signaltypes.insert(pair <string,uint32_t>("event", SIG_EVENT));
 
 }

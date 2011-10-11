@@ -57,15 +57,6 @@
 #include "tia/constants.h"
 #include "tcp_server.h"
 
-// new forward declaration
-namespace tia
-{
-class DataServer;
-class ServerControlConnection;
-class Socket;
-class HardwareInterface;
-}
-
 namespace tobiss
 {
 // forward declarations
@@ -118,7 +109,7 @@ public:
    */
   void getConfig(ConfigMsg& config);
 
-  void checkConnections (boost::system::error_code error);
+//  void checkConnections (boost::system::error_code error);
 
 protected:
   typedef std::map<ControlConnection::ConnectionID, ControlConnection::pointer> CtrlConnHandlers;
@@ -152,11 +143,11 @@ private:
   SubjectInfo*             subject_info_; ///< reference to the subject meta data
   SignalInfo*              signal_info_;  ///< reference to the signal meta data
   Constants                cst_;
-  tia::DataServer* data_server_;
-  std::map<unsigned, tia::ServerControlConnection*> new_connections_;
-  std::map<unsigned, tia::Socket*> new_sockets_;
-  tia::HardwareInterface* hardware_interface_;
-  boost::asio::deadline_timer check_connections_timer_;
+//  tia::DataServer* data_server_;
+//  std::map<unsigned, tia::ControlConnection2*> new_connections_;
+//  std::map<unsigned, tia::Socket*> new_sockets_;
+//  tia::HardwareInterface* hardware_interface_;
+//  boost::asio::deadline_timer check_connections_timer_;
 
 };
 

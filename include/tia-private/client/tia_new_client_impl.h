@@ -101,6 +101,7 @@ private:
     std::auto_ptr<ReadSocket> data_socket_;
     std::auto_ptr<TiAControlMessageBuilder> message_builder_;
     std::auto_ptr<TiAControlMessageParser> message_parser_;
+//    std::auto_ptr<TiAControlMessageParser> message_parser_;
 };
 
 
