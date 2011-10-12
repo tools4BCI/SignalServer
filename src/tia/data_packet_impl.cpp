@@ -38,6 +38,7 @@
 #include <sstream>
 #include <stdexcept>
 
+#include "tia/defines.h"
 #include "tia/data_packet_impl.h"
 #include "tia-private/datapacket/raw_mem.h"
 
@@ -247,7 +248,7 @@ uint64_t DataPacketImpl::getPacketNr()
 
 //-----------------------------------------------------------------------------
 
-void DataPacketImpl::setTimestamp()
+void DataPacketImpl::setBoostPosixTimestamp()
 {
   timestamp_ =  boost::posix_time::microsec_clock::local_time();
 }
@@ -294,14 +295,14 @@ vector<boost::uint16_t> DataPacketImpl::getNrOfBlocks()
 
 //-----------------------------------------------------------------------------
 
-vector<uint16_t> DataPacketImpl::getNrOfValues()
+vector<uint16_t> DataPacketImpl::getNrOfSamples()
 {
   return(nr_values_);
 }
 
 //-----------------------------------------------------------------------------
 
-vector<double> DataPacketImpl::getData()
+const vector<double>& DataPacketImpl::getData()
 {
   if(!flagsOK())
     throw(std::logic_error("DataPacket::getData() -- Flags differ from Amount of Signals in DataPacket!"));
@@ -327,7 +328,7 @@ vector<double> DataPacketImpl::getSingleDataBlock(boost::uint32_t flag)
 
 //-----------------------------------------------------------------------------
 
-boost::uint16_t DataPacketImpl::getNrOfValues(boost::uint32_t flag)
+boost::uint16_t DataPacketImpl::getNrOfSamples(boost::uint32_t flag)
 {
   if(!flagsOK())
     throw(std::logic_error("DataPacket::getNrOfValues() -- Flags differ from Amount of Signals in DataPacket!"));
@@ -459,7 +460,7 @@ boost::uint32_t DataPacketImpl::getRequiredRawMemorySize()
 
 //-----------------------------------------------------------------------------
 
-boost::uint32_t DataPacketImpl::getRequiredRawMemorySize(void* mem, boost::int32_t ba)
+boost::uint32_t DataPacketImpl::getRequiredRawMemorySize(void* mem, boost::uint32_t ba)
 {
   uint32_t bytes_available = 0;
 

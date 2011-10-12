@@ -38,6 +38,8 @@
 #include <sstream>
 #include <stdexcept>
 
+#include "tia/defines.h"
+
 #include "tia/data_packet_3_impl.h"
 #include "tia-private/clock.h"
 #include "tia-private/datapacket/raw_mem3.h"
@@ -233,7 +235,7 @@ void DataPacket3Impl::insertDataBlock(vector<double> v, uint32_t signal_flag, ui
 
 void DataPacket3Impl::appendDataBlock(vector<double> &v, uint32_t signal_flag, uint16_t blocks)
 {
-  if(getNrOfBlocks(signal_flag) != blocks)
+  if(getNrSamplesPerChannel(signal_flag) != blocks)
     throw(std::logic_error("DataPacket3::appendDataBlock() -- Blocksize of appended signal does not \
           match the stored one -- check your settings!"));
 
@@ -250,7 +252,7 @@ void DataPacket3Impl::appendDataBlock(vector<double> &v, uint32_t signal_flag, u
 
 void DataPacket3Impl::prependDataBlock(vector<double> &v, uint32_t signal_flag, uint16_t blocks)
 {
-  if(getNrOfBlocks(signal_flag) != blocks)
+  if(getNrSamplesPerChannel(signal_flag) != blocks)
     throw(std::logic_error("DataPacket3::appendDataBlock() -- Blocksize of appended signal does not \
           match the stored one -- check your settings!"));
 
@@ -318,7 +320,19 @@ boost::uint16_t DataPacket3Impl::getNrOfSignalTypes()
 
 //-----------------------------------------------------------------------------
 
-vector<boost::uint16_t> DataPacket3Impl::getSamplesPerChannel()
+std::vector<boost::uint16_t> DataPacket3Impl::getNrOfSamples()
+{
+  std::vector<boost::uint16_t> vec(samples_per_channel_.size());
+
+  for(unsigned int n = 0; n < samples_per_channel_.size(); n++ )
+    vec[n] = samples_per_channel_[n] * nr_channels_[n];
+
+  return(vec);
+}
+
+//-----------------------------------------------------------------------------
+
+vector<boost::uint16_t> DataPacket3Impl::getNrSamplesPerChannel()
 {
   return(samples_per_channel_);
 }
@@ -359,7 +373,7 @@ vector<double> DataPacket3Impl::getSingleDataBlock(boost::uint32_t flag)
 
 //-----------------------------------------------------------------------------
 
-boost::uint16_t DataPacket3Impl::getNrOfValues(boost::uint32_t flag)
+boost::uint16_t DataPacket3Impl::getNrOfSamples(boost::uint32_t flag)
 {
   if(!flagsOK())
     throw(std::logic_error("DataPacket3::getNrOfValues() -- Flags differ from Amount of Signals in DataPacket!"));
@@ -367,7 +381,7 @@ boost::uint16_t DataPacket3Impl::getNrOfValues(boost::uint32_t flag)
   if(!hasFlag(flag))
     return(0);
 
-  return( getNrOfChannels(flag) * getSamplesPerChannel(flag) );
+  return( getNrOfChannels(flag) * getNrSamplesPerChannel(flag) );
 }
 
 //-----------------------------------------------------------------------------
@@ -386,7 +400,7 @@ boost::uint16_t DataPacket3Impl::getNrOfChannels(boost::uint32_t flag)
 
 //-----------------------------------------------------------------------------
 
-boost::uint16_t DataPacket3Impl::getSamplesPerChannel(boost::uint32_t flag)
+boost::uint16_t DataPacket3Impl::getNrSamplesPerChannel(boost::uint32_t flag)
 {
   if(!flagsOK())
     throw(std::logic_error("DataPacket3::getSamplesPerChannel() -- Flags differ from Amount of Signals in DataPacket!"));
@@ -396,13 +410,6 @@ boost::uint16_t DataPacket3Impl::getSamplesPerChannel(boost::uint32_t flag)
 //    throw(std::invalid_argument("DataPacket3::getSamplesPerChannel() -- Error ... Flag not set, unable to get Data!"));
 
   return(samples_per_channel_[getDataPos(flag)]);
-}
-
-//-----------------------------------------------------------------------------
-
-boost::uint16_t DataPacket3Impl::getNrOfBlocks(boost::uint32_t flag)
-{
-  return(getSamplesPerChannel(flag));
 }
 
 //-----------------------------------------------------------------------------
@@ -504,90 +511,33 @@ void* DataPacket3Impl::getRaw()
 
 boost::uint32_t DataPacket3Impl::getRequiredRawMemorySize()
 {
-  uint32_t size = sizeof(version_) + sizeof(uint32_t)\
+  uint32_t size_ = sizeof(version_) + sizeof(size_)\
                   + sizeof(flags_) + sizeof(packet_id_) + sizeof(connection_packet_nr_) \
                   + sizeof(timestamp_) \
                   + samples_per_channel_.size() * sizeof(uint16_t) \
                   + nr_channels_.size() * sizeof(uint16_t) \
                   + data_.size() * sizeof(float);  // FIXME  ...  hardcoded sizeof() !!!!
-  return(size);
+  return(size_);
 }
 
 //-----------------------------------------------------------------------------
 
-boost::uint32_t DataPacket3Impl::getRequiredRawMemorySize(void* mem, boost::int32_t ba)
+boost::uint32_t DataPacket3Impl::getRequiredRawMemorySize(void* mem, boost::uint32_t ba)
 {
-  uint32_t bytes_available = 0;
-
-  if(ba <= 0)
+  if(ba < sizeof(uint8_t) + sizeof(uint32_t) )
     return(0);
-  else
-    bytes_available = ba;
 
   uint8_t* version_ptr = reinterpret_cast<uint8_t*>(mem);
   uint8_t version = *version_ptr;
 
-  if(CURRENT_DATA_PACKET_VERSION != version)
-  {
-    string ex_str("DataPacket(void* mem): ERROR -- DataPacket versions don't match!");
-    ex_str = ex_str + " - Received packet version: ";
-    ex_str += version_;
-    ex_str = ex_str + " - Needed packet version: ";
-    ex_str += CURRENT_DATA_PACKET_VERSION;
-    throw(std::runtime_error(ex_str));
-  }
-
-  vector<uint16_t>  samples_per_channel;
-  vector<uint16_t>  nr_channels;
+  if(version != 3)
+    throw(std::runtime_error("Error -- DataPacket3Impl::getRequiredRawMemorySize: Wrong packet version!"));
 
   uint32_t* ui32_ptr = reinterpret_cast<uint32_t*>(++version_ptr);
 
-  *ui32_ptr++;      ///< FIXME:  size field is skipped
+  return(*ui32_ptr);
 
-  uint32_t flags  = *ui32_ptr;
 
-  uint32_t nr_of_signal_types = calcNrOfSignalTypes(flags);
-
-  uint32_t size = sizeof(version) + sizeof(flags) + sizeof(packet_id_) \
-                  + sizeof(connection_packet_nr_) + sizeof(timestamp_);
-
-  if(size > bytes_available)
-    return(0);
-
-  uint64_t* ui64_ptr = reinterpret_cast<uint64_t*>(++ui32_ptr);
-  ui64_ptr++;
-  boost::posix_time::ptime* ptime_ptr
-    = reinterpret_cast<boost::posix_time::ptime*>(++ui64_ptr);
-
-  uint16_t* ui16_ptr = reinterpret_cast<uint16_t*>(++ptime_ptr);
-  for(unsigned int n = 0; n < nr_of_signal_types; n++)
-  {
-    size += sizeof(uint16_t);
-    if(size > bytes_available)
-      return(0);
-
-    nr_channels.push_back(*ui16_ptr);
-    ui16_ptr++;
-  }
-
-  for(unsigned int n = 0; n < nr_of_signal_types; n++)
-  {
-    size += sizeof(uint16_t);
-    if(size > bytes_available)
-      return(0);
-
-    samples_per_channel.push_back(*ui16_ptr);
-    ui16_ptr++;
-  }
-
-  for(unsigned int j = 0; j < nr_channels.size(); j++)
-      size +=  sizeof(float) * (nr_channels[j] * samples_per_channel[j]) ;
-
-//  for(unsigned int j = 0; j < nr_values.size(); j++)
-//    for(unsigned int k = 0; k < (nr_channels[j] * samples_per_channel[j]); k++)
-//      size +=  sizeof(float);
-
-    return(size);
 }
 
 } // Namespace tobiss

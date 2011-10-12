@@ -50,6 +50,7 @@
 #include "tia/data_packet_impl.h"
 #include "tia/tia_client.h"
 #include "tia/ssconfig.h"
+#include "tia/defines.h"
 
 using namespace std;
 
@@ -80,7 +81,6 @@ class TiAClientDataReader
     {
       unsigned int counter = 0;
 
-      boost::uint16_t nr_values = 0;
       boost::uint64_t sample_nr = 0;
       boost::uint64_t packet_nr = 0;
 
@@ -109,15 +109,12 @@ class TiAClientDataReader
               if(packet.hasFlag(SIG_MOUSE))
               {
                 v = packet.getSingleDataBlock(SIG_MOUSE);
-                nr_values = packet.getNrOfValues(SIG_MOUSE);
-
                 cout << "mousepos: "<< packet.getSingleDataBlock(SIG_MOUSE)[1]<<","<<packet.getSingleDataBlock(SIG_MOUSE)[2];
               }
 
               if(packet.hasFlag(SIG_MBUTTON))
               {
                 v = packet.getSingleDataBlock(SIG_MBUTTON);
-                nr_values = packet.getNrOfValues(SIG_MBUTTON);
                 cout<<" ... buttons: "<<packet.getSingleDataBlock(SIG_MBUTTON)[1]<<packet.getSingleDataBlock(SIG_MBUTTON)[2]<<packet.getSingleDataBlock(SIG_MBUTTON)[3]<<endl;
               }
               if( ((client_.config().signal_info.masterSamplingRate()/client_.config().signal_info.masterBlockSize()) < 1) ||

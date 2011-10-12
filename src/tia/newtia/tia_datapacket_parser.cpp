@@ -31,9 +31,11 @@
     Contact: TiA@tobi-project.org
 */
 
-#include "tia-private/newtia/tia_datapacket_parser.h"
-
 #include <string>
+
+#include "tia-private/newtia/tia_datapacket_parser.h"
+#include "tia/defines.h"
+
 
 using std::string;
 

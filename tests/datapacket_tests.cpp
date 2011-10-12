@@ -47,7 +47,7 @@ TEST_FIXTURE(DataPacketSignalTypeFlags, emptyDataPacket)
     DataPacket3Impl empty_packet;
     CHECK (empty_packet.getNrOfChannels().size() == 0);
     CHECK (empty_packet.getNrOfSignalTypes() == 0);
-    CHECK (empty_packet.getSamplesPerChannel().size() == 0);
+    CHECK (empty_packet.getNrSamplesPerChannel().size() == 0);
     CHECK (empty_packet.getData().size() == 0);
     CHECK (empty_packet.getConnectionPacketNr() == 0);
     CHECK (empty_packet.getFlags() == 0);
@@ -56,9 +56,9 @@ TEST_FIXTURE(DataPacketSignalTypeFlags, emptyDataPacket)
     {
         CHECK_THROW (empty_packet.getSingleDataBlock (flag_setting), std::invalid_argument);
         CHECK (empty_packet.hasFlag (flag_setting) == false);
-        CHECK (empty_packet.getNrOfValues(flag_setting) == 0);
-        CHECK (empty_packet.getSamplesPerChannel (flag_setting) == 0);
-        CHECK (empty_packet.getNrOfBlocks (flag_setting) == 0);
+        CHECK (empty_packet.getNrOfSamples(flag_setting) == 0);
+        CHECK (empty_packet.getNrSamplesPerChannel (flag_setting) == 0);
+        //CHECK (empty_packet.getNrOfBlocks (flag_setting) == 0);
     }
 }
 

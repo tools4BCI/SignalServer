@@ -47,12 +47,9 @@
 #define DATAPACKET3_H
 
 #include <map>
-#include <vector>
-
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/cstdint.hpp>
 
-#include "tia/defines.h"
+#include "tia/data_packet_interface.h"
 
 namespace tia
 {
@@ -75,7 +72,7 @@ class RawMem3;
 * @todo TESTING
 * @todo Check doxygen, because several methods have changed!
 */
-class DataPacket3Impl
+class DataPacket3Impl : public DataPacket
 {
   /** \example datapacket-usage-example.cpp
   *   This is an example how to build an fill a TiA data packet with
@@ -192,16 +189,43 @@ class DataPacket3Impl
     * @return sample number
     */
     boost::uint64_t getPacketID();
+
+
+    /**
+    * @brief TODO
+    */
+    virtual std::vector<boost::uint16_t> getNrOfSamples();
     /**
     * @brief Get a vector containing the blocksizes for every signal type.
     * @return A vector containing the blocksizes for every signal type.
     */
-    std::vector<boost::uint16_t> getSamplesPerChannel();
+    std::vector<boost::uint16_t> getNrSamplesPerChannel();
     /**
     * @brief Get a vector containing the number of values (NOT channels!) for every signal type.
     * @return A vector containing the number of values (NOT channels!)for every signal type.
     */
     std::vector<boost::uint16_t> getNrOfChannels();
+
+
+
+    /**
+    * @brief TODO
+    */
+    boost::uint16_t getNrOfSamples(boost::uint32_t flag);
+    /**
+    * @brief Get the number of blocks for a specific signal type.
+    * @param[in] flag
+    * @return boost::uint16_t The number of blocks.
+    */
+    boost::uint16_t getNrSamplesPerChannel(boost::uint32_t flag);
+    /**
+    * @brief Get the number of values for a specific signal type.
+    * @param[in] flag
+    * @return boost::uint16_t The number of values.
+    */
+    boost::uint16_t getNrOfChannels(boost::uint32_t flag);
+
+
     /**
     * @brief Get all samples stored in the DataPacket as a vector.
     * @return A vector reference to the samples stored in the DataPacket.
@@ -216,33 +240,6 @@ class DataPacket3Impl
     * @throw std::invalid_argument if flag is not set in the DataPacket
     */
     std::vector<double> getSingleDataBlock(boost::uint32_t flag);
-
-
-    /**
-    * @brief TODO
-    */
-    boost::uint16_t getNrOfValues(boost::uint32_t flag);
-
-    /**
-    * @brief Get the number of values for a specific signal type.
-    * @param[in] flag
-    * @return boost::uint16_t The number of values.
-    */
-    boost::uint16_t getNrOfChannels(boost::uint32_t flag);
-
-    /**
-    * @brief Get the number of blocks for a specific signal type.
-    * @param[in] flag
-    * @return boost::uint16_t The number of blocks.
-    */
-    boost::uint16_t getSamplesPerChannel(boost::uint32_t flag);
-
-    /**
-    * @brief Get the number of blocks for a specific signal type (the same as getSamplesPerChannel).
-    * @param[in] flag
-    * @return boost::uint16_t The number of blocks (samples per channel).
-    */
-    boost::uint16_t getNrOfBlocks(boost::uint32_t flag);
 
     /**
     * @brief Get a pointer to a memory region, containing the raw representation of the DataPacket.
@@ -279,7 +276,7 @@ class DataPacket3Impl
     *
     * @todo Rewrite this mehtod as its size is now available inside the data packet.
     */
-    boost::uint32_t getRequiredRawMemorySize(void* mem, boost::int32_t bytes_available);
+    boost::uint32_t getRequiredRawMemorySize(void* mem, boost::uint32_t bytes_available);
 
   private:
     /**
@@ -335,6 +332,7 @@ class DataPacket3Impl
   private:
 
     boost::uint8_t  version_;
+    boost::uint32_t size_;
 
     /**
     * @brief The sample number the data packet is holding.
@@ -355,6 +353,8 @@ class DataPacket3Impl
     std::vector<boost::uint16_t>  samples_per_channel_;    ///< Blocksize for every signal type.
     std::vector<boost::uint16_t>  nr_channels_;              ///< Number of values for every signal type.
     std::vector<double> data_;                             ///< The samples stored in the DataPacket.
+
+
 
     std::map<boost::uint32_t, RawMem3*> raw_map_; ///< A map holding pointers to raw_mem objects, identified by their flags.
 };

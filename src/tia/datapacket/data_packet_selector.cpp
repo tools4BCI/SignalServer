@@ -86,7 +86,7 @@ DataPacketImpl DataPacketSelector::getModifiedDataPacket(DataPacketImpl& packet)
 
     work_vec_ = packet.getSingleDataBlock(flag);
     blocksize = packet.getNrOfBlocks(flag);
-    nr_values = packet.getNrOfValues(flag);
+    nr_values = packet.getNrOfSamples(flag);
     nr_ch  = nr_values/blocksize;
 
     vector<double>&  sample_vec = sample_map_[flag];
