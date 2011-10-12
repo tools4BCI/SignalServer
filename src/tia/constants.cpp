@@ -42,7 +42,7 @@
 #include "tia/defines.h"
 #include "ticpp/ticpp.h"
 
-namespace tobiss
+namespace tia
 {
 using std::string;
 using std::map;

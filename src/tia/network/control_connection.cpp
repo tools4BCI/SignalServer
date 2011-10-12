@@ -52,7 +52,7 @@
 #include "tia-private/network/tcp_data_server.h"
 #include "tia-private/network/udp_data_server.h"
 
-namespace tobiss
+namespace tia
 {
 using std::cout;
 using std::cerr;

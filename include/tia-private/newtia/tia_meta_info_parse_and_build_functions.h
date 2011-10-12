@@ -40,10 +40,10 @@ namespace tia
 {
 
 //-----------------------------------------------------------------------------
-tobiss::SSConfig parseTiAMetaInfoFromXMLString (std::string const& tia_meta_info_xml_string);
+SSConfig parseTiAMetaInfoFromXMLString (std::string const& tia_meta_info_xml_string);
 
 //-----------------------------------------------------------------------------
-std::string buildTiAMetaInfoXMLString (tobiss::SSConfig const& tia_meta_info);
+std::string buildTiAMetaInfoXMLString (SSConfig const& tia_meta_info);
 
 
 }

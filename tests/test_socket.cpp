@@ -56,17 +56,37 @@ string TestSocket::readString (unsigned number_bytes)
 }
 
 //-----------------------------------------------------------------------------
-string TestSocket::readLine (unsigned max_length)
+string TestSocket::readUntil (char delimiter)
+{
+    std::string delim;
+    delim = delimiter;
+    string ret_val;
+    size_t new_line_pos = 0;
+    while ((string_to_return_on_read_.substr (new_line_pos, 1) != delim) &&
+           (new_line_pos < string_to_return_on_read_.size ()))
+        new_line_pos++;
+    if (string_to_return_on_read_.substr (new_line_pos, 1) == delim)
+        ret_val = readString (new_line_pos);
+    else
+        throw tia::TiAException ("TestSocket::readUntil (char delimiter): No NewLine Character in given string.");
+
+    string_to_return_on_read_.erase (0, 1);
+
+    return ret_val;
+}
+
+//-----------------------------------------------------------------------------
+string TestSocket::readUntil (std::string delimiter)
 {
     string ret_val;
     size_t new_line_pos = 0;
-    while ((string_to_return_on_read_.substr (new_line_pos, NEW_LINE.size ()) != NEW_LINE) &&
+    while ((string_to_return_on_read_.substr (new_line_pos, delimiter.size ()) != delimiter) &&
            (new_line_pos < string_to_return_on_read_.size ()))
         new_line_pos++;
-    if (string_to_return_on_read_.substr (new_line_pos, NEW_LINE.size ()) == NEW_LINE)
+    if (string_to_return_on_read_.substr (new_line_pos, delimiter.size ()) == delimiter)
         ret_val = readString (new_line_pos);
     else
-        throw tia::TiAException ("TestSocket::readLine: No NewLine Character in given string.");
+        throw tia::TiAException ("TestSocket::readUntil (std::string delimiter): No NewLine Character in given string.");
 
     string_to_return_on_read_.erase (0, 1);
 

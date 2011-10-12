@@ -20,11 +20,11 @@
 
 #include "UnitTest++/UnitTest++.h"
 #include "tia/tia_client.h"
-#include "tia/data_packet.h"
+#include "tia/data_packet_impl.h"
 
 #include <limits>
 
-using namespace tobiss;
+using namespace tia;
 
 TEST(clientBasicConnection)
 {
@@ -46,6 +46,6 @@ TEST(clientBasicConnection)
 
     client.disconnect();
 
-    DataPacket data_packet;
+    DataPacketImpl data_packet;
     CHECK_THROW(client.getDataPacket(data_packet), std::ios_base::failure);
 }

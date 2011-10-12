@@ -38,8 +38,8 @@ namespace tia
 {
 
 //-----------------------------------------------------------------------------
-FustyDataServerImpl::FustyDataServerImpl (tobiss::TCPDataServer& tcp_data_server,
-                                          tobiss::UDPDataServer& udp_data_server)
+FustyDataServerImpl::FustyDataServerImpl (TCPDataServer& tcp_data_server,
+                                          UDPDataServer& udp_data_server)
     : tcp_data_server_ (tcp_data_server),
       udp_data_server_ (udp_data_server),
       next_free_connection_id_ (0)

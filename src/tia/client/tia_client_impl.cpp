@@ -49,7 +49,7 @@
 #include "tia-private/config/control_message_decoder.h"
 #include "tia-private/config/control_message_encoder.h"
 #include "tia-private/config/control_messages.h"
-#include "tia/data_packet.h"
+#include "tia/data_packet_impl.h"
 
 #ifdef TIMING_TEST
   #include "LptTools/LptTools.h"
@@ -57,7 +57,7 @@
   #define LPT2  1
 #endif
 
-namespace tobiss
+namespace tia
 {
 using boost::numeric_cast;
 using boost::numeric::bad_numeric_cast;
@@ -478,7 +478,7 @@ void TiAClientImpl::stopReceiving()
 
 //-----------------------------------------------------------------------------
 
-void TiAClientImpl::getDataPacket(DataPacket& packet)
+void TiAClientImpl::getDataPacket(DataPacketImpl& packet)
 {
   if ((ctl_conn_state_ == ControlConnState_NotConnected))
   {
@@ -497,7 +497,7 @@ void TiAClientImpl::getDataPacket(DataPacket& packet)
   boost::system::error_code error;
   size_t bytes_transferred = 0;
   uint32_t packet_size = 0;
-  DataPacket p;
+  DataPacketImpl p;
 
   if (packet_offset_ == 0)
   {
@@ -578,7 +578,7 @@ void TiAClientImpl::getDataPacket(DataPacket& packet)
 
   try
   {
-    p = DataPacket(reinterpret_cast<char*>(&(data_buf_[packet_offset_])));
+    p = DataPacketImpl(reinterpret_cast<char*>(&(data_buf_[packet_offset_])));
   }
   catch(std::runtime_error& e)
   {

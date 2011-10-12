@@ -27,7 +27,7 @@
 #include <boost/thread.hpp>
 #include <boost/thread/xtime.hpp>
 
-using namespace tobiss;
+using namespace tia;
 
 //-------------------------------------------------------------------------------------------------
 TEST (clockTest)

@@ -80,9 +80,9 @@ map<string, string> getAttributes (rapidxml::xml_node<>* node);
 map<string, string> getAttributes (rapidxml::xml_node<>* node, set<string> required_attributes);
 
 //-----------------------------------------------------------------------------
-tobiss::SSConfig parseTiAMetaInfoFromXMLString (std::string const& tia_meta_info_xml_string)
+SSConfig parseTiAMetaInfoFromXMLString (std::string const& tia_meta_info_xml_string)
 {
-    tobiss::SSConfig tia_meta_info;
+    SSConfig tia_meta_info;
     rapidxml::xml_document<> xml_doc;
     try
     {
@@ -126,10 +126,10 @@ tobiss::SSConfig parseTiAMetaInfoFromXMLString (std::string const& tia_meta_info
     // parse signals
     rapidxml::xml_node<>* signal_node = 0;
     signal_node = tia_metainfo_node->first_node (XML_TAGS::SIGNAL.c_str());
-    tobiss::SignalInfo::SignalMap& signal_map = tia_meta_info.signal_info.signals ();
+    SignalInfo::SignalMap& signal_map = tia_meta_info.signal_info.signals ();
     while (signal_node)
     {
-        tobiss::Signal signal;
+        Signal signal;
         map<string, string> signal_attributes = getAttributes (signal_node, XML_TAGS::SIGNAL_REQUIRED_ATTRIBUTES);
         signal.setType (signal_attributes[XML_TAGS::SIGNAL_TYPE]);
         signal.setSamplingRate (toUnsigned (signal_attributes[XML_TAGS::SIGNAL_SAMPLINGRATE]));
@@ -138,10 +138,10 @@ tobiss::SSConfig parseTiAMetaInfoFromXMLString (std::string const& tia_meta_info
         unsigned const num_channels = toUnsigned (signal_attributes[XML_TAGS::SIGNAL_NUMCHANNELS]);
 
         // parse channels
-        std::vector<tobiss::Channel>& channel_vector = signal.channels();
+        std::vector<Channel>& channel_vector = signal.channels();
         for (unsigned channel_nr = 0; channel_nr < num_channels; channel_nr++)
         {
-            tobiss::Channel channel;
+            Channel channel;
             channel.setId (toString (channel_nr));
             channel_vector.push_back (channel);
         }
@@ -166,7 +166,7 @@ tobiss::SSConfig parseTiAMetaInfoFromXMLString (std::string const& tia_meta_info
 }
 
 //-----------------------------------------------------------------------------
-std::string buildTiAMetaInfoXMLString (tobiss::SSConfig const& tia_meta_info)
+std::string buildTiAMetaInfoXMLString (SSConfig const& tia_meta_info)
 {
     rapidxml::xml_document<> xml_doc;
 
@@ -192,7 +192,7 @@ std::string buildTiAMetaInfoXMLString (tobiss::SSConfig const& tia_meta_info)
 
 
     // signals
-    for (tobiss::SignalInfo::SignalMap::const_iterator signal_iter = tia_meta_info.signal_info.signals().begin ();
+    for (SignalInfo::SignalMap::const_iterator signal_iter = tia_meta_info.signal_info.signals().begin ();
          signal_iter != tia_meta_info.signal_info.signals ().end (); ++signal_iter)
     {
         char *signal_node_name = xml_doc.allocate_string (XML_TAGS::SIGNAL.c_str ());

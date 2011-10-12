@@ -35,7 +35,6 @@ HEADERS += include/tia/tia_server.h \
     include/tia-private/config/control_message_encoder.h \
     include/tia-private/config/control_messages.h \
     include/tia/ss_meta_info.h \
-    include/tia/data_packet.h \
     include/tia-private/datapacket/raw_mem.h \
     include/tia-private/datapacket/data_packet_selector.h \
     include/tia-private/network/control_connection.h \
@@ -47,7 +46,6 @@ HEADERS += include/tia/tia_server.h \
     include/tia-private/client/tia_client_impl.h \
     include/tia-private/client/tia_client_impl_base.h \
     include/tia/ssconfig.h \
-    include/tia/data_packet3.h \
     include/tia-private/datapacket/raw_mem3.h \
     include/tia-private/clock.h \
     include/tia-private/newtia/network/socket.h \
@@ -88,7 +86,10 @@ HEADERS += include/tia/tia_server.h \
     include/tia-private/newtia/network_impl/boost_tcp_socket_impl.h \
     include/tia-private/newtia/server/control_connection_server_2.h \
     include/tia-private/newtia/server_impl/control_connection_server_2_impl.h \
-    include/tia-private/newtia/server_impl/control_connection_2.h
+    include/tia-private/newtia/server_impl/control_connection_2.h \
+    include/tia/data_packet_impl.h \
+    include/tia/data_packet_3_impl.h \
+    include/tia/data_packet_interface.h
 
 contains( DEFINES, TIMING_TEST )::HEADERS += extern/include/LptTools/LptTools.h
 
@@ -100,7 +101,6 @@ SOURCES += src/tia/tia_server.cpp \
     src/tia/config/control_message_encoder.cpp \
     src/tia/config/control_messages.cpp \
     src/tia/ss_meta_info.cpp \
-    src/tia/data_packet.cpp \
     src/tia/datapacket/raw_mem.cpp \
     src/tia/datapacket/data_packet_selector.cpp \
     src/tia/network/control_connection.cpp \
@@ -110,7 +110,6 @@ SOURCES += src/tia/tia_server.cpp \
     src/tia/network/udp_data_server.cpp \
     src/tia/client/tia_client_impl.cpp \
     src/tia/tia_client.cpp \
-    src/tia/data_packet3.cpp \
     src/tia/datapacket/raw_mem3.cpp \
     src/tia/clock.cpp \
     src/tia/newtia/commands/get_data_connection_control_command.cpp \
@@ -126,7 +125,9 @@ SOURCES += src/tia/tia_server.cpp \
     src/tia/newtia/network_impl/boost_tcp_server_socket_impl.cpp \
     src/tia/newtia/server_impl/tia_server_state_server_impl.cpp \
     src/tia/newtia/server_impl/control_connection_server_2_impl.cpp \
-    src/tia/newtia/server_impl/control_connection_2.cpp
+    src/tia/newtia/server_impl/control_connection_2.cpp \
+    src/tia/data_packet_impl.cpp \
+    src/tia/data_packet_3_impl.cpp
 
 unix {
   contains( DEFINES, TIMING_TEST )::SOURCES += extern/include/LptTools/LptToolsLinux.cpp

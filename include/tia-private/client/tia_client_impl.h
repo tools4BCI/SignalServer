@@ -50,12 +50,12 @@
 #include "tia/ssconfig.h"
 #include "tia/defines.h"
 
-namespace tobiss
+namespace tia
 {
 // forward declaration
 class ControlMsgEncoder;
 class ControlMsgDecoder;
-class DataPacket;
+class DataPacketImpl;
 class SSConfig;
 
 //-----------------------------------------------------------------------------
@@ -139,7 +139,7 @@ public:
    * @throw std::overflow_error if an overflow occurs
    *
    */
-  virtual void getDataPacket(DataPacket& packet);
+  virtual void getDataPacket(DataPacketImpl& packet);
 
   /**
    * @brief Sets the client's data input buffer size to the given value

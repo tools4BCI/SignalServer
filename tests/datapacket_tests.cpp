@@ -22,8 +22,8 @@
 
 #include "datapacket_tests_fixtures.h"
 
-#include "tia/data_packet3.h"
-#include "tia/data_packet.h"
+#include "tia/data_packet_3_impl.h"
+#include "tia/data_packet_impl.h"
 #include "tia-private/clock.h"
 
 #include <boost/foreach.hpp>
@@ -33,7 +33,7 @@
 #include <string>
 #include <vector>
 
-using namespace tobiss;
+using namespace tia;
 using std::vector;
 
 //-------------------------------------------------------------------------------------------------
@@ -44,7 +44,7 @@ using std::vector;
 ///
 TEST_FIXTURE(DataPacketSignalTypeFlags, emptyDataPacket)
 {
-    DataPacket3 empty_packet;
+    DataPacket3Impl empty_packet;
     CHECK (empty_packet.getNrOfChannels().size() == 0);
     CHECK (empty_packet.getNrOfSignalTypes() == 0);
     CHECK (empty_packet.getSamplesPerChannel().size() == 0);
@@ -69,7 +69,7 @@ TEST_FIXTURE(DataPacketSignalTypeFlags, emptyDataPacket)
 /// check the setter and getter methods of DataPacket
 TEST(setterGetterDataPacket)
 {
-    DataPacket3 empty_packet;
+    DataPacket3Impl empty_packet;
 
     empty_packet.setConnectionPacketNr (5);
     CHECK(empty_packet.getConnectionPacketNr() == 5);
@@ -96,7 +96,7 @@ TEST(setterGetterDataPacket)
 //-------------------------------------------------------------------------------------------------
 TEST_FIXTURE(DataPacketInsertingFixture, insertingDataPacket)
 {
-    DataPacket3 packet;
+    DataPacket3Impl packet;
 
     packet.insertDataBlock (random_data, SIG_EEG, 1);
     CHECK(packet.hasFlag(SIG_EEG));
@@ -111,12 +111,12 @@ TEST_FIXTURE(DataPacketInsertingFixture, insertingDataPacket)
 ///
 TEST_FIXTURE(DataPacketRawMemoryFixture, createVersion3DataPacket)
 {
-    DataPacket3 empty_packet (reinterpret_cast<void*>(version_3_binary_packet_empty));
+    DataPacket3Impl empty_packet (reinterpret_cast<void*>(version_3_binary_packet_empty));
     CHECK_EQUAL (empty_packet.getPacketID(), RANDOM_PACKET_ID);
     CHECK_EQUAL (empty_packet.getConnectionPacketNr(), RANDOM_CONNECTION_PACKET_NUMBER);
     CHECK_EQUAL (empty_packet.getTimestamp(), TIME_STAMP);
 
-    DataPacket3 eeg_packet (reinterpret_cast<void*>(version_3_binary_packet_eeg));
+    DataPacket3Impl eeg_packet (reinterpret_cast<void*>(version_3_binary_packet_eeg));
     CHECK_EQUAL (eeg_packet.getPacketID(), RANDOM_PACKET_ID);
     CHECK_EQUAL (eeg_packet.getConnectionPacketNr(), RANDOM_CONNECTION_PACKET_NUMBER);
     CHECK_EQUAL (eeg_packet.getNrOfChannels (SIG_EEG), EEG_CHANNELS);
@@ -129,7 +129,7 @@ TEST_FIXTURE(DataPacketRawMemoryFixture, createVersion3DataPacket)
             CHECK (!eeg_packet.hasFlag (flag_setting));
     }
 
-    DataPacket3 eeg_emg_packet (reinterpret_cast<void*>(version_3_binary_packet_eeg_emg));
+    DataPacket3Impl eeg_emg_packet (reinterpret_cast<void*>(version_3_binary_packet_eeg_emg));
     CHECK_EQUAL (eeg_emg_packet.getTimestamp(), TIME_STAMP);
     BOOST_FOREACH (boost::uint32_t flag_setting, all_signal_type_flags_single)
     {
@@ -145,7 +145,7 @@ TEST_FIXTURE(DataPacketRawMemoryFixture, createVersion3DataPacket)
 //-------------------------------------------------------------------------------------------------
 TEST(assemblePacket)
 {
-    DataPacket3 assembled_packet;
+    DataPacket3Impl assembled_packet;
     vector<double> v0 (25,0);
     vector<double> v1 (5,1);
     vector<double> v2 (16,2);
@@ -194,7 +194,7 @@ TEST(assemblePacket)
 // NOT COMPLETED YET
 TEST_FIXTURE(DataPacketRawMemoryFixture, createVersion2DataPacket)
 {
-    DataPacket packet (reinterpret_cast<void*>(version_2_binary_packet_empty));
+    DataPacketImpl packet (reinterpret_cast<void*>(version_2_binary_packet_empty));
 
     CHECK_EQUAL (packet.getPacketNr(), RANDOM_PACKET_ID);
 }

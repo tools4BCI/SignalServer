@@ -50,7 +50,7 @@
 #include <boost/asio.hpp>
 #include <boost/cstdint.hpp>
 
-#include "tia/data_packet.h"
+#include "tia/data_packet_impl.h"
 #include "hw_thread.h"
 
 namespace tobiss
@@ -101,7 +101,7 @@ class HWAccess
     * SampleNr is automatically increased.
     * DataPacket (holded by hw_access object) is reseted all the time this method is called.
     */
-    DataPacket getDataPacket();
+    tia::DataPacketImpl getDataPacket();
 
     /**
     * @brief Starts the data acquisition.
@@ -254,7 +254,7 @@ class HWAccess
     /**
     * @brief The DataPacket containing latest data from all connected devices.
     */
-    DataPacket packet_;
+    tia::DataPacketImpl packet_;
 
     /**
     * @brief A vector holding pointers to all connected slave hardware objects.

@@ -50,7 +50,7 @@ namespace tia
 class FustyDataServerImpl : public DataServer
 {
 public:
-    FustyDataServerImpl (tobiss::TCPDataServer& tcp_data_server, tobiss::UDPDataServer& udp_data_server);
+    FustyDataServerImpl (TCPDataServer& tcp_data_server, UDPDataServer& udp_data_server);
 
     virtual ~FustyDataServerImpl ();
 
@@ -70,8 +70,8 @@ public:
     virtual void stopTransmission (ConnectionID connection);
 
 private:
-    tobiss::TCPDataServer& tcp_data_server_;
-    tobiss::UDPDataServer& udp_data_server_;
+    TCPDataServer& tcp_data_server_;
+    UDPDataServer& udp_data_server_;
 
     std::map<ConnectionID, boost::asio::ip::tcp::endpoint> id_tcp_endpoint_map_;
     std::set<ConnectionID> tcp_connections_;

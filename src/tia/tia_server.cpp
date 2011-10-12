@@ -52,7 +52,7 @@
 #include "ticpp/ticpp.h"
 
 // local
-#include "tia/data_packet.h"
+#include "tia/data_packet_impl.h"
 #include "tia-private/network/control_connection_server.h"
 #include "tia/tia_server.h"
 #include "tia-private/network/tcp_data_server.h"
@@ -70,7 +70,7 @@
   #define LPT2  1
 #endif
 
-namespace tobiss
+namespace tia
 {
 using boost::uint64_t;
 using boost::uint32_t;
@@ -194,7 +194,7 @@ void TiAServer::initialize(std::map<std::string,std::string>& subject_info_map,
 
 //-----------------------------------------------------------------------------
 
-void TiAServer::sendDataPacket(DataPacket& packet)
+void TiAServer::sendDataPacket(DataPacketImpl& packet)
 {
   tcp_data_server_->sendDataPacket(packet);
   udp_data_server_->sendDataPacket(packet);

@@ -51,7 +51,7 @@
 #include "tia-private/config/control_message_decoder.h"
 #include "tia/ss_meta_info.h"
 
-namespace tobiss
+namespace tia
 {
 
 using boost::lexical_cast;

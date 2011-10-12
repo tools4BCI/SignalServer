@@ -38,11 +38,11 @@
 #include <sstream>
 #include <stdexcept>
 
-#include "tia/data_packet3.h"
+#include "tia/data_packet_3_impl.h"
 #include "tia-private/clock.h"
 #include "tia-private/datapacket/raw_mem3.h"
 
-namespace tobiss
+namespace tia
 {
 
 using boost::uint16_t;
@@ -60,7 +60,7 @@ static const unsigned int CURRENT_DATA_PACKET_VERSION = 3;
 
 //-----------------------------------------------------------------------------
 
-DataPacket3::DataPacket3()
+DataPacket3Impl::DataPacket3Impl()
 : version_(CURRENT_DATA_PACKET_VERSION), packet_id_(0),
   flags_(0), connection_packet_nr_(0),
   timestamp_(0), nr_of_signal_types_(0)
@@ -70,7 +70,7 @@ DataPacket3::DataPacket3()
 
 //-----------------------------------------------------------------------------
 
-DataPacket3::DataPacket3(const DataPacket3 &src)
+DataPacket3Impl::DataPacket3Impl(const DataPacket3Impl &src)
 {
   version_ = src.version_;
   packet_id_ = src.packet_id_;
@@ -88,7 +88,7 @@ DataPacket3::DataPacket3(const DataPacket3 &src)
 
 //-----------------------------------------------------------------------------
 
-DataPacket3::DataPacket3(void* mem)
+DataPacket3Impl::DataPacket3Impl(void* mem)
   : flags_(0), connection_packet_nr_(0), nr_of_signal_types_(0)
 {
   #ifdef DEBUG
@@ -146,7 +146,7 @@ DataPacket3::DataPacket3(void* mem)
 }
 
 //-----------------------------------------------------------------------------
-DataPacket3::~DataPacket3()
+DataPacket3Impl::~DataPacket3Impl()
 {
 	for(std::map<boost::uint32_t, RawMem3*>::iterator it(raw_map_.begin());
 		it != raw_map_.end(); it++)
@@ -158,7 +158,7 @@ DataPacket3::~DataPacket3()
 
 //-----------------------------------------------------------------------------
 
-void DataPacket3::reset()
+void DataPacket3Impl::reset()
 {
   #ifdef DEBUG
     cout << "DataPacket: reset" << endl;
@@ -178,21 +178,21 @@ void DataPacket3::reset()
 
 //-----------------------------------------------------------------------------
 
-void DataPacket3::incPacketID()
+void DataPacket3Impl::incPacketID()
 {
   packet_id_++;
 }
 
 //-----------------------------------------------------------------------------
 
-void DataPacket3::setPacketID(boost::uint64_t nr)
+void DataPacket3Impl::setPacketID(boost::uint64_t nr)
 {
   packet_id_ = nr;
 }
 
 //-----------------------------------------------------------------------------
 
-void DataPacket3::insertDataBlock(vector<double> v, uint32_t signal_flag, uint16_t blocks, bool prepend)
+void DataPacket3Impl::insertDataBlock(vector<double> v, uint32_t signal_flag, uint16_t blocks, bool prepend)
 {
 
   if(!flagsOK())
@@ -231,7 +231,7 @@ void DataPacket3::insertDataBlock(vector<double> v, uint32_t signal_flag, uint16
 
 //-----------------------------------------------------------------------------
 
-void DataPacket3::appendDataBlock(vector<double> &v, uint32_t signal_flag, uint16_t blocks)
+void DataPacket3Impl::appendDataBlock(vector<double> &v, uint32_t signal_flag, uint16_t blocks)
 {
   if(getNrOfBlocks(signal_flag) != blocks)
     throw(std::logic_error("DataPacket3::appendDataBlock() -- Blocksize of appended signal does not \
@@ -248,7 +248,7 @@ void DataPacket3::appendDataBlock(vector<double> &v, uint32_t signal_flag, uint1
 
 //-----------------------------------------------------------------------------
 
-void DataPacket3::prependDataBlock(vector<double> &v, uint32_t signal_flag, uint16_t blocks)
+void DataPacket3Impl::prependDataBlock(vector<double> &v, uint32_t signal_flag, uint16_t blocks)
 {
   if(getNrOfBlocks(signal_flag) != blocks)
     throw(std::logic_error("DataPacket3::appendDataBlock() -- Blocksize of appended signal does not \
@@ -264,35 +264,35 @@ void DataPacket3::prependDataBlock(vector<double> &v, uint32_t signal_flag, uint
 
 //-----------------------------------------------------------------------------
 
-void DataPacket3::setConnectionPacketNr(boost::uint64_t nr)
+void DataPacket3Impl::setConnectionPacketNr(boost::uint64_t nr)
 {
   connection_packet_nr_ = nr;
 }
 
 //--------------------------------------------------------------------
 
-uint64_t DataPacket3::getConnectionPacketNr()
+uint64_t DataPacket3Impl::getConnectionPacketNr()
 {
   return(connection_packet_nr_);
 }
 
 //-------------------------------------------------------------------
 
-void DataPacket3::setTimestamp()
+void DataPacket3Impl::setTimestamp()
 {
     timestamp_ =  Clock::instance ().getMicroSeconds ();
 }
 
 //-----------------------------------------------------------------------------
 
-bool DataPacket3::hasFlag(boost::uint32_t f)
+bool DataPacket3Impl::hasFlag(boost::uint32_t f)
 {
   return( (f & flags_) == f);
 }
 
 //-----------------------------------------------------------------------------
 
-boost::uint32_t DataPacket3::getFlags()
+boost::uint32_t DataPacket3Impl::getFlags()
 {
   if(!flagsOK())
     throw(std::logic_error("DataPacket3::getFlags() -- Flags differ from Amount of Signals in DataPacket!"));
@@ -301,14 +301,14 @@ boost::uint32_t DataPacket3::getFlags()
 
 //-----------------------------------------------------------------------------
 
-boost::uint64_t DataPacket3::getPacketID()
+boost::uint64_t DataPacket3Impl::getPacketID()
 {
   return(packet_id_);
 }
 
 //-----------------------------------------------------------------------------
 
-boost::uint16_t DataPacket3::getNrOfSignalTypes()
+boost::uint16_t DataPacket3Impl::getNrOfSignalTypes()
 {
   if(!flagsOK())
     throw(std::logic_error("DataPacket3::getNrOfSignalTypes() -- Flags differ from Amount of Signals in DataPacket!"));
@@ -318,21 +318,21 @@ boost::uint16_t DataPacket3::getNrOfSignalTypes()
 
 //-----------------------------------------------------------------------------
 
-vector<boost::uint16_t> DataPacket3::getSamplesPerChannel()
+vector<boost::uint16_t> DataPacket3Impl::getSamplesPerChannel()
 {
   return(samples_per_channel_);
 }
 
 //-----------------------------------------------------------------------------
 
-vector<uint16_t> DataPacket3::getNrOfChannels()
+vector<uint16_t> DataPacket3Impl::getNrOfChannels()
 {
   return(nr_channels_);
 }
 
 //-----------------------------------------------------------------------------
 
-const vector<double>& DataPacket3::getData()
+const vector<double>& DataPacket3Impl::getData()
 {
   if(!flagsOK())
     throw(std::logic_error("DataPacket3::getData() -- Flags differ from Amount of Signals in DataPacket!"));
@@ -341,7 +341,7 @@ const vector<double>& DataPacket3::getData()
 
 //-----------------------------------------------------------------------------
 
-vector<double> DataPacket3::getSingleDataBlock(boost::uint32_t flag)
+vector<double> DataPacket3Impl::getSingleDataBlock(boost::uint32_t flag)
 {
   if(!flagsOK())
     throw(std::logic_error("DataPacket3::getSingleDataBlock() -- Flags differ from Amount of Signals in DataPacket!"));
@@ -359,7 +359,7 @@ vector<double> DataPacket3::getSingleDataBlock(boost::uint32_t flag)
 
 //-----------------------------------------------------------------------------
 
-boost::uint16_t DataPacket3::getNrOfValues(boost::uint32_t flag)
+boost::uint16_t DataPacket3Impl::getNrOfValues(boost::uint32_t flag)
 {
   if(!flagsOK())
     throw(std::logic_error("DataPacket3::getNrOfValues() -- Flags differ from Amount of Signals in DataPacket!"));
@@ -372,7 +372,7 @@ boost::uint16_t DataPacket3::getNrOfValues(boost::uint32_t flag)
 
 //-----------------------------------------------------------------------------
 
-boost::uint16_t DataPacket3::getNrOfChannels(boost::uint32_t flag)
+boost::uint16_t DataPacket3Impl::getNrOfChannels(boost::uint32_t flag)
 {
   if(!flagsOK())
     throw(std::logic_error("DataPacket3::getNrOfChannels() -- Flags differ from Amount of Signals in DataPacket!"));
@@ -386,7 +386,7 @@ boost::uint16_t DataPacket3::getNrOfChannels(boost::uint32_t flag)
 
 //-----------------------------------------------------------------------------
 
-boost::uint16_t DataPacket3::getSamplesPerChannel(boost::uint32_t flag)
+boost::uint16_t DataPacket3Impl::getSamplesPerChannel(boost::uint32_t flag)
 {
   if(!flagsOK())
     throw(std::logic_error("DataPacket3::getSamplesPerChannel() -- Flags differ from Amount of Signals in DataPacket!"));
@@ -400,14 +400,14 @@ boost::uint16_t DataPacket3::getSamplesPerChannel(boost::uint32_t flag)
 
 //-----------------------------------------------------------------------------
 
-boost::uint16_t DataPacket3::getNrOfBlocks(boost::uint32_t flag)
+boost::uint16_t DataPacket3Impl::getNrOfBlocks(boost::uint32_t flag)
 {
   return(getSamplesPerChannel(flag));
 }
 
 //-----------------------------------------------------------------------------
 
-boost::uint16_t DataPacket3::calcNrOfSignalTypes(boost::uint32_t f)
+boost::uint16_t DataPacket3Impl::calcNrOfSignalTypes(boost::uint32_t f)
 {
   uint16_t count = 0;
   uint32_t shift = 1;
@@ -420,7 +420,7 @@ boost::uint16_t DataPacket3::calcNrOfSignalTypes(boost::uint32_t f)
 
 //-----------------------------------------------------------------------------
 
-bool DataPacket3::flagsOK()
+bool DataPacket3Impl::flagsOK()
 {
   if(calcNrOfSignalTypes(flags_) != nr_of_signal_types_)
     return(false);
@@ -430,14 +430,14 @@ bool DataPacket3::flagsOK()
 
 //-----------------------------------------------------------------------------
 
-void DataPacket3::setFlag(boost::uint32_t f)
+void DataPacket3Impl::setFlag(boost::uint32_t f)
 {
   flags_ |= f;
 }
 
 //-----------------------------------------------------------------------------
 
-boost::uint32_t DataPacket3::getDataPos(boost::uint32_t flag)
+boost::uint32_t DataPacket3Impl::getDataPos(boost::uint32_t flag)
 {
   if(flag > flags_)
     return(nr_of_signal_types_);
@@ -457,7 +457,7 @@ boost::uint32_t DataPacket3::getDataPos(boost::uint32_t flag)
 
 //-----------------------------------------------------------------------------
 
-boost::uint32_t DataPacket3::getOffset(boost::uint32_t pos)
+boost::uint32_t DataPacket3Impl::getOffset(boost::uint32_t pos)
 {
   uint32_t offset = 0;
 
@@ -468,7 +468,7 @@ boost::uint32_t DataPacket3::getOffset(boost::uint32_t pos)
 
 //-----------------------------------------------------------------------------
 
-boost::uint32_t DataPacket3::getRawMemorySize()
+boost::uint32_t DataPacket3Impl::getRawMemorySize()
 {
   map<uint32_t, RawMem3*>::iterator it(raw_map_.find(flags_));
 
@@ -479,7 +479,7 @@ boost::uint32_t DataPacket3::getRawMemorySize()
 
 //-----------------------------------------------------------------------------
 
-void* DataPacket3::getRaw()
+void* DataPacket3Impl::getRaw()
 {
   map<uint32_t, RawMem3*>::iterator it(raw_map_.find(flags_));
   RawMem3* r;
@@ -502,7 +502,7 @@ void* DataPacket3::getRaw()
 
 //-----------------------------------------------------------------------------
 
-boost::uint32_t DataPacket3::getRequiredRawMemorySize()
+boost::uint32_t DataPacket3Impl::getRequiredRawMemorySize()
 {
   uint32_t size = sizeof(version_) + sizeof(uint32_t)\
                   + sizeof(flags_) + sizeof(packet_id_) + sizeof(connection_packet_nr_) \
@@ -515,7 +515,7 @@ boost::uint32_t DataPacket3::getRequiredRawMemorySize()
 
 //-----------------------------------------------------------------------------
 
-boost::uint32_t DataPacket3::getRequiredRawMemorySize(void* mem, boost::int32_t ba)
+boost::uint32_t DataPacket3Impl::getRequiredRawMemorySize(void* mem, boost::int32_t ba)
 {
   uint32_t bytes_available = 0;
 

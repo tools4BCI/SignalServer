@@ -174,7 +174,7 @@ void HWThread::setDeviceChannels(ticpp::Iterator<ticpp::Element>const &elem)
     throw(std::invalid_argument(ex_str + e.what()));
   }
 
-  Constants cst;
+  tia::Constants cst;
   for(uint16_t n = 1; n <= nr_ch_; n++)
     channel_info_.insert(
         pair<uint16_t, pair<string, uint32_t> >(n, pair<string, uint32_t>(naming,
@@ -225,7 +225,7 @@ void HWThread::setChannelSelection(ticpp::Iterator<ticpp::Element>const &father)
   else
     elem = father->FirstChildElement(hw_chset_ch_,false);
 
-  Constants cst;
+  tia::Constants cst;
   if (elem != elem.end())
   {
     if(channel_info_.size() != 0)

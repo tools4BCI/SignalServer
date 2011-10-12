@@ -46,18 +46,18 @@
 #ifndef DATAPACKET_H
 #define DATAPACKET_H
 
-#include <map>
-#include <vector>
 
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/cstdint.hpp>
 
 #include "tia/defines.h"
 
-namespace tobiss
+namespace std
 {
+  class vector;
+}
 
-class RawMem;
+namespace tia
+{
 
 /**
 * @class DataPacket
@@ -70,8 +70,6 @@ class RawMem;
 * (EEG first, then EMG, EOG, ...).
 * It provides methods to get stored data wether again as a vector or in a raw representation.
 * For raw representations, it holds raw memory objects, storing the respective representation.
-*
-* @todo Implementing the possibility to built a raw DataPacket representation with freely selectable content.
 */
 class DataPacket
 {
@@ -84,10 +82,7 @@ class DataPacket
     /**
     * @brief Default constructor -- building an empty DataPacket.
     */
-    DataPacket()
-    : flags_(0), packet_nr_(0),
-      timestamp_(boost::posix_time::microsec_clock::local_time()), nr_of_signal_types_(0)
-    {  }
+    virtual DataPacket() = 0;
 
     /**
     * @brief Constructor to (re)build a DataPacket from raw memory.
@@ -95,47 +90,38 @@ class DataPacket
     * @param[in] mem Raw memory containing the raw representation of a DataPacket.
     * @throw std::invalid_argument if packet version missmatch
     * @todo Implementing safety checks, as far as possible.
+    * @todo Size field is skipped!
     *
     * This method (re)builds a DataPacket object from a raw memory region, containing
     * the raw representation of a DataPacket.
     */
-    DataPacket(void* mem);
+    virtual DataPacket(void* mem) = 0;
 
     /**
     * @brief Destructor
-    *
-    * @todo Check for memory leaks! (can occur, if raw_mem objects are built)
-    *
-    * Deletes all dynamically built raw_mem objects stored in raw_map.
     */
-    virtual ~DataPacket();
+    virtual ~DataPacket() = 0;
 
-  /**
+    /**
     * @brief Copy constructor  --  does NOT copy the raw memory representation.
     * @todo Check for memory leaks! (can occur, if raw_mem objects are built)
     */
-    DataPacket(const DataPacket &src)
-    {
-      sample_nr_ = src.sample_nr_;
-      flags_ = src.flags_;
-      packet_nr_ = src.packet_nr_;
-      timestamp_ = src.timestamp_;
-      nr_of_signal_types_ = src.nr_of_signal_types_;
+    virtual DataPacket(const DataPacket &src) = 0;
 
-      nr_blocks_ = src.nr_blocks_;
-      nr_values_ = src.nr_values_;
-      data_ = src.data_;
-
-      std::map<boost::uint32_t, RawMem*> raw_map_;
-    }
     /**
     * @brief Resets the whole DataPacket (samples are deleted).
     */
-    void reset();
+    virtual void reset() = 0;
+
     /**
     * @brief Increase the static sample number by one.
     */
-    void incSampleNr();
+    virtual void incPacketID() = 0;
+
+    /**
+    * @brief Set the packet ID.
+    */
+    virtual void setPacketID(boost::uint64_t nr) = 0;
 
     /**
     * @brief Insert data (only one signal type) from a hardware device into the DataPacket (will be automatically placed correct).
@@ -148,71 +134,68 @@ class DataPacket
     * This mehtod inserts a homogenous sample vector (consiting of only ONE single signal type)
     * into the DataPacket. The vector is automatically correctly placed in the Packet,
     * respective to its signal type.
-    * @warning Up to the DataPacket can only store one signal type from only one device. If two
-    * devices are delivering the same signal type, an exception is thrown. (Could be avoided,
-    * if the second device delivers a user-type signal.)
-    * @todo If needed: Implementing the possibility to store the same signal type comming from different devices.
     */
-    void insertDataBlock(std::vector<double> v, boost::uint32_t signal_flag, boost::uint16_t blocks, bool prepend = false);
+    virtual void insertDataBlock(std::vector<double> v, boost::uint32_t signal_flag, boost::uint16_t blocks, bool prepend = false)  = 0;
 
     /**
     * @brief Set the packet number (can differ from the samplenumber -- e.g. if sending with different rates)
     */
-    void setPacketNr(boost::uint64_t);
+    virtual void setConnectionPacketNr(boost::uint64_t) = 0;
 
     /**
     * @brief Set the packet number (can differ from the samplenumber -- e.g. if sending with different rates)
     */
-    boost::uint64_t getPacketNr();
+    virtual boost::uint64_t getConnectionPacketNr() = 0;
 
     /**
     * @brief Set the timestamp to localtime.
     */
-    void setTimestamp();
+    virtual void setTimestamp() = 0;
 
     /**
-    * @brief Get the timestamp (localtime) of the datapacket.
+    * @brief Get the timestamp (microseconds since signal server has been started)
+    *        of the datapacket.
     */
-    boost::posix_time::ptime getTimestamp()   { return(timestamp_);  }
+    virtual boost::uint64_t getTimestamp() = 0;
 
     /**
     * @brief Check, if a flag is already set.
     * @return bool
     */
-    bool hasFlag(boost::uint32_t f);
+    virtual bool hasFlag(boost::uint32_t f) = 0;
     /**
     * @brief Get the number of signal types stored in the DataPacket.
     * @return The amount of signal types stored in the DataPacket.
     * @throw std::logic_error if flags are not OK.
     */
-    boost::uint16_t getNrOfSignalTypes();
+    virtual boost::uint16_t getNrOfSignalTypes() = 0;
     /**
     * @brief Get the flags (including packetversion) of the DataPacket.
     * @return flags
     * @throw std::logic_error if flags are not OK.
     */
-    boost::uint32_t getFlags();
+    virtual boost::uint32_t getFlags() = 0;
     /**
     * @brief Get the sample number of the DataPacket.
     * @return sample number
     */
-    boost::uint64_t getSampleNr();
+    virtual boost::uint64_t getPacketID() = 0;
     /**
     * @brief Get a vector containing the blocksizes for every signal type.
     * @return A vector containing the blocksizes for every signal type.
     */
-    std::vector<boost::uint16_t> getNrOfBlocks();
+    virtual std::vector<boost::uint16_t> getSamplesPerChannel() = 0;
     /**
     * @brief Get a vector containing the number of values (NOT channels!) for every signal type.
     * @return A vector containing the number of values (NOT channels!)for every signal type.
     */
-    std::vector<boost::uint16_t> getNrOfValues();
+    virtual std::vector<boost::uint16_t> getNrOfChannels() = 0;
     /**
     * @brief Get all samples stored in the DataPacket as a vector.
-    * @return A vector containing the samples stored in the DataPacket.
+    * @return A vector reference to the samples stored in the DataPacket.
     * @throw std::logic_error if flags are not OK.
     */
-    std::vector<double> getData();
+    virtual const std::vector<double>& getData() = 0;
     /**
     * @brief Get a vector containing all samples for a specific signal type.
     * @param[in] flag
@@ -220,21 +203,34 @@ class DataPacket
     * @throw std::logic_error if flags are not OK.
     * @throw std::invalid_argument if flag is not set in the DataPacket
     */
-    std::vector<double> getSingleDataBlock(boost::uint32_t flag);
+    virtual std::vector<double> getSingleDataBlock(boost::uint32_t flag) = 0;
+
+
+    /**
+    * @brief TODO
+    */
+    virtual boost::uint16_t getNrOfValues(boost::uint32_t flag) = 0;
 
     /**
     * @brief Get the number of values for a specific signal type.
     * @param[in] flag
     * @return boost::uint16_t The number of values.
     */
-    boost::uint16_t getNrOfValues(boost::uint32_t flag);
+    virtual boost::uint16_t getNrOfChannels(boost::uint32_t flag) = 0;
 
     /**
     * @brief Get the number of blocks for a specific signal type.
     * @param[in] flag
     * @return boost::uint16_t The number of blocks.
     */
-    boost::uint16_t getNrOfBlocks(boost::uint32_t flag);
+    virtual boost::uint16_t getSamplesPerChannel(boost::uint32_t flag) = 0;
+
+    /**
+    * @brief Get the number of blocks for a specific signal type (the same as getSamplesPerChannel).
+    * @param[in] flag
+    * @return boost::uint16_t The number of blocks (samples per channel).
+    */
+    virtual boost::uint16_t getNrOfBlocks(boost::uint32_t flag) = 0;
 
     /**
     * @brief Get a pointer to a memory region, containing the raw representation of the DataPacket.
@@ -244,20 +240,20 @@ class DataPacket
     * @todo Inserting data after building a raw representation, won't change the raw memory and
     * will deliver a pointer pointing to "the old" DataPacket.
     */
-    void* getRaw();
+    virtual void* getRaw() = 0;
 
-    /**}
+    /**
      *
     * @brief Get the size (in bytes) of the raw memory region holding the raw DataPacket.
     * @return The size of the raw memory region.
     */
-    boost::uint32_t getRawMemorySize();
+    virtual boost::uint32_t getRawMemorySize() = 0;
 
     /**
     * @brief Get the required size (in bytes) to hold a given raw DataPacket.
     * @return The needed size of the raw memory region.
     */
-    boost::uint32_t getRequiredRawMemorySize();
+    virtual boost::uint32_t getRequiredRawMemorySize() = 0;
 
     /**
     * @brief Get the required size (in bytes) to hold raw DataPacket stored in RAW memory.
@@ -268,84 +264,13 @@ class DataPacket
     * @param[in] bytes_available  The memory size, the DataPacket is stored in.
     * @return 0 if the RAW memory region is too small to hold the DataPacket,
     * otherwise the needed size of the raw memory region.
-    */
-    boost::uint32_t getRequiredRawMemorySize(void* mem, boost::int32_t bytes_available);
-
-  private:
-    /**
-    * @brief Calculate the number of different signaltypes (equal to bits == 1) defined in a flag.
-    * @return The number of bits == 1.
-    */
-    boost::uint16_t calcNrOfSignalTypes(boost::uint32_t f);
-    /**
-    * @brief Check, if the flags are OK and not in conflict to other values in the DataPacket.
-    * @return bool
-    */
-    bool flagsOK();
-    /**
-    * @brief Set a flag in flags.
-    * @param[in] flag The Flag to set.
-    */
-    void setFlag(boost::uint32_t flag);
-    /**
-    * @brief Get the data position (first signal, second, ...) of a signal type in the DataPacket.
-    * @param[in] flag The signal type to get the position for.
-    * @return The position of the signal type.
-    */
-    boost::uint32_t getDataPos(boost::uint32_t flag);
-    /**
-    * @brief Get the offset in the samples vector for a signal at a desired position (first signal, ...).
-    * @param[in] pos The position in the DataPacket (from getDataPos() ).
-    * @return The offset in the samples vector for the "n-th" signal.
-    */
-    boost::uint32_t getOffset(boost::uint32_t pos);
-
-    /**
-    * @brief Append data (only one signal type) from a hardware device into the DataPacket (will be automatically placed correct).
-    * @param[in]  &v   Vector containing homogenous samples (only one signal type).
-    * @param[in]  signal_flag   The flag specifiying the appended signal.
-    * @param[in]  blocks    The number of blocks (=blocksize), the vector contains.
-    * @throws TODO
     *
-    * TODO: Description
+    * @todo Rewrite this mehtod as its size is now available inside the data packet.
     */
-    void appendDataBlock(std::vector<double> &v, boost::uint32_t signal_flag, boost::uint16_t blocks);
+    virtual boost::uint32_t getRequiredRawMemorySize(void* mem, boost::int32_t bytes_available) = 0;
 
-    /**
-    * @brief Append data (only one signal type) from a hardware device into the DataPacket (will be automatically placed correct).
-    * @param[in]  &v   Vector containing homogenous samples (only one signal type).
-    * @param[in]  signal_flag   The flag specifiying the appended signal.
-    * @param[in]  blocks    The number of blocks (=blocksize), the vector contains.
-    * @throws TODO
-    *
-    * TODO: Description
-    */
-    void prependDataBlock(std::vector<double> &v, boost::uint32_t signal_flag, boost::uint16_t blocks);
-
-  private:
-    /**
-    * @brief The sample number the data packet is holding.
-    * @todo Is a static declaration needed/useful for the sample number?
-    */
-    static boost::uint64_t  sample_nr_;
-
-    /**
-    * @brief Flags, specifying the signal types stored in the DataPacket.
-    * @todo Replace by a std::bitset!
-    */
-    boost::uint32_t  flags_;
-    boost::uint64_t  packet_nr_;        ///< The packet number of the DataPacket (not mandatory = the sample number)
-    boost::posix_time::ptime  timestamp_;   ///< Timestamp of the datapacket (important ... synchronize clocks!)
-
-    boost::uint16_t  nr_of_signal_types_;   ///<  Number of different signal types stored in the DataPacket.
-
-    std::vector<boost::uint16_t>  nr_blocks_;  ///< Blocksize for every signal type.
-    std::vector<boost::uint16_t>  nr_values_;  ///< Number of values for every signal type.
-    std::vector<double> data_;  ///< The samples stored in the DataPacket.
-
-    std::map<boost::uint32_t, RawMem*> raw_map_; ///< A map holding pointers to raw_mem objects, identified by their flags.
 };
 
-} // Namespace tobiss
+} // Namespace tia
 
 #endif // DATAPACKET_H

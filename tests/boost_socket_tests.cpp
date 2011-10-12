@@ -63,11 +63,11 @@ TEST(boostTCPSocketImpl)
     boost::thread* io_thread = new boost::thread(boost::bind(&boost::asio::io_service::run, &io_service));
 
     socket->waitForData ();
-    CHECK_EQUAL (std::string ("Hugo"), socket->readLine (100));
+    CHECK_EQUAL (std::string ("Hugo"), socket->readUntil( '\n') );
 
     socket->waitForData ();
-    CHECK_EQUAL (std::string ("Hugo Klaus"), socket->readLine (100));
-    CHECK_EQUAL (std::string (""), socket->readLine (100));
+    CHECK_EQUAL (std::string ("Hugo Klaus"), socket->readUntil( '\n') );
+    CHECK_EQUAL (std::string (""), socket->readUntil( '\n') );
     CHECK_EQUAL ('1', socket->readCharacter ());
     CHECK_EQUAL ('2', socket->readCharacter ());
     CHECK_EQUAL ('3', socket->readCharacter ());

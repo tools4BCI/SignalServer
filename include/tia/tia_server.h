@@ -60,19 +60,16 @@
 
 namespace tia
 {
+
+  class ControlConnectionServer;
+  class TCPDataServer;
+  class UDPDataServer;
+
   class TiAServerStateServer;
   class ControlConnectionServer2;
   class DataServer;
   class HardwareInterface;
-}
-
-namespace tobiss
-{
-// forward declarations
-class ControlConnectionServer;
-class TCPDataServer;
-class UDPDataServer;
-class DataPacket;
+  class DataPacketImpl;
 
 //-----------------------------------------------------------------------------
 
@@ -140,7 +137,7 @@ class TiAServer : boost::noncopyable
     * @param[in]  packet
     * @throws
     */
-    void sendDataPacket(DataPacket& packet);
+    void sendDataPacket(DataPacketImpl& packet);
 
     /**
      * @brief Set the sampling rate of the master device
@@ -218,8 +215,8 @@ class TiAServer : boost::noncopyable
     std::vector<boost::uint32_t>                          fs_per_sig_type_; ///<
     std::map<boost::uint32_t, std::vector<std::string> >  channels_per_sig_type_; ///<
 
-    tobiss::SubjectInfo                 subject_info_;
-    tobiss::SignalInfo                  signal_info_;
+    SubjectInfo                 subject_info_;
+    SignalInfo                  signal_info_;
 
 
     Constants                           cst_; ///<

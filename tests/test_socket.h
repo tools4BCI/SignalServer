@@ -43,9 +43,13 @@ public:
 
     virtual void setReceiveBufferSize (unsigned) {}
     virtual std::string readString (unsigned number_bytes = 4000000000u);
-    virtual std::string readLine (unsigned max_length);
+    virtual std::string readUntil (char delimiter);
+    virtual std::string readUntil (std::string delimiter);
     virtual char readCharacter ();
     virtual void waitForData ();
+
+    virtual size_t readBytes (char* data, size_t bytes_to_read) { return 0;}
+    virtual size_t getAvailableData (char* data, size_t max_size) { return 0;}
 
     virtual std::string getRemoteEndPointAsString()
     {

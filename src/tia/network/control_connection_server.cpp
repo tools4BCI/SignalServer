@@ -57,7 +57,7 @@
 //#include "tia-private/newtia/server_impl/fusty_data_server_impl.h"
 //#include "tia-private/newtia/fusty_hardware_interface_impl.h"
 
-namespace tobiss
+namespace tia
 {
 
 using std::vector;

@@ -45,7 +45,7 @@
 
 #include <iostream>
 
-namespace tobiss
+namespace tia
 {
 //-----------------------------------------------------------------------------
 
@@ -129,7 +129,7 @@ void TiAClient::stopReceiving()
 
 //-----------------------------------------------------------------------------
 
-void TiAClient::getDataPacket(DataPacket& packet)
+void TiAClient::getDataPacket(DataPacketImpl& packet)
 {
   impl_->getDataPacket(packet);
 }

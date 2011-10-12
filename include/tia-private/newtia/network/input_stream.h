@@ -36,17 +36,22 @@
 
 #include <string>
 
+
 namespace tia
 {
 
 //-----------------------------------------------------------------------------
 class InputStream
 {
-public:
+  public:
     virtual ~InputStream () {}
-    virtual std::string readLine (unsigned max_length) = 0;
+    virtual std::string readUntil (char delimiter) = 0;
+    virtual std::string readUntil (std::string delimiter) = 0;
     virtual std::string readString (unsigned length) = 0;
     virtual char readCharacter () = 0;
+
+    virtual size_t readBytes (char* data, size_t bytes_to_read) = 0;
+    virtual size_t getAvailableData (char* data, size_t max_size) = 0;
 };
 
 }

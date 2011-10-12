@@ -43,9 +43,9 @@
 
 #include <boost/cstdint.hpp>
 
-#include "tia/data_packet.h"
+#include "tia/data_packet_impl.h"
 
-namespace tobiss
+namespace tia
 {
 
 //-----------------------------------------------------------------------------
@@ -65,7 +65,7 @@ class DataPacketSelector
     void setDesiredChannels(  boost::uint32_t signal_type, boost::uint16_t blocksize,
                          std::set<boost::uint16_t> channels);
 
-    DataPacket getModifiedDataPacket(DataPacket& packet);
+    DataPacketImpl getModifiedDataPacket(DataPacketImpl& packet);
 
   private:
 

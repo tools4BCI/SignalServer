@@ -52,19 +52,24 @@
   }
 #endif
 
+namespace tia
+{
+  class TiAServer;
+}
+
 namespace tobiss
 {
 
 class XMLParser;
 class HWAccess;
-class TiAServer;
+
 
 //-----------------------------------------------------------------------------
 
 class SignalServer
 {
   public:
-    SignalServer(HWAccess& hw_access, TiAServer& server, XMLParser& config_parser);
+    SignalServer(HWAccess& hw_access, tia::TiAServer& server, XMLParser& config_parser);
     virtual ~SignalServer();
 
     void stop();
@@ -77,7 +82,7 @@ class SignalServer
     boost::thread*              io_service_thread_;
 
     HWAccess&                   hw_access_;
-    TiAServer&                  tia_server_;
+    tia::TiAServer&                  tia_server_;
     XMLParser&                  config_parser_;
 
     #ifdef USE_TID_SERVER

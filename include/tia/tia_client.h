@@ -47,10 +47,10 @@
   #define DECL_EXPORT
 #endif
 
-namespace tobiss
+namespace tia
 {
 // forward declarations
-class DataPacket;
+class DataPacketImpl;
 class TiAClientImplBase;
 class SSConfig;
 
@@ -178,7 +178,7 @@ public:
    * @throw std::overflow_error if an overflow occurs
    *
    */
-  virtual void getDataPacket(DataPacket& packet);
+  virtual void getDataPacket(DataPacketImpl& packet);
   /**
    * @brief Sets the client's data input buffer size to the given value
    * @param size the size of the input buffer in [byte]

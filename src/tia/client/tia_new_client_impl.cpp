@@ -43,9 +43,9 @@
 #include "tia-private/newtia/string_utils.h"
 #include "tia-private/newtia/network_impl/boost_tcp_socket_impl.h"
 #include "tia-private/newtia/network_impl/boost_udp_read_socket.h"
-#include "tia-private/newtia/tia_datapacket_parser.h"
 
-using namespace tobiss;
+
+
 using namespace std;
 
 namespace tia
@@ -59,7 +59,8 @@ TiANewClientImpl::TiANewClientImpl ()
       receiving_ (false),
       buffer_size_ (BUFFER_SIZE),
       message_builder_ (new TiAControlMessageBuilder10),
-      message_parser_ (new TiAControlMessageParser10)
+      message_parser_ (new TiAControlMessageParser10),
+      data_packet_parser(0)
 {
 
 }
@@ -88,6 +89,12 @@ void TiANewClientImpl::disconnect ()
     if (data_socket_.get ())
         data_socket_.reset (0);
     socket_.reset (0);
+
+    if(data_packet_parser)
+    {
+      delete data_packet_parser;
+      data_packet_parser = 0;
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -127,6 +134,8 @@ void TiANewClientImpl::startReceiving (bool use_udp_bc)
         }
     }
 
+    data_packet_parser =  new TiADataPacketParser(*data_socket_);
+
     sendMessage (TiAControlMessage (MESSAGE_VERSION_, TiAControlMessageTags10::START_DATA_TRANSMISSION, "", ""));
     waitForOKResponse ();
 
@@ -151,7 +160,7 @@ void TiANewClientImpl::stopReceiving()
 }
 
 //-----------------------------------------------------------------------------
-void TiANewClientImpl::getDataPacket (DataPacket& packet)
+void TiANewClientImpl::getDataPacket (DataPacketImpl& packet)
 {
     if (!receiving_)
         return;
@@ -159,8 +168,11 @@ void TiANewClientImpl::getDataPacket (DataPacket& packet)
     if (!data_socket_.get ())
         return;
 
-    TiADataPacketParser packet_parser;
-    packet = packet_parser.parseFustyDataPacketFromStream (*data_socket_, receiving_);
+//    TiADataPacketParser packet_parser(*data_socket_);
+//    packet = packet_parser.parseFustyDataPacketFromStream (*data_socket_, receiving_);
+
+    data_packet_parser->parseDataPacket(packet);
+
     if (!receiving_)
         data_socket_.reset (0);
 }

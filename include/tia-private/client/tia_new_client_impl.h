@@ -40,6 +40,8 @@
 #include "../newtia/messages/tia_control_message_builder.h"
 #include "../newtia/messages/tia_control_message_parser.h"
 
+#include "tia-private/newtia/tia_datapacket_parser.h"
+
 #include <boost/asio.hpp>
 
 namespace tia
@@ -51,7 +53,7 @@ namespace tia
 ///
 /// Client implementation of TiA 1.0
 ///
-class TiANewClientImpl : public tobiss::TiAClientImplBase
+class TiANewClientImpl : public TiAClientImplBase
 {
 public:
     TiANewClientImpl ();
@@ -67,7 +69,7 @@ public:
 
     virtual void requestConfig ();
 
-    virtual tobiss::SSConfig config () const;
+    virtual SSConfig config () const;
 
     virtual void startReceiving (bool use_udp_bc);
 
@@ -75,7 +77,7 @@ public:
 
     virtual void stopReceiving();
 
-    virtual void getDataPacket (tobiss::DataPacket& packet);
+    virtual void getDataPacket (DataPacketImpl& packet);
 
     virtual void setBufferSize (size_t size);
 
@@ -93,14 +95,15 @@ private:
     std::string server_ip_address_;
     bool receiving_;
 
-    tobiss::SSConfig config_;
+    SSConfig config_;
     unsigned buffer_size_;
 
     boost::asio::io_service io_service_;
     std::auto_ptr<Socket> socket_;
     std::auto_ptr<ReadSocket> data_socket_;
-    std::auto_ptr<TiAControlMessageBuilder> message_builder_;
-    std::auto_ptr<TiAControlMessageParser> message_parser_;
+    std::auto_ptr<TiAControlMessageBuilder>   message_builder_;
+    std::auto_ptr<TiAControlMessageParser>    message_parser_;
+    TiADataPacketParser*                      data_packet_parser;
 //    std::auto_ptr<TiAControlMessageParser> message_parser_;
 };
 

@@ -41,7 +41,7 @@
 #include <boost/numeric/conversion/cast.hpp>
 #include "tia-private/datapacket/raw_mem.h"
 
-namespace tobiss
+namespace tia
 {
 
 using boost::numeric_cast;

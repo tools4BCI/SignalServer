@@ -48,7 +48,7 @@
 // local
 #include "tia-private/network/tcp_server.h"
 
-namespace tobiss
+namespace tia
 {
 using boost::uint16_t;
 using boost::uint32_t;

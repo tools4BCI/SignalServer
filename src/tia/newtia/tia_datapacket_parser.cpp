@@ -40,10 +40,44 @@ using std::string;
 namespace tia
 {
 
+static const int MINIMAL_DATA_PACKET_SIZE = 32;  /// todo: implement function in data packet
+
 //-----------------------------------------------------------------------------
-tobiss::DataPacket TiADataPacketParser::parseFustyDataPacketFromStream (InputStream& input_stream, bool& run)
+
+TiADataPacketParser::TiADataPacketParser(InputStream& input_stream)
+  :input_stream_(input_stream)
 {
-    tobiss::DataPacket packet;
+  buffer_ = new char[BUFFER_SIZE];
+}
+
+//-----------------------------------------------------------------------------
+
+TiADataPacketParser::~TiADataPacketParser()
+{
+  if(buffer_)
+    delete[] buffer_;
+}
+
+//-----------------------------------------------------------------------------
+
+void TiADataPacketParser::parseDataPacket (DataPacketImpl& packet)
+{
+  size_t received = input_stream_.readBytes(buffer_,MINIMAL_DATA_PACKET_SIZE);
+
+  size_t needed = packet.getRequiredRawMemorySize(buffer_,received);
+
+  while(received < needed)
+    received += input_stream_.readBytes(buffer_+received, needed - received);
+
+  DataPacketImpl p(buffer_);
+  packet = p;
+}
+
+//-----------------------------------------------------------------------------
+
+DataPacketImpl TiADataPacketParser::parseFustyDataPacketFromStream (InputStream& input_stream, bool& run)
+{
+    DataPacketImpl packet;
     char buffer[10000];
     unsigned available = 0;
     for (; (available < 32) && run; ++available)
@@ -58,13 +92,13 @@ tobiss::DataPacket TiADataPacketParser::parseFustyDataPacketFromStream (InputStr
     }
     if (!run)
         return packet;
-    return tobiss::DataPacket (reinterpret_cast<void*>(buffer));
+    return DataPacketImpl (reinterpret_cast<void*>(buffer));
 }
 
 //-----------------------------------------------------------------------------
-tobiss::DataPacket3 TiADataPacketParser::parseFustyDataPacket3FromStream (InputStream& /*input_stream*/)
+DataPacket3Impl TiADataPacketParser::parseFustyDataPacket3FromStream (InputStream& /*input_stream*/)
 {
-    return tobiss::DataPacket3 ();
+    return DataPacket3Impl ();
 }
 
 }

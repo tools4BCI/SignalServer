@@ -209,7 +209,7 @@ void gBSampBase::getFilterParams(ticpp::Iterator<ticpp::Element>const &elem,\
     cout << "gBSamp: getFilterParams" << endl;
   #endif
 
-  Constants cst;
+  tia::Constants cst;
   type = cst.getSignalFlag(elem.Get()->GetAttribute(hw_fil_type));
   try
   {

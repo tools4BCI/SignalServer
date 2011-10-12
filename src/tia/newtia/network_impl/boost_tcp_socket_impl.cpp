@@ -41,33 +41,43 @@
 
 using std::string;
 
+static const int RESERVED_STRING_LENGTH = 2048;
+static const int RESERVED_STREAM_BUFFER_SIZE = 2048;
+
 namespace tia
 {
 BoostTCPSocketImpl::BoostTCPSocketImpl (boost::asio::io_service& io_service,
                                         boost::asio::ip::tcp::endpoint const& endpoint, unsigned buffer_size)
-    : socket_ (new boost::asio::ip::tcp::socket (io_service))
+  : socket_ (new boost::asio::ip::tcp::socket (io_service) ), input_stream_(&stream_buffer_)
 {
-    socket_->connect (endpoint);
-    boost::asio::socket_base::receive_buffer_size option (buffer_size);
-    socket_->set_option (option);
-    remote_endpoint_str_ = endpoint.address().to_string() + ":" + boost::lexical_cast<std::string>( endpoint.port() );
+  socket_->connect (endpoint);
+  boost::asio::socket_base::receive_buffer_size option (buffer_size);
+  socket_->set_option (option);
+
+  remote_endpoint_str_ = socket_->remote_endpoint().address().to_string() + ":"
+      + boost::lexical_cast<std::string>( socket_->remote_endpoint().port() );
+
+  local_endpoint_str_ = socket_->local_endpoint().address().to_string() + ":"
+      + boost::lexical_cast<std::string>( socket_->local_endpoint().port() );
+
+
+  stream_buffer_.prepare(RESERVED_STREAM_BUFFER_SIZE);
+  str_buffer_.reserve(RESERVED_STRING_LENGTH);
 }
 
 //-----------------------------------------------------------------------------
-//BoostTCPSocketImpl::BoostTCPSocketImpl (boost::shared_ptr<tobiss::TCPConnection> con)
-//  : fusty_connection_ (con), remote_endpoint_str_(con->endpointToString( con->socket().remote_endpoint() ))
-//{
-//}
 
-//-----------------------------------------------------------------------------
 BoostTCPSocketImpl::BoostTCPSocketImpl (boost::shared_ptr<boost::asio::ip::tcp::socket> boost_socket)
-    : socket_ (boost_socket)
+    : socket_ (boost_socket), input_stream_(&stream_buffer_)
 {
   remote_endpoint_str_ = socket_->remote_endpoint().address().to_string() + ":"
       + boost::lexical_cast<std::string>( socket_->remote_endpoint().port() );
 
   local_endpoint_str_ = socket_->local_endpoint().address().to_string() + ":"
       + boost::lexical_cast<std::string>( socket_->local_endpoint().port() );
+
+  stream_buffer_.prepare(RESERVED_STREAM_BUFFER_SIZE);
+  str_buffer_.reserve(RESERVED_STRING_LENGTH);
 }
 
 //-----------------------------------------------------------------------------
@@ -77,7 +87,7 @@ BoostTCPSocketImpl::~BoostTCPSocketImpl ()
     {
         socket_->close ();
     }
-    buffered_string_.clear ();
+    str_buffer_.clear ();
 }
 
 //-----------------------------------------------------------------------------
@@ -86,110 +96,164 @@ void BoostTCPSocketImpl::setReceiveBufferSize (unsigned size)
     boost::asio::socket_base::receive_buffer_size option(size);
     if (socket_)
         socket_->set_option (option);
-//    else if (fusty_connection_)
-//        fusty_connection_->socket().set_option (option);
 }
 
 //-----------------------------------------------------------------------------
-string BoostTCPSocketImpl::readLine (unsigned /*max_length*/)
+
+string BoostTCPSocketImpl::readUntil (char delimiter)
 {
-    string line;
+  error_.clear();
+  size_t transfered = boost::asio::read_until (*socket_, stream_buffer_, delimiter, error_ );
 
-    if (!buffered_string_.size())
-        readBytes (1);
+  if(error_)
+    throw TiALostConnection ("InputStreamSocket::readUntil error_ read_until: "
+                             + string (error_.category().name()) + error_.message());
+  str_buffer_.resize(transfered -1);
 
-    while (buffered_string_[0] != TiAControlMessageTags10::NEW_LINE_CHAR)
-    {
-        line.push_back (buffered_string_[0]);
-        buffered_string_.erase (0, 1);
-        if (!buffered_string_.size())
-            readBytes (1);
-    }
-    buffered_string_.erase (0, 1);
+  size_t n = 0;
+  while(n != transfered-1)
+  {
+    str_buffer_[n] = input_stream_.peek();
+    stream_buffer_.consume(1);
+    n++;
+  }
+  input_stream_.get();
 
-    return line;
+  return(str_buffer_);
+}
+
+//-----------------------------------------------------------------------------
+
+string BoostTCPSocketImpl::readUntil (std::string delimiter)
+{
+  error_.clear();
+  size_t transfered = boost::asio::read_until (*socket_, stream_buffer_, delimiter,error_ );
+
+  if(error_)
+    throw TiALostConnection ("InputStreamSocket::readUntil error_ read_until: "
+                             + string (error_.category().name()) + error_.message());
+  str_buffer_.resize(transfered -delimiter.size());
+
+  size_t n = 0;
+  while(n != transfered-delimiter.size())
+  {
+    str_buffer_[n] = input_stream_.peek();
+    stream_buffer_.consume(1);
+    n++;
+  }
+
+  for(unsigned int s = 0; s < delimiter.size(); s++)
+    input_stream_.get();
+
+  return(str_buffer_);
 }
 
 
 //-----------------------------------------------------------------------------
 string BoostTCPSocketImpl::readString (unsigned length)
 {
-    while (length > buffered_string_.size())
-        readBytes (length - buffered_string_.size ());
+  if(stream_buffer_.size() < length)
+  {
+    error_.clear();
+    boost::asio::read (*socket_, stream_buffer_,
+                       boost::asio::transfer_at_least( length - stream_buffer_.size() ), error_ ) ;
+    if (error_)
+      throw TiALostConnection ("InputStreamSocket::readString error_ read: "
+                               + string (error_.category().name()) + error_.message());
+  }
 
-    string str = buffered_string_.substr (0, length);
-    buffered_string_.erase (0, length);
+  str_buffer_.clear();
+  str_buffer_.resize(length);
 
-    return str;
+  for(unsigned int n = 0; n < length; n++)
+  {
+    str_buffer_[n] = input_stream_.peek();
+    stream_buffer_.consume(1);
+  }
+  return(str_buffer_);
 }
 
 //-----------------------------------------------------------------------------
 char BoostTCPSocketImpl::readCharacter ()
 {
-    if (!buffered_string_.size ())
-        readBytes (1);
-    char character = buffered_string_[0];
-    buffered_string_.erase (0, 1);
-    return character;
+  if(!stream_buffer_.size())
+    waitForData();
+
+  char c = input_stream_.peek();
+  stream_buffer_.consume(1);
+  return(c);
+
 }
 
 //-----------------------------------------------------------------------------
 void BoostTCPSocketImpl::waitForData ()
 {
-    if (!buffered_string_.size ())
-        readBytes (1);
+  error_.clear();
+  if (!stream_buffer_.size () )
+    boost::asio::read (*socket_, stream_buffer_, boost::asio::transfer_at_least(1), error_) ;
+
+  if (error_)
+    throw TiALostConnection ("InputStreamSocket::readBytes error_ read: "
+                             + string (error_.category().name()) + error_.message());
 }
 
 //-----------------------------------------------------------------------------
 void BoostTCPSocketImpl::sendString (string const& str) throw (TiALostConnection)
 {
-    boost::system::error_code error;
-//    if (fusty_connection_)
-//        fusty_connection_->socket().send (boost::asio::buffer (str), 0, error);
-//    else
-    socket_->send (boost::asio::buffer (str), 0, error);
-    if (error)
+    error_.clear();
+    socket_->send (boost::asio::buffer (str), 0, error_);
+    if (error_)
         throw TiALostConnection ("BoostTCPSocketImpl: sending string failed");
 }
 
 //-----------------------------------------------------------------------------
 
-void BoostTCPSocketImpl::readBytes (unsigned requested_bytes)
+size_t BoostTCPSocketImpl::readBytes (char* data, size_t bytes_to_read)
 {
-    boost::system::error_code error;
 
-    unsigned available = 0;
-    unsigned read_bytes = 0;
-//    if (fusty_connection_)
-//    {
-//        available = fusty_connection_->socket().available (error);
-//        std::cout << "BoostTCPSocketImpl::readBytes -- Using Fusty Connection!" << std::endl;
-//    }
-//    else
-        available = socket_->available (error);
+  if(stream_buffer_.size () < bytes_to_read )
+  {
+    error_.clear();
+    boost::asio::read (*socket_, stream_buffer_,
+                       boost::asio::transfer_at_least(bytes_to_read-stream_buffer_.size ()),error_);
+    if (error_)
+      throw TiALostConnection ("InputStreamSocket::readBytes error_ read: "
+                               + string (error_.category().name()) + error_.message());
 
-    if (error)
-        throw TiALostConnection ("BoostTCPSocketImpl: error calling available: " + string (error.category().name()) + error.message());
-    unsigned allocating = std::max<unsigned> (requested_bytes, available);
+    input_stream_.read(data, bytes_to_read);
+    return bytes_to_read;
+  }
+  else
+  {
+    input_stream_.read( data, bytes_to_read);
+    return bytes_to_read;
+  }
+}
 
-    std::vector<char> data (allocating);
+//-----------------------------------------------------------------------------
 
-    while (read_bytes < requested_bytes)
+size_t BoostTCPSocketImpl::getAvailableData (char* data, size_t max_size)
+{
+
+  size_t available_data = stream_buffer_.size ();
+  if ( !available_data )
+  {
+    data = 0;
+    return 0;
+  }
+  else
+  {
+    if(available_data > max_size)
     {
-        unsigned read_bytes_now = 0;
-//        if (fusty_connection_)
-//            read_bytes_now += fusty_connection_->socket().read_some (boost::asio::buffer (data), error);
-//        else
-        read_bytes_now += socket_->read_some (boost::asio::buffer (data), error);
-
-        if (error)
-        {
-            throw TiALostConnection ("BoostTCPSocketImpl: error read_some 2");
-        }
-
-        buffered_string_.append (data.data(), read_bytes_now);
-        read_bytes += read_bytes_now;
+      input_stream_.read( data, max_size);
+      return max_size;
     }
+    else
+    {
+      input_stream_.read( data, available_data);
+      return available_data;
+    }
+  }
 }
 
 //-----------------------------------------------------------------------------

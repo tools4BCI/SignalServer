@@ -57,7 +57,7 @@
 // Local
 #include "tia/defines.h"
 
-namespace tobiss
+namespace tia
 {
 //-----------------------------------------------------------------------------
 

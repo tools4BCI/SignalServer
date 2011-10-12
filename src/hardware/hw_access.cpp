@@ -344,7 +344,7 @@ void HWAccess::stopDataAcquisition()
 
 //-----------------------------------------------------------------------------
 
-DataPacket HWAccess::getDataPacket()
+tia::DataPacketImpl HWAccess::getDataPacket()
 {
   //#ifdef DEBUG
   //  cout << "HWAccess: getDataPacket" << endl;

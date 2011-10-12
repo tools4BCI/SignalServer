@@ -102,7 +102,7 @@ int main(int argc, const char* argv[])
 
       boost::asio::io_service io_service;
 
-      TiAServer tia_server(io_service, use_new_tia);
+      tia::TiAServer tia_server(io_service, use_new_tia);
       HWAccess hw_access(io_service, config);
       tobiss::SignalServer sig_server(hw_access, tia_server, config);
       boost::thread* io_thread_ptr = 0;

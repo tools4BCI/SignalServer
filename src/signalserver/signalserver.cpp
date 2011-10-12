@@ -52,7 +52,7 @@ namespace tobiss
 {
 //-----------------------------------------------------------------------------
 
-SignalServer::SignalServer(HWAccess& hw_access, TiAServer& tia_server, XMLParser& config_parser)
+SignalServer::SignalServer(HWAccess& hw_access, tia::TiAServer& tia_server, XMLParser& config_parser)
   : hw_access_(hw_access), tia_server_(tia_server), config_parser_(config_parser),
     #ifdef USE_TID_SERVER
       tid_server_(0),
@@ -158,7 +158,7 @@ void SignalServer::readPackets()
   {
     sample_count += master_blocksize_;
 
-    DataPacket packet = hw_access_.getDataPacket();
+    tia::DataPacketImpl packet = hw_access_.getDataPacket();
     tia_server_.sendDataPacket(packet);
 
     #ifdef USE_TID_SERVER

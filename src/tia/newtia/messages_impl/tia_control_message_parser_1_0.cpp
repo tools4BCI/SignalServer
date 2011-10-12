@@ -59,7 +59,7 @@ TiAControlMessage TiAControlMessageParser10::parseMessage (InputStream& stream) 
 //-----------------------------------------------------------------------------
 string TiAControlMessageParser10::readVersion (InputStream& stream) const
 {
-    string id_and_version = trim (stream.readLine (MAX_LINE_LENGTH_));
+    string id_and_version = trim (stream.readUntil(TiAControlMessageTags10::NEW_LINE_CHAR) );
 
     if (id_and_version != TiAControlMessageTags10::ID_AND_VERSION)
         throw TiAException (string ("TiAControlMessageParser10::readVersion Wrong Message ID and Version. Required \"") + TiAControlMessageTags10::ID_AND_VERSION + "\" but was \"" + id_and_version + "\".");
@@ -70,14 +70,14 @@ string TiAControlMessageParser10::readVersion (InputStream& stream) const
 //-----------------------------------------------------------------------------
 pair<string, string> TiAControlMessageParser10::readCommandAndParameter (InputStream& stream) const
 {
-    string line = trim (stream.readLine (MAX_LINE_LENGTH_));
+    string line = trim (stream.readUntil(TiAControlMessageTags10::NEW_LINE_CHAR));
     return getPair (line);
 }
 
 //-----------------------------------------------------------------------------
 string TiAControlMessageParser10::readContent (InputStream& stream) const
 {
-    string line = trim (stream.readLine (MAX_LINE_LENGTH_));
+    string line = trim (stream.readUntil(TiAControlMessageTags10::NEW_LINE_CHAR) );
     if (line.size () == 0)
         return "";
 
@@ -91,7 +91,7 @@ string TiAControlMessageParser10::readContent (InputStream& stream) const
     if (isstr.fail ())
         throw TiAException (string ("TiAControlMessageParser10::readContent: Error while converting \"") + content_length_pair.second + "\" into a number.");
 
-    string empty_line = stream.readLine (MAX_LINE_LENGTH_);
+    string empty_line = stream.readUntil(TiAControlMessageTags10::NEW_LINE_CHAR);
     if (empty_line.size ())
         throw TiAException (string ("TiAControlMessageParser10::readContent: Expecting an empty line before content starts."));
 

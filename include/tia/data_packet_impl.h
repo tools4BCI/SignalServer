@@ -32,7 +32,7 @@
 */
 
 /**
-* @file data_packet3.h
+* @file data_packet.h
 *
 * @brief The DataPacket stores all sampled data from every connected device.
 *
@@ -43,8 +43,8 @@
 *
 **/
 
-#ifndef DATAPACKET3_H
-#define DATAPACKET3_H
+#ifndef DATAPACKET_H
+#define DATAPACKET_H
 
 #include <map>
 #include <vector>
@@ -54,13 +54,13 @@
 
 #include "tia/defines.h"
 
-namespace tobiss
+namespace tia
 {
 
-class RawMem3;
+class RawMem;
 
 /**
-* @class DataPacket3
+* @class DataPacket
 *
 * @brief A Class to manage the DataPacket to be distributed over network.
 *
@@ -72,10 +72,8 @@ class RawMem3;
 * For raw representations, it holds raw memory objects, storing the respective representation.
 *
 * @todo Implementing the possibility to built a raw DataPacket representation with freely selectable content.
-* @todo TESTING
-* @todo Check doxygen, because several methods have changed!
 */
-class DataPacket3
+class DataPacketImpl
 {
   /** \example datapacket-usage-example.cpp
   *   This is an example how to build an fill a TiA data packet with
@@ -86,7 +84,10 @@ class DataPacket3
     /**
     * @brief Default constructor -- building an empty DataPacket.
     */
-    DataPacket3();
+    DataPacketImpl()
+    : flags_(0), packet_nr_(0),
+      timestamp_(boost::posix_time::microsec_clock::local_time()), nr_of_signal_types_(0)
+    {  }
 
     /**
     * @brief Constructor to (re)build a DataPacket from raw memory.
@@ -94,12 +95,11 @@ class DataPacket3
     * @param[in] mem Raw memory containing the raw representation of a DataPacket.
     * @throw std::invalid_argument if packet version missmatch
     * @todo Implementing safety checks, as far as possible.
-    * @todo Size field is skipped!
     *
     * This method (re)builds a DataPacket object from a raw memory region, containing
     * the raw representation of a DataPacket.
     */
-    DataPacket3(void* mem);
+    DataPacketImpl(void* mem);
 
     /**
     * @brief Destructor
@@ -108,28 +108,34 @@ class DataPacket3
     *
     * Deletes all dynamically built raw_mem objects stored in raw_map.
     */
-    virtual ~DataPacket3();
+    virtual ~DataPacketImpl();
 
-    /**
+  /**
     * @brief Copy constructor  --  does NOT copy the raw memory representation.
     * @todo Check for memory leaks! (can occur, if raw_mem objects are built)
     */
-    DataPacket3(const DataPacket3 &src);
+    DataPacketImpl(const DataPacketImpl &src)
+    {
+      sample_nr_ = src.sample_nr_;
+      flags_ = src.flags_;
+      packet_nr_ = src.packet_nr_;
+      timestamp_ = src.timestamp_;
+      nr_of_signal_types_ = src.nr_of_signal_types_;
 
+      nr_blocks_ = src.nr_blocks_;
+      nr_values_ = src.nr_values_;
+      data_ = src.data_;
+
+      std::map<boost::uint32_t, RawMem*> raw_map_;
+    }
     /**
     * @brief Resets the whole DataPacket (samples are deleted).
     */
     void reset();
-
     /**
     * @brief Increase the static sample number by one.
     */
-    void incPacketID();
-
-    /**
-    * @brief Set the packet ID.
-    */
-    void setPacketID(boost::uint64_t nr);
+    void incSampleNr();
 
     /**
     * @brief Insert data (only one signal type) from a hardware device into the DataPacket (will be automatically placed correct).
@@ -152,12 +158,12 @@ class DataPacket3
     /**
     * @brief Set the packet number (can differ from the samplenumber -- e.g. if sending with different rates)
     */
-    void setConnectionPacketNr(boost::uint64_t);
+    void setPacketNr(boost::uint64_t);
 
     /**
     * @brief Set the packet number (can differ from the samplenumber -- e.g. if sending with different rates)
     */
-    boost::uint64_t getConnectionPacketNr();
+    boost::uint64_t getPacketNr();
 
     /**
     * @brief Set the timestamp to localtime.
@@ -165,10 +171,9 @@ class DataPacket3
     void setTimestamp();
 
     /**
-    * @brief Get the timestamp (microseconds since signal server has been started)
-    *        of the datapacket.
+    * @brief Get the timestamp (localtime) of the datapacket.
     */
-    boost::uint64_t getTimestamp()   { return(timestamp_);  }
+    boost::posix_time::ptime getTimestamp()   { return(timestamp_);  }
 
     /**
     * @brief Check, if a flag is already set.
@@ -191,23 +196,23 @@ class DataPacket3
     * @brief Get the sample number of the DataPacket.
     * @return sample number
     */
-    boost::uint64_t getPacketID();
+    boost::uint64_t getSampleNr();
     /**
     * @brief Get a vector containing the blocksizes for every signal type.
     * @return A vector containing the blocksizes for every signal type.
     */
-    std::vector<boost::uint16_t> getSamplesPerChannel();
+    std::vector<boost::uint16_t> getNrOfBlocks();
     /**
     * @brief Get a vector containing the number of values (NOT channels!) for every signal type.
     * @return A vector containing the number of values (NOT channels!)for every signal type.
     */
-    std::vector<boost::uint16_t> getNrOfChannels();
+    std::vector<boost::uint16_t> getNrOfValues();
     /**
     * @brief Get all samples stored in the DataPacket as a vector.
-    * @return A vector reference to the samples stored in the DataPacket.
+    * @return A vector containing the samples stored in the DataPacket.
     * @throw std::logic_error if flags are not OK.
     */
-    const std::vector<double>& getData();
+    std::vector<double> getData();
     /**
     * @brief Get a vector containing all samples for a specific signal type.
     * @param[in] flag
@@ -217,30 +222,17 @@ class DataPacket3
     */
     std::vector<double> getSingleDataBlock(boost::uint32_t flag);
 
-
-    /**
-    * @brief TODO
-    */
-    boost::uint16_t getNrOfValues(boost::uint32_t flag);
-
     /**
     * @brief Get the number of values for a specific signal type.
     * @param[in] flag
     * @return boost::uint16_t The number of values.
     */
-    boost::uint16_t getNrOfChannels(boost::uint32_t flag);
+    boost::uint16_t getNrOfValues(boost::uint32_t flag);
 
     /**
     * @brief Get the number of blocks for a specific signal type.
     * @param[in] flag
     * @return boost::uint16_t The number of blocks.
-    */
-    boost::uint16_t getSamplesPerChannel(boost::uint32_t flag);
-
-    /**
-    * @brief Get the number of blocks for a specific signal type (the same as getSamplesPerChannel).
-    * @param[in] flag
-    * @return boost::uint16_t The number of blocks (samples per channel).
     */
     boost::uint16_t getNrOfBlocks(boost::uint32_t flag);
 
@@ -254,7 +246,7 @@ class DataPacket3
     */
     void* getRaw();
 
-    /**
+    /**}
      *
     * @brief Get the size (in bytes) of the raw memory region holding the raw DataPacket.
     * @return The size of the raw memory region.
@@ -276,8 +268,6 @@ class DataPacket3
     * @param[in] bytes_available  The memory size, the DataPacket is stored in.
     * @return 0 if the RAW memory region is too small to hold the DataPacket,
     * otherwise the needed size of the raw memory region.
-    *
-    * @todo Rewrite this mehtod as its size is now available inside the data packet.
     */
     boost::uint32_t getRequiredRawMemorySize(void* mem, boost::int32_t bytes_available);
 
@@ -317,7 +307,7 @@ class DataPacket3
     * @param[in]  blocks    The number of blocks (=blocksize), the vector contains.
     * @throws TODO
     *
-    * @todo Implement checking if blocksize divides v.size with a rest.
+    * TODO: Description
     */
     void appendDataBlock(std::vector<double> &v, boost::uint32_t signal_flag, boost::uint16_t blocks);
 
@@ -328,37 +318,34 @@ class DataPacket3
     * @param[in]  blocks    The number of blocks (=blocksize), the vector contains.
     * @throws TODO
     *
-    * @todo Implement checking if blocksize divides v.size with a rest.
+    * TODO: Description
     */
     void prependDataBlock(std::vector<double> &v, boost::uint32_t signal_flag, boost::uint16_t blocks);
 
   private:
-
-    boost::uint8_t  version_;
-
     /**
     * @brief The sample number the data packet is holding.
-    * @todo Is a static declaration needed/useful for the packet id?
+    * @todo Is a static declaration needed/useful for the sample number?
     */
-    boost::uint64_t  packet_id_;
+    static boost::uint64_t  sample_nr_;
 
     /**
     * @brief Flags, specifying the signal types stored in the DataPacket.
     * @todo Replace by a std::bitset!
     */
     boost::uint32_t  flags_;
-    boost::uint64_t  connection_packet_nr_;        ///< The packet number of the DataPacket (not mandatory = the sample number)
-    boost::uint64_t  timestamp_;                   ///< Timestamp of the datapacket (important ... synchronize clocks!)
+    boost::uint64_t  packet_nr_;        ///< The packet number of the DataPacket (not mandatory = the sample number)
+    boost::posix_time::ptime  timestamp_;   ///< Timestamp of the datapacket (important ... synchronize clocks!)
 
     boost::uint16_t  nr_of_signal_types_;   ///<  Number of different signal types stored in the DataPacket.
 
-    std::vector<boost::uint16_t>  samples_per_channel_;    ///< Blocksize for every signal type.
-    std::vector<boost::uint16_t>  nr_channels_;              ///< Number of values for every signal type.
-    std::vector<double> data_;                             ///< The samples stored in the DataPacket.
+    std::vector<boost::uint16_t>  nr_blocks_;  ///< Blocksize for every signal type.
+    std::vector<boost::uint16_t>  nr_values_;  ///< Number of values for every signal type.
+    std::vector<double> data_;  ///< The samples stored in the DataPacket.
 
-    std::map<boost::uint32_t, RawMem3*> raw_map_; ///< A map holding pointers to raw_mem objects, identified by their flags.
+    std::map<boost::uint32_t, RawMem*> raw_map_; ///< A map holding pointers to raw_mem objects, identified by their flags.
 };
 
 } // Namespace tobiss
 
-#endif // DATAPACKET3_H
+#endif // DATAPACKET_H

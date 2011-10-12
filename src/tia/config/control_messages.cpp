@@ -43,7 +43,7 @@
 #include "tia-private/config/control_message_encoder.h"
 #include "tia-private/config/control_messages.h"
 
-namespace tobiss
+namespace tia
 {
 
 //-----------------------------------------------------------------------------

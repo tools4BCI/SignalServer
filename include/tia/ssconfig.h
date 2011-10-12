@@ -42,7 +42,7 @@
 // local
 #include "tia/ss_meta_info.h"
 
-namespace tobiss
+namespace tia
 {
 //-----------------------------------------------------------------------------
 /**

@@ -37,7 +37,7 @@
 
 #include "tia-private/datapacket/data_packet_selector.h"
 
-namespace tobiss
+namespace tia
 {
 
 using std::vector;
@@ -68,9 +68,9 @@ void DataPacketSelector::setDesiredChannels( boost::uint32_t signal_type, boost:
 
 //-----------------------------------------------------------------------------
 
-DataPacket DataPacketSelector::getModifiedDataPacket(DataPacket& packet)
+DataPacketImpl DataPacketSelector::getModifiedDataPacket(DataPacketImpl& packet)
 {
-  DataPacket new_packet;
+  DataPacketImpl new_packet;
 
   map<uint32_t, set<uint16_t> >::iterator it;
   uint32_t flag = 0;

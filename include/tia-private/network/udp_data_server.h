@@ -47,10 +47,10 @@
 #include <boost/asio.hpp>
 #include <boost/cstdint.hpp>
 
-namespace tobiss
+namespace tia
 {
 // forward declarations
-class DataPacket;
+class DataPacketImpl;
 
 /**
 * @class UDPDataServer
@@ -109,7 +109,7 @@ public:
    * @param  packet the DataPacket to be sent
    * FIXME: const correctness
    */
-  void sendDataPacket(DataPacket& packet);
+  void sendDataPacket(DataPacketImpl& packet);
 
 private:
   /**

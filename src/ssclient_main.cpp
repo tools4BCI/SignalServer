@@ -47,19 +47,18 @@
 #include <boost/cstdint.hpp>
 
 // local
-#include "tia/data_packet.h"
+#include "tia/data_packet_impl.h"
 #include "tia/tia_client.h"
 #include "tia/ssconfig.h"
 
 using namespace std;
-using namespace tobiss;
 
 //-----------------------------------------------------------------------------
 
-class SSClientDataReader
+class TiAClientDataReader
 {
   public:
-    SSClientDataReader(TiAClient& client, boost::mutex& mutex, boost::condition_variable& cond) :
+    TiAClientDataReader(tia::TiAClient& client, boost::mutex& mutex, boost::condition_variable& cond) :
         client_(client),
         mutex_(mutex),
         cond_(cond),
@@ -94,7 +93,7 @@ class SSClientDataReader
 
           boost::unique_lock<boost::mutex> lock(mutex_);
 
-          DataPacket packet;
+          tia::DataPacketImpl packet;
           vector<double> v;
 
           if (!client_.receiving())
@@ -195,7 +194,7 @@ class SSClientDataReader
       }
     }
   private:
-    TiAClient&                   client_;
+    tia::TiAClient&                   client_;
     boost::mutex&               mutex_;
     boost::condition_variable&  cond_;
     bool                        running_;
@@ -245,7 +244,7 @@ int main(int argc, const char* argv[])
     return(-1);
   }
 
-  TiAClient client;
+  tia::TiAClient client;
 
   try
   {
@@ -261,8 +260,8 @@ int main(int argc, const char* argv[])
   boost::mutex mutex;
   boost::condition_variable cond;
 
-  SSClientDataReader reader(client, mutex, cond);
-  boost::thread reader_thread(boost::bind(&SSClientDataReader::readData, &reader));
+  TiAClientDataReader reader(client, mutex, cond);
+  boost::thread reader_thread(boost::bind(&TiAClientDataReader::readData, &reader));
 
     #ifdef WIN32
       SetPriorityClass(GetCurrentProcess(), ABOVE_NORMAL_PRIORITY_CLASS);

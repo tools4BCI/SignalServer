@@ -43,13 +43,13 @@
 
 // local
 
-#include "tia/data_packet.h"
+#include "tia/data_packet_impl.h"
 
-namespace tobiss
+namespace tia
 {
 // forward declarations;
 class SSConfig;
-class DataPacket;
+class DataPacketImpl;
 
 //-----------------------------------------------------------------------------
 /**
@@ -112,7 +112,7 @@ public:
   /**
    * @brief Gets a packet from the server.
    */
-  virtual void getDataPacket(DataPacket& packet) = 0;
+  virtual void getDataPacket(DataPacketImpl& packet) = 0;
   /**
    * @brief Sets the client's data input buffer size to the given value
    */

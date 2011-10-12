@@ -47,9 +47,9 @@
 
 // local
 #include "tia-private/network/tcp_data_server.h"
-#include "tia/data_packet.h"
+#include "tia/data_packet_impl.h"
 
-namespace tobiss
+namespace tia
 {
 using std::cout;
 using std::cerr;
@@ -88,7 +88,7 @@ void TCPDataConnection::handleWrite(const boost::system::error_code& ec,
 
 //-----------------------------------------------------------------------------
 
-void TCPDataConnection::sendDataPacket(DataPacket& packet)
+void TCPDataConnection::sendDataPacket(DataPacketImpl& packet)
 {
   boost::unique_lock<boost::mutex> lock(mutex_);
 
@@ -249,7 +249,7 @@ void TCPDataServer::enableTransmission(const boost::asio::ip::tcp::endpoint& end
 
 //-----------------------------------------------------------------------------
 
-void TCPDataServer::sendDataPacket(DataPacket& packet)
+void TCPDataServer::sendDataPacket(DataPacketImpl& packet)
 {
   // lock the connection list
   boost::unique_lock<boost::mutex> lock(mutex_);

@@ -57,7 +57,7 @@
 #include "tia/constants.h"
 #include "tcp_server.h"
 
-namespace tobiss
+namespace tia
 {
 // forward declarations
 class TiAServer;

@@ -71,6 +71,7 @@ BoostUDPReadSocket::BoostUDPReadSocket (boost::asio::io_service& io_service, boo
 
 
 //-----------------------------------------------------------------------------
+
 void BoostUDPReadSocket::setReceiveBufferSize (unsigned size)
 {
     boost::asio::socket_base::receive_buffer_size option(size);
@@ -78,23 +79,58 @@ void BoostUDPReadSocket::setReceiveBufferSize (unsigned size)
 }
 
 //-----------------------------------------------------------------------------
-string BoostUDPReadSocket::readLine (unsigned max_length)
+
+string BoostUDPReadSocket::readUntil (char delimiter)
 {
-    string line;
+//  boost::system::error_code  error;
 
-    if (!buffered_string_.size())
-        readBytes (1);
+//  size_t transfered = boost::asio::read_until (socket_, stream_buffer_, delimiter,error );
 
-    while (buffered_string_[0] != TiAControlMessageTags10::NEW_LINE_CHAR)
-    {
-        line.push_back (buffered_string_[0]);
-        buffered_string_.erase (0, 1);
-        if (!buffered_string_.size())
-            readBytes (1);
-    }
-    buffered_string_.erase (0, 1);
+//  if(error)
+//    throw TiALostConnection ("InputStreamSocket::readUntil error read_until: "
+//                             + string (error.category().name()) + error.message());
+//  str_buffer_.clear();
 
-    return line;
+//  char c;
+//  size_t n = 1;
+//  while(n != transfered)
+//  {
+//    input_stream_.get(c);
+//    str_buffer_.append(&c);
+//    n++;
+//  }
+//  input_stream_.get(c);
+
+  return(buffered_string_);
+}
+
+//-----------------------------------------------------------------------------
+
+string BoostUDPReadSocket::readUntil (std::string delimiter)
+{
+
+//  boost::system::error_code  error;
+
+//  size_t transfered = boost::asio::read_until (socket_, stream_buffer_, delimiter,error );
+
+//  if(error)
+//    throw TiALostConnection ("InputStreamSocket::readLine error read_until: "
+//                             + string (error.category().name()) + error.message());
+//  str_buffer_.clear();
+
+//  char c;
+//  size_t n = delimiter.size();
+//  while(n != transfered)
+//  {
+//    input_stream_.get(c);
+//    str_buffer_.append(&c);
+//    n++;
+//  }
+
+//  for(unsigned int s = 0; s < delimiter.size(); s++)
+//    input_stream_.get();
+
+  return(buffered_string_);
 }
 
 

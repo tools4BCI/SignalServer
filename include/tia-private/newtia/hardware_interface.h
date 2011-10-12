@@ -45,7 +45,7 @@ class HardwareInterface
 public:
     virtual ~HardwareInterface () {}
 
-    virtual tobiss::SSConfig getTiAMetaInfo () const = 0;
+    virtual SSConfig getTiAMetaInfo () const = 0;
 
     // TODO: setHardwareConfig
 };

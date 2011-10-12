@@ -53,28 +53,32 @@ class BoostTCPSocketImpl : public Socket
     BoostTCPSocketImpl (boost::asio::io_service& io_service,
                         boost::asio::ip::tcp::endpoint const& endpoint, unsigned buffer_size);
 
-
-//    BoostTCPSocketImpl (boost::shared_ptr<tobiss::TCPConnection> con);
-
     BoostTCPSocketImpl (boost::shared_ptr<boost::asio::ip::tcp::socket> boost_socket);
 
     virtual ~BoostTCPSocketImpl ();
 
     virtual void setReceiveBufferSize (unsigned size);
-    virtual std::string readLine (unsigned max_length);
+    virtual std::string readUntil (char delimiter);
+    virtual std::string readUntil (std::string delimiter);
     virtual std::string readString (unsigned length);
     virtual char readCharacter ();
     virtual void waitForData ();
     virtual void sendString (std::string const& str) throw (TiALostConnection);
 
+    virtual size_t readBytes (char* data, size_t bytes_to_read);
+    virtual size_t getAvailableData (char* data, size_t max_size);
+
+
     virtual std::string getRemoteEndPointAsString();
     virtual std::string getLocalEndPointAsString();
 
+
   private:
-    void readBytes (unsigned num_bytes);
-//    boost::shared_ptr<tobiss::TCPConnection> fusty_connection_;
-    boost::shared_ptr<boost::asio::ip::tcp::socket> socket_;
-    std::string buffered_string_;
+    boost::shared_ptr<boost::asio::ip::tcp::socket>    socket_;
+    boost::asio::streambuf                             stream_buffer_;
+    std::istream                                       input_stream_;
+    std::string                                        str_buffer_;
+    boost::system::error_code                          error_;
 
     std::string remote_endpoint_str_;
     std::string local_endpoint_str_;

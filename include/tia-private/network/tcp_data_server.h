@@ -51,10 +51,10 @@
 // local
 #include "tcp_server.h"
 
-namespace tobiss
+namespace tia
 {
 // forward declarations
-class DataPacket;
+class DataPacketImpl;
 
 //-----------------------------------------------------------------------------
 
@@ -106,7 +106,7 @@ public:
    * @brief Sends a DataPacket to the clients
    * @param packet the DataPacket to send
    */
-  void sendDataPacket(DataPacket& packet);
+  void sendDataPacket(DataPacketImpl& packet);
 
 protected:
   virtual void startAccept();
@@ -183,7 +183,7 @@ public:
    * FIXME: const correctness
    * \sa enableTransmission()
    */
-  void sendDataPacket(DataPacket& packet);
+  void sendDataPacket(DataPacketImpl& packet);
 
 private:
   typedef std::map<boost::asio::ip::tcp::endpoint, TCPDataConnection::pointer> ClientConnectionMap;

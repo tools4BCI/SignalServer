@@ -260,7 +260,7 @@ class XMLParser
     */
     std::vector< std::pair<std::string, ticpp::Iterator<ticpp::Element> > > hardware_;
 
-    Constants cst_;  ///< A static object containing constants.
+    tia::Constants cst_;  ///< A static object containing constants.
 };
 
 } // Namespace tobiss

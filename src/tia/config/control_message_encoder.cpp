@@ -43,7 +43,7 @@
 
 #include "tia-private/config/control_message_encoder.h"
 
-namespace tobiss
+namespace tia
 {
 
 using boost::lexical_cast;

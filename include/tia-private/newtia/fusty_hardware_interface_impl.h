@@ -45,30 +45,30 @@ namespace tia
 class FustyHardwareInterfaceImpl : public HardwareInterface
 {
 public:
-    FustyHardwareInterfaceImpl (tobiss::ControlConnectionServer& cc_server)
+    FustyHardwareInterfaceImpl (ControlConnectionServer& cc_server)
 //        : cc_server_ (cc_server)
     {
       // really ugly code!!!!! :(
-      tobiss::ConfigMsg config_msg;
+      ConfigMsg config_msg;
       cc_server.getConfig (config_msg);
       tia_meta_info_.subject_info = config_msg.subject_info;
       tia_meta_info_.signal_info = config_msg.signal_info;
     }
 
-    FustyHardwareInterfaceImpl (tobiss::SubjectInfo subj_info, tobiss::SignalInfo sig_info)
+    FustyHardwareInterfaceImpl (SubjectInfo subj_info, SignalInfo sig_info)
     {
       tia_meta_info_.subject_info = subj_info;
       tia_meta_info_.signal_info = sig_info;
     }
 
-    tobiss::SSConfig getTiAMetaInfo () const
+    SSConfig getTiAMetaInfo () const
     {
         return tia_meta_info_;
     }
 
 private:
 //    tobiss::ControlConnectionServer& cc_server_;
-    tobiss::SSConfig tia_meta_info_;
+    SSConfig tia_meta_info_;
 };
 
 }

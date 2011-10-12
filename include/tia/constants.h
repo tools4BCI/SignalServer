@@ -52,7 +52,7 @@
 
 #include "defines.h"
 
-namespace tobiss
+namespace tia
 {
   /**
   * @class Constants
