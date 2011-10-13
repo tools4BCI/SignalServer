@@ -47,7 +47,7 @@
 #include <boost/cstdint.hpp>
 
 // local
-#include "tia/data_packet_impl.h"
+#include "tia/data_packet_interface.h"
 #include "tia/tia_client.h"
 #include "tia/ssconfig.h"
 #include "tia/defines.h"
@@ -60,9 +60,7 @@ class TiAClientDataReader
 {
   public:
     TiAClientDataReader(tia::TiAClient& client, boost::mutex& mutex, boost::condition_variable& cond) :
-        client_(client),
-        mutex_(mutex),
-        cond_(cond),
+        client_(client), packet_(0), mutex_(mutex), cond_(cond),
         running_(1),
         timestamp_(boost::posix_time::microsec_clock::local_time()),
         t_min_total_ (10, 0, 0),
@@ -70,7 +68,9 @@ class TiAClientDataReader
         t_min_last_ (10, 0, 0),
         t_max_last_ (0, 0, 0),
         t_var_(0)
-    {}
+    {
+      packet_ = client_.getEmptyDataPacket();
+    }
 
     void stop()
     {
@@ -93,7 +93,6 @@ class TiAClientDataReader
 
           boost::unique_lock<boost::mutex> lock(mutex_);
 
-          tia::DataPacketImpl packet;
           vector<double> v;
 
           if (!client_.receiving())
@@ -104,31 +103,31 @@ class TiAClientDataReader
           if(running_ && client_.receiving())
           {
             try {
-              client_.getDataPacket(packet);
+              client_.getDataPacket(*packet_);
 
-              if(packet.hasFlag(SIG_MOUSE))
+              if(packet_->hasFlag(SIG_MOUSE))
               {
-                v = packet.getSingleDataBlock(SIG_MOUSE);
-                cout << "mousepos: "<< packet.getSingleDataBlock(SIG_MOUSE)[1]<<","<<packet.getSingleDataBlock(SIG_MOUSE)[2];
+                v = packet_->getSingleDataBlock(SIG_MOUSE);
+                cout << "mousepos: "<< packet_->getSingleDataBlock(SIG_MOUSE)[1]<<","<<packet_->getSingleDataBlock(SIG_MOUSE)[2];
               }
 
-              if(packet.hasFlag(SIG_MBUTTON))
+              if(packet_->hasFlag(SIG_MBUTTON))
               {
-                v = packet.getSingleDataBlock(SIG_MBUTTON);
-                cout<<" ... buttons: "<<packet.getSingleDataBlock(SIG_MBUTTON)[1]<<packet.getSingleDataBlock(SIG_MBUTTON)[2]<<packet.getSingleDataBlock(SIG_MBUTTON)[3]<<endl;
+                v = packet_->getSingleDataBlock(SIG_MBUTTON);
+                cout<<" ... buttons: "<<packet_->getSingleDataBlock(SIG_MBUTTON)[1]<<packet_->getSingleDataBlock(SIG_MBUTTON)[2]<<packet_->getSingleDataBlock(SIG_MBUTTON)[3]<<endl;
               }
               if( ((client_.config().signal_info.masterSamplingRate()/client_.config().signal_info.masterBlockSize()) < 1) ||
                 (counter%(
                 (client_.config().signal_info.masterSamplingRate()/client_.config().signal_info.masterBlockSize()) *2 ) == 0) )
               {
-                std::cout << " -- Nr:" << packet.getPacketNr () << std::endl;
+                std::cout << " -- Nr:" << packet_->getPacketID() << std::endl;
               }
 
               sample_nr_old = sample_nr;
               packet_nr_old = packet_nr;
 
-              sample_nr = packet.getSampleNr();
-              packet_nr = packet.getPacketNr();
+              sample_nr = packet_->getPacketID();
+              packet_nr = packet_->getConnectionPacketNr();
 
               if( (sample_nr - sample_nr_old) > 1)
               {
@@ -152,7 +151,7 @@ class TiAClientDataReader
 
             #ifdef TIMING_TEST
               timestamp_ = boost::posix_time::microsec_clock::local_time();
-              diff_ = timestamp_ - packet.getTimestamp();
+              diff_ = timestamp_ - packet_->getTimestamp();
 
               t_diffs_.push_back (diff_);
               t_min_total_ = min (t_min_total_, diff_);
@@ -192,6 +191,7 @@ class TiAClientDataReader
     }
   private:
     tia::TiAClient&                   client_;
+    tia::DataPacket*                  packet_;
     boost::mutex&               mutex_;
     boost::condition_variable&  cond_;
     bool                        running_;
@@ -215,7 +215,7 @@ int main(int argc, const char* argv[])
   string   srv_addr = "127.0.0.1";
   boost::uint16_t srv_port = 9000;
 
-  bool new_tia = true;
+  bool use_new_tia = true;
 
   if(argc == 1)
   {
@@ -225,7 +225,7 @@ int main(int argc, const char* argv[])
   {
     string param (argv[1]);
     if (param == "-o")
-      new_tia = false;
+      use_new_tia = false;
   }
   else if(argc == 3)
   {
@@ -241,11 +241,11 @@ int main(int argc, const char* argv[])
     return(-1);
   }
 
-  tia::TiAClient client;
+  tia::TiAClient client(use_new_tia);
 
   try
   {
-    client.connect(srv_addr, srv_port, new_tia);
+    client.connect(srv_addr, srv_port);
     client.requestConfig();
   }
   catch(std::exception& e)

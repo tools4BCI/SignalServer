@@ -32,6 +32,7 @@
 */
 
 #include <string>
+#include <iostream>
 
 #include "tia-private/newtia/tia_datapacket_parser.h"
 #include "tia/defines.h"
@@ -62,7 +63,7 @@ TiADataPacketParser::~TiADataPacketParser()
 
 //-----------------------------------------------------------------------------
 
-void TiADataPacketParser::parseDataPacket (DataPacketImpl& packet)
+void TiADataPacketParser::parseDataPacket (DataPacket& packet)
 {
   size_t received = input_stream_.readBytes(buffer_,MINIMAL_DATA_PACKET_SIZE);
 
@@ -71,37 +72,36 @@ void TiADataPacketParser::parseDataPacket (DataPacketImpl& packet)
   while(received < needed)
     received += input_stream_.readBytes(buffer_+received, needed - received);
 
-  DataPacketImpl p(buffer_);
-  packet = p;
+  packet.reset(buffer_);
 }
 
 //-----------------------------------------------------------------------------
 
-DataPacketImpl TiADataPacketParser::parseFustyDataPacketFromStream (InputStream& input_stream, bool& run)
-{
-    DataPacketImpl packet;
-    char buffer[10000];
-    unsigned available = 0;
-    for (; (available < 32) && run; ++available)
-        buffer[available] = input_stream.readCharacter ();
+//DataPacketImpl TiADataPacketParser::parseFustyDataPacketFromStream (InputStream& input_stream, bool& run)
+//{
+//    DataPacketImpl packet;
+//    char buffer[10000];
+//    unsigned available = 0;
+//    for (; (available < 32) && run; ++available)
+//        buffer[available] = input_stream.readCharacter ();
 
-    unsigned bytes_needed = packet.getRequiredRawMemorySize (reinterpret_cast<void*>(buffer), available);
-    while ((bytes_needed != available) && run)
-    {
-        buffer[available] = input_stream.readCharacter ();
-        available++;
-        bytes_needed = packet.getRequiredRawMemorySize (reinterpret_cast<void*>(buffer), available);
-    }
-    if (!run)
-        return packet;
-    return DataPacketImpl (reinterpret_cast<void*>(buffer));
-}
+//    unsigned bytes_needed = packet.getRequiredRawMemorySize (reinterpret_cast<void*>(buffer), available);
+//    while ((bytes_needed != available) && run)
+//    {
+//        buffer[available] = input_stream.readCharacter ();
+//        available++;
+//        bytes_needed = packet.getRequiredRawMemorySize (reinterpret_cast<void*>(buffer), available);
+//    }
+//    if (!run)
+//        return packet;
+//    return DataPacketImpl (reinterpret_cast<void*>(buffer));
+//}
 
 //-----------------------------------------------------------------------------
-DataPacket3Impl TiADataPacketParser::parseFustyDataPacket3FromStream (InputStream& /*input_stream*/)
-{
-    return DataPacket3Impl ();
-}
+//DataPacket3Impl TiADataPacketParser::parseFustyDataPacket3FromStream (InputStream& /*input_stream*/)
+//{
+//    return DataPacket3Impl ();
+//}
 
 }
 

@@ -55,6 +55,7 @@
 namespace tia
 {
   class TiAServer;
+  class DataPacket;
 }
 
 namespace tobiss
@@ -69,29 +70,28 @@ class HWAccess;
 class SignalServer
 {
   public:
-    SignalServer(HWAccess& hw_access, tia::TiAServer& server, XMLParser& config_parser);
+    SignalServer(XMLParser& config_parser, bool use_new_tia);
     virtual ~SignalServer();
 
     void stop();
     void readPackets();
 
+    static std::vector<std::string> getPossibleHardwareNames();
+
   private:
     void initGdf(); ///< Initialize writing acquired data into a .gdf file.
 
-    boost::asio::io_service     io_;
-    boost::thread*              io_service_thread_;
+    HWAccess*                   hw_access_;
+    tia::TiAServer*             tia_server_;
 
-    HWAccess&                   hw_access_;
-    tia::TiAServer&                  tia_server_;
+    boost::asio::io_service     tia_io_service_;
+    boost::thread*              tia_io_service_thread_;
+
+    boost::asio::io_service     hw_access_io_service_;
+    boost::thread*              hw_access_io_service_thread_;
+
+
     XMLParser&                  config_parser_;
-
-    #ifdef USE_TID_SERVER
-      TiD::TiDServer*             tid_server_;
-    #endif
-
-    #ifdef USE_GDF_SAVER
-      gdf::Writer*                gdf_writer_;
-    #endif
 
     bool                                stop_reading_;
     bool                                write_file_;
@@ -101,6 +101,18 @@ class SignalServer
     std::map<std::string,std::string>   server_settings_;
     std::map<boost::uint32_t, std::vector<std::string> >    channels_per_sig_type_;
     std::vector<boost::uint32_t>                            sampling_rate_per_sig_type_;
+
+    tia::DataPacket*                                        packet_;
+
+    #ifdef USE_TID_SERVER
+      TiD::TiDServer*             tid_server_;
+      boost::asio::io_service     tid_io_service_;
+      boost::thread*              tid_io_service_thread_;
+    #endif
+
+    #ifdef USE_GDF_SAVER
+      gdf::Writer*                gdf_writer_;
+    #endif
 };
 
 //-----------------------------------------------------------------------------

@@ -49,7 +49,7 @@
 #include "tia-private/config/control_message_decoder.h"
 #include "tia-private/config/control_message_encoder.h"
 #include "tia-private/config/control_messages.h"
-#include "tia/data_packet_impl.h"
+#include "tia-private/datapacket/data_packet_impl__tmp.h"
 
 #ifdef TIMING_TEST
   #include "LptTools/LptTools.h"
@@ -95,6 +95,8 @@ TiAClientImpl::TiAClientImpl() :
   msg_encoder_ = new ControlMsgEncoderXML;
   msg_decoder_ = new ControlMsgDecoderXML;
 
+  packet_.reset( new DataPacketImpl);
+
   msg_decoder_->setInputStream(&ctl_conn_stream_);
 
     #ifdef WIN32
@@ -124,8 +126,11 @@ TiAClientImpl::TiAClientImpl() :
 
 TiAClientImpl::~TiAClientImpl()
 {
-  delete msg_encoder_;
-  delete msg_decoder_;
+  if(msg_encoder_)
+    delete msg_encoder_;
+
+  if(msg_decoder_)
+    delete msg_decoder_;
 
   #ifdef TIMING_TEST
     LptExit();
@@ -478,7 +483,14 @@ void TiAClientImpl::stopReceiving()
 
 //-----------------------------------------------------------------------------
 
-void TiAClientImpl::getDataPacket(DataPacketImpl& packet)
+DataPacket* TiAClientImpl::getEmptyDataPacket()
+{
+  return(packet_.get());
+}
+
+//-----------------------------------------------------------------------------
+
+void TiAClientImpl::getDataPacket(DataPacket& packet)
 {
   if ((ctl_conn_state_ == ControlConnState_NotConnected))
   {
@@ -578,7 +590,7 @@ void TiAClientImpl::getDataPacket(DataPacketImpl& packet)
 
   try
   {
-    p = DataPacketImpl(reinterpret_cast<char*>(&(data_buf_[packet_offset_])));
+    p.reset(reinterpret_cast<char*>(&(data_buf_[packet_offset_])));
   }
   catch(std::runtime_error& e)
   {

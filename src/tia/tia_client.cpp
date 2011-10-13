@@ -49,11 +49,13 @@ namespace tia
 {
 //-----------------------------------------------------------------------------
 
-TiAClient::TiAClient() :
+TiAClient::TiAClient(bool use_new_tia) :
   impl_(0)
 {
-  impl_ = new tia::TiANewClientImpl;
-  //impl_ = new TiAClientImpl;
+  if(use_new_tia)
+    impl_ = new tia::TiANewClientImpl;
+  else
+    impl_ = new TiAClientImpl;
 }
 
 //-----------------------------------------------------------------------------
@@ -66,15 +68,8 @@ TiAClient::~TiAClient()
 
 //-----------------------------------------------------------------------------
 
-void TiAClient::connect(const std::string& address, short unsigned port, bool use_new_tia)
+void TiAClient::connect(const std::string& address, short unsigned port)
 {
-  if (!use_new_tia)
-  {
-    if (impl_)
-      delete impl_;
-    impl_ = new TiAClientImpl;
-  }
-
   impl_->connect(address, port);
 }
 
@@ -129,9 +124,16 @@ void TiAClient::stopReceiving()
 
 //-----------------------------------------------------------------------------
 
-void TiAClient::getDataPacket(DataPacketImpl& packet)
+void TiAClient::getDataPacket(DataPacket& packet)
 {
   impl_->getDataPacket(packet);
+}
+
+//-----------------------------------------------------------------------------
+
+DataPacket* TiAClient::getEmptyDataPacket()
+{
+  return impl_->getEmptyDataPacket();
 }
 
 //-----------------------------------------------------------------------------

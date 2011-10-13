@@ -40,12 +40,14 @@
 #include "../newtia/messages/tia_control_message_builder.h"
 #include "../newtia/messages/tia_control_message_parser.h"
 
-#include "tia-private/newtia/tia_datapacket_parser.h"
+
 
 #include <boost/asio.hpp>
 
 namespace tia
 {
+
+class TiADataPacketParser;
 
 //-----------------------------------------------------------------------------
 ///
@@ -58,8 +60,8 @@ class TiANewClientImpl : public TiAClientImplBase
 public:
     TiANewClientImpl ();
 
-    virtual ~TiANewClientImpl()
-    {}
+    virtual ~TiANewClientImpl();
+
 
     virtual void connect (const std::string& address, short unsigned port);
 
@@ -77,7 +79,12 @@ public:
 
     virtual void stopReceiving();
 
-    virtual void getDataPacket (DataPacketImpl& packet);
+    virtual void getDataPacket (DataPacket& packet);
+
+    /**
+    * @brief todo
+    */
+    virtual DataPacket* getEmptyDataPacket();
 
     virtual void setBufferSize (size_t size);
 
@@ -98,12 +105,13 @@ private:
     SSConfig config_;
     unsigned buffer_size_;
 
-    boost::asio::io_service io_service_;
-    std::auto_ptr<Socket> socket_;
-    std::auto_ptr<ReadSocket> data_socket_;
+    boost::asio::io_service                   io_service_;
+    std::auto_ptr<Socket>                     socket_;
+    std::auto_ptr<ReadSocket>                 data_socket_;
     std::auto_ptr<TiAControlMessageBuilder>   message_builder_;
     std::auto_ptr<TiAControlMessageParser>    message_parser_;
     TiADataPacketParser*                      data_packet_parser;
+    boost::shared_ptr<DataPacket>             packet_;
 //    std::auto_ptr<TiAControlMessageParser> message_parser_;
 };
 

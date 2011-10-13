@@ -22,8 +22,8 @@
 
 #include "datapacket_tests_fixtures.h"
 
-#include "tia/data_packet_3_impl.h"
-#include "tia/data_packet_impl.h"
+#include "tia-private/datapacket/data_packet_3_impl.h"
+#include "tia-private/datapacket/data_packet_impl__tmp.h"
 #include "tia-private/clock.h"
 
 #include <boost/foreach.hpp>
@@ -111,12 +111,14 @@ TEST_FIXTURE(DataPacketInsertingFixture, insertingDataPacket)
 ///
 TEST_FIXTURE(DataPacketRawMemoryFixture, createVersion3DataPacket)
 {
-    DataPacket3Impl empty_packet (reinterpret_cast<void*>(version_3_binary_packet_empty));
+    DataPacket3Impl empty_packet;
+    empty_packet.reset(reinterpret_cast<void*>(version_3_binary_packet_empty));
     CHECK_EQUAL (empty_packet.getPacketID(), RANDOM_PACKET_ID);
     CHECK_EQUAL (empty_packet.getConnectionPacketNr(), RANDOM_CONNECTION_PACKET_NUMBER);
     CHECK_EQUAL (empty_packet.getTimestamp(), TIME_STAMP);
 
-    DataPacket3Impl eeg_packet (reinterpret_cast<void*>(version_3_binary_packet_eeg));
+    DataPacket3Impl eeg_packet;
+    eeg_packet.reset(reinterpret_cast<void*>(version_3_binary_packet_eeg));
     CHECK_EQUAL (eeg_packet.getPacketID(), RANDOM_PACKET_ID);
     CHECK_EQUAL (eeg_packet.getConnectionPacketNr(), RANDOM_CONNECTION_PACKET_NUMBER);
     CHECK_EQUAL (eeg_packet.getNrOfChannels (SIG_EEG), EEG_CHANNELS);
@@ -129,7 +131,8 @@ TEST_FIXTURE(DataPacketRawMemoryFixture, createVersion3DataPacket)
             CHECK (!eeg_packet.hasFlag (flag_setting));
     }
 
-    DataPacket3Impl eeg_emg_packet (reinterpret_cast<void*>(version_3_binary_packet_eeg_emg));
+    DataPacket3Impl eeg_emg_packet;
+    eeg_emg_packet.reset(reinterpret_cast<void*>(version_3_binary_packet_eeg_emg));
     CHECK_EQUAL (eeg_emg_packet.getTimestamp(), TIME_STAMP);
     BOOST_FOREACH (boost::uint32_t flag_setting, all_signal_type_flags_single)
     {
@@ -194,7 +197,8 @@ TEST(assemblePacket)
 // NOT COMPLETED YET
 TEST_FIXTURE(DataPacketRawMemoryFixture, createVersion2DataPacket)
 {
-    DataPacketImpl packet (reinterpret_cast<void*>(version_2_binary_packet_empty));
+    DataPacketImpl packet;
+    packet.reset(reinterpret_cast<void*>(version_2_binary_packet_empty));
 
     CHECK_EQUAL (packet.getPacketNr(), RANDOM_PACKET_ID);
 }

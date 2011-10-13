@@ -47,7 +47,7 @@
 
 // local
 #include "tia-private/network/tcp_data_server.h"
-#include "tia/data_packet_impl.h"
+#include "tia/data_packet_interface.h"
 
 namespace tia
 {
@@ -88,7 +88,7 @@ void TCPDataConnection::handleWrite(const boost::system::error_code& ec,
 
 //-----------------------------------------------------------------------------
 
-void TCPDataConnection::sendDataPacket(DataPacketImpl& packet)
+void TCPDataConnection::sendDataPacket(DataPacket& packet)
 {
   boost::unique_lock<boost::mutex> lock(mutex_);
 
@@ -249,7 +249,7 @@ void TCPDataServer::enableTransmission(const boost::asio::ip::tcp::endpoint& end
 
 //-----------------------------------------------------------------------------
 
-void TCPDataServer::sendDataPacket(DataPacketImpl& packet)
+void TCPDataServer::sendDataPacket(DataPacket& packet)
 {
   // lock the connection list
   boost::unique_lock<boost::mutex> lock(mutex_);

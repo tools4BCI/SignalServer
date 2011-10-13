@@ -43,6 +43,8 @@
 #include "hardware/event_listener.h"
 #include "config/xml_parser.h"
 
+#include "tia/data_packet_interface.h"
+
 #ifdef TIMING_TEST
   #include "LptTools/LptTools.h"
   #define LPT1  0
@@ -105,7 +107,6 @@ HWAccess::HWAccess(boost::asio::io_service& io, XMLParser& parser)
   buildDataInfoMap();
   buildFsInfoMap();
   doHWSetup();
-  packet_.reset();
 
   event_listener_ = new EventListener(io);
 
@@ -344,16 +345,16 @@ void HWAccess::stopDataAcquisition()
 
 //-----------------------------------------------------------------------------
 
-tia::DataPacketImpl HWAccess::getDataPacket()
+void HWAccess::fillDataPacket(tia::DataPacket* packet)
 {
   //#ifdef DEBUG
   //  cout << "HWAccess: getDataPacket" << endl;
   //#endif
 
-  packet_.reset();
+  packet->reset();
 
   SampleBlock<double> sb(master_->getSyncData());
-  packet_.setTimestamp();
+  packet->setTimestamp();
 
   #ifdef TIMING_TEST
     int port_state = LptPortIn(LPT1,0);
@@ -370,7 +371,7 @@ tia::DataPacketImpl HWAccess::getDataPacket()
   #endif
 
   for(int n = 0; n < sb.getNrOfSignalTypes() ; n++)
-    packet_.insertDataBlock(sb.getSignalByNr(n), sb.getFlagByNr(n), sb.getNrOfBlocks());
+    packet->insertDataBlock(sb.getSignalByNr(n), sb.getFlagByNr(n), sb.getNrOfBlocks());
 
 
   for (unsigned int n=0; n < slaves_.size(); n++)
@@ -379,7 +380,7 @@ tia::DataPacketImpl HWAccess::getDataPacket()
     {
       sb = slaves_[n]->getAsyncData();
       for(int j = 0; j < sb.getNrOfSignalTypes() ; j++)
-        packet_.insertDataBlock(sb.getSignalByNr(j), sb.getFlagByNr(j), sb.getNrOfBlocks());
+        packet->insertDataBlock(sb.getSignalByNr(j), sb.getFlagByNr(j), sb.getNrOfBlocks());
       sample_it_[n] = 0;
     }
     sample_it_[n]++;
@@ -389,15 +390,14 @@ tia::DataPacketImpl HWAccess::getDataPacket()
   {
     sb = aperiodics_[n]->getAsyncData();
     for(int j = 0; j < sb.getNrOfSignalTypes() ; j++)
-      packet_.insertDataBlock(sb.getSignalByNr(j), sb.getFlagByNr(j), sb.getNrOfBlocks());
+      packet->insertDataBlock(sb.getSignalByNr(j), sb.getFlagByNr(j), sb.getNrOfBlocks());
   }
 
   sb = event_listener_->getAsyncData();
   for(int j = 0; j < sb.getNrOfSignalTypes() ; j++)
-    packet_.insertDataBlock(sb.getSignalByNr(j), sb.getFlagByNr(j), sb.getNrOfBlocks());
+    packet->insertDataBlock(sb.getSignalByNr(j), sb.getFlagByNr(j), sb.getNrOfBlocks());
 
-  packet_.incSampleNr();
-  return (packet_);
+  packet->incPacketID();
 }
 
 //-----------------------------------------------------------------------------

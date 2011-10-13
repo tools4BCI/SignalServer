@@ -34,8 +34,8 @@
 #ifndef TIA_DATAPACKET_PARSER_H
 #define TIA_DATAPACKET_PARSER_H
 
-#include "tia/data_packet_impl.h"
-#include "tia/data_packet_3_impl.h"
+#include "tia/data_packet_interface.h"
+//#include "tia/data_packet_3_impl.h"
 
 #include "network/input_stream.h"
 
@@ -49,9 +49,9 @@ class TiADataPacketParser
     TiADataPacketParser(InputStream& input_stream);
     virtual ~TiADataPacketParser();
 
-    void parseDataPacket (DataPacketImpl& packet);
-    DataPacketImpl parseFustyDataPacketFromStream (InputStream& input_stream, bool& run);
-    DataPacket3Impl parseFustyDataPacket3FromStream (InputStream& input_stream);
+    void parseDataPacket (DataPacket& packet);
+//    DataPacketImpl parseFustyDataPacketFromStream (InputStream& input_stream, bool& run);
+//    DataPacket3Impl parseFustyDataPacket3FromStream (InputStream& input_stream);
 
   private:
     InputStream&                input_stream_;

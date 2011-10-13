@@ -49,9 +49,12 @@
 
 #include <boost/asio.hpp>
 #include <boost/cstdint.hpp>
-
-#include "tia/data_packet_impl.h"
 #include "hw_thread.h"
+
+namespace tia
+{
+  class DataPacket;
+}
 
 namespace tobiss
 {
@@ -92,16 +95,13 @@ class HWAccess
     virtual ~HWAccess();
 
     /**
-    * @brief Retreive a DataPacket containing data from attached hardware synchronous with the master device.
-    *
-    * @return packet A DataPacket containing data from all connected hardware objects (master)
-    * and slaves).
+    * @brief Fill a DataPacket with data from attached hardware synchronous with the master device.
     *
     * Signals a ascending ordered dependent on their SignalType (EEG, EMG,...).
     * SampleNr is automatically increased.
     * DataPacket (holded by hw_access object) is reseted all the time this method is called.
     */
-    tia::DataPacketImpl getDataPacket();
+    void fillDataPacket(tia::DataPacket* packet);
 
     /**
     * @brief Starts the data acquisition.
@@ -251,11 +251,6 @@ class HWAccess
 //-----------------------------------------------
 
   private:
-    /**
-    * @brief The DataPacket containing latest data from all connected devices.
-    */
-    tia::DataPacketImpl packet_;
-
     /**
     * @brief A vector holding pointers to all connected slave hardware objects.
     */

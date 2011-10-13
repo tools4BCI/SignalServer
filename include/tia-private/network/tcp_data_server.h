@@ -54,7 +54,7 @@
 namespace tia
 {
 // forward declarations
-class DataPacketImpl;
+class DataPacket;
 
 //-----------------------------------------------------------------------------
 
@@ -106,7 +106,7 @@ public:
    * @brief Sends a DataPacket to the clients
    * @param packet the DataPacket to send
    */
-  void sendDataPacket(DataPacketImpl& packet);
+  void sendDataPacket(DataPacket& packet);
 
 protected:
   virtual void startAccept();
@@ -183,7 +183,7 @@ public:
    * FIXME: const correctness
    * \sa enableTransmission()
    */
-  void sendDataPacket(DataPacketImpl& packet);
+  void sendDataPacket(DataPacket& packet);
 
 private:
   typedef std::map<boost::asio::ip::tcp::endpoint, TCPDataConnection::pointer> ClientConnectionMap;

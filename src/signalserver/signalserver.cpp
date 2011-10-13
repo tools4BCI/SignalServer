@@ -38,6 +38,7 @@
 #include <boost/filesystem.hpp>
 
 #include "tia/tia_server.h"
+#include "tia/data_packet_interface.h"
 #include "hardware/hw_access.h"
 #include "config/xml_parser.h"
 
@@ -52,41 +53,54 @@ namespace tobiss
 {
 //-----------------------------------------------------------------------------
 
-SignalServer::SignalServer(HWAccess& hw_access, tia::TiAServer& tia_server, XMLParser& config_parser)
-  : hw_access_(hw_access), tia_server_(tia_server), config_parser_(config_parser),
+SignalServer::SignalServer(XMLParser& config_parser, bool use_new_tia)
+  : hw_access_(0), tia_server_(0), tia_io_service_thread_(0),hw_access_io_service_thread_(0),
+    config_parser_(config_parser),
+    stop_reading_(false), write_file_(false),
+    master_blocksize_( 0 ),
+    master_samplingrate_( 0 )
     #ifdef USE_TID_SERVER
-      tid_server_(0),
+      ,tid_server_(0),tid_io_service_thread_(0),
     #endif
     #ifdef USE_GDF_SAVER
       gdf_writer_(0),
     #endif
-    stop_reading_(false), write_file_(false),
-    master_blocksize_( hw_access.getMastersBlocksize() ),
-    master_samplingrate_( hw_access.getMastersSamplingRate() )
 {
 
-  tia_server_.setMasterBlocksize( master_blocksize_ );
-  tia_server_.setMasterSamplingRate( master_samplingrate_ );
-  tia_server_.setAcquiredSignalTypes(hw_access_.getAcquiredSignalTypes());
-  tia_server_.setBlockSizesPerSignalType(hw_access_.getBlockSizesPerSignalType());
+  tia_server_ = new tia::TiAServer(tia_io_service_, use_new_tia);
+  hw_access_ = new HWAccess(hw_access_io_service_, config_parser_);
 
-  sampling_rate_per_sig_type_ = hw_access_.getSamplingRatePerSignalType();
-  tia_server_.setSamplingRatePerSignalType(sampling_rate_per_sig_type_);
+  master_blocksize_ =  hw_access_->getMastersBlocksize();
+  master_samplingrate_ = hw_access_->getMastersSamplingRate();
 
-  channels_per_sig_type_ = hw_access_.getChannelNames();
-  tia_server_.setChannelNames(channels_per_sig_type_);
+  tia_server_->setMasterBlocksize( master_blocksize_ );
+  tia_server_->setMasterSamplingRate( master_samplingrate_ );
+  tia_server_->setAcquiredSignalTypes( hw_access_->getAcquiredSignalTypes() );
+  tia_server_->setBlockSizesPerSignalType( hw_access_->getBlockSizesPerSignalType() );
 
-  subject_info_ = config_parser_.parseSubject();
+  sampling_rate_per_sig_type_ = hw_access_->getSamplingRatePerSignalType();
+  tia_server_->setSamplingRatePerSignalType(sampling_rate_per_sig_type_);
+
+  channels_per_sig_type_ = hw_access_->getChannelNames();
+  tia_server_->setChannelNames(channels_per_sig_type_);
+
+  subject_info_ = config_parser_ .parseSubject();
   server_settings_ = config_parser_.parseServerSettings();
-  tia_server_.initialize(subject_info_, server_settings_);
+
+  tia_server_->initialize(subject_info_, server_settings_);
+
+  packet_ = tia_server_->getEmptyDataPacket();
+  packet_->reset();
 
   #ifdef USE_TID_SERVER
     tid_server_ = new TiD::TiDServer(io_);
     tid_server_->bind ( boost::lexical_cast<unsigned int>(server_settings_[Constants::ss_tid_port]));
     tid_server_->listen();
+
+    tid_io_service_thread_ = new boost::thread(boost::bind(&boost::asio::io_service::run,
+                                                           &tid_io_service_));
   #endif
 
-  io_service_thread_ = new boost::thread(boost::bind(&boost::asio::io_service::run, &io_));
 
   #ifdef USE_GDF_SAVER
     try
@@ -104,23 +118,52 @@ SignalServer::SignalServer(HWAccess& hw_access, tia::TiAServer& tia_server, XMLP
       throw;
     }
   #endif
+
+  hw_access_->startDataAcquisition();
+  hw_access_io_service_thread_ = new boost::thread(boost::bind(&boost::asio::io_service::run,
+                                                               &hw_access_io_service_));
+  tia_io_service_thread_ = new boost::thread(boost::bind(&boost::asio::io_service::run,
+                                                               &tia_io_service_));
+
+#ifdef WIN32
+  SetPriorityClass(tia_io_service_thread_->native_handle(), REALTIME_PRIORITY_CLASS);
+  SetThreadPriority(tia_io_service_thread_->native_handle(), THREAD_PRIORITY_TIME_CRITICAL );
+
+  SetPriorityClass(hw_access_io_service_thread_->native_handle(), REALTIME_PRIORITY_CLASS);
+  SetThreadPriority(hw_access_io_service_thread_->native_handle(), THREAD_PRIORITY_TIME_CRITICAL );
+
+  #ifdef USE_TID_SERVER
+    SetPriorityClass(tid_io_service_thread_->native_handle(), REALTIME_PRIORITY_CLASS);
+    SetThreadPriority(tid_io_service_thread_->native_handle(), THREAD_PRIORITY_TIME_CRITICAL );
+  #endif
+
+#endif
 }
 
 //-----------------------------------------------------------------------------
 
 SignalServer::~SignalServer()
 {
-  stop_reading_ = true;
+  stop();
+
+  if(tia_io_service_thread_)
+    delete(tia_io_service_thread_);
+
+  if(tia_server_)
+    delete(tia_server_);
 
 
-  io_.stop();
-  io_service_thread_->interrupt();
-  io_service_thread_->join();
+  if(hw_access_io_service_thread_)
+    delete(hw_access_io_service_thread_);
 
-  if(io_service_thread_)
-    delete(io_service_thread_);
+  if(hw_access_)
+    delete(hw_access_);
+
 
   #ifdef USE_TID_SERVER
+    if(tid_io_service_thread_)
+      delete(tid_io_service_thread_);
+
     if(tid_server_)
       delete(tid_server_);
   #endif
@@ -139,6 +182,22 @@ SignalServer::~SignalServer()
 void SignalServer::stop()
 {
   stop_reading_ = true;
+
+  hw_access_io_service_.stop();
+  hw_access_io_service_thread_->interrupt();
+  hw_access_io_service_thread_->join();
+
+  tia_io_service_.stop();
+  tia_io_service_thread_->interrupt();
+  tia_io_service_thread_->join();
+
+  #ifdef USE_TID_SERVER
+    tid_io_service_.stop();
+    tid_io_service_thread_->interrupt();
+    tid_io_service_thread_->join();
+  #endif
+
+  hw_access_->stopDataAcquisition();
 }
 
 //-----------------------------------------------------------------------------
@@ -158,8 +217,8 @@ void SignalServer::readPackets()
   {
     sample_count += master_blocksize_;
 
-    tia::DataPacketImpl packet = hw_access_.getDataPacket();
-    tia_server_.sendDataPacket(packet);
+    hw_access_->fillDataPacket(packet_);
+    tia_server_->sendDataPacket();
 
     #ifdef USE_TID_SERVER
     if(tid_server_->newMessagesAvailable())
@@ -305,6 +364,13 @@ void SignalServer::initGdf()
   gdf_writer_->open( server_settings_[Constants::ss_filename] + ".gdf" );
 }
 #endif
+
+//-----------------------------------------------------------------------------
+
+std::vector<std::string> SignalServer::getPossibleHardwareNames()
+{
+  return(HWAccess::getPossibleHardwareNames());
+}
 
 //-----------------------------------------------------------------------------
 

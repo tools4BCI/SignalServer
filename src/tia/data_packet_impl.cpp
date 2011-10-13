@@ -39,7 +39,7 @@
 #include <stdexcept>
 
 #include "tia/defines.h"
-#include "tia/data_packet_impl.h"
+#include "tia-private/datapacket/data_packet_impl__tmp.h"
 #include "tia-private/datapacket/raw_mem.h"
 
 namespace tia
@@ -59,12 +59,15 @@ using std::make_pair;
 uint64_t  DataPacketImpl::sample_nr_ = 0;
 
 //-----------------------------------------------------------------------------
-DataPacketImpl::DataPacketImpl(void* mem)
-  : flags_(0), packet_nr_(0), nr_of_signal_types_(0)
+void DataPacketImpl::reset(void* mem)
 {
   #ifdef DEBUG
       cout << "DataPacket: RAW Constructor" << endl;
   #endif
+
+  flags_ = 0;
+  packet_nr_ = 0;
+  nr_of_signal_types_ = 0;
 
   uint32_t* f = reinterpret_cast<uint32_t*>(mem);
 

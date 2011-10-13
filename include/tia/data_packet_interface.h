@@ -59,6 +59,7 @@ class DataPacket
 
     virtual ~DataPacket() {}
     virtual void reset() = 0;
+    virtual void reset(void* mem) = 0;
 
     virtual void incPacketID() = 0;
     virtual void setPacketID(boost::uint64_t nr) = 0;

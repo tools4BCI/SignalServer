@@ -41,7 +41,6 @@
 #include <iostream>
 
 // Boost
-#include <boost/asio.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/exception/all.hpp>
 #include <boost/filesystem.hpp>
@@ -49,9 +48,7 @@
 
 // local
 #include "version.h"
-#include "tia/tia_server.h"
 #include "config/xml_parser.h"
-#include "hardware/hw_access.h"
 #include "signalserver/signalserver.h"
 
 using namespace std;
@@ -100,22 +97,13 @@ int main(int argc, const char* argv[])
     {
       XMLParser config(config_file);
 
-      boost::asio::io_service io_service;
 
-      tia::TiAServer tia_server(io_service, use_new_tia);
-      HWAccess hw_access(io_service, config);
-      tobiss::SignalServer sig_server(hw_access, tia_server, config);
-      boost::thread* io_thread_ptr = 0;
+      tobiss::SignalServer sig_server(config, use_new_tia);
       boost::thread* sig_server_ptr = 0;
 
-      hw_access.startDataAcquisition();
-
-      io_thread_ptr  = new boost::thread(boost::bind(&boost::asio::io_service::run, &io_service));
       sig_server_ptr = new boost::thread(boost::bind(&SignalServer::readPackets, &sig_server));
 
       #ifdef WIN32
-        SetPriorityClass(io_thread_ptr->native_handle(), REALTIME_PRIORITY_CLASS);
-        SetThreadPriority(io_thread_ptr->native_handle(), THREAD_PRIORITY_TIME_CRITICAL );
         SetPriorityClass(sig_server_ptr->native_handle(),     HIGH_PRIORITY_CLASS);
         SetThreadPriority(sig_server_ptr->native_handle(), THREAD_PRIORITY_HIGHEST );
       #endif
@@ -153,13 +141,6 @@ int main(int argc, const char* argv[])
       }
 
       sig_server.stop();
-      io_service.stop();
-      hw_access.stopDataAcquisition();
-      if(io_thread_ptr)
-      {
-        io_thread_ptr->join();
-        delete io_thread_ptr;
-      }
       if(sig_server_ptr)
       {
         sig_server_ptr->join();
@@ -262,7 +243,7 @@ void printVersion()
 void printPossibleHardware()
 {
   cout << "Possible hardware abrevations to be used  with this signal server version:" << endl;
-  vector<string> hw_names = HWAccess::getPossibleHardwareNames();
+  vector<string> hw_names = SignalServer::getPossibleHardwareNames();
   for(unsigned int n = 0; n < hw_names.size(); n++)
     cout << "  * " << hw_names[n] << endl;
 }

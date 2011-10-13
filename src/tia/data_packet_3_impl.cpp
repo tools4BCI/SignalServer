@@ -40,7 +40,7 @@
 
 #include "tia/defines.h"
 
-#include "tia/data_packet_3_impl.h"
+#include "tia-private/datapacket/data_packet_3_impl.h"
 #include "tia-private/clock.h"
 #include "tia-private/datapacket/raw_mem3.h"
 
@@ -90,12 +90,15 @@ DataPacket3Impl::DataPacket3Impl(const DataPacket3Impl &src)
 
 //-----------------------------------------------------------------------------
 
-DataPacket3Impl::DataPacket3Impl(void* mem)
-  : flags_(0), connection_packet_nr_(0), nr_of_signal_types_(0)
+void DataPacket3Impl::reset(void* mem)
 {
   #ifdef DEBUG
       cout << "DataPacket: RAW Constructor" << endl;
   #endif
+
+  flags_ = 0;
+  connection_packet_nr_ = 0;
+  nr_of_signal_types_ = 0;
 
   uint8_t* version_ptr = reinterpret_cast<uint8_t*>(mem);
   version_ = *version_ptr;

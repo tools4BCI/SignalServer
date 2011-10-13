@@ -50,7 +50,7 @@
 namespace tia
 {
 // forward declarations
-class DataPacketImpl;
+class DataPacket;
 class TiAClientImplBase;
 class SSConfig;
 
@@ -106,7 +106,7 @@ public:
    * Call connect() to establish a connection to a TOBI SignalServer.
    * @throws
    */
-  TiAClient();
+  TiAClient( bool use_new_tia);
   /**
    * @brief Destructor
    */
@@ -120,7 +120,7 @@ public:
    * @throw std::ios_base::failure if the client could not
    *   connect to the server or if the client is already connected.
    */
-  virtual void connect(const std::string& address, short unsigned port, bool use_new_tia = false);
+  virtual void connect(const std::string& address, short unsigned port);
 
   /**
    * @brief Tells if the client is connected to the server,
@@ -178,7 +178,13 @@ public:
    * @throw std::overflow_error if an overflow occurs
    *
    */
-  virtual void getDataPacket(DataPacketImpl& packet);
+
+  /**
+  * @brief todo
+  */
+  virtual DataPacket* getEmptyDataPacket();
+
+  virtual void getDataPacket(DataPacket& packet);
   /**
    * @brief Sets the client's data input buffer size to the given value
    * @param size the size of the input buffer in [byte]

@@ -48,7 +48,7 @@
 
 // local
 #include "tia-private/network/udp_data_server.h"
-#include "tia/data_packet_impl.h"
+#include "tia/data_packet_interface.h"
 
 namespace tia
 {
@@ -83,7 +83,7 @@ void UDPDataServer::setDestination(const std::string& address, uint16_t port)
 
 //-----------------------------------------------------------------------------
 
-void UDPDataServer::sendDataPacket(DataPacketImpl& packet)
+void UDPDataServer::sendDataPacket(DataPacket& packet)
 {
   if (num_clients_ == 0)
     return;

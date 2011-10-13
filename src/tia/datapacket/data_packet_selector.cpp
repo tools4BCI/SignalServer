@@ -68,47 +68,47 @@ void DataPacketSelector::setDesiredChannels( boost::uint32_t signal_type, boost:
 
 //-----------------------------------------------------------------------------
 
-DataPacketImpl DataPacketSelector::getModifiedDataPacket(DataPacketImpl& packet)
-{
-  DataPacketImpl new_packet;
+//DataPacketImpl DataPacketSelector::getModifiedDataPacket(DataPacketImpl& packet)
+//{
+//  DataPacketImpl new_packet;
 
-  map<uint32_t, set<uint16_t> >::iterator it;
-  uint32_t flag = 0;
-  uint16_t nr_ch = 0;
-  uint16_t nr_values = 0;
-  uint16_t blocksize = 0;
-  uint32_t offset = 0;
+//  map<uint32_t, set<uint16_t> >::iterator it;
+//  uint32_t flag = 0;
+//  uint16_t nr_ch = 0;
+//  uint16_t nr_values = 0;
+//  uint16_t blocksize = 0;
+//  uint32_t offset = 0;
 
 
-  for( it = ch_selection_.begin(); it != ch_selection_.end(); it++  )
-  {
-    flag = it->first;
+//  for( it = ch_selection_.begin(); it != ch_selection_.end(); it++  )
+//  {
+//    flag = it->first;
 
-    work_vec_ = packet.getSingleDataBlock(flag);
-    blocksize = packet.getNrOfBlocks(flag);
-    nr_values = packet.getNrOfSamples(flag);
-    nr_ch  = nr_values/blocksize;
+//    work_vec_ = packet.getSingleDataBlock(flag);
+//    blocksize = packet.getNrOfBlocks(flag);
+//    nr_values = packet.getNrOfSamples(flag);
+//    nr_ch  = nr_values/blocksize;
 
-    vector<double>&  sample_vec = sample_map_[flag];
-    set< uint16_t >& channel_list = it->second;
+//    vector<double>&  sample_vec = sample_map_[flag];
+//    set< uint16_t >& channel_list = it->second;
 
-    for(unsigned int n = 0; n < nr_ch; n++)
-    {
-      if( channel_list.find(n) != channel_list.end() )
-      {
-        offset = n * blocksize;
-        for(unsigned int k = 0; k < blocksize; k++)
-          sample_vec.push_back(offset + k);
-      }
-    }
+//    for(unsigned int n = 0; n < nr_ch; n++)
+//    {
+//      if( channel_list.find(n) != channel_list.end() )
+//      {
+//        offset = n * blocksize;
+//        for(unsigned int k = 0; k < blocksize; k++)
+//          sample_vec.push_back(offset + k);
+//      }
+//    }
 
-    new_packet.insertDataBlock( sample_vec, flag, blocksize);
-    sample_vec.clear();
-  }
+//    new_packet.insertDataBlock( sample_vec, flag, blocksize);
+//    sample_vec.clear();
+//  }
 
-  return(new_packet);
+//  return(new_packet);
 
-}
+//}
 
 //-----------------------------------------------------------------------------
 

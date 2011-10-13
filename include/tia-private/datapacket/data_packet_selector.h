@@ -40,10 +40,11 @@
 
 #include <set>
 #include <vector>
+#include <map>
 
 #include <boost/cstdint.hpp>
 
-#include "tia/data_packet_impl.h"
+#include "tia/data_packet_interface.h"
 
 namespace tia
 {
@@ -65,7 +66,7 @@ class DataPacketSelector
     void setDesiredChannels(  boost::uint32_t signal_type, boost::uint16_t blocksize,
                          std::set<boost::uint16_t> channels);
 
-    DataPacketImpl getModifiedDataPacket(DataPacketImpl& packet);
+//    DataPacketImpl getModifiedDataPacket(DataPacketImpl& packet);
 
   private:
 

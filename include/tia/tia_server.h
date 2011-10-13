@@ -51,10 +51,12 @@
 #include <boost/asio.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/utility.hpp>
+#include <boost/shared_ptr.hpp>
 
 // local
 #include "tia/constants.h"
 #include "tia/ss_meta_info.h"
+
 
 // forward declarations
 
@@ -69,7 +71,9 @@ namespace tia
   class ControlConnectionServer2;
   class DataServer;
   class HardwareInterface;
+  class DataPacket;
   class DataPacketImpl;
+  class DataPacket3Impl;
 
 //-----------------------------------------------------------------------------
 
@@ -132,12 +136,18 @@ class TiAServer : boost::noncopyable
     void initialize(std::map<std::string,std::string>& subject_info,
                     std::map<std::string,std::string>& server_settings);
 
+
+    /**
+    * @brief todo
+    */
+    DataPacket* getEmptyDataPacket();
+
     /**
     * @brief Sends a DataPacket to connected clients
     * @param[in]  packet
     * @throws
     */
-    void sendDataPacket(DataPacketImpl& packet);
+    void sendDataPacket();
 
     /**
      * @brief Set the sampling rate of the master device
@@ -193,6 +203,8 @@ class TiAServer : boost::noncopyable
      */
     void createSignalInfo();
 
+    DataPacketImpl  makeDataPacketCopy(DataPacketImpl& packet);
+    DataPacket3Impl makeDataPacketCopy(DataPacket3Impl& packet);
 
   private:
     boost::asio::io_service&            io_service_; ///<
@@ -215,9 +227,17 @@ class TiAServer : boost::noncopyable
     std::vector<boost::uint32_t>                          fs_per_sig_type_; ///<
     std::map<boost::uint32_t, std::vector<std::string> >  channels_per_sig_type_; ///<
 
-    SubjectInfo                 subject_info_;
-    SignalInfo                  signal_info_;
+    SubjectInfo                         subject_info_;
+    SignalInfo                          signal_info_;
 
+    DataPacket*       data_packet_;
+
+    boost::shared_ptr<DataPacketImpl>                     data_packet_impl_;
+    boost::shared_ptr<DataPacket3Impl>                    data_packet_3_impl_;
+
+    DataPacket*       work_data_packet_;
+    DataPacketImpl*                     work_data_packet_impl_;
+    DataPacket3Impl*                    work_data_packet_3_impl_;
 
     Constants                           cst_; ///<
 

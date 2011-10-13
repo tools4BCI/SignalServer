@@ -20,7 +20,7 @@
 
 #include "UnitTest++/UnitTest++.h"
 #include "tia/tia_client.h"
-#include "tia/data_packet_impl.h"
+#include "tia-private/datapacket/data_packet_impl__tmp.h"
 
 #include <limits>
 
@@ -28,7 +28,7 @@ using namespace tia;
 
 TEST(clientBasicConnection)
 {
-    TiAClient client;
+    TiAClient client(0);
 
     CHECK(client.connected() == false);
     CHECK(client.receiving() == false);

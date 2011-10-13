@@ -52,9 +52,10 @@
 #include "ticpp/ticpp.h"
 
 // local
-#include "tia/data_packet_impl.h"
-#include "tia-private/network/control_connection_server.h"
+#include "tia/data_packet_interface.h"
 #include "tia/tia_server.h"
+
+#include "tia-private/network/control_connection_server.h"
 #include "tia-private/network/tcp_data_server.h"
 #include "tia-private/network/udp_data_server.h"
 #include "tia-private/newtia/server_impl/tia_server_state_server_impl.h"
@@ -63,6 +64,9 @@
 
 #include "tia-private/newtia/server_impl/fusty_data_server_impl.h"
 #include "tia-private/newtia/fusty_hardware_interface_impl.h"
+
+#include "tia-private/datapacket/data_packet_impl__tmp.h"
+#include "tia-private/datapacket/data_packet_3_impl.h"
 
 #ifdef TIMING_TEST
   #include "LptTools/LptTools.h"
@@ -91,8 +95,16 @@ TiAServer::TiAServer(boost::asio::io_service& io_service, bool new_tia)
   server_state_server_(0),
   new_tia_ (new_tia),
   control_connection_server_2_(0),
-    data_server_(0), hardware_interface_(0)
+  data_server_(0), hardware_interface_(0)
+
 {
+
+  data_packet_impl_.reset( new DataPacketImpl );
+  work_data_packet_impl_ = new DataPacketImpl;
+
+  data_packet_3_impl_.reset( new DataPacket3Impl );
+  work_data_packet_3_impl_ = new DataPacket3Impl;
+
   #ifdef TIMING_TEST
     timestamp_ = boost::posix_time::microsec_clock::local_time();
     counter_ = 0;
@@ -142,6 +154,12 @@ TiAServer::~TiAServer()
   if(hardware_interface_)
     delete hardware_interface_;
 
+  data_packet_ = 0;
+  if(work_data_packet_impl_)
+    delete work_data_packet_impl_;
+  if(work_data_packet_3_impl_)
+    delete work_data_packet_3_impl_;
+
   #ifdef TIMING_TEST
     LptExit();
   #endif
@@ -182,6 +200,8 @@ void TiAServer::initialize(std::map<std::string,std::string>& subject_info_map,
         new tia::ControlConnectionServer2Impl(control_connection_server2_socket, ctl_port,
                    data_server_, server_state_server_, hardware_interface_);
 
+    data_packet_ = data_packet_3_impl_.get();
+    work_data_packet_ = work_data_packet_3_impl_;
   }
   else
   {
@@ -189,15 +209,48 @@ void TiAServer::initialize(std::map<std::string,std::string>& subject_info_map,
                                                              io_service_, *this);
     control_connection_server_->bind(ctl_port);
     control_connection_server_->listen();
+
+    data_packet_ = data_packet_impl_.get();
+    work_data_packet_ = work_data_packet_impl_;
   }
 }
 
 //-----------------------------------------------------------------------------
 
-void TiAServer::sendDataPacket(DataPacketImpl& packet)
+DataPacket* TiAServer::getEmptyDataPacket()
 {
-  tcp_data_server_->sendDataPacket(packet);
-  udp_data_server_->sendDataPacket(packet);
+  return data_packet_;
+}
+
+//-----------------------------------------------------------------------------
+
+DataPacketImpl  TiAServer::makeDataPacketCopy(DataPacketImpl& packet)
+{
+  DataPacketImpl p(packet);
+  return p;
+}
+
+//-----------------------------------------------------------------------------
+
+DataPacket3Impl  TiAServer::makeDataPacketCopy(DataPacket3Impl& packet)
+{
+  DataPacket3Impl p(packet);
+  return p;
+}
+
+//-----------------------------------------------------------------------------
+
+void TiAServer::sendDataPacket()
+{
+  if(new_tia_)
+    *work_data_packet_3_impl_ = *(data_packet_3_impl_.get() );
+  else
+    *work_data_packet_impl_ = *(data_packet_impl_.get() );
+
+  tcp_data_server_->sendDataPacket( *work_data_packet_ );
+  udp_data_server_->sendDataPacket( *work_data_packet_ );
+
+  work_data_packet_->reset();
 
   #ifdef TIMING_TEST
     timestamp_ = boost::posix_time::microsec_clock::local_time();
@@ -214,7 +267,7 @@ void TiAServer::sendDataPacket(DataPacketImpl& packet)
     }
     counter_++;
 
-    diff_ = timestamp_ - packet.getTimestamp();
+    diff_ = timestamp_ - data_packet_->getTimestamp();
     t_diffs_.push_back (diff_);
     t_min_total_ = min (t_min_total_, diff_);
     t_max_total_ = max (t_max_total_, diff_);

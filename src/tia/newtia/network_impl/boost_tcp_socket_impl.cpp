@@ -103,6 +103,7 @@ void BoostTCPSocketImpl::setReceiveBufferSize (unsigned size)
 string BoostTCPSocketImpl::readUntil (char delimiter)
 {
   error_.clear();
+  str_buffer_.clear();
   size_t transfered = boost::asio::read_until (*socket_, stream_buffer_, delimiter, error_ );
 
   if(error_)
@@ -127,6 +128,7 @@ string BoostTCPSocketImpl::readUntil (char delimiter)
 string BoostTCPSocketImpl::readUntil (std::string delimiter)
 {
   error_.clear();
+  str_buffer_.clear();
   size_t transfered = boost::asio::read_until (*socket_, stream_buffer_, delimiter,error_ );
 
   if(error_)
@@ -152,6 +154,7 @@ string BoostTCPSocketImpl::readUntil (std::string delimiter)
 //-----------------------------------------------------------------------------
 string BoostTCPSocketImpl::readString (unsigned length)
 {
+  str_buffer_.clear();
   if(stream_buffer_.size() < length)
   {
     error_.clear();

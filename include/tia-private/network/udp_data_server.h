@@ -50,7 +50,7 @@
 namespace tia
 {
 // forward declarations
-class DataPacketImpl;
+class DataPacket;
 
 /**
 * @class UDPDataServer
@@ -109,7 +109,7 @@ public:
    * @param  packet the DataPacket to be sent
    * FIXME: const correctness
    */
-  void sendDataPacket(DataPacketImpl& packet);
+  void sendDataPacket(DataPacket& packet);
 
 private:
   /**

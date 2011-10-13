@@ -55,7 +55,7 @@ namespace tia
 // forward declaration
 class ControlMsgEncoder;
 class ControlMsgDecoder;
-class DataPacketImpl;
+class DataPacket;
 class SSConfig;
 
 //-----------------------------------------------------------------------------
@@ -139,7 +139,12 @@ public:
    * @throw std::overflow_error if an overflow occurs
    *
    */
-  virtual void getDataPacket(DataPacketImpl& packet);
+  virtual void getDataPacket(DataPacket& packet);
+
+  /**
+  * @brief todo
+  */
+  virtual DataPacket* getEmptyDataPacket();
 
   /**
    * @brief Sets the client's data input buffer size to the given value
@@ -200,6 +205,8 @@ protected:
   std::vector<char>               recv_buf_; ///<
   std::vector<char>               data_buf_; ///<
   boost::asio::ip::tcp::endpoint  tcp_target_; ///<
+
+  boost::shared_ptr<DataPacket>   packet_;
 
 #ifdef TIMING_TEST
   private:

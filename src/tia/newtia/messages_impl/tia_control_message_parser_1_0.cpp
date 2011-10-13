@@ -34,9 +34,9 @@
 #include "tia-private/newtia/messages_impl/tia_control_message_parser_1_0.h"
 #include "tia-private/newtia/messages/tia_control_message_tags_1_0.h"
 #include "tia-private/newtia/tia_exceptions.h"
-#include "tia-private/newtia/string_utils.h"
 
 #include <sstream>
+#include <boost/algorithm/string.hpp>
 
 using std::string;
 using std::pair;
@@ -59,7 +59,7 @@ TiAControlMessage TiAControlMessageParser10::parseMessage (InputStream& stream) 
 //-----------------------------------------------------------------------------
 string TiAControlMessageParser10::readVersion (InputStream& stream) const
 {
-    string id_and_version = trim (stream.readUntil(TiAControlMessageTags10::NEW_LINE_CHAR) );
+    string id_and_version = boost::algorithm::trim_copy(stream.readUntil(TiAControlMessageTags10::NEW_LINE_CHAR) );
 
     if (id_and_version != TiAControlMessageTags10::ID_AND_VERSION)
         throw TiAException (string ("TiAControlMessageParser10::readVersion Wrong Message ID and Version. Required \"") + TiAControlMessageTags10::ID_AND_VERSION + "\" but was \"" + id_and_version + "\".");
@@ -70,14 +70,14 @@ string TiAControlMessageParser10::readVersion (InputStream& stream) const
 //-----------------------------------------------------------------------------
 pair<string, string> TiAControlMessageParser10::readCommandAndParameter (InputStream& stream) const
 {
-    string line = trim (stream.readUntil(TiAControlMessageTags10::NEW_LINE_CHAR));
+    string line = boost::algorithm::trim_copy(stream.readUntil(TiAControlMessageTags10::NEW_LINE_CHAR));
     return getPair (line);
 }
 
 //-----------------------------------------------------------------------------
 string TiAControlMessageParser10::readContent (InputStream& stream) const
 {
-    string line = trim (stream.readUntil(TiAControlMessageTags10::NEW_LINE_CHAR) );
+    string line = boost::algorithm::trim_copy(stream.readUntil(TiAControlMessageTags10::NEW_LINE_CHAR) );
     if (line.size () == 0)
         return "";
 
@@ -114,7 +114,7 @@ pair<string, string> TiAControlMessageParser10::getPair (std::string const& str)
     string tag = str.substr (0, delimiter_index);
     string value;
     if (delimiter_index < str.size () - 1)
-        value = trim (str.substr (delimiter_index + 1, str.size () + 1 - delimiter_index));
+        value = boost::algorithm::trim_copy(str.substr (delimiter_index + 1, str.size () + 1 - delimiter_index));
 
     return pair<string, string> (tag, value);
 }
