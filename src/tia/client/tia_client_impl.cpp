@@ -49,7 +49,7 @@
 #include "tia-private/config/control_message_decoder.h"
 #include "tia-private/config/control_message_encoder.h"
 #include "tia-private/config/control_messages.h"
-#include "tia-private/datapacket/data_packet_impl__tmp.h"
+#include "tia-private/datapacket/data_packet_impl.h"
 
 #ifdef TIMING_TEST
   #include "LptTools/LptTools.h"

@@ -20,7 +20,7 @@
 
 #include "UnitTest++/UnitTest++.h"
 #include "tia/tia_client.h"
-#include "tia-private/datapacket/data_packet_impl__tmp.h"
+#include "tia-private/datapacket/data_packet_impl.h"
 
 #include <limits>
 

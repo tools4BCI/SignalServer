@@ -39,7 +39,7 @@
 #include <stdexcept>
 
 #include "tia/defines.h"
-#include "tia-private/datapacket/data_packet_impl__tmp.h"
+#include "tia-private/datapacket/data_packet_impl.h"
 #include "tia-private/datapacket/raw_mem.h"
 
 namespace tia

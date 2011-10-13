@@ -89,7 +89,7 @@ HEADERS += include/tia/tia_server.h \
     include/tia-private/newtia/server_impl/control_connection_2.h \
     include/tia-private/datapacket/data_packet_3_impl.h \
     include/tia/data_packet_interface.h \
-    include/tia-private/datapacket/data_packet_impl__tmp.h
+    include/tia-private/datapacket/data_packet_impl.h
 
 contains( DEFINES, TIMING_TEST )::HEADERS += extern/include/LptTools/LptTools.h
 

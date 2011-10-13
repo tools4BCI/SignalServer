@@ -23,7 +23,7 @@
 #include "datapacket_tests_fixtures.h"
 
 #include "tia-private/datapacket/data_packet_3_impl.h"
-#include "tia-private/datapacket/data_packet_impl__tmp.h"
+#include "tia-private/datapacket/data_packet_impl.h"
 #include "tia-private/clock.h"
 
 #include <boost/foreach.hpp>
