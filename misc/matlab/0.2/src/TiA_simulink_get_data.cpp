@@ -51,12 +51,12 @@
 
 #include "tia/defines.h"
 #include "tia/tia_client.h"
-#include "tia/data_packet.h"
+#include "tia/data_packet_interface.h"
 
 #include <boost/cstdint.hpp>
 
 using namespace std;
-using namespace tobiss;
+using namespace tia;
 
 using boost::uint16_t;
 using boost::uint32_t;
@@ -338,9 +338,9 @@ static void mdlStart(SimStruct *S)
 
     ssGetPWork(S)[SIGNAL_TYPES_MAP_POSITION] =  sig_info;
 
-    TiAClient* client = new TiAClient;
+    TiAClient* client = new TiAClient(use_new_tia);
     ssGetPWork(S)[TiAClient_POSITION] = client;
-    client->connect(ip, ctrl_port, use_new_tia);
+    client->connect(ip, ctrl_port);
 
     boost::posix_time::ptime* start_time =
           new boost::posix_time::ptime( boost::posix_time::microsec_clock::local_time() );
@@ -399,14 +399,14 @@ static void mdlOutputs(SimStruct *S, int_T tid)
   {
     uint16_t nr_values = 0;
     vector<double> v;
-    DataPacket packet;
+    DataPacket* packet = client->getEmptyDataPacket();
 
     if (!client->receiving())
     {
       ssSetErrorStatus(S, "Receiving failed!");
     }
 
-    client->getDataPacket(packet);
+    client->getDataPacket(*packet);
     unsigned int port = 0;
     real_T *y = 0;
 
@@ -424,11 +424,11 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 
     //     get sample nr
     y = ssGetOutputPortRealSignal(S, ++port);
-    y[0] = packet.getSampleNr();
+    y[0] = packet->getPacketID();
 
     //     get timestamp
     y = ssGetOutputPortRealSignal(S, ++port);
-    boost::posix_time::ptime timestamp = packet.getTimestamp();
+    boost::uint64_t timestamp = packet->getTimestamp();
 
     y[0] = *(reinterpret_cast<real_T*>(&timestamp));
 
@@ -450,8 +450,8 @@ static void mdlOutputs(SimStruct *S, int_T tid)
       y = ssGetOutputPortRealSignal(S, port);
 
       try{
-        v = packet.getSingleDataBlock(it->first);
-        nr_values = packet.getNrOfValues(it->first);
+        v = packet->getSingleDataBlock(it->first);
+        nr_values = packet->getNrOfSamples(it->first);
 
         for(unsigned int n = 0; n < nr_values; n++)
           y[n] = v[n];

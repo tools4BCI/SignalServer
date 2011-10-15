@@ -73,7 +73,7 @@ using boost::uint16_t;
 using boost::uint32_t;
 
 using namespace std;
-using namespace tobiss;
+using namespace tia;
 
 
 //---------------------------------------------------------------------------------------
@@ -121,19 +121,19 @@ void mexFunction( int nlhs, mxArray *plhs[],
 
     cout << "Using server " << srv_addr << ":" << port;
     cout << "  (TiA version: " << tia_version << ")"<< endl;
-    TiAClient client;
-    client.connect(srv_addr, port, use_new_tia);
+    TiAClient client(use_new_tia);
+    client.connect(srv_addr, port);
 
     client.requestConfig();
     SSConfig config = client.config();
-    tobiss::SignalInfo::SignalMap& signals(config.signal_info.signals());
-    std::map<uint32_t, tobiss::Signal> sig_types_map;
-    tobiss::SignalInfo::SignalMap::iterator iter(signals.begin());
+    tia::SignalInfo::SignalMap& signals(config.signal_info.signals());
+    std::map<uint32_t, tia::Signal> sig_types_map;
+    tia::SignalInfo::SignalMap::iterator iter(signals.begin());
 
     for( ; iter != signals.end(); iter++)
       sig_types_map.insert( make_pair(cst.getSignalFlag(iter->first), iter->second)  );
 
-    std::map<uint32_t, tobiss::Signal>::iterator it(sig_types_map.begin());
+    std::map<uint32_t, tia::Signal>::iterator it(sig_types_map.begin());
 
     vector<uint32_t> sig_types;
     vector<uint16_t> blocksizes;

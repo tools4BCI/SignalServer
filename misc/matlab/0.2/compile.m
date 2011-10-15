@@ -1,7 +1,7 @@
 
 c_files = ' ';
-c_files = [c_files ' ../../../src/tia/data_packet.cpp ../../../src/tia/datapacket/raw_mem.cpp'];
-c_files = [c_files ' ../../../src/tia/data_packet3.cpp ../../../src/tia/datapacket/raw_mem3.cpp ../../../src/tia/clock.cpp'];
+c_files = [c_files ' ../../../src/tia/data_packet_impl.cpp ../../../src/tia/datapacket/raw_mem.cpp'];
+c_files = [c_files ' ../../../src/tia/data_packet_3_impl.cpp ../../../src/tia/datapacket/raw_mem3.cpp ../../../src/tia/clock.cpp'];
 c_files = [c_files ' ../../../src/tia/constants.cpp ../../../src/tia/config/control_message_decoder.cpp'];
 c_files = [c_files ' ../../../src/tia/config/control_messages.cpp ../../../src/tia/config/control_message_encoder.cpp'];
 c_files = [c_files ' ../../../src/tia/tia_client.cpp ../../../src/tia/client/tia_client_impl.cpp'];
@@ -40,31 +40,31 @@ if(isunix)
     eval([unix_build_command  ' src/TiA_matlab_get_config.cpp ' ...
       c_files ' ../../../extern/lib/ticpp/linux/libticpp.a']);
 
-    eval([unix_build_command  ' src/simulink_get_data.cpp ' ...
+    eval([unix_build_command  ' src/TiA_simulink_get_data.cpp ' ...
       c_files ' ../../../extern/lib/ticpp/linux/libticpp.a']);
 
-%      eval([unix_build_command  ' src/mexSSClient.cpp ' ...
-%        c_files ' ../../../extern/lib/ticpp/linux/libticpp.a']);
+     eval([unix_build_command  ' src/TiA_matlab_client.cpp ' ...
+       c_files ' ../../../extern/lib/ticpp/linux/libticpp.a']);
     
   else
-%      eval([unix_build_command  ' src/TiA_matlab_get_config.cpp ' ...
-%        c_files ' ../../../extern/lib/ticpp/linux/libticpp_64.a']);
+    eval([unix_build_command  ' src/TiA_matlab_get_config.cpp ' ...
+      c_files ' ../../../extern/lib/ticpp/linux/libticpp_64.a']);
         
     eval([unix_build_command  ' src/TiA_simulink_get_data.cpp ' ...
       c_files ' ../../../extern/lib/ticpp/linux/libticpp_64.a']);
 
-%      eval([unix_build_command  ' src/mexSSClient.cpp ' ...
-%        c_files ' ../../../extern/lib/ticpp/linux/libticpp_64.a']);
+     eval([unix_build_command  ' src/TiA_matlab_client.cpp ' ...
+       c_files ' ../../../extern/lib/ticpp/linux/libticpp_64.a']);
   end
 
 else
   eval([win_build_command  ' src/TiA_matlab_get_config.cpp ' ...
     c_files ticpp_files ' ../../../extern/lib/ticpp/linux/libticpp.a' win_libs]);
   
-  eval([win_build_command  ' src/simulink_get_data.cpp ' ...
+  eval([win_build_command  ' src/TiA_simulink_get_data.cpp ' ...
     c_files ticpp_files ' ../../../extern/lib/ticpp/linux/libticpp.a' win_libs]);
   
-%    eval([win_build_command  ' src/mexSSClient.cpp ' ...
-%      c_files ticpp_files ' ../../../extern/lib/ticpp/linux/libticpp.a' win_libs]); 
+eval([Win_build_command  ' src/TiA_matlab_client.cpp ' ...
+     c_files ticpp_files ' ../../../extern/lib/ticpp/linux/libticpp.a' win_libs]); 
 end
 
