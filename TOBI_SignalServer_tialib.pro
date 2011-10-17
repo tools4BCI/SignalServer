@@ -126,8 +126,8 @@ SOURCES += src/tia/tia_server.cpp \
     src/tia/newtia/server_impl/tia_server_state_server_impl.cpp \
     src/tia/newtia/server_impl/control_connection_server_2_impl.cpp \
     src/tia/newtia/server_impl/control_connection_2.cpp \
-    src/tia/data_packet_impl.cpp \
-    src/tia/data_packet_3_impl.cpp
+    src/tia/datapacket/data_packet_impl.cpp \
+    src/tia/datapacket/data_packet_3_impl.cpp
 
 unix {
   contains( DEFINES, TIMING_TEST )::SOURCES += extern/include/LptTools/LptToolsLinux.cpp
@@ -148,12 +148,12 @@ unix {
         message(Building 64 bit )
 
         # 64-bit Linux
-        LIBS += $$PWD/extern/lib/ticpp/linux/libticpp_64.a
+        LIBS += extern/lib/ticpp/linux/libticpp_64.a
     }
     else:: {
         # 32-bit Linux
         message(Building 32 bit )
-        LIBS += $$PWD/extern/lib/ticpp/linux/libticpp.a
+        LIBS += extern/lib/ticpp/linux/libticpp.a
     }
 }
 win32:LIBS += extern\lib\sdl\win\SDL.lib \
