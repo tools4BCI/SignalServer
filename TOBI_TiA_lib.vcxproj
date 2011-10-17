@@ -172,8 +172,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\tia\client\tia_new_client_impl.cpp" />
+    <ClCompile Include="src\tia\clock.cpp" />
     <ClCompile Include="src\tia\constants.cpp" />
-    <ClCompile Include="src\tia\data_packet.cpp" />
+    <ClCompile Include="src\tia\datapacket\data_packet_3_impl.cpp" />
+    <ClCompile Include="src\tia\datapacket\data_packet_impl.cpp" />
+    <ClCompile Include="src\tia\datapacket\data_packet_selector.cpp" />
+    <ClCompile Include="src\tia\datapacket\raw_mem3.cpp" />
     <ClCompile Include="src\tia\newtia\commands\get_data_connection_control_command.cpp" />
     <ClCompile Include="src\tia\newtia\commands\start_data_transmission_control_command.cpp" />
     <ClCompile Include="src\tia\newtia\commands\stop_data_transmission_control_command.cpp" />
@@ -181,7 +185,8 @@
     <ClCompile Include="src\tia\newtia\network_impl\boost_tcp_server_socket_impl.cpp" />
     <ClCompile Include="src\tia\newtia\network_impl\boost_tcp_socket_impl.cpp" />
     <ClCompile Include="src\tia\newtia\network_impl\boost_udp_read_socket.cpp" />
-    <ClCompile Include="src\tia\newtia\server_control_connection.cpp" />
+    <ClCompile Include="src\tia\newtia\server_impl\control_connection_2.cpp" />
+    <ClCompile Include="src\tia\newtia\server_impl\control_connection_server_2_impl.cpp" />
     <ClCompile Include="src\tia\newtia\server_impl\fusty_data_server_impl.cpp" />
     <ClCompile Include="src\tia\newtia\server_impl\tia_server_state_server_impl.cpp" />
     <ClCompile Include="src\tia\newtia\tia_datapacket_parser.cpp" />
@@ -202,13 +207,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\tia-private\client\tia_new_client_impl.h" />
+    <ClInclude Include="include\tia-private\clock.h" />
+    <ClInclude Include="include\tia-private\datapacket\data_packet_3_impl.h" />
+    <ClInclude Include="include\tia-private\datapacket\data_packet_impl.h" />
+    <ClInclude Include="include\tia-private\datapacket\data_packet_selector.h" />
+    <ClInclude Include="include\tia-private\datapacket\raw_mem3.h" />
     <ClInclude Include="include\tia-private\newtia\commands\check_protocol_version_control_command.h" />
     <ClInclude Include="include\tia-private\newtia\commands\get_data_connection_control_command.h" />
     <ClInclude Include="include\tia-private\newtia\commands\get_metainfo_control_command.h" />
     <ClInclude Include="include\tia-private\newtia\commands\get_serverstate_connection_command.h" />
     <ClInclude Include="include\tia-private\newtia\commands\start_data_transmission_control_command.h" />
     <ClInclude Include="include\tia-private\newtia\commands\stop_data_transmission_control_command.h" />
-    <ClInclude Include="include\tia-private\newtia\server_control_connection.h" />
     <ClInclude Include="include\tia-private\newtia\fusty_hardware_interface_impl.h" />
     <ClInclude Include="include\tia-private\newtia\hardware_interface.h" />
     <ClInclude Include="include\tia-private\newtia\messages\standard_control_messages.h" />
@@ -227,9 +236,12 @@
     <ClInclude Include="include\tia-private\newtia\network_impl\boost_socket_impl.h" />
     <ClInclude Include="include\tia-private\newtia\network_impl\boost_tcp_server_socket_impl.h" />
     <ClInclude Include="include\tia-private\newtia\network_impl\boost_udp_read_socket.h" />
+    <ClInclude Include="include\tia-private\newtia\server\control_connection_server_2.h" />
     <ClInclude Include="include\tia-private\newtia\server\data_server.h" />
     <ClInclude Include="include\tia-private\newtia\server\server_states.h" />
     <ClInclude Include="include\tia-private\newtia\server\tia_server_state_server.h" />
+    <ClInclude Include="include\tia-private\newtia\server_impl\control_connection_2.h" />
+    <ClInclude Include="include\tia-private\newtia\server_impl\control_connection_server_2_impl.h" />
     <ClInclude Include="include\tia-private\newtia\server_impl\fusty_data_server_impl.h" />
     <ClInclude Include="include\tia-private\newtia\server_impl\tia_server_state_server_impl.h" />
     <ClInclude Include="include\tia-private\newtia\string_utils.h" />
@@ -239,7 +251,7 @@
     <ClInclude Include="include\tia-private\newtia\tia_exceptions.h" />
     <ClInclude Include="include\tia-private\newtia\tia_meta_info_parse_and_build_functions.h" />
     <ClInclude Include="include\tia\constants.h" />
-    <ClInclude Include="include\tia\data_packet.h" />
+    <ClInclude Include="include\tia\data_packet_interface.h" />
     <ClInclude Include="include\tia\defines.h" />
     <ClInclude Include="include\tia\ss_meta_info.h" />
     <ClInclude Include="include\tia\tia_server.h" />

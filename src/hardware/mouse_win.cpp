@@ -54,7 +54,7 @@ const HWThreadBuilderTemplateRegistratorWithoutIOService<Mouse> Mouse::FACTORY_R
 Mouse::Mouse(ticpp::Iterator<ticpp::Element> hw)
 : MouseBase(hw)
 {
-  Constants cst;
+  tia::Constants cst;
   ticpp::Iterator<ticpp::Element> ds(hw->FirstChildElement(hw_devset_, true));
 
   ticpp::Iterator<ticpp::Element> elem(ds->FirstChildElement(hw_dc_path_,true));

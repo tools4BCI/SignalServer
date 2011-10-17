@@ -8,14 +8,8 @@
     <Filter Include="Source Files\config">
       <UniqueIdentifier>{4e9e1228-180e-419e-8716-d32d663de4f2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\signalserver">
-      <UniqueIdentifier>{8ddc0864-c400-4d28-b949-2cf65686c0c1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\datapacket">
       <UniqueIdentifier>{d0b2e9d1-2e0c-4c98-9106-a583baa448de}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\definitions">
-      <UniqueIdentifier>{8e4e6a37-a5ea-457c-9b12-d97db191ea78}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\network">
       <UniqueIdentifier>{70bc581b-78af-47b4-af6d-614b5bf0f380}</UniqueIdentifier>
@@ -27,26 +21,14 @@
     <Filter Include="Header Files\config">
       <UniqueIdentifier>{bda51340-93ba-474b-9480-9c5108df5c0b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\signalserver">
-      <UniqueIdentifier>{7497f60a-3b69-44d0-a2dc-35c793e39c45}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\datapacket">
       <UniqueIdentifier>{30a1e0cf-c151-40f2-b211-ca756e718e03}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\definitions">
-      <UniqueIdentifier>{e8b83edb-011d-4ed2-b0c3-2b8db57d860a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\network">
       <UniqueIdentifier>{140df814-e23d-4c68-a71e-53a3d4d6f051}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\tia\constants.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\tia\data_packet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\tia\ss_meta_info.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -71,9 +53,6 @@
     <ClCompile Include="src\tia\network\udp_data_server.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\tia\datapacket\raw_mem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\tia\config\control_message_decoder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -84,9 +63,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\tia\client\tia_client_impl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\tia\newtia\server_control_connection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\tia\newtia\tia_datapacket_parser.cpp">
@@ -125,17 +101,35 @@
     <ClCompile Include="src\tia\newtia\messages_impl\tia_control_message_parser_1_0.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\tia\datapacket\raw_mem.cpp">
+      <Filter>Source Files\datapacket</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tia\datapacket\data_packet_3_impl.cpp">
+      <Filter>Source Files\datapacket</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tia\datapacket\data_packet_impl.cpp">
+      <Filter>Source Files\datapacket</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tia\datapacket\data_packet_selector.cpp">
+      <Filter>Source Files\datapacket</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tia\datapacket\raw_mem3.cpp">
+      <Filter>Source Files\datapacket</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tia\newtia\server_impl\control_connection_2.cpp">
+      <Filter>Source Files\network</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tia\newtia\server_impl\control_connection_server_2_impl.cpp">
+      <Filter>Source Files\network</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tia\constants.cpp">
+      <Filter>Source Files\config</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tia\clock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\tia\constants.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\tia\data_packet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\tia\defines.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\tia\ss_meta_info.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -158,9 +152,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\tia-private\network\udp_server.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\tia-private\datapacket\raw_mem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\tia-private\config\control_message_decoder.h">
@@ -286,7 +277,40 @@
     <ClInclude Include="include\tia-private\newtia\tia_meta_info_parse_and_build_functions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\tia-private\newtia\server_control_connection.h">
+    <ClInclude Include="include\tia-private\datapacket\data_packet_3_impl.h">
+      <Filter>Header Files\datapacket</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tia-private\datapacket\data_packet_impl.h">
+      <Filter>Header Files\datapacket</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tia-private\datapacket\data_packet_selector.h">
+      <Filter>Header Files\datapacket</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tia-private\datapacket\raw_mem3.h">
+      <Filter>Header Files\datapacket</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tia-private\datapacket\raw_mem.h">
+      <Filter>Header Files\datapacket</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tia\data_packet_interface.h">
+      <Filter>Header Files\datapacket</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tia-private\newtia\server_impl\control_connection_2.h">
+      <Filter>Header Files\network</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tia-private\newtia\server_impl\control_connection_server_2_impl.h">
+      <Filter>Header Files\network</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tia-private\newtia\server\control_connection_server_2.h">
+      <Filter>Header Files\network</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tia\defines.h">
+      <Filter>Header Files\config</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tia\constants.h">
+      <Filter>Header Files\config</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tia-private\clock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
