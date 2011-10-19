@@ -93,6 +93,13 @@ enum
 
 //---------------------------------------------------------------------------------------
 
+double round(double d)
+{
+  return floor(d + 0.5);
+}
+
+//---------------------------------------------------------------------------------------
+
 void calcSizes(const mxArray* sig_types, vector<int>& width, vector< pair<uint16_t,uint16_t> >& dims)
 {
   //   Signal Types Info:  (Flag, BS, NrCh, fs)
@@ -434,12 +441,14 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 
     //     calc difference of system time and the master-port simulation time
     y = ssGetOutputPortRealSignal(S, ++port);
-    boost::posix_time::time_duration sys_time =
-      boost::posix_time::microsec_clock::local_time() - *start_time;
-
-    boost::posix_time::time_duration diff =
-      sys_time - boost::posix_time::time_duration(0, 0, numeric_cast<uint64_t>(ssGetT(S)),
-                  numeric_cast<uint64_t>((ssGetT(S)-floor(ssGetT(S)))*1000000) );
+    
+    boost::posix_time::time_duration sim_time =  boost::posix_time::time_duration(0, 0,
+                                                 numeric_cast<uint64_t>(  ssGetT(S) ) ,
+                                                    numeric_cast<uint64_t>( (ssGetT(S) -
+                                                    numeric_cast<uint64_t>( ssGetT(S) ) )*1000000) );
+    
+    boost::posix_time::time_duration diff = boost::posix_time::microsec_clock::local_time()
+                                            - *start_time - sim_time;
 
     y[0] = lexical_cast<double>( to_iso_string(diff) );
 
@@ -447,7 +456,7 @@ static void mdlOutputs(SimStruct *S, int_T tid)
     for(map<uint32_t, pair<uint16_t, uint16_t> >::iterator it = sig_info->begin();
         it != sig_info->end();  it++)
     {
-      y = ssGetOutputPortRealSignal(S, port);
+      y = ssGetOutputPortRealSignal(S, ++port);
 
       try{
         v = packet->getSingleDataBlock(it->first);
@@ -462,7 +471,6 @@ static void mdlOutputs(SimStruct *S, int_T tid)
       //     Exception from "p->getSingleDataBlock( flag )" if flag not found
       //       --> do nothing (don't write output port)
       }
-      port++;
     }
 
   }
