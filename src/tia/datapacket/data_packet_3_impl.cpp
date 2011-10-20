@@ -533,7 +533,7 @@ boost::uint32_t DataPacket3Impl::getRequiredRawMemorySize(void* mem, boost::uint
   uint8_t* version_ptr = reinterpret_cast<uint8_t*>(mem);
   uint8_t version = *version_ptr;
 
-  if(version != 3)
+  if(version != CURRENT_DATA_PACKET_VERSION)
     throw(std::runtime_error("Error -- DataPacket3Impl::getRequiredRawMemorySize: Wrong packet version!"));
 
   uint32_t* ui32_ptr = reinterpret_cast<uint32_t*>(++version_ptr);

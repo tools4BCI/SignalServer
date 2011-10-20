@@ -1,7 +1,7 @@
 
 c_files = ' ';
-c_files = [c_files ' ../../../src/tia/data_packet_impl.cpp ../../../src/tia/datapacket/raw_mem.cpp'];
-c_files = [c_files ' ../../../src/tia/data_packet_3_impl.cpp ../../../src/tia/datapacket/raw_mem3.cpp ../../../src/tia/clock.cpp'];
+c_files = [c_files ' ../../../src/tia/datapacket/data_packet_impl.cpp ../../../src/tia/datapacket/raw_mem.cpp'];
+c_files = [c_files ' ../../../src/tia/datapacket/data_packet_3_impl.cpp ../../../src/tia/datapacket/raw_mem3.cpp ../../../src/tia/clock.cpp'];
 c_files = [c_files ' ../../../src/tia/constants.cpp ../../../src/tia/config/control_message_decoder.cpp'];
 c_files = [c_files ' ../../../src/tia/config/control_messages.cpp ../../../src/tia/config/control_message_encoder.cpp'];
 c_files = [c_files ' ../../../src/tia/tia_client.cpp ../../../src/tia/client/tia_client_impl.cpp'];

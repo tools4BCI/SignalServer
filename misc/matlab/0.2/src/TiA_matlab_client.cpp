@@ -25,6 +25,11 @@
  *               - new error handling
  *               - we close the old connection now if we want to connect 
  *                 and a connection still exists.
+ *
+ *  2011/10/17 - Christian Breitwieser
+ *               - implemented support for new TiA version
+ *               - usage of DataPacket interface
+ * 
  */
 
 #include "mex.h"
@@ -33,16 +38,9 @@
 #include <vector>
 #include <string>
 #include <map>
-#include <sstream>
-#include <fstream>
+#include <iostream>
 
 #include <boost/exception/all.hpp>
-#include <boost/asio.hpp>
-#include <boost/bind.hpp>
-#include <boost/thread.hpp>
-#include <boost/cast.hpp>
-
-#include "ticpp/ticpp.h"
 
 #include "tia/constants.h"
 #include "tia/tia_client.h"
@@ -50,12 +48,7 @@
 #include "tia/data_packet_interface.h"
 
 
-
-#ifdef WIN32
 #include <boost/cstdint.hpp>
-#else
-#include <stdint.h>
-#endif
 
 #define NUM_INPUTS_GETDATA   0
 #define NUM_INPUTS_CLOSE     1
@@ -77,7 +70,6 @@
 
 #define USE_NEW_TIA_IMPLEMENTATION  0
 
-using boost::asio::ip::udp;
 using namespace std;
 using namespace tia;
 
@@ -119,7 +111,7 @@ void ssc_getConfig(int nlhs, mxArray *plhs[],
    */
   
   if(0 != client) {
-    mexWarnMsgTxt ("mexSSClient: Warning connection already open. Closing the connection.");
+    mexWarnMsgTxt ("TiA_matlab_client: Warning connection already open. Closing the connection.");
     ssc_close();
   }
 
@@ -127,27 +119,27 @@ void ssc_getConfig(int nlhs, mxArray *plhs[],
    * correct format.
    */
   if(nlhs != NUM_OUTPUTS_CONFIG) {
-    mexErrMsgTxt("mexSSClient: 4 output arguments required.");
+    mexErrMsgTxt("TiA_matlab_client: 4 output arguments required.");
   }
 
   if ( !mxIsChar(prhs[IP_POS]) ) {
-    mexErrMsgTxt("mexSSClient: IP must be a string.");
+    mexErrMsgTxt("TiA_matlab_client: IP must be a string.");
   }
   if ( !mxIsNumeric(prhs[PORT_POS]) ) {
-    mexErrMsgTxt("mexSSClient: Port must be a number.");
+    mexErrMsgTxt("TiA_matlab_client: Port must be a number.");
   }
   if ( !mxIsChar(prhs[PROTOCOL_POS]) ) {
-    mexErrMsgTxt("mexSSClient: Protocol must be a string.");
+    mexErrMsgTxt("TiA_matlab_client: Protocol must be a string.");
   }
 
   if (mxGetM(prhs[IP_POS]) !=1 ) {
-    mexErrMsgTxt("mexSSClient: IP must be a row vector.");
+    mexErrMsgTxt("TiA_matlab_client: IP must be a row vector.");
   }
   if (mxGetM(prhs[PORT_POS]) !=1 &&  mxGetN(prhs[PORT_POS]) !=1) {
-    mexErrMsgTxt("mexSSClient: Port must be a single number.");
+    mexErrMsgTxt("TiA_matlab_client: Port must be a single number.");
   }
   if (mxGetM(prhs[PROTOCOL_POS]) !=1 ) {
-    mexErrMsgTxt("mexSSClient: Protocol must be a row vector.");
+    mexErrMsgTxt("TiA_matlab_client: Protocol must be a row vector.");
   }
   
   try
@@ -159,7 +151,7 @@ void ssc_getConfig(int nlhs, mxArray *plhs[],
 
     Constants cst;
 
-    cout << "Using server " << srv_addr << ":" << port << endl;
+    std::cout << "Using server " << srv_addr << ":" << port << std::endl;
     // Connect to the server
     client = new TiAClient( USE_NEW_TIA_IMPLEMENTATION );
     sig_types_map = new std::map<uint32_t, tia::Signal>();
@@ -236,65 +228,23 @@ void ssc_getConfig(int nlhs, mxArray *plhs[],
 
     client->startReceiving(false); 
   }
-  catch(ticpp::Exception& e)
-  {
-    string ex_str("mexSSClient:  ***** TICPP Exception caught! *****\n  -->");
-    ex_str += e.what();
-    ex_str += '\n';
-    mexErrMsgTxt(ex_str.c_str());
-  }
-  catch(std::invalid_argument& e)
-  {
-    string ex_str("mexSSClient:  ***** STL Exception -- Invalid argument -- caught! *****\n  -->");
-    ex_str += e.what();
-    ex_str += '\n';
-    mexErrMsgTxt(ex_str.c_str());
-  }
-  catch(std::length_error& e)
-  {
-    string ex_str("mexSSClient:  ***** STL Exception -- Length error -- caught! *****\n  -->");
-    ex_str += e.what();
-    ex_str += '\n';
-    mexErrMsgTxt(ex_str.c_str());
-  }
-  catch(std::logic_error& e)
-  {
-    string ex_str("mexSSClient:  ***** STL Exception -- Logic error -- caught! *****\n  -->");
-    ex_str += e.what();
-    ex_str += '\n';
-    mexErrMsgTxt(ex_str.c_str());
-  }
-  catch(std::range_error& e)
-  {
-    string ex_str("mexSSClient:  ***** STL Exception -- Range error -- caught! *****\n  -->");
-    ex_str += e.what();
-    ex_str += '\n';
-    mexErrMsgTxt(ex_str.c_str());
-  }
-  catch(std::runtime_error& e)
-  {
-    string ex_str("mexSSClient:  ***** STL Exception -- Runtime error -- caught! *****\n  -->");
-    ex_str += e.what();
-    ex_str += '\n';
-    mexErrMsgTxt(ex_str.c_str());
-  }
   catch(std::exception& e)
   {
-    string ex_str("mexSSClient:  ***** STL Exception caught! *****\n  -->");
+    string ex_str("TiA_matlab_client:  ***** STL Exception caught! *****\n  -->");
     ex_str += e.what();
     ex_str += '\n';
     mexErrMsgTxt(ex_str.c_str());
   }
   catch(boost::exception& e)
   {
-    string ex_str("mexSSClient:  ***** Boost Exception caught! *****\n  -->");
+    string ex_str("TiA_matlab_client:  ***** Boost Exception caught! *****\n  -->");
     ex_str += boost::diagnostic_information(e);
     ex_str += '\n';
     mexErrMsgTxt(ex_str.c_str());
   }
   catch(...)
   {
-    mexErrMsgTxt("mexSSClient: ERROR !!  --  Unknown exception caught!");
+    mexErrMsgTxt("TiA_matlab_client: ERROR !!  --  Unknown exception caught!");
   }
     return;
 }
@@ -368,72 +318,23 @@ void ssc_getData(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
        }
      }
   }
-  catch(boost::numeric::bad_numeric_cast& e)
-  {
-    string ex_str("mexSSClient:  ***** Boost Numeric Cast Exception caught! *****\n  -->");
-    ex_str += boost::diagnostic_information(e);
-    ex_str += '\n';
-    mexErrMsgTxt( ex_str.c_str());
-  }
-  catch(ticpp::Exception& e)
-  {
-    string ex_str("mexSSClient:  ***** TICPP Exception caught! *****\n  -->");
-    ex_str += e.what();
-    ex_str += '\n';
-    mexErrMsgTxt( ex_str.c_str());
-  }
-  catch(std::invalid_argument& e)
-  {
-    string ex_str("mexSSClient:  ***** STL Exception -- Invalid argument -- caught! *****\n  -->");
-    ex_str += e.what();
-    ex_str += '\n';
-    mexErrMsgTxt( ex_str.c_str());
-  }
-  catch(std::length_error& e)
-  {
-    string ex_str("mexSSClient:  ***** STL Exception -- Length error -- caught! *****\n  -->");
-    ex_str += e.what();
-    ex_str += '\n';
-    mexErrMsgTxt( ex_str.c_str());
-  }
-  catch(std::logic_error& e)
-  {
-    string ex_str("mexSSClient:  ***** STL Exception -- Logic error -- caught! *****\n  -->");
-    ex_str += e.what();
-    ex_str += '\n';
-    mexErrMsgTxt( ex_str.c_str());
-  }
-  catch(std::range_error& e)
-  {
-    string ex_str("mexSSClient:  ***** STL Exception -- Range error -- caught! *****\n  -->");
-    ex_str += e.what();
-    ex_str += '\n';
-    mexErrMsgTxt( ex_str.c_str());
-  }
-  catch(std::runtime_error& e)
-  {
-    string ex_str("mexSSClient:  ***** STL Exception -- Runtime error -- caught! *****\n  -->");
-    ex_str += e.what();
-    ex_str += '\n';
-    mexErrMsgTxt( ex_str.c_str());
-  }
   catch(std::exception& e)
   {
-    string ex_str("mexSSClient:  ***** STL Exception caught! *****\n  -->");
+    string ex_str("TiA_matlab_client:  ***** STL Exception caught! *****\n  -->");
     ex_str += e.what();
     ex_str += '\n';
     mexErrMsgTxt( ex_str.c_str());
   }
   catch(boost::exception& e)
   {
-    string ex_str("mexSSClient:  ***** Boost Exception caught! *****\n  -->");
+    string ex_str("TiA_matlab_client:  ***** Boost Exception caught! *****\n  -->");
     ex_str += boost::diagnostic_information(e);
     ex_str += '\n';
     mexErrMsgTxt( ex_str.c_str());
   }
   catch(...)
   {
-    mexErrMsgTxt("mexSSClient: ERROR: Exception caught!");
+    mexErrMsgTxt("TiA_matlab_client: ERROR: Exception caught!");
   }
   
 }
