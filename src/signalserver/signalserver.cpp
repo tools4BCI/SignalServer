@@ -63,7 +63,7 @@ SignalServer::SignalServer(XMLParser& config_parser, bool use_new_tia)
       ,tid_server_(0),tid_io_service_thread_(0),
     #endif
     #ifdef USE_GDF_SAVER
-      gdf_writer_(0),
+      gdf_writer_(0)
     #endif
 {
 
@@ -93,8 +93,8 @@ SignalServer::SignalServer(XMLParser& config_parser, bool use_new_tia)
   packet_->reset();
 
   #ifdef USE_TID_SERVER
-    tid_server_ = new TiD::TiDServer(io_);
-    tid_server_->bind ( boost::lexical_cast<unsigned int>(server_settings_[Constants::ss_tid_port]));
+    tid_server_ = new TiD::TiDServer(tid_io_service_);
+    tid_server_->bind ( boost::lexical_cast<unsigned int>(server_settings_[tia::Constants::ss_tid_port]));
     tid_server_->listen();
 
     tid_io_service_thread_ = new boost::thread(boost::bind(&boost::asio::io_service::run,
@@ -105,7 +105,7 @@ SignalServer::SignalServer(XMLParser& config_parser, bool use_new_tia)
   #ifdef USE_GDF_SAVER
     try
     {
-      if(server_settings_[Constants::ss_filetype] == "gdf")
+      if(server_settings_[tia::Constants::ss_filetype] == "gdf")
       {
         gdf_writer_ = new gdf::Writer();
         initGdf();
@@ -230,6 +230,7 @@ void SignalServer::readPackets()
     {
       uint32_t nr_values = 0;
       uint32_t nr_blocks = 0;
+      uint32_t nr_channels = 0;
       std::vector<double> v;
       uint32_t ch_start = 0;
 
@@ -238,9 +239,10 @@ void SignalServer::readPackets()
       {
         try
         {
-          v = packet.getSingleDataBlock(it->first);
-          nr_values = packet.getNrOfValues(it->first);
-          nr_blocks = packet.getNrOfBlocks(it->first);
+          v = packet_->getSingleDataBlock(it->first);
+          nr_values = packet_->getNrOfSamples(it->first);
+          nr_channels = packet_->getNrOfChannels(it->first);
+          nr_blocks = nr_values/nr_channels;
 
           for(uint32_t n = 0; n < nr_values/nr_blocks; n++)
             for(uint32_t m = 0; m < nr_blocks; m++)
@@ -319,7 +321,7 @@ void SignalServer::initGdf()
 {
   std::map<uint32_t, std::vector<std::string> >::iterator it(channels_per_sig_type_.begin());
 
-  Constants cst;
+  tia::Constants cst;
 
   for(uint32_t m = 0 ; it != channels_per_sig_type_.end(); it++, m++)
   {
@@ -340,17 +342,17 @@ void SignalServer::initGdf()
   gdf_writer_->getHeaderAccess().setRecordDuration( 2* master_samplingrate_, 2*master_samplingrate_ );
 
   gdf_writer_->setEventMode( 1 );     // FIXME: 1 ... EventMode 1 (gdf)
-  gdf_writer_->setEventSamplingRate( hw_access_.getMastersSamplingRate() );
+  gdf_writer_->setEventSamplingRate( master_samplingrate_ );
 
   double systime = boost::numeric_cast<double>( time( NULL ) );
   double tmptime = ( systime/(3600.0*24.0) + 719529.0 ) * pow(2.0,32);
   gdf_writer_->getMainHeader( ).set_recording_start( boost::numeric_cast<gdf::uint64>(tmptime) );
 
-  std::cout << "  ** Saving data to file: " << server_settings_[Constants::ss_filename] << ".gdf" << std::endl;
+  std::cout << "  ** Saving data to file: " << server_settings_[tia::Constants::ss_filename] << ".gdf" << std::endl;
 
-  boost::filesystem::path p( server_settings_[Constants::ss_filename] + ".gdf" );
+  boost::filesystem::path p( server_settings_[tia::Constants::ss_filename] + ".gdf" );
 
-  if(exists(p) && server_settings_[Constants::ss_file_overwrite] == "1")
+  if(exists(p) && server_settings_[tia::Constants::ss_file_overwrite] == "1")
   {
     if(is_regular_file(p))
     {
@@ -361,7 +363,7 @@ void SignalServer::initGdf()
       throw(std::invalid_argument( p.string() + "exists, but is not a regular file!"));
   }
 
-  gdf_writer_->open( server_settings_[Constants::ss_filename] + ".gdf" );
+  gdf_writer_->open( server_settings_[tia::Constants::ss_filename] + ".gdf" );
 }
 #endif
 
