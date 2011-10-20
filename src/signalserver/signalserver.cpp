@@ -60,10 +60,10 @@ SignalServer::SignalServer(XMLParser& config_parser, bool use_new_tia)
     master_blocksize_( 0 ),
     master_samplingrate_( 0 )
     #ifdef USE_TID_SERVER
-      ,tid_server_(0),tid_io_service_thread_(0),
+      ,tid_server_(0),tid_io_service_thread_(0)
     #endif
     #ifdef USE_GDF_SAVER
-      gdf_writer_(0)
+      ,gdf_writer_(0)
     #endif
 {
 
