@@ -10,6 +10,11 @@ distribution_id=`lsb_release -i -s`
 distribution_release=`lsb_release -r -s`
 
 # create temporary build directories
+mkdir -p $dir
+mkdir -p $lib_dir
+mkdir -p $dev_dir
+mkdir -p $ss_dir
+
 mkdir -p $lib_dir/usr/lib
 mkdir -p $lib_dir/DEBIAN
 
@@ -18,24 +23,25 @@ mkdir -p $dev_dir/usr/include/tia
 mkdir -p $dev_dir/DEBIAN
 
 mkdir -p $ss_dir/usr/bin
-mkdir -p $ss_dir/usr/local/etc/signalserver
+mkdir -p $ss_dir/usr/etc/signalserver
+mkdir -p $ss_dir/usr/share/signalserver
 mkdir -p $ss_dir/DEBIAN
 
-mkdir $pckdir
+mkdir -p $pckdir
 
 
 # copy necessary files
-cp ./lib/libtia.so* ./$lib_dir/usr/lib/
+cp -rp ./lib/libtia.so* ./$lib_dir/usr/lib/
 
 cp ./lib/libtia.a ./$dev_dir/usr/lib/
-cp -r ./include/tia ./$dev_dir/usr/include
+cp -rp ./include/tia ./$dev_dir/usr/include
 
 cp ./bin/signalserver ./$ss_dir/usr/bin/
 cp ./bin/server_config.xml ./$ss_dir/usr/share/signalserver/
 cp ./bin/server_config_comments.xml ./$ss_dir/usr/share/signalserver/
 
 # current version
-version=0.1
+version=1.0
 
 # get local architecture
 architecture=`dpkg-architecture -l | grep DEB_BUILD_ARCH= | sed -e '/DEB_BUILD_ARCH=/s/DEB_BUILD_ARCH=//'`

@@ -1,6 +1,7 @@
 #include "tia-private/newtia/server_impl/control_connection_server_2_impl.h"
 
 #include "tia-private/newtia/server_impl/control_connection_2.h"
+#include <iostream>
 
 namespace tia
 {

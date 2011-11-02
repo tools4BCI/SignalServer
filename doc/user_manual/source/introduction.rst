@@ -42,7 +42,8 @@ Planned extensions
 License
 -------
 
-The TOBI signal server is licenced under the `GPLv3`_.
+The TOBI signal server is dual licenced under the `GPLv3`_ and a proprietary licence.
+In case of commercial usage it can be used based on an agreement with Graz University of Technology.
 
 
 Contact

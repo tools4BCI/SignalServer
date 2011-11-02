@@ -2,8 +2,8 @@
 <tobi-config version="1.0">
   <subject>
     <id>asdfg52</id>
-    <first_name>Nobody</name>
-    <surname>Nowhereman</name>
+    <first_name>Nobody</first_name>
+    <surname>Nowhereman</surname>
     <birthday>01.01.1900</birthday>
     <sex>m</sex>
     <handedness>r</handedness>
@@ -11,6 +11,8 @@
     <!-- To be extended by the user -->
   </subject>
 
+<!-- =============================================================================== -->
+  
   <server_settings>
 
     <!-- The control connection port (TCP) clients connect to.   -->
@@ -25,19 +27,31 @@
     <udp_bc_addr>127.0.0.1</udp_bc_addr>
     <udp_port>9001</udp_port>
 
+    <!-- The port (TCP) TiD clients connect to.   -->
+    <tid_port>  9100  </tid_port>
+
+    <!--  Information if a the recorded data should be saved into a file.
+          NOTE: only gdf supported yet; still in testing phase! -->
+    <store-data>
+      <filepath> way_to_files </filepath>
+      <filename> hugo.gdf </filename>
+      <filetype> gdf </filetype>
+      <overwrite> yes </overwrite>
+    </store-data>
+
   </server_settings>
 
 
 <!-- =============================================================================== -->
 
   <!-- An artificial signal source generating a 1Hz sine with an arbitrary naumber of channels.
-       Signaltypes can be assigned as needed.
-       The sine generator is a dummy signal source to test basic functionallities without the
-       need to be attached to a hardware DAQ device.
+      Signaltypes can be assigned as needed.
+      The sine generator is a dummy signal source to test basic functionallities without the
+      need to be attached to a hardware DAQ device.
 
       The sine generator can be seen as a minimal device. Common settings also possible in
       hardware devices are done the same way like setting the sampling rate.
-       -->
+      -->
   <hardware name="sinegenerator" version="1.0" serial="">
     <mode> master </mode>
 
@@ -51,7 +65,7 @@
       <blocksize> 8 </blocksize>
     </device_settings>
 
-     <channel_settings>
+    <channel_settings>
 
       <!--  The "measurement_channels" settings done in device_settings are overridden here;
             the selected 2 EEG channels named eeg are overridden by 5 channels with different
@@ -68,7 +82,7 @@
 
 <!-- =============================================================================== -->
 
-  <hardware name="g.usbamp" version="1.4" serial="2008.06.42">
+  <hardware name="g.usbamp" version="1.4" serial="UB-2008.06.42">
 
     <!-- For Calibration purposes use the demo-software delivered with the g.USBamp -->
     <!-- Mandatory Settings:  -->
@@ -83,11 +97,11 @@
 
       <blocksize> 8 </blocksize>
       <!-- IMPORTANT: Too small blocksizesize may cause loss of data
-               blocksize = 1  only up to 128Hz recommended  -->
-      <filter type="chebyshev" order="6" f_low="0.5" f_high="100"/>
+              blocksize = 1  only up to 128Hz recommended  -->
+      <filter type="chebyshev" order="8" f_low="0.5" f_high="100"/>
       <notch f_center="50"/>
       <!-- Not every filter setting with sampling rate possible - see settings.txt/.pdf,
-               notch filtering only possible up to 4800Hz, butterworth, 4th order -->
+              notch filtering only possible up to 4800Hz, butterworth, 4th order -->
 
       <!-- Optional Settings:  -->
         <!-- connect grounds to common ground:  on or off  ... default: on = connected -->
@@ -105,19 +119,16 @@
         <cr block="d" value="on" />
       </common_reference>
 
-      <operation_mode> normal </operation_mode>
-        <!-- up to now only normal mode supported-->
-
-      <trigger_line> off </trigger_line>
+      <trigger_line type="user1"> on </trigger_line>
       <!-- Acquire the external trigger input ports -- an additional channel with
-        signaltype user_1  is automatically added-->
+        the given signal type is automatically added-->
 
       <shortcut> off </shortcut>
         <!--A TTL high impulse on the SC input socket can be used to disconnect all
         electrode input sockets from the input amplifiers and to connect the inputs
         to ground potential. -- see g.USBamp manual for detailed instructions-->
 
-      <usbamp_master> no </usbamp_master>
+      <usbamp_master> yes </usbamp_master>
         <!-- multiple usbamps: master or slave device  ...  important if connected with other USBamps
         through SYNC-Plugs   ->   only one master device allowed -->
 
@@ -149,10 +160,10 @@
       </selection>
 
       <!-- define channel specific filter and notch settings
-             ... settings defined in device_setting will be overwritten for respective channels -->
+            ... settings defined in device_setting will be overwritten for respective channels -->
       <filter>
-        <ch nr="15" type="chebyshev" order="6" f_low="0.5" f_high="30"/>
-        <ch nr="16" type="chebyshev" order="6" f_low="0.5" f_high="30"/>
+        <ch nr="15" type="chebyshev" order="8" f_low="0.5" f_high="30"/>
+        <ch nr="16" type="chebyshev" order="8" f_low="0.5" f_high="60"/>
       </filter>
       <notch>
         <ch nr="15" f_center="50"/>

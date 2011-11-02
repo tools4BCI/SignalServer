@@ -20,6 +20,8 @@
     <udp_port> 9998 </udp_port>
     <tid_port> 9001</tid_port>
     <udp_bc_addr> 192.168.1.255 </udp_bc_addr>
+    
+    <tid_port>  9100  </tid_port>
 
      <store-data>
       <filepath> way_to_files </filepath>
@@ -34,32 +36,11 @@
    <hardware name="sinegenerator" version="1.0" serial="">
     <mode> master </mode>
     <device_settings>
-      <sampling_rate> 100 </sampling_rate>
-      <measurement_channels nr="1" names="eeg" type="user_1" />
-      <blocksize> 1 </blocksize>
+      <sampling_rate> 600 </sampling_rate>
+      <measurement_channels nr="16" names="eeg" type="eeg" />
+      <blocksize> 10 </blocksize>
     </device_settings>
 
-    <!-- <channel_settings>
-      <selection>
-        <ch nr="01" name="eeg" type="eeg" />
-        <ch nr="02" name="eeg" type="eeg" />
-        <ch nr="03" name="eeg" type="eeg" />
-        <ch nr="04" name="eeg" type="ecg" />
-        <ch nr="05" name="eeg" type="ecg" />
-        <ch nr="06" name="eeg" type="hr" />
-        <ch nr="07" name="eeg" type="eeg" />
-        <ch nr="08" name="eeg" type="eeg" />
-        <ch nr="09" name="eeg" type="eeg" />
-        <ch nr="10" name="eeg" type="eeg" />
-        <ch nr="11" name="eeg" type="eeg" />
-        <ch nr="12" name="eeg" type="eeg" />
-        <ch nr="13" name="eeg" type="eeg" />
-        <ch nr="14" name="eeg" type="eeg" />
-        <ch nr="15" name="eeg" type="eeg" />
-        <ch nr="16" name="eeg" type="eeg" />
-        <ch nr="17" name="eeg" type="user1" />
-      </selection>
-    </channel_settings> -->
   </hardware>
 
 <!-- =============================================================================== -->
@@ -68,9 +49,9 @@
   <hardware name="sinegenerator" version="1.0" serial="">
     <mode> slave </mode>
     <device_settings>
-      <sampling_rate> 2400 </sampling_rate>
+      <sampling_rate> 300 </sampling_rate>
       <measurement_channels nr="2" names="sensor" type="sensor" />
-      <blocksize> 30 </blocksize>
+      <blocksize> 10 </blocksize>
     </device_settings>
 
    <channel_settings>
@@ -85,95 +66,18 @@
 
 <!-- =============================================================================== -->
 
-<!--	<hardware name="g.usbamp" version="1.4" serial="UA-2008.06.42">
-		<mode> master </mode>
-		<device_settings>
-			<sampling_rate> 256 </sampling_rate>
-      <measurement_channels nr="1" names="eeg" type="eeg" />
-      <blocksize> 1 </blocksize>
-
-			<filter type="chebyshev" order="8" f_low="0.5" f_high="100"/>
- 			<notch f_center="50"/>
-			<operation_mode> normal </operation_mode>
-
-			<shortcut> on </shortcut>
-
-			<usbamp_master> yes </usbamp_master>
-
-			<common_ground>
-        <gnd block="a" value="1" />
-        <gnd block="b" value="1" />
-        <gnd block="c" value="1" />
-        <gnd block="d" value="1" />
-      </common_ground>
-
-			<common_reference>
-        <cr block="a" value="1" />
-        <cr block="b" value="1" />
-        <cr block="c" value="1" />
-        <cr block="d" value="1" />
-      </common_reference>
-      <driven_right_leg> no </driven_right_leg>
-		</device_settings>-->
-
-<!--    <channel_settings>
-			<selection>
-				<ch nr="01" name="eeg" type="eeg" />
-				<ch nr="02" name="eeg" type="eeg" />
-				<ch nr="03" name="eeg" type="eeg" />
-				<ch nr="04" name="eeg" type="eeg" />
-				<ch nr="05" name="eeg" type="eeg" />
-				<ch nr="06" name="eeg" type="eeg" />
-				<ch nr="07" name="eeg" type="eeg" />
-				<ch nr="08" name="eeg" type="eeg" />
-				<ch nr="09" name="eeg" type="eeg" />
-				<ch nr="10" name="eeg" type="eeg" />
-				<ch nr="11" name="eeg" type="eeg" />
-				<ch nr="12" name="eeg" type="eeg" />
-				<ch nr="13" name="eeg" type="eeg" />
-				<ch nr="14" name="eeg" type="eeg" />
-				<ch nr="15" name="eeg" type="eeg" />
-				<ch nr="16" name="eeg" type="eeg" />
-			</selection>
-			<filter>
-				<ch nr="15" type="chebyshev" order="8" f_low="0.5" f_high="30"/>
-				<ch nr="16" type="chebyshev" order="8" f_low="0.5" f_high="200"/>
-			</filter>
-			<notch>
-				<ch nr="15" f_center="50"/>
-				<ch nr="16" f_center="50"/>
-			</notch>
-
-
-        <bipolar>
-          <ch nr="1" with="16" />
-          <ch nr="2" with="3" />
-        </bipolar>
-
-
-        <driven_right_leg>
-          <ch nr="1" value="0" />
-          <ch nr="2" value="1" />
-        </driven_right_leg>
-
-		</channel_settings>-->
-<!-- 	</hardware> -->
-
-<!-- =============================================================================== -->
-
-<!--<hardware name="g.usbamp" version="B" serial="UB-2009.07.07">
+<!--  <hardware name="g.usbamp" version="1.4" serial="UB-2008.06.42">
     <mode> master </mode>
     <device_settings>
-      <sampling_rate> 512 </sampling_rate>
-      <measurement_channels nr="4" names="eeg" type="eeg" />
+      <sampling_rate> 256 </sampling_rate>
+      <measurement_channels nr="1" names="eeg" type="eeg" />
+      <blocksize> 8 </blocksize>
 
-      <filter type="chebyshev" order="8" f_low="0.5" f_high="30"/>
+      <filter type="chebyshev" order="8" f_low="0.5" f_high="100"/>
       <notch f_center="50"/>
-      <blocksize> 2 </blocksize>
       <operation_mode> normal </operation_mode>
 
-      <shortcut> off </shortcut>
-      <trigger_line> off </trigger_line>
+      <shortcut> on </shortcut>
 
       <usbamp_master> yes </usbamp_master>
 
@@ -190,19 +94,21 @@
         <cr block="c" value="1" />
         <cr block="d" value="1" />
       </common_reference>
+      <driven_right_leg> no </driven_right_leg>
     </device_settings>
+	</hardware>-->
 
-  </hardware>
+<!-- =============================================================================== -->
 
-  <hardware name="g.usbamp" version="B" serial="UB-2009.10.11">
-    <mode> slave </mode>
+<!--<hardware name="g.usbamp" version="B" serial="UB-2009.07.07">
+    <mode> master </mode>
     <device_settings>
       <sampling_rate> 512 </sampling_rate>
-      <measurement_channels nr="4" names="eeg" type="eeg" />
+      <measurement_channels nr="4" names="eog" type="eog" />
 
       <filter type="chebyshev" order="8" f_low="0.5" f_high="30"/>
       <notch f_center="50"/>
-      <blocksize> 2 </blocksize>
+      <blocksize> 16 </blocksize>
       <operation_mode> normal </operation_mode>
 
       <shortcut> off </shortcut>
@@ -224,31 +130,26 @@
         <cr block="d" value="1" />
       </common_reference>
     </device_settings>
-
   </hardware>-->
 
 <!-- =============================================================================== -->
 <!--
   <hardware name="g.mobilab" version="1.0" serial="">
-    <mode> slave </mode>
-    <device_settings>
-      <sampling_rate fs="512"/>
-      <filter f_low="0.5" f_high="100"/>
+    <mode> master </mode>
+    <device_settings>-->
+      <!--Windows: Use COM1 or similar as serial port!-->
+      <!--<serial_port> /dev/ttyS0 </serial_port>
+      <mobilab_type> eeg </mobilab_type>
+      <measurement_channels nr="1" names="eeg" type="eeg" />
+      <blocksize> 1 </blocksize>
     </device_settings>
-
+    
     <channel_settings>
       <selection>
         <ch nr="01" name="eeg" type="eeg" />
         <ch nr="02" name="eeg" type="eeg" />
-        <ch nr="03" name="eeg" type="eeg" />
-        <ch nr="04" name="eeg" type="eeg" />
-        <ch nr="05" name="eeg" type="eeg" />
-        <ch nr="06" name="eeg" type="eeg" />
-        <ch nr="07" name="eeg" type="eeg" />
-        <ch nr="08" name="eeg" type="eeg" />
       </selection>
     </channel_settings>
-
   </hardware>
 -->
 <!-- =============================================================================== -->

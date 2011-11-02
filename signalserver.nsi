@@ -2,9 +2,9 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "TOBI SignalServer"
-!define PRODUCT_VERSION "0.1"
-!define PRODUCT_PUBLISHER "Institute for Knowledge Discovery, TU Graz, Austria"
-!define PRODUCT_WEB_SITE "http://www.tobi-project.org"
+!define PRODUCT_VERSION "1.0"
+!define PRODUCT_PUBLISHER "Institute for Knowledge Discovery, Graz University of Technology, Austria"
+!define PRODUCT_WEB_SITE "https://sourceforge.net/p/tools4bci"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\signalserver.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
@@ -50,7 +50,10 @@ Section "Hauptgruppe" SEC01
   CreateDirectory "$SMPROGRAMS\TOBI SignalServer"
   CreateShortCut "$SMPROGRAMS\TOBI SignalServer\TOBI SignalServer.lnk" "$INSTDIR\signalserver.exe"
   CreateShortCut "$DESKTOP\TOBI SignalServer.lnk" "$INSTDIR\signalserver.exe"
+  File "doc\user_manual\build\latex\SignalServer-UserManual.pdf"
+  CreateShortCut "$SMPROGRAMS\TOBI SignalServer\User Manual.lnk" "$INSTDIR\SignalServer-UserManual.pdf"
   File "bin\SDL.dll"
+  File "bin\libusb0.dll"
   File "bin\server_config_comments.xml"
   File "bin\server_config.xml"
   File "licence\gpl.txt"
@@ -86,12 +89,16 @@ Section Uninstall
   Delete "$INSTDIR\server_config.xml"
   Delete "$INSTDIR\gpl.txt"
   Delete "$INSTDIR\SDL.dll"
+  Delete "$INSTDIR\libusb0.dll"
   Delete "$INSTDIR\signalserver.exe"
 
   Delete "$SMPROGRAMS\TOBI SignalServer\Uninstall.lnk"
   Delete "$DESKTOP\TOBI SignalServer.lnk"
   Delete "$SMPROGRAMS\TOBI SignalServer\TOBI SignalServer.lnk"
 
+  Delete "$INSTDIR\SignalServer-UserManual.pdf"
+  Delete "$SMPROGRAMS\TOBI SignalServer\User Manual.lnk"
+  
   RMDir "$SMPROGRAMS\TOBI SignalServer"
   RMDir "$INSTDIR"
 

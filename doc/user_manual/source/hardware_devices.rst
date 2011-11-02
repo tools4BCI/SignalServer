@@ -179,6 +179,8 @@ explains which configuration settings can be done.
 
           <shortcut> off </shortcut>
 
+          <trigger_line type="user1"> on </trigger_line>
+
           <usbamp_master> yes </usbamp_master>
 
           <common_ground>
@@ -260,6 +262,31 @@ Turning this setting on or off enables or disables the SC socket to react on inc
   ..  code-block:: xml
 
       <shortcut> off </shortcut>
+
+====
+
+Digital input > 250 mV (e.g. a trigger signal) can be recorded together with the acquired
+data with the same sampling rate as the recorded biosignal. This feature can be enabled via
+the trigger line, using the respective connectors at the back of the USBamp.
+A channel with the given signal type of the trigger line is automatically added to the recorded signals.
+
+The new channel, representing the trigger inputs, is binary coded (2^n):
+  
+  0 ... all trigger channels low
+  
+  1 ... channel 1 high
+  
+  2 ... channel 2 high
+  
+  3 ... channels 1 and 2 high
+  
+  4 ... channel 3 high
+  
+  etc.
+  
+  ..  code-block:: xml
+
+      <trigger_line type="user1"> on </trigger_line>
 
 ====
 

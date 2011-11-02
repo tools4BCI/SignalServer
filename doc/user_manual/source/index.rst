@@ -8,7 +8,8 @@ Signal Server -- User Manual
 
 .. toctree::
    :maxdepth: 3
-
+   
+   changelog
    introduction
 
    requirements
@@ -18,5 +19,4 @@ Signal Server -- User Manual
    hardware_devices
 ==================
 
-..
-  changelog
+

@@ -16,6 +16,16 @@ read (operating system dependent) or by passing an individual config file to the
 Startup Commands:
 ====
 
+Get some help:
+-----------------------
+
+  ``signalserver --help``
+
+  or
+
+  ``signalserver -h``
+
+
 Individual config files:
 ------------------------
 
@@ -29,6 +39,12 @@ List possible hardware:
 -----------------------
 
   ``signalserver -l``
+
+
+Use old TiA protocol:
+-----------------------
+
+  ``signalserver -o``
 
 
 ====

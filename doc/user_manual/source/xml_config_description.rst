@@ -50,6 +50,15 @@ Inside this tag the Signal Server except its attached hardware is configured.
         <ctl_port> 9000 </ctl_port>
         <udp_port> 9998 </udp_port>
         <udp_bc_addr> 127.0.0.255 </udp_bc_addr>
+
+        <tid_port> 9100 </tid_port>
+
+        <store-data>
+          <filepath> way_to_files </filepath>
+          <filename> hugo.gdf </filename>
+          <filetype> gdf </filetype>
+          <overwrite> yes </overwrite>
+        </store-data>
       </server_settings>
 
 * ctl_port
@@ -77,6 +86,23 @@ Sending UDP packets to an address in an other subnet or two different ports is n
   to every computer with an IP 192.168.1.XXX ).
 
 
+TiD Server
+----------
+
+* tid_port
+
+The SignalServer support event dispatching using TiD messages. Therfore a TCP port,
+TiD clients can connect to has to be given.
+
+Saving recorded signals
+-----------------------
+
+The SignalServer supports saving data. Currently only .gdf files can be produced. Furthermore
+data saving will be started together with the SignalServer start and ends when the SignalServer
+is stopped.
+Additional control possibilities will be added soon.
+
+  
 The Hardware sections
 ^^^^^^^^^^^^^^^^^^^^^
 

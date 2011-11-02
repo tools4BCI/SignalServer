@@ -141,8 +141,7 @@ unix {
         message(Building 64 bit )
 
         # 64-bit Linux
-        LIBS += -L \
-            extern/lib/ticpp/linux \
+        LIBS += -L extern/lib/ticpp/linux \
             -lticpp_64
 
         contains( DEFINES, USE_TID_SERVER )::LIBS += extern/lib/TiDlib/linux/libTiDserver_64.a
@@ -153,7 +152,7 @@ unix {
 
         # 32-bit Linux
         message(Building 32 bit )
-        LIBS += -L/extern/lib/ticpp/linux \
+        LIBS += -L extern/lib/ticpp/linux \
             -lticpp
         contains( DEFINES, USE_TID_SERVER )::USE_TID_SERVER:LIBS += extern/lib/TiDlib/linux/libTiDserver_32.a
         contains( DEFINES, USE_GDF_SAVER )::LIBS += extern/lib/libgdf/linux/libGDF_32.a

@@ -121,6 +121,8 @@ class TiAClientDataReader
                 (client_.config().signal_info.masterSamplingRate()/client_.config().signal_info.masterBlockSize()) *2 ) == 0) )
               {
                 std::cout << " -- Nr:" << packet_->getPacketID() << std::endl;
+                client_.requestConfig();
+                cerr << " -- got config ... "  << endl;
               }
 
               sample_nr_old = sample_nr;
@@ -231,6 +233,17 @@ int main(int argc, const char* argv[])
   {
     srv_addr = argv[1];
     stringstream conv(argv[2]);
+    conv >> srv_port;
+    cout << "Using server " << srv_addr << ":" << srv_port << endl;
+  }
+  else if(argc == 4)
+  {
+    string param (argv[1]);
+    if (param == "-o")
+      use_new_tia = false;
+
+    srv_addr = argv[2];
+    stringstream conv(argv[3]);
     conv >> srv_port;
     cout << "Using server " << srv_addr << ":" << srv_port << endl;
   }

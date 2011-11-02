@@ -3,7 +3,7 @@ Version: <version>
 Section: science
 Priority: extra
 Architecture: <architecture-via-script>
-Depends: libtia, libsdl1.2debian, libboost-filesystem1.42.0
+Depends: libtia, libsdl1.2debian, libboost-filesystem1.46.1
 Replaces: tobi-signalserver (<< <version>)
 Maintainer: Christian Breitwieser <christian.breitwieser@tugraz.at>, Christoph Eibel <christoph.eibel@tugraz.at>
 Homepage: http://www.tobi-project.org

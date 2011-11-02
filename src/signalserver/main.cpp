@@ -303,7 +303,7 @@ int parseInput(int argc, const char* argv[], std::string& config_file, bool& use
     vm.erase( OLD_TIA_PARAM );
   }
   else
-    cout << endl << " ***  Signal Server will start with TiA 0.2 ***" << endl;
+    cout << endl << " ***  Signal Server will start with TiA 1.0 ***" << endl;
 
   if(vm.size() == 0)
   {
