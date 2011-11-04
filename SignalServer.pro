@@ -1,10 +1,12 @@
 #-----------------------------------------------------------------------
 
-include (TOBI_SignalServer_tialib.pro)
+TEMPLATE = subdirs
 
-CONFIG  += dll shared
+CONFIG += ordered
 
-OBJECTS_DIR = tmp/serverlib_shared
+SUBDIRS += SignalServer_server.pro \
+           TiA_client.pro
+#           SignalServer_tests.pro
 
 #-----------------------------------------------------------------------
 #! end of file
