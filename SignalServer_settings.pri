@@ -6,7 +6,6 @@ CONFIG += console \
     warn_on \
     exceptions \
     stl
-
 QT -= core \
     gui
 
@@ -16,6 +15,7 @@ DEFINES += TIXML_USE_TICPP
 #DEFINES += TIMING_TEST
 
 TARGET = signalserver
+
 DESTDIR = bin
 OBJECTS_DIR = tmp
 INCLUDEPATH += . \
@@ -40,6 +40,7 @@ unix {
 QMAKE_CXXFLAGS_WARN_ON = -Wall \
     -pedantic
 
+# ------------------------------------------
 
 HARDWARE_PLATFORM = $$system(uname -m)
 contains( HARDWARE_PLATFORM, x86_64 )::
@@ -48,3 +49,5 @@ contains( HARDWARE_PLATFORM, x86_64 )::
   }else::{
     message(Building 32 bit )
   }
+
+# ------------------------------------------
