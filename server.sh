@@ -1,12 +1,22 @@
-#!/bin/sh
+#!/bin/bash
 
-SERVER_CMD="signalserver"
+CMD="signalserver"
 
-if [ ! -f bin/${SERVER_CMD} ]; then
-  echo "** ERROR - bin/${SERVER_CMD} does not exist."
+if [ ! -f bin/${CMD} ]; then
+  echo "** ERROR - bin/${CMD} does not exist."
   exit 1
 fi
 
-#cd bin
+PLATFORM=$(uname -m)
 
-exec env LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(pwd)/../lib ./bin/${SERVER_CMD}  $1 $2
+if [ "$PLATFORM" == "x86_64" ]
+then
+  LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(pwd)/extern/lib/tia/x64
+else
+  LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(pwd)/extern/lib/tia/x32
+fi
+
+export PATH LD_LIBRARY_PATH
+exec ./bin/${CMD}  $1 $2
+
+
