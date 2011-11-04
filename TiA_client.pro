@@ -12,7 +12,7 @@ QT -= core \
 DEFINES += TIXML_USE_TICPP
 # TIMING_TEST
 
-TARGET = TiA_client
+TARGET = tiA_client
 
 DESTDIR = bin
 OBJECTS_DIR = tmp
@@ -40,13 +40,13 @@ unix {
     {
         # 64-bit Linux
         LIBS += -lticpp_64 \
-                -L extern/lib/tia/linux/x64 -l tia
+                -Lextern/lib/tia/linux/x64 -ltia
 
     }else::{
 
         # 32-bit Linux
         LIBS += -lticpp \
-                -L extern/lib/tia/linux/x64 -l tia
+                -Lextern/lib/tia/linux/x32 -ltia
     }
 }
 
