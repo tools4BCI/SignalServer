@@ -109,29 +109,30 @@ class gBSamp : public gBSampBase
     /**
     * @brief Initialize device
     */
-    int initCard();
+    void initCard();
 
     /**
     * @brief Stops the device if an error occurs
     */
-    void stopDAQ(boost::int32_t error_, char errBuff[2048]);
+    void stopDAQ();
 
     /**
     * @brief Starts reading from device
     */
-    int readFromDAQCard();
+    void readFromDAQCard();
+
+    /**
+    * @brief Check error codes
+    */
+    void checkNIDAQmxError(nidaqmx::int32 error_code, bool throw_on_failure = true);
 
 //-----------------------------------------------
 
   private:
-    bool acquiring_;   ///< to check, if data acquisition has started (needed if used as master)
     boost::uint16_t current_block_;     ///< counter variable -- only used if blocks >1
     boost::uint32_t expected_values_;
 
-    boost::mutex sync_mut_;  ///< mutex needed for synchronisation
-    boost::condition_variable_any cond_;   ///< condition variable to wake up getSyncData()
-
-    std::vector<double> samples_; ///< temporary vector holding recent samples of the sine (1 element per channel)
+    std::vector<nidaqmx::float64> samples_; ///< temporary vector holding recent samples of the sine (1 element per channel)
 
     /**
     * @brief Buffer object used if blockwise data generation is set.
@@ -142,17 +143,17 @@ class gBSamp : public gBSampBase
     */
     SampleBlock<double> buffer_;
 
-  boost::int32_t error_;
-  nidaqmx::TaskHandle taskHandle_;
-  nidaqmx::int32 read;                     // give this variable a meaningful name
-  nidaqmx::float64 data[1];                // this array is used nowhere!!
-  char errBuff[2048];
-  std::vector<nidaqmx::float64> data_buffer;  // also not used!!
+    nidaqmx::TaskHandle                      task_handle_;
+    nidaqmx::int32                           read_samples_;    // give this variable a meaningful name
+    nidaqmx::int32                           received_samples_;
+    //nidaqmx::float64                         data[1]; // this array is used nowhere!!
 
-  // get rid of this buffer mess !!!!
+    //std::vector<nidaqmx::float64>            data_buffer;  // also not used!!
 
-  nidaqmx::NIDaqmxWrapper                                                 nidaqmx_;
-  static const HWThreadBuilderTemplateRegistratorWithoutIOService<gBSamp> factory_registrator_;
+    // get rid of this buffer mess !!!!
+
+    nidaqmx::NIDaqmxWrapper                                                 nidaqmx_;
+    static const HWThreadBuilderTemplateRegistratorWithoutIOService<gBSamp> factory_registrator_;
 
 };
 

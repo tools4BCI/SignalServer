@@ -40,7 +40,6 @@
 
 #include "hardware/hw_access.h"
 #include "hardware/hw_thread_factory.h"
-#include "hardware/event_listener.h"
 #include "config/xml_parser.h"
 
 #include "tia/data_packet_interface.h"
@@ -70,7 +69,7 @@ using std::dec;
 //-----------------------------------------------------------------------------
 
 HWAccess::HWAccess(boost::asio::io_service& io, XMLParser& parser)
-  : master_(0), event_listener_(0)
+  : master_(0)
 {
   #ifdef DEBUG
     cout << "HWAccess Constructor" << endl;
@@ -108,8 +107,6 @@ HWAccess::HWAccess(boost::asio::io_service& io, XMLParser& parser)
   buildFsInfoMap();
   doHWSetup();
 
-  event_listener_ = new EventListener(io);
-
   #ifdef TIMING_TEST
     lpt_flag_ = 0;
   #endif
@@ -131,8 +128,6 @@ HWAccess::~HWAccess()
 
   if(master_)
     delete master_;
-  if(event_listener_)
-    delete event_listener_;
 }
 
 //-----------------------------------------------------------------------------
@@ -318,8 +313,6 @@ void HWAccess::startDataAcquisition()
     cout << " * " << aperiodics_[n]->getType() << " successfully started" << endl;
   }
 
-  event_listener_->run();
-
   cout << endl << " Master:" << endl;
   master_->run();
   cout << " * " << master_->getType() << " successfully started" << endl;
@@ -392,10 +385,6 @@ void HWAccess::fillDataPacket(tia::DataPacket* packet)
     for(int j = 0; j < sb.getNrOfSignalTypes() ; j++)
       packet->insertDataBlock(sb.getSignalByNr(j), sb.getFlagByNr(j), sb.getNrOfBlocks());
   }
-
-  sb = event_listener_->getAsyncData();
-  for(int j = 0; j < sb.getNrOfSignalTypes() ; j++)
-    packet->insertDataBlock(sb.getSignalByNr(j), sb.getFlagByNr(j), sb.getNrOfBlocks());
 
   packet->incPacketID();
 }

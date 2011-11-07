@@ -3844,10 +3844,6 @@ typedef uInt32             CalHandle;
 #define DAQmxWarningPALSyncAbandoned                                                      (50551)
 
 
-
-
-#define DAQmxFailed(error)                            ((error)<0)
-
 typedef int32 (CALLBACK* DAQmxStartTaskType) (TaskHandle);
 typedef int32 (CALLBACK* DAQmxStopTaskType) (TaskHandle);
 typedef int32 (CALLBACK* DAQmxClearTaskType) (TaskHandle);
@@ -3857,6 +3853,8 @@ typedef int32 (CALLBACK* DAQmxGetExtendedErrorInfoType) (char[], uInt32);
 typedef int32 (CALLBACK* DAQmxReadAnalogF64Type) (TaskHandle, int32, float64, bool32, float64[], uInt32, int32*, bool32*);
 typedef int32 (CALLBACK* DAQmxCreateAIVoltageChanType) (TaskHandle, const char[], const char[], int32, float64, float64, int32, const char[]);
 typedef int32 (CALLBACK* DAQmxCfgSampClkTimingType) (TaskHandle, const char[], float64, int32, int32, uInt64);
+typedef int32 (CALLBACK* DAQmxCfgInputBufferType) (TaskHandle, uInt32);
+
 //---------------------------------
 /// wrapper class
 class NIDaqmxWrapper
@@ -3877,6 +3875,7 @@ class NIDaqmxWrapper
     setupDLLFunction (ni_DAQmxReadAnalogF64_ptr_, "DAQmxReadAnalogF64");
     setupDLLFunction (ni_DAQmxCreateAIVoltageChan_ptr_, "DAQmxCreateAIVoltageChan");
     setupDLLFunction (ni_DAQmxCfgSampClkTiming_ptr_, "DAQmxCfgSampClkTiming");
+    setupDLLFunction (ni_DAQmxCfgInputBuffer_ptr_, "DAQmxCfgInputBuffer");
   }
 
   ~NIDaqmxWrapper ()
@@ -3937,6 +3936,11 @@ class NIDaqmxWrapper
                                           sample_mode, samps_per_chan) );
   }
 
+  int32 cfgInputBuffer(TaskHandle handle, uInt32 num_samps_per_chan)
+  {
+    return( ni_DAQmxCfgInputBuffer_ptr_(handle, num_samps_per_chan) );
+  }
+
   private:
   template<typename T>
   void setupDLLFunction (T& pointer, std::string const& name)
@@ -3957,6 +3961,7 @@ class NIDaqmxWrapper
   DAQmxReadAnalogF64Type ni_DAQmxReadAnalogF64_ptr_;
   DAQmxCreateAIVoltageChanType ni_DAQmxCreateAIVoltageChan_ptr_;
   DAQmxCfgSampClkTimingType ni_DAQmxCfgSampClkTiming_ptr_;
+  DAQmxCfgInputBufferType ni_DAQmxCfgInputBuffer_ptr_;
 
 };
 

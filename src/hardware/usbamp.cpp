@@ -133,8 +133,6 @@ USBamp::USBamp(ticpp::Iterator<ticpp::Element> hw)
     cout << "USBamp: Constructor" << endl;
   #endif
 
-  #pragma comment(lib,"gUSBamp.lib")
-
   usbamp_filter_types_.insert(pair <string,int>("chebyshev", 1));
   usbamp_filter_types_.insert(pair <string,int>("cheby", 1));
   usbamp_filter_types_.insert(pair <string,int>("butterworth", 2));
