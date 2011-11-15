@@ -112,23 +112,9 @@ class gBSamp : public gBSampBase
 //-----------------------------------------------
 
   private:
-    bool acquiring_;   ///< to check, if data acquisition has started (needed if used as master)
-    boost::uint16_t current_block_;     ///< counter variable -- only used if blocks >1
     boost::uint32_t expected_values_;
 
-    boost::mutex sync_mut_;  ///< mutex needed for synchronisation
-    boost::condition_variable_any cond_;   ///< condition variable to wake up getSyncData()
-
     std::vector<double> samples_; ///< temporary vector holding recent samples of the sine (1 element per channel)
-
-    /**
-    * @brief Buffer object used if blockwise data generation is set.
-    *
-    * Samples are appended to the sample block.
-    * This buffer is only for internal use and must not be accessible from outside!
-    * For more information, read the SampleBlock documentation.
-    */
-    SampleBlock<double> buffer_;
 
     boost::int32_t error_;
     boost::int32_t first_run_;

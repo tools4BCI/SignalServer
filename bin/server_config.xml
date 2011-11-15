@@ -161,7 +161,7 @@
     </device_settings>
   </hardware> -->
 
-<!--  <hardware name="joystick" version="1.0" serial="">
+<!--   <hardware name="kinect" version="1.0" serial="">
     <mode> aperiodic </mode>
     <device_settings>
 

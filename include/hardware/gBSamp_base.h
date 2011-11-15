@@ -53,7 +53,7 @@ class gBSamp;
 class gBSampBase : public HWThread
 {
   protected:
-    gBSampBase() {}
+    gBSampBase();
     virtual ~gBSampBase() {}
 
     virtual SampleBlock<double> getSyncData() = 0;
@@ -85,16 +85,34 @@ class gBSampBase : public HWThread
     void setDeviceFilterSettings(ticpp::Iterator<ticpp::Element>const &elem);
     void checkFilterAttributes(ticpp::Iterator<ticpp::Element>const &elem);
     void getFilterParams(ticpp::Iterator<ticpp::Element>const &elem,\
-                         unsigned int &type, bool &notch, float &f_low, float &f_high, float &sense);
+                         unsigned int &type, bool &notch, float &f_low,
+                         float &f_high, float &sense);
+    void setAcquisitionMode(ticpp::Iterator<ticpp::Element>const &elem);
 
-    static const std::string hw_fil;   ///< xml-tag hardware: filter
-    static const std::string hw_fil_type;   ///< xml-tag hardware: filter type
-    static const std::string hw_fil_order;   ///< xml-tag hardware: filter order
-    static const std::string hw_fil_low;   ///< xml-tag hardware: filter lower cutoff freq.
-    static const std::string hw_fil_high;   ///< xml-tag hardware: filter upper cutoff freq.
-    static const std::string hw_fil_sense;   ///< xml-tag hardware: mV for gBSamp
-    static const std::string hw_notch;   ///< xml-tag hardware: notch_filter
-    static const std::string hw_notch_center;    ///< xml-tag hardware: notch center freq.
+    void setDeviceName(ticpp::Iterator<ticpp::Element>const &elem);
+
+
+
+
+
+    static const std::string hw_fil_;   ///< xml-tag hardware: filter
+    static const std::string hw_fil_type_;   ///< xml-tag hardware: filter type
+    static const std::string hw_fil_order_;   ///< xml-tag hardware: filter order
+    static const std::string hw_fil_low_;   ///< xml-tag hardware: filter lower cutoff freq.
+    static const std::string hw_fil_high_;   ///< xml-tag hardware: filter upper cutoff freq.
+    static const std::string hw_fil_sense_;   ///< xml-tag hardware: mV for gBSamp
+    static const std::string hw_notch_;   ///< xml-tag hardware: notch_filter
+    static const std::string hw_notch_center_;    ///< xml-tag hardware: notch center freq.
+    static const std::string hw_daq_mode_;    ///< xml-tag hardware: acquisition mode
+    static const std::string hw_device_id_;    ///< xml-tag hardware: device name (e.g. Dev1 or comedi0)
+
+    enum daq_mode_type
+      { RSE = 0, NRSE, diff };
+    daq_mode_type                        daq_mode_;
+    std::string                          device_id_;
+
+  private:
+    std::map<std::string, daq_mode_type> daq_modes_map_;
 };
 
 //-----------------------------------------------------------------------------

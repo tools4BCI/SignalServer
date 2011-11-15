@@ -31,8 +31,6 @@
     Contact: SignalServer@tobi-project.org
 */
 
-#ifdef _WIN32
-
 #include "hardware/mouse_win.h"
 #include "tia/constants.h"
 #include "boost/filesystem.hpp"
@@ -227,4 +225,3 @@ void Mouse::acquireData()
 
 } // Namespace tobiss
 
-#endif // _WIN32

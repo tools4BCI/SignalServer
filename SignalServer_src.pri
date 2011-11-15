@@ -16,7 +16,8 @@ HEADERS += include/config/xml_parser.h \
     include/hardware/mouse.h \
     include/hardware/eeg_sim_msg_parser.h \
     include/signalserver/signalserver.h \
-    include/hardware/gBSamp_base.h
+    include/hardware/gBSamp_base.h \
+    include/hardware/kinect.h
 
 unix {
   HEADERS += include/hardware/mouse_linux.h\
@@ -28,7 +29,8 @@ win32 {
              include/hardware/brainampseries.h \
              include/hardware/gBSamp_win.h \
              include/hardware/gtec_usbamp_wrapper.h \
-             include/hardware/usbamp.h
+             include/hardware/usbamp.h \
+             include/hardware/nirscout.h
 }
 contains( DEFINES, TIMING_TEST )::HEADERS += extern/include/LptTools/LptTools.h
 
@@ -50,7 +52,8 @@ SOURCES += src/signalserver/main.cpp \
     src/hardware/mouse.cpp \
     src/hardware/eeg_sim_msg_parser.cpp \
     src/signalserver/signalserver.cpp \
-    src/hardware/gBSamp_base.cpp
+    src/hardware/gBSamp_base.cpp \
+    src/hardware/kinect.cpp
 
 unix {
   SOURCES += src/hardware/mouse_linux.cpp \
@@ -62,7 +65,8 @@ win32 {
   SOURCES += src/hardware/mouse_win.cpp \
              src/hardware/gBSamp_win.cpp \
              src/hardware/brainampseries.cpp \
-             src/hardware/usbamp.cpp
+             src/hardware/usbamp.cpp\
+             src/hardware/nirscout.cpp
   contains( DEFINES, TIMING_TEST )::SOURCES += extern/include/LptTools/LptTools_.cpp
 }
 

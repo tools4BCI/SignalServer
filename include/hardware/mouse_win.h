@@ -38,8 +38,6 @@
 *
 **/
 
-#ifdef _WIN32
-
 #ifndef MOUSE_WIN_H
 #define MOUSE_WIN_H
 
@@ -100,6 +98,5 @@ class Mouse : public MouseBase
 } // Namespace tobiss
 
 #endif // MOUSE_WIN_H
-#endif // _WIN32
 //-----------------------------------------------------------------------------
 //

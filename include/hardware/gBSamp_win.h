@@ -30,9 +30,6 @@
     Copyright 2010 Graz University of Technology
     Contact: SignalServer@tobi-project.org
 */
-
-#ifdef WIN32
-
 #ifndef GBSAMP_WIN_H
 #define GBSAMP_WIN_H
 
@@ -126,6 +123,11 @@ class gBSamp : public gBSampBase
     */
     void checkNIDAQmxError(nidaqmx::int32 error_code, bool throw_on_failure = true);
 
+    /**
+    * @brief Get the appropriate  NIDAQmx value for the daq mode
+    */
+    nidaqmx::int32 getDAQmxModeID(daq_mode_type val);
+
 //-----------------------------------------------
 
   private:
@@ -134,26 +136,15 @@ class gBSamp : public gBSampBase
 
     std::vector<nidaqmx::float64> samples_; ///< temporary vector holding recent samples of the sine (1 element per channel)
 
-    /**
-    * @brief Buffer object used if blockwise data generation is set.
-    *
-    * Samples are appended to the sample block.
-    * This buffer is only for internal use and must not be accessible from outside!
-    * For more information, read the SampleBlock documentation.
-    */
-    SampleBlock<double> buffer_;
-
     nidaqmx::TaskHandle                      task_handle_;
-    nidaqmx::int32                           read_samples_;    // give this variable a meaningful name
+    nidaqmx::int32                           read_samples_;
     nidaqmx::int32                           received_samples_;
-    //nidaqmx::float64                         data[1]; // this array is used nowhere!!
+    double                                   max_timeout_;
 
-    //std::vector<nidaqmx::float64>            data_buffer;  // also not used!!
-
-    // get rid of this buffer mess !!!!
 
     nidaqmx::NIDaqmxWrapper                                                 nidaqmx_;
     static const HWThreadBuilderTemplateRegistratorWithoutIOService<gBSamp> factory_registrator_;
+    std::map<daq_mode_type, nidaqmx::int32>  nidaqmx_modes_map_;
 
 };
 
@@ -161,4 +152,3 @@ class gBSamp : public gBSampBase
 
 #endif // GBSAMP_WIN_H
 
-#endif // WIN32

@@ -31,8 +31,6 @@
     Contact: SignalServer@tobi-project.org
 */
 
-#ifdef WIN32
-
 #include <Windows.h>
 
 #include "hardware/gBSamp_win.h"
@@ -54,6 +52,9 @@ using std::string;
 using std::cout;
 using std::endl;
 
+static const double MAX_DAQ_RANGE_VOLTS = 10.0;
+static const double MIN_DAQ_RANGE_VOLTS = -10.0;
+
 //-----------------------------------------------------------------------------
 
 const HWThreadBuilderTemplateRegistratorWithoutIOService<gBSamp> gBSamp::factory_registrator_ ("gbsamp", "g.bsamp");
@@ -62,28 +63,25 @@ const HWThreadBuilderTemplateRegistratorWithoutIOService<gBSamp> gBSamp::factory
 
 gBSamp::gBSamp(ticpp::Iterator<ticpp::Element> hw)
   : current_block_(0), expected_values_(0),
-    task_handle_(0), read_samples_(0), received_samples_(0)
+    task_handle_(0), read_samples_(0), received_samples_(0), max_timeout_(0)
 {
   #ifdef DEBUG
     cout << "gBSamp: Constructor" << endl;
   #endif
 
+  nidaqmx_modes_map_.insert(std::make_pair(RSE,  DAQmx_Val_RSE) );
+  nidaqmx_modes_map_.insert(std::make_pair(NRSE, DAQmx_Val_NRSE) );
+  nidaqmx_modes_map_.insert(std::make_pair(diff, DAQmx_Val_Diff) );
+
   setHardware(hw);
 
   expected_values_ = nr_ch_ * blocks_;
 
-  //DWORD driver_buffer_size_ = expected_values_ * sizeof(float);
-
-  //data_buffer.resize(driver_buffer_size_,0);
-
-  buffer_.init(blocks_ , nr_ch_ , channel_types_);
   data_.init(blocks_, nr_ch_, channel_types_);
   samples_.resize(expected_values_, 0);
   initCard();
 
-  cout << " * gBSamp sucessfully initialized" << endl;
-  cout << "    fs: " << fs_ << "Hz, nr of channels: " << nr_ch_  << ", blocksize: " << blocks_  << endl;
-
+  max_timeout_ = 4*blocks_/fs_;
 }
 
 //-----------------------------------------------------------------------------
@@ -109,8 +107,6 @@ void gBSamp::run()
   running_ = 1;
 
   readFromDAQCard();
-
-  cout << " * gBSamp sucessfully started" << endl;
 }
 
 //-----------------------------------------------------------------------------
@@ -132,8 +128,6 @@ void gBSamp::stop()
     checkNIDAQmxError( nidaqmx_.clearTask(task_handle_), false);
   }
   task_handle_ = 0;
-
-  cout << " * gBSamp sucessfully stopped" << endl;
 }
 
 //-----------------------------------------------------------------------------
@@ -153,35 +147,21 @@ SampleBlock<double> gBSamp::getSyncData()
 
   if(!running_)
   {
-    cout << "Not running!" << endl;
+    std::cerr << "gBSamp: getSyncData -- Not running!" << endl;
     return(data_);
   }
 
-//    nidaqmx::float64 recv_buffer[1000];
-
   boost::shared_lock<boost::shared_mutex> lock(rw_);
-  read_samples_ = 0;
   received_samples_ = 0;
   while(received_samples_ < blocks_)
   {
-    checkNIDAQmxError( nidaqmx_.readAnalogF64(task_handle_, blocks_ ,2*blocks_/fs_,
-                                            DAQmx_Val_GroupByChannel, &samples_[received_samples_] ,samples_.size(), &read_samples_, 0) );
+    checkNIDAQmxError( nidaqmx_.readAnalogF64(task_handle_, blocks_ , max_timeout_,
+                                            DAQmx_Val_GroupByChannel, &samples_[received_samples_],
+                                            samples_.size()-received_samples_, &read_samples_, 0) );
     received_samples_ += read_samples_;
   }
-  //DAQmxReadAnalogF64(taskHandle,1, -1, DAQmx_Val_GroupByChannel,
-  //                   recv_buffer, 1, &nr_samples_received, NULL);
-
-
-//  for(int i=0; i < nr_ch_; i++)
-//    for(int j=0; j < blocks_; j++)
-//      samples_[i+j] =recv_buffer[i+j];
-
-  //cout << "gBSamp: getSyncData -- samples.size() " << samples_.size() << endl;
-  //cout << "sampleblock size: " << data_.getNrOfSamples() << endl;
 
   data_.setSamples(samples_);
-
-  samples_available_ = false;
   lock.unlock();
 
   return(data_);
@@ -202,28 +182,26 @@ SampleBlock<double> gBSamp::getAsyncData()
 
 void gBSamp::initCard()
 {
-  //TODO: make a list with needed channels
-  // now just uses first channels
-  //const char channel_list[] = "Dev1/ai0";
-
   std::string channel_list;
 
   for(map<uint16_t, std::pair<string, uint32_t> >::iterator it = channel_info_.begin();
       it != channel_info_.end(); it++)
   {
-    channel_list += "Dev1/ai";
+    channel_list += device_id_ + "/ai";
     channel_list += boost::lexical_cast<std::string>( it->first - 1 );
     channel_list += ",";
   }
   channel_list.erase(channel_list.size()-1);
 
-  // DAQmx Configure Code
   checkNIDAQmxError( nidaqmx_.createTask("",&task_handle_) );
-  
-  checkNIDAQmxError( nidaqmx_.createAIVoltageChan(task_handle_,channel_list.c_str(),"",
-                                              DAQmx_Val_RSE,-10.0,10.0,DAQmx_Val_Volts,0));
-  
-  
+
+  nidaqmx::int32 mode_id = getDAQmxModeID(daq_mode_);
+
+  checkNIDAQmxError( nidaqmx_.createAIVoltageChan(task_handle_, channel_list.c_str(), "",
+                                              mode_id, MIN_DAQ_RANGE_VOLTS, MAX_DAQ_RANGE_VOLTS,
+                                                  DAQmx_Val_Volts, 0));
+
+
   checkNIDAQmxError( nidaqmx_.cfgSampClkTiming(task_handle_, 0, fs_, DAQmx_Val_Rising,
                                                DAQmx_Val_HWTimedSinglePoint, blocks_));
 
@@ -251,6 +229,21 @@ void gBSamp::checkNIDAQmxError(nidaqmx::int32 error_code, bool throw_on_failure)
 
 //-----------------------------------------------------------------------------
 
+nidaqmx::int32 gBSamp::getDAQmxModeID(daq_mode_type val)
+{
+  std::map<daq_mode_type, nidaqmx::int32>::iterator it;
+  it = nidaqmx_modes_map_.find(val);
+
+  if(it == nidaqmx_modes_map_.end())
+  {
+    string e = "g.BSamp NIDAQmx mode \"" + boost::lexical_cast<string>(val) + "\" not found!";
+    throw(std::invalid_argument(e));
+  }
+
+  return(it->second);
+}
+
+//-----------------------------------------------------------------------------
+
 } // Namespace tobiss
 
-#endif // WIN32

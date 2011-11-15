@@ -34,7 +34,9 @@
 #include "hardware/gBSamp_base.h"
 
 #include <iostream>
+#include <utility>
 #include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string.hpp>
 
 #include "tia/constants.h"
 
@@ -49,14 +51,29 @@ using std::endl;
 using boost::lexical_cast;
 using boost::bad_lexical_cast;
 
-const string gBSampBase::hw_fil("filter");
-const string gBSampBase::hw_fil_type("type");
-const string gBSampBase::hw_fil_order("order");
-const string gBSampBase::hw_fil_low("f_low");
-const string gBSampBase::hw_fil_high("f_high");
-const string gBSampBase::hw_fil_sense("sense");
-const string gBSampBase::hw_notch("notch");
-const string gBSampBase::hw_notch_center("f_center");
+const string gBSampBase::hw_fil_("filter");
+const string gBSampBase::hw_fil_type_("type");
+const string gBSampBase::hw_fil_order_("order");
+const string gBSampBase::hw_fil_low_("f_low");
+const string gBSampBase::hw_fil_high_("f_high");
+const string gBSampBase::hw_fil_sense_("sense");
+const string gBSampBase::hw_notch_("notch");
+const string gBSampBase::hw_notch_center_("f_center");
+const string gBSampBase::hw_daq_mode_("daq_mode");
+const string gBSampBase::hw_device_id_("device_label");
+
+
+//-----------------------------------------------------------------------------
+
+gBSampBase::gBSampBase()
+  : daq_mode_(RSE)
+{
+  daq_modes_map_.insert( std::make_pair("rse", RSE) );
+  daq_modes_map_.insert( std::make_pair("nrse", NRSE) );
+  daq_modes_map_.insert( std::make_pair("diff", diff) );
+
+  setType("g.USBamp");
+}
 
 //-----------------------------------------------------------------------------
 
@@ -100,6 +117,9 @@ void gBSampBase::setDeviceSettings(ticpp::Iterator<ticpp::Element>const &father)
   ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(hw_fs_,true));
   setSamplingRate(elem);
 
+  elem = father->FirstChildElement(hw_device_id_,true);
+  setDeviceName(elem);
+
   elem = father->FirstChildElement(hw_channels_,false);
   if(elem != elem.end())
     setDeviceChannels(elem);
@@ -108,7 +128,11 @@ void gBSampBase::setDeviceSettings(ticpp::Iterator<ticpp::Element>const &father)
   if(elem != elem.end())
     setBlocks(elem);
 
-  ticpp::Iterator<ticpp::Element> filter(father->FirstChildElement(hw_fil, false));
+  elem = father->FirstChildElement(hw_daq_mode_,false);
+  if(elem != elem.end())
+    setAcquisitionMode(elem);
+
+  ticpp::Iterator<ticpp::Element> filter(father->FirstChildElement(hw_fil_, false));
   if (filter != filter.end())
   {
     for(ticpp::Iterator<ticpp::Element> it(filter); ++it != it.end(); )
@@ -130,6 +154,41 @@ void gBSampBase::setChannelSettings(ticpp::Iterator<ticpp::Element>const &father
   if (elem != elem.end())
     setChannelSelection(elem);
 }
+
+//---------------------------------------------------------------------------------------
+
+void gBSampBase::setAcquisitionMode(ticpp::Iterator<ticpp::Element>const &elem)
+{
+  #ifdef DEBUG
+    cout << "gBSamp: setAcquisitionMode" << endl;
+  #endif
+
+  std::string mode = elem->GetText(true);
+
+  std::map<string, daq_mode_type>::iterator it;
+
+  it = daq_modes_map_.find(boost::algorithm::to_lower_copy(mode));
+
+  if(it == daq_modes_map_.end())
+  {
+    string e = "g.BSamp acquisition mode \"" + mode + "\" not found -- please also check spelling!";
+    throw(std::invalid_argument(e));
+  }
+
+  daq_mode_ = it->second;
+}
+
+//---------------------------------------------------------------------------------------
+
+void gBSampBase::setDeviceName(ticpp::Iterator<ticpp::Element>const &elem)
+{
+  #ifdef DEBUG
+    cout << "gBSamp: setAcquisitionMode" << endl;
+  #endif
+
+  device_id_ = elem->GetText(true);
+}
+
 
 //---------------------------------------------------------------------------------------
 
@@ -163,39 +222,39 @@ void gBSampBase::checkFilterAttributes(ticpp::Iterator<ticpp::Element>const &ele
     cout << "USBamp: checkFilterAttributes" << endl;
   #endif
 
-  if(!elem.Get()->HasAttribute(hw_fil_type))
+  if(!elem.Get()->HasAttribute(hw_fil_type_))
   {
     string ex_str;
     ex_str = "gBSamp: Error -- ";
-    ex_str += "Tag <"+hw_fil+"> given, filter type ("+hw_fil_type+") not given!";
+    ex_str += "Tag <"+hw_fil_+"> given, filter type ("+hw_fil_type_+") not given!";
     throw(ticpp::Exception(ex_str));
   }
-  if(!elem.Get()->HasAttribute(hw_notch))
+  if(!elem.Get()->HasAttribute(hw_notch_))
   {
     string ex_str;
     ex_str = "gBSamp: Error -- ";
-    ex_str += "Tag <"+hw_fil+"> given, filter order ("+hw_notch+") not given!";
+    ex_str += "Tag <"+hw_fil_+"> given, filter order ("+hw_notch_+") not given!";
     throw(ticpp::Exception(ex_str));
   }
-  if(!elem.Get()->HasAttribute(hw_fil_low))
+  if(!elem.Get()->HasAttribute(hw_fil_low_))
   {
     string ex_str;
     ex_str = "gBSamp: Error -- ";
-    ex_str += "Tag <"+hw_fil+"> given, lower cutoff frequency ("+hw_fil_low+") not given!";
+    ex_str += "Tag <"+hw_fil_+"> given, lower cutoff frequency ("+hw_fil_low_+") not given!";
     throw(ticpp::Exception(ex_str));
   }
-  if(!elem.Get()->HasAttribute(hw_fil_high))
+  if(!elem.Get()->HasAttribute(hw_fil_high_))
   {
     string ex_str;
     ex_str = "gBSamp: Error -- ";
-    ex_str += "Tag <"+hw_fil+"> given, upper cutoff frequency ("+hw_fil_high+") not given!";
+    ex_str += "Tag <"+hw_fil_+"> given, upper cutoff frequency ("+hw_fil_high_+") not given!";
     throw(ticpp::Exception(ex_str));
   }
-  if(!elem.Get()->HasAttribute(hw_fil_sense))
+  if(!elem.Get()->HasAttribute(hw_fil_sense_))
   {
     string ex_str;
     ex_str = "gBSamp: Error -- ";
-    ex_str += "Tag <"+hw_fil+"> given, parameter ("+hw_fil_sense+") not given!";
+    ex_str += "Tag <"+hw_fil_+"> given, parameter ("+hw_fil_sense_+") not given!";
     throw(ticpp::Exception(ex_str));
   }
 }
@@ -209,29 +268,35 @@ void gBSampBase::getFilterParams(ticpp::Iterator<ticpp::Element>const &elem,\
     cout << "gBSamp: getFilterParams" << endl;
   #endif
 
+  // EEG 0.1 mV.   -->.  * 20  (Saettigung: 200 muV Ampl --> 400muV SS)
+  //     0.05 mV...-->   * 10  (Saettigung: 100 muV Ampl)
+  // EMG 1           ;  5
+  // EOG 0.1         ;  2
+  // ECG 2           ;  5
+
   tia::Constants cst;
-  type = cst.getSignalFlag(elem.Get()->GetAttribute(hw_fil_type));
+  type = cst.getSignalFlag(elem.Get()->GetAttribute(hw_fil_type_));
   try
   {
-    notch = equalsOnOrOff(elem.Get()->GetAttribute(hw_notch));
+    notch = equalsOnOrOff(elem.Get()->GetAttribute(hw_notch_));
   }
   catch(bad_lexical_cast &)
   {
     string ex_str;
     ex_str = "gBSamp: Error -- ";
-    ex_str += "Tag <"+hw_fil+"> given, but notch is not 'on' or 'off'";
+    ex_str += "Tag <"+hw_fil_+"> given, but notch is not 'on' or 'off'";
     throw(ticpp::Exception(ex_str));
   }
   if(type == SIG_EEG)
   {
     try
     {
-      f_low  = lexical_cast<float>(elem.Get()->GetAttribute(hw_fil_low));
+      f_low  = lexical_cast<float>(elem.Get()->GetAttribute(hw_fil_low_));
       if((f_low != .5) || (f_low != 2))
       {
         string ex_str;
         ex_str = "gBSamp: Error -- ";
-        ex_str += "Tag <"+hw_fil+"> given, but lower filter is not '0.5' or '2'";
+        ex_str += "Tag <"+hw_fil_+"> given, but lower filter is not '0.5' or '2'";
         throw(ticpp::Exception(ex_str));
       }
     }
@@ -239,17 +304,17 @@ void gBSampBase::getFilterParams(ticpp::Iterator<ticpp::Element>const &elem,\
     {
       string ex_str;
       ex_str = "gBSamp: Error -- ";
-      ex_str += "Tag <"+hw_fil+"> given, but lower filter is not given";
+      ex_str += "Tag <"+hw_fil_+"> given, but lower filter is not given";
       throw(ticpp::Exception(ex_str));
     }
     try
     {
-      f_high = lexical_cast<float>(elem.Get()->GetAttribute(hw_fil_high));
+      f_high = lexical_cast<float>(elem.Get()->GetAttribute(hw_fil_high_));
       if((f_high != 30) || (f_high != 100))
       {
         string ex_str;
         ex_str = "gBSamp: Error -- ";
-        ex_str += "Tag <"+hw_fil+"> given, but lower filter is not '30' or '100'";
+        ex_str += "Tag <"+hw_fil_+"> given, but lower filter is not '30' or '100'";
         throw(ticpp::Exception(ex_str));
       }
     }
@@ -257,17 +322,17 @@ void gBSampBase::getFilterParams(ticpp::Iterator<ticpp::Element>const &elem,\
     {
       string ex_str;
       ex_str = "gBSamp: Error -- ";
-      ex_str += "Tag <"+hw_fil+"> given, but lower filter is not given";
+      ex_str += "Tag <"+hw_fil_+"> given, but lower filter is not given";
       throw(ticpp::Exception(ex_str));
     }
     try
     {
-      sense = lexical_cast<float>(elem.Get()->GetAttribute(hw_fil_sense));
+      sense = lexical_cast<float>(elem.Get()->GetAttribute(hw_fil_sense_));
       if((f_low != .05) || (f_low != .1))
       {
         string ex_str;
         ex_str = "gBSamp: Error -- ";
-        ex_str += "Tag <"+hw_fil+"> given, but lower filter is not '0.05' or '.1'";
+        ex_str += "Tag <"+hw_fil_+"> given, but lower filter is not '0.05' or '.1'";
         throw(ticpp::Exception(ex_str));
       }
     }
@@ -275,7 +340,7 @@ void gBSampBase::getFilterParams(ticpp::Iterator<ticpp::Element>const &elem,\
     {
       string ex_str;
       ex_str = "gBSamp: Error -- ";
-      ex_str += "Tag <"+hw_fil+"> given, but lower filter is not given";
+      ex_str += "Tag <"+hw_fil_+"> given, but lower filter is not given";
       throw(ticpp::Exception(ex_str));
     }
   }
@@ -284,12 +349,12 @@ void gBSampBase::getFilterParams(ticpp::Iterator<ticpp::Element>const &elem,\
   {
     try
     {
-      f_low  = lexical_cast<float>(elem.Get()->GetAttribute(hw_fil_low));
+      f_low  = lexical_cast<float>(elem.Get()->GetAttribute(hw_fil_low_));
       if((f_low != .5) || (f_low != 2))
       {
         string ex_str;
         ex_str = "gBSamp: Error -- ";
-        ex_str += "Tag <"+hw_fil+"> given, but lower filter is not '0.5' or '2'";
+        ex_str += "Tag <"+hw_fil_+"> given, but lower filter is not '0.5' or '2'";
         throw(ticpp::Exception(ex_str));
       }
     }
@@ -297,17 +362,17 @@ void gBSampBase::getFilterParams(ticpp::Iterator<ticpp::Element>const &elem,\
     {
       string ex_str;
       ex_str = "gBSamp: Error -- ";
-      ex_str += "Tag <"+hw_fil+"> given, but lower filter is not given";
+      ex_str += "Tag <"+hw_fil_+"> given, but lower filter is not given";
       throw(ticpp::Exception(ex_str));
     }
     try
     {
-      f_high = lexical_cast<float>(elem.Get()->GetAttribute(hw_fil_high));
+      f_high = lexical_cast<float>(elem.Get()->GetAttribute(hw_fil_high_));
       if((f_high != 30) || (f_high != 100))
       {
         string ex_str;
         ex_str = "gBSamp: Error -- ";
-        ex_str += "Tag <"+hw_fil+"> given, but lower filter is not '30' or '100'";
+        ex_str += "Tag <"+hw_fil_+"> given, but lower filter is not '30' or '100'";
         throw(ticpp::Exception(ex_str));
       }
     }
@@ -315,17 +380,17 @@ void gBSampBase::getFilterParams(ticpp::Iterator<ticpp::Element>const &elem,\
     {
       string ex_str;
       ex_str = "gBSamp: Error -- ";
-      ex_str += "Tag <"+hw_fil+"> given, but lower filter is not given";
+      ex_str += "Tag <"+hw_fil_+"> given, but lower filter is not given";
       throw(ticpp::Exception(ex_str));
     }
     try
     {
-      sense = lexical_cast<float>(elem.Get()->GetAttribute(hw_fil_sense));
+      sense = lexical_cast<float>(elem.Get()->GetAttribute(hw_fil_sense_));
       if((f_low != .1) || (f_low != 1))
       {
         string ex_str;
         ex_str = "gBSamp: Error -- ";
-        ex_str += "Tag <"+hw_fil+"> given, but lower filter is not '0.1' or '1'";
+        ex_str += "Tag <"+hw_fil_+"> given, but lower filter is not '0.1' or '1'";
         throw(ticpp::Exception(ex_str));
       }
     }
@@ -333,7 +398,7 @@ void gBSampBase::getFilterParams(ticpp::Iterator<ticpp::Element>const &elem,\
     {
       string ex_str;
       ex_str = "gBSamp: Error -- ";
-      ex_str += "Tag <"+hw_fil+"> given, but lower filter is not given";
+      ex_str += "Tag <"+hw_fil_+"> given, but lower filter is not given";
       throw(ticpp::Exception(ex_str));
     }
   }
@@ -342,12 +407,12 @@ void gBSampBase::getFilterParams(ticpp::Iterator<ticpp::Element>const &elem,\
   {
     try
     {
-      f_low  = lexical_cast<float>(elem.Get()->GetAttribute(hw_fil_low));
+      f_low  = lexical_cast<float>(elem.Get()->GetAttribute(hw_fil_low_));
       if((f_low != .01) || (f_low != 2))
       {
         string ex_str;
         ex_str = "gBSamp: Error -- ";
-        ex_str += "Tag <"+hw_fil+"> given, but lower filter is not '0.01' or '2'";
+        ex_str += "Tag <"+hw_fil_+"> given, but lower filter is not '0.01' or '2'";
         throw(ticpp::Exception(ex_str));
       }
     }
@@ -355,17 +420,17 @@ void gBSampBase::getFilterParams(ticpp::Iterator<ticpp::Element>const &elem,\
     {
       string ex_str;
       ex_str = "gBSamp: Error -- ";
-      ex_str += "Tag <"+hw_fil+"> given, but lower filter is not given";
+      ex_str += "Tag <"+hw_fil_+"> given, but lower filter is not given";
       throw(ticpp::Exception(ex_str));
     }
     try
     {
-      f_high = lexical_cast<float>(elem.Get()->GetAttribute(hw_fil_high));
+      f_high = lexical_cast<float>(elem.Get()->GetAttribute(hw_fil_high_));
       if((f_high != 60) || (f_high != 100))
       {
         string ex_str;
         ex_str = "gBSamp: Error -- ";
-        ex_str += "Tag <"+hw_fil+"> given, but lower filter is not '60' or '100'";
+        ex_str += "Tag <"+hw_fil_+"> given, but lower filter is not '60' or '100'";
         throw(ticpp::Exception(ex_str));
       }
     }
@@ -373,17 +438,17 @@ void gBSampBase::getFilterParams(ticpp::Iterator<ticpp::Element>const &elem,\
     {
       string ex_str;
       ex_str = "gBSamp: Error -- ";
-      ex_str += "Tag <"+hw_fil+"> given, but lower filter is not given";
+      ex_str += "Tag <"+hw_fil_+"> given, but lower filter is not given";
       throw(ticpp::Exception(ex_str));
     }
     try
     {
-      sense = lexical_cast<float>(elem.Get()->GetAttribute(hw_fil_sense));
+      sense = lexical_cast<float>(elem.Get()->GetAttribute(hw_fil_sense_));
       if((f_low != 1) || (f_low != 5))
       {
         string ex_str;
         ex_str = "gBSamp: Error -- ";
-        ex_str += "Tag <"+hw_fil+"> given, but lower filter is not '1' or '5'";
+        ex_str += "Tag <"+hw_fil_+"> given, but lower filter is not '1' or '5'";
         throw(ticpp::Exception(ex_str));
       }
     }
@@ -391,7 +456,7 @@ void gBSampBase::getFilterParams(ticpp::Iterator<ticpp::Element>const &elem,\
     {
       string ex_str;
       ex_str = "gBSamp: Error -- ";
-      ex_str += "Tag <"+hw_fil+"> given, but lower filter is not given";
+      ex_str += "Tag <"+hw_fil_+"> given, but lower filter is not given";
       throw(ticpp::Exception(ex_str));
     }
   }
@@ -400,12 +465,12 @@ void gBSampBase::getFilterParams(ticpp::Iterator<ticpp::Element>const &elem,\
   {
     try
     {
-      f_low  = lexical_cast<float>(elem.Get()->GetAttribute(hw_fil_low));
+      f_low  = lexical_cast<float>(elem.Get()->GetAttribute(hw_fil_low_));
       if((f_low != .01) || (f_low != 2))
       {
         string ex_str;
         ex_str = "gBSamp: Error -- ";
-        ex_str += "Tag <"+hw_fil+"> given, but lower filter is not '0.01' or '2'";
+        ex_str += "Tag <"+hw_fil_+"> given, but lower filter is not '0.01' or '2'";
         throw(ticpp::Exception(ex_str));
       }
     }
@@ -413,17 +478,17 @@ void gBSampBase::getFilterParams(ticpp::Iterator<ticpp::Element>const &elem,\
     {
       string ex_str;
       ex_str = "gBSamp: Error -- ";
-      ex_str += "Tag <"+hw_fil+"> given, but lower filter is not given";
+      ex_str += "Tag <"+hw_fil_+"> given, but lower filter is not given";
       throw(ticpp::Exception(ex_str));
     }
     try
     {
-      f_high = lexical_cast<float>(elem.Get()->GetAttribute(hw_fil_high));
+      f_high = lexical_cast<float>(elem.Get()->GetAttribute(hw_fil_high_));
       if((f_high != 60) || (f_high != 100))
       {
         string ex_str;
         ex_str = "gBSamp: Error -- ";
-        ex_str += "Tag <"+hw_fil+"> given, but lower filter is not '60' or '100'";
+        ex_str += "Tag <"+hw_fil_+"> given, but lower filter is not '60' or '100'";
         throw(ticpp::Exception(ex_str));
       }
     }
@@ -431,17 +496,17 @@ void gBSampBase::getFilterParams(ticpp::Iterator<ticpp::Element>const &elem,\
     {
       string ex_str;
       ex_str = "gBSamp: Error -- ";
-      ex_str += "Tag <"+hw_fil+"> given, but lower filter is not given";
+      ex_str += "Tag <"+hw_fil_+"> given, but lower filter is not given";
       throw(ticpp::Exception(ex_str));
     }
     try
     {
-      sense = lexical_cast<float>(elem.Get()->GetAttribute(hw_fil_sense));
+      sense = lexical_cast<float>(elem.Get()->GetAttribute(hw_fil_sense_));
       if((f_low != 2) || (f_low != 5))
       {
         string ex_str;
         ex_str = "gBSamp: Error -- ";
-        ex_str += "Tag <"+hw_fil+"> given, but lower filter is not '2' or '5'";
+        ex_str += "Tag <"+hw_fil_+"> given, but lower filter is not '2' or '5'";
         throw(ticpp::Exception(ex_str));
       }
     }
@@ -449,7 +514,7 @@ void gBSampBase::getFilterParams(ticpp::Iterator<ticpp::Element>const &elem,\
     {
       string ex_str;
       ex_str = "gBSamp: Error -- ";
-      ex_str += "Tag <"+hw_fil+"> given, but lower filter is not given";
+      ex_str += "Tag <"+hw_fil_+"> given, but lower filter is not given";
       throw(ticpp::Exception(ex_str));
     }
   }

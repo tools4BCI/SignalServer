@@ -24,7 +24,7 @@
 #include <ctime>
 #include <iostream>
 
-int main()
+int main(int argc, const char* argv[])
 {
     srand (time(NULL));
     std::cout << std::endl << "Build on " << __DATE__ << " at " << __TIME__ << std::endl << std::endl;

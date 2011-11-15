@@ -38,9 +38,6 @@
     <ClCompile Include="src\hardware\eeg_simulator.cpp">
       <Filter>Source Files\hardware</Filter>
     </ClCompile>
-    <ClCompile Include="src\hardware\event_listener.cpp">
-      <Filter>Source Files\hardware</Filter>
-    </ClCompile>
     <ClCompile Include="src\hardware\hw_access.cpp">
       <Filter>Source Files\hardware</Filter>
     </ClCompile>
@@ -86,15 +83,15 @@
     <ClCompile Include="src\hardware\gBSamp_win.cpp">
       <Filter>Source Files\hardware</Filter>
     </ClCompile>
+    <ClCompile Include="src\hardware\kinect.cpp">
+      <Filter>Source Files\hardware</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\hardware\artificial_signal_source.h">
       <Filter>Header Files\hardware</Filter>
     </ClInclude>
     <ClInclude Include="include\hardware\eeg_simulator.h">
-      <Filter>Header Files\hardware</Filter>
-    </ClInclude>
-    <ClInclude Include="include\hardware\event_listener.h">
       <Filter>Header Files\hardware</Filter>
     </ClInclude>
     <ClInclude Include="include\hardware\gtec_usbamp_wrapper.h">
@@ -149,6 +146,9 @@
       <Filter>Header Files\hardware</Filter>
     </ClInclude>
     <ClInclude Include="include\hardware\nidaqmx_wrapper.h">
+      <Filter>Header Files\hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="include\hardware\kinect.h">
       <Filter>Header Files\hardware</Filter>
     </ClInclude>
   </ItemGroup>

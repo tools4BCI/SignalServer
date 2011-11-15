@@ -68,27 +68,21 @@ static const int buf_size = 1000;
 
 
 gBSamp::gBSamp(ticpp::Iterator<ticpp::Element> hw)
-: acquiring_(0), current_block_(0), first_run_(1)
+: first_run_(1)
 {
   #ifdef DEBUG
     cout << "gBSamp: Constructor" << endl;
   #endif
 
-  setType("g.BSamp");
   setHardware(hw);
 
   expected_values_ = nr_ch_ * blocks_;
 
-  buffer_.init(blocks_ , nr_ch_ , channel_types_);
   data_.init(blocks_, nr_ch_, channel_types_);
   samples_.resize(expected_values_, 0);
 
   if( initCard() != 0)
     throw(std::invalid_argument("gBSamp: not initialized, please restart") );
-
-  cout << " * gBSamp sucessfully initialized" << endl;
-  cout << "    fs: " << fs_ << "Hz, nr of channels: " << nr_ch_  << ", blocksize: " << blocks_  << endl;
-
 }
 
 //-----------------------------------------------------------------------------
@@ -104,7 +98,10 @@ gBSamp::~gBSamp()
     //    comedi_cancel(device_, 0);
     comedi_close(device_);
   }
-  delete [] channel_list_;
+
+  if( channel_list_ )
+    delete [] channel_list_;
+  channel_list_ = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -117,7 +114,6 @@ void gBSamp::run()
 
   running_ = 1;
 
-  cout << " * gBSamp sucessfully started" << endl;
 }
 
 //-----------------------------------------------------------------------------
@@ -135,9 +131,6 @@ void gBSamp::stop()
     //    comedi_cancel(device_, 0);
     comedi_close(device_);
   }
-
-  cond_.notify_all();
-  cout << " * gBSamp sucessfully stopped" << endl;
 }
 
 //-----------------------------------------------------------------------------
@@ -153,9 +146,6 @@ SampleBlock<double> gBSamp::getSyncData()
     cout << "Not running!" << endl;
     return(data_);
   }
-
-  if(!acquiring_)
-    acquiring_ = 1;
 
   boost::shared_lock<boost::shared_mutex> lock(rw_);
   sampl_t buf[buf_size];
@@ -217,14 +207,14 @@ int gBSamp::initCard()
     cout << "gBSamp: getAsyncData" << endl;
   #endif
 
-  device_ = comedi_open("/dev/comedi0");
+  device_ = comedi_open(device_id_.c_str());
   if(device_==0)
   {
       cerr << "Error: " << comedi_strerror( comedi_errno() ) << endl;
       return -1;
   }
 
-#ifdef DEBUG
+  #ifdef DEBUG
     cout << "gBSamp: device opened!" << endl;
   #endif
 

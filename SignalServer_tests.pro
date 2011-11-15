@@ -1,18 +1,16 @@
 TEMPLATE += app
 CONFIG += console
-TARGET = $$PWD/bin/test
+DESTDIR = bin
+TARGET = test
 OBJECTS_DIR = tmp/tests/
 
 QT -= core \
       gui
 
-
 INCLUDEPATH += $$PWD/. \
     $$PWD/include \
     $$PWD/extern/include
 DEPENDPATH += $$INCLUDEPATH
-
-PRE_TARGETDEPS += $$PWD/lib/libtia.a
 
 DEFINES += TIXML_USE_TICPP
 #DEFINES += DEBUG
@@ -24,16 +22,22 @@ DEFINES += TIXML_USE_TICPP
 QMAKE_CXXFLAGS_WARN_ON = -Wall \
     -pedantic
 
-LIBS += $$PWD/lib/libtia.a
+# ---------------------------
 
-HARDWARE_PLATFORM = $$system(uname -m)
+HEADERS += include/hardware/hw_thread.h
 
-contains( HARDWARE_PLATFORM, x86_64 )::{
-  LIBS += $$PWD/extern/lib/ticpp/linux/libticpp_64.a
-  }
-  else:: {
-  LIBS += $$PWD/extern/lib/ticpp/linux/libticpp.a
-  }
+
+SOURCES += \
+    tests/main.cpp \
+    tests/sampleblock_tests.cpp\
+    src/hardware/hw_thread.cpp \
+
+win32 {
+    SOURCES += tests/nirscout_tests.cpp\
+               src/hardware/nirscout.cpp
+}
+
+# ---------------------------
 
 LIBS += -lboost_thread \
         -lboost_system \
@@ -42,6 +46,21 @@ LIBS += -lboost_thread \
         -L$$PWD/extern/lib/ticpp/linux \
         -L$$PWD/tests/UnitTest++
 
+HARDWARE_PLATFORM = $$system(uname -m)
+  contains( HARDWARE_PLATFORM, x86_64 )::
+  {
+  # 64-bit Linux
+  LIBS += -Lextern/lib/ticpp/linux  -lticpp_64 \
+                -Lextern/lib/tia/linux/x64 -ltia
+
+  }else::{
+
+  # 32-bit Linux
+  LIBS += -Lextern/lib/ticpp/linux  -lticpp \
+                -Lextern/lib/tia/linux/x86 -ltia
+  }
+
+
 contains( HARDWARE_PLATFORM, x86_64 )::{
   LIBS += -lUnitTest++_64
   }
@@ -49,26 +68,3 @@ contains( HARDWARE_PLATFORM, x86_64 )::{
   LIBS += -lUnitTest++
   }
 
-
-SOURCES += \
-    tests/main.cpp \
-    tests/datapacket_tests.cpp \
-    tests/tia_client_tests.cpp \
-    tests/tia_clock_tests.cpp \
-    tests/tia_server_tests.cpp \
-    #tests/server_control_connection_tests.cpp \
-    tests/tia_version_1_0/tia_control_message_parser_1_0_tests.cpp \
-    tests/test_socket.cpp \
-    tests/boost_socket_tests.cpp \
-    tests/control_commands/get_data_transmission.cpp \
-    tests/tia_version_1_0/tia_tcp_server_socket_tests.cpp \
-    tests/tia_server_state_server_tests.cpp \
-    tests/sampleblock_tests.cpp
-
-HEADERS += \
-    tests/datapacket_tests_fixtures.h \
-    tests/raw_datapacket_definition.h \
-    #tests/tia_server_control_connection_tests_fixtures.h \
-    tests/tia_control_messages_definition.h \
-    tests/test_socket.h \
-    tests/test_data_server.h

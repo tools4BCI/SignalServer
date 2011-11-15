@@ -12,9 +12,9 @@ PLATFORM=$(uname -m)
 
 if [ "$PLATFORM" == "x86_64" ]
 then
-  LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(pwd)/extern/lib/tia/x64
+  LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(pwd)/extern/lib/tia/linux/x64
 else
-  LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(pwd)/extern/lib/tia/x32
+  LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(pwd)/extern/lib/tia/linux/x32
 fi
 
 export PATH LD_LIBRARY_PATH
