@@ -12,12 +12,6 @@ unix {
         -lusb-1.0 \
         -lcomedi
 
-    contains( DEFINES, USE_TID_SERVER )::
-    {
-      LIBS += -ltobicore \
-              -ltobiid
-    }
-
     HARDWARE_PLATFORM = $$system(uname -m)
     contains( HARDWARE_PLATFORM, x86_64 )::
     {
