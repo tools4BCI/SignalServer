@@ -3,7 +3,7 @@
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "TOBI SignalServer"
 !define PRODUCT_VERSION "1.0"
-!define PRODUCT_PLATFORM "Win32"
+!define PRODUCT_PLATFORM "x64"
 !define PRODUCT_PUBLISHER "Institute for Knowledge Discovery, Graz University of Technology, Austria"
 !define PRODUCT_WEB_SITE "https://sourceforge.net/p/tools4bci"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\signalserver.exe"
