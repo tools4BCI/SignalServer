@@ -161,6 +161,12 @@ SampleBlock<double> gBSamp::getSyncData()
     received_samples_ += read_samples_;
   }
 
+  for(unsigned int m = 0; m < channel_info_.size() ; m++)
+    for(unsigned int n = 0; n < blocks_; n++)
+    {
+      samples_[ (blocks_*m) +n] *= scaling_factors_[m];
+    }
+
   data_.setSamples(samples_);
   lock.unlock();
 

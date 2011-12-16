@@ -104,12 +104,9 @@ int main(int argc, const char* argv[])
       sig_server_ptr = new boost::thread(boost::bind(&SignalServer::readPackets, &sig_server));
 
       #ifdef WIN32
-        SetPriorityClass(sig_server_ptr->native_handle(),     HIGH_PRIORITY_CLASS);
+        SetPriorityClass(sig_server_ptr->native_handle(),  HIGH_PRIORITY_CLASS);
         SetThreadPriority(sig_server_ptr->native_handle(), THREAD_PRIORITY_HIGHEST );
-      #endif
-
-      #ifdef WIN32
-        SetPriorityClass(GetCurrentProcess(), REALTIME_PRIORITY_CLASS);
+        SetPriorityClass(GetCurrentProcess(),              REALTIME_PRIORITY_CLASS);
       #endif
 
       string str;

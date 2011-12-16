@@ -581,7 +581,7 @@ void USBamp::setDeviceSettings(ticpp::Iterator<ticpp::Element>const &father)
     setDeviceChannels(elem);
   checkNrOfChannels();
 
-  elem = father->FirstChildElement(hw_blocksize_,false);
+  elem = father->FirstChildElement(hw_blocksize_,true);
   if(elem != elem.end())
     setBlocks(elem);
 
