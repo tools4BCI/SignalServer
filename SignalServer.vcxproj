@@ -46,15 +46,19 @@
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\tobi_win32.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\tobi_win64.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\tobi_win32.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\tobi_win64.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -283,7 +287,7 @@
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>ticpp.lib;SDL.lib;libusb0.lib;tia.lib;NIDAQmx.lib;tobiid.lib;tobicore.lib;TiDServer.lib;GDF.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ticpp.lib;SDL.lib;libusb0.lib;tia.lib;tobiid.lib;tobicore.lib;TiDServer.lib;GDF.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)signalserver.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>lib;extern\lib\g.usbamp\win;extern\lib\sdl\win;extern\lib\ticpp\win;extern\lib\libgdf\win;extern\lib\libusb\win;extern\lib\nidaqmx\win;extern\lib\tobi_libs\win;extern\lib\TiDlib\win;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -305,6 +309,7 @@
     <ClCompile Include="src\hardware\gBSamp_base.cpp" />
     <ClCompile Include="src\hardware\gBSamp_win.cpp" />
     <ClCompile Include="src\hardware\kinect.cpp" />
+    <ClCompile Include="src\hardware\plux.cpp" />
     <ClCompile Include="src\signalserver\main.cpp" />
     <ClCompile Include="src\hardware\artificial_signal_source.cpp" />
     <ClCompile Include="src\hardware\eeg_simulator.cpp" />
@@ -337,6 +342,7 @@
     <ClInclude Include="include\hardware\mouse.h" />
     <ClInclude Include="include\hardware\mouse_win.h" />
     <ClInclude Include="include\hardware\nidaqmx_wrapper.h" />
+    <ClInclude Include="include\hardware\plux.h" />
     <ClInclude Include="include\hardware\serial_port_base.h" />
     <ClInclude Include="include\hardware\sine_generator.h" />
     <ClInclude Include="include\hardware\usbamp.h" />

@@ -33,11 +33,11 @@
 
 <!-- =============================================================================== -->
 
-   <hardware name="sinegenerator" version="1.0" serial="">
+   <hardware name="bioplux" version="1.0" serial="">
     <mode> master </mode>
     <device_settings>
-      <sampling_rate> 600 </sampling_rate>
-      <measurement_channels nr="16" names="eeg" type="eeg" />
+      <sampling_rate> 987 </sampling_rate>
+      <measurement_channels nr="1" names="emg" type="emg" />
       <blocksize> 10 </blocksize>
     </device_settings>
 
