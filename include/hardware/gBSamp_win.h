@@ -36,8 +36,6 @@
 #include <vector>
 #include <map>
 
-#include <boost/thread/condition.hpp>  // for mutex and cond. variables
-#include <boost/thread/shared_mutex.hpp>
 #include <boost/cstdint.hpp>
 
 #include "hardware/gBsamp_base.h"
