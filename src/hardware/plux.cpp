@@ -37,8 +37,13 @@
 
 #include "hardware/plux.h"
 
+#include <iostream>
+
 namespace tobiss
 {
+
+using std::cout;
+using std::endl;
 
 //-----------------------------------------------------------------------------
 

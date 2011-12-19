@@ -307,6 +307,7 @@
     <ClCompile Include="src\hardware\gBSamp_base.cpp" />
     <ClCompile Include="src\hardware\gBSamp_win.cpp" />
     <ClCompile Include="src\hardware\kinect.cpp" />
+    <ClCompile Include="src\hardware\plux.cpp" />
     <ClCompile Include="src\signalserver\main.cpp" />
     <ClCompile Include="src\hardware\artificial_signal_source.cpp" />
     <ClCompile Include="src\hardware\eeg_simulator.cpp" />
@@ -339,6 +340,7 @@
     <ClInclude Include="include\hardware\mouse.h" />
     <ClInclude Include="include\hardware\mouse_win.h" />
     <ClInclude Include="include\hardware\nidaqmx_wrapper.h" />
+    <ClInclude Include="include\hardware\plux.h" />
     <ClInclude Include="include\hardware\serial_port_base.h" />
     <ClInclude Include="include\hardware\sine_generator.h" />
     <ClInclude Include="include\hardware\usbamp.h" />
