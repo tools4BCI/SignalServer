@@ -37,6 +37,8 @@
 
 #include "hardware/plux.h"
 
+#include "BioPlux.h"
+
 #include <iostream>
 
 namespace tobiss
@@ -57,6 +59,10 @@ Plux::Plux(ticpp::Iterator<ticpp::Element> hw)
   #ifdef DEBUG
     cout << "Plux: Constructor" << endl;
   #endif
+
+  BP::Device *dev = NULL;
+  dev = BP::Device::Create("Test");
+  if (dev) delete dev;
   
   checkMandatoryHardwareTags(hw);
 
