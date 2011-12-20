@@ -229,7 +229,7 @@
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>BioPlux.lib;tia.lib;libticpp.lib;SDL.lib;libusb0.lib;tobiid.lib;tobicore.lib;TiDServer.lib;GDF.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>tia.lib;libticpp.lib;SDL.lib;libusb0.lib;tobiid.lib;tobicore.lib;TiDServer.lib;GDF.lib;BioPlux.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>extern\lib\libgdf\win;extern\lib\tobi_libs\win;extern\lib\TiDlib\win;$(SolutionDir)extern\lib\ticpp\win\$(Platform);$(SolutionDir)extern\lib\tia\win\$(Platform);$(SolutionDir)extern\lib\sdl\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\libusb\win\$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
