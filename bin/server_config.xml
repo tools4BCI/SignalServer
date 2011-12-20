@@ -33,13 +33,23 @@
 
 <!-- =============================================================================== -->
 
-   <hardware name="bioplux" version="1.0" serial="">
+   <hardware name="bioplux" mac="00:07:80:4B:2C:A2" version="1.0" serial="">
     <mode> master </mode>
     <device_settings>
       <sampling_rate> 987 </sampling_rate>
-      <measurement_channels nr="1" names="emg" type="emg" />
+<!--      <measurement_channels nr="1" names="emg" type="emg" /> -->
       <blocksize> 10 </blocksize>
     </device_settings>
+
+   <channel_settings>
+      <selection>
+        <ch nr="01" name="acc X" type="sensor" />
+        <ch nr="02" name="acc Y" type="sensor" />
+        <ch nr="03" name="acc Z" type="sensor" />
+        <ch nr="05" name="emg" type="emg" />
+        <ch nr="06" name="emg" type="emg" />
+      </selection>
+    </channel_settings>
 
   </hardware>
 

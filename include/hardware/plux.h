@@ -42,6 +42,11 @@
 #include "hw_thread.h"
 #include "hw_thread_builder.h"
 
+#include "BioPlux.h"
+
+#define PLUX_TRY try  
+#define PLUX_CATCH catch( BP::Err err ) { rethrowPluxException( err ); }
+
 namespace tobiss
 {
 //-----------------------------------------------------------------------------
@@ -97,6 +102,13 @@ public:
 private:
 
     /**
+    * @brief Set the configuration of the Plux Device with a XML object
+    * @param[in] hw ticpp::Element pointing to an \<hardware\> tag in the config file
+    * @throw std::invalid_argument if \<channel_settings\> is defined multiple times.
+    */
+    void setHardware(ticpp::Iterator<ticpp::Element>const &hw);
+
+    /**
     * @brief Set configuration listed in the \<device_settings\> section in the XML file.
     * @param[in] hw ticpp::Element pointing to an \<device_settings\> tag in the config file
     * @throw ticpp::exception
@@ -109,7 +121,23 @@ private:
     */
     virtual void setChannelSettings(ticpp::Iterator<ticpp::Element>const &father);
 
-	static const HWThreadBuilderTemplateRegistratorWithoutIOService<Plux> FACTORY_REGISTRATOR_;
+    /**
+    * @brief Automatically selects an available PLUX device.
+    * @return std::string MAC adress of available device
+    * @todo What if there is more than one device?.
+    */
+    static std::string acquireDevice( );
+
+    /**
+    * @brief Throws a standard exception with information obtained from a BioPlux excaption.
+    */
+    static void rethrowPluxException(  BP::Err &err );
+
+    static const HWThreadBuilderTemplateRegistratorWithoutIOService<Plux> FACTORY_REGISTRATOR_;
+
+
+    std::map<std::string, std::string> m_;	/// Attributes map -- to be renamed
+    BP::Device *device_;
 };
 
 } // Namespace tobiss

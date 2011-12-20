@@ -37,8 +37,6 @@
 
 #include "hardware/plux.h"
 
-#include "BioPlux.h"
-
 #include <iostream>
 
 namespace tobiss
@@ -46,6 +44,8 @@ namespace tobiss
 
 using std::cout;
 using std::endl;
+using std::pair;
+using std::string;
 
 //-----------------------------------------------------------------------------
 
@@ -54,39 +54,107 @@ const HWThreadBuilderTemplateRegistratorWithoutIOService<Plux> Plux::FACTORY_REG
 //-----------------------------------------------------------------------------
 
 Plux::Plux(ticpp::Iterator<ticpp::Element> hw)
-  : HWThread()
+  : HWThread(), device_(NULL)
 {
   #ifdef DEBUG
     cout << "Plux: Constructor" << endl;
   #endif
 
-  BP::Device *dev = NULL;
-  dev = BP::Device::Create("Test");
-  if (dev) delete dev;
-  
-  checkMandatoryHardwareTags(hw);
+  setHardware(hw);
 
-	throw std::invalid_argument( "Plux::Plux() - Plux class not yet implemented." );
+  PLUX_TRY {
+
+    std::map<std::string, std::string>::const_iterator it = m_.find( "mac" );
+
+    if( it == m_.end() )
+      device_ = BP::Device::Create( acquireDevice( ) );
+    else
+      device_ = BP::Device::Create( it->second );
+
+    std::string dev_info;
+    device_->GetDescription( dev_info );
+    setType( dev_info );
+  } PLUX_CATCH
 }
 
 //-----------------------------------------------------------------------------
 
 Plux::~Plux( )
 {
+  #ifdef DEBUG
+    cout << "Plux: Destructor" << endl;
+  #endif
+
+  if( device_ )
+    delete device_;
 }
 
 //-----------------------------------------------------------------------------
 
-void Plux::setDeviceSettings(ticpp::Iterator<ticpp::Element>const&)
+void Plux::setHardware(ticpp::Iterator<ticpp::Element>const &hw)
 {
-	throw std::invalid_argument( "Plux::setDeviceSettings() - Plux class not yet implemented." );
+  #ifdef DEBUG
+    cout << "Plux: setHardware" << endl;
+  #endif
+
+  checkMandatoryHardwareTags(hw);
+
+  // parse hardware attributes
+  ticpp::Iterator<ticpp::Element> elem(hw);
+  ticpp::Iterator< ticpp::Attribute > attribute;
+  for(attribute = attribute.begin(elem.Get()); attribute != attribute.end();
+      attribute++)
+      m_.insert(pair<string, string>(attribute->Name(), attribute->Value()));
+
+  // parse device settings
+  ticpp::Iterator<ticpp::Element> ds(hw->FirstChildElement(hw_devset_, true));
+  setDeviceSettings(ds);
+
+  // parse channel selection
+  ticpp::Iterator<ticpp::Element> cs(hw->FirstChildElement(hw_chset_, false));
+  if (cs != cs.end())
+  {
+    for(ticpp::Iterator<ticpp::Element> it(cs); ++it != it.end(); )
+      if(it->Value() == hw_chset_)
+      {
+      string ex_str(type_ + " -- ");
+        ex_str += "Multiple channel_settings found!";
+        throw(std::invalid_argument(ex_str));
+      }
+      setChannelSettings(cs);
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+void Plux::setDeviceSettings(ticpp::Iterator<ticpp::Element>const &father)
+{
+  #ifdef DEBUG
+    cout << "Plux: setDeviceSettings" << endl;
+  #endif
+  ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(hw_fs_,true));
+  setSamplingRate(elem);
+
+  elem = father->FirstChildElement(hw_channels_,false);
+  if(elem != elem.end())
+    setDeviceChannels(elem);
+
+  elem = father->FirstChildElement(hw_blocksize_,false);
+  if(elem != elem.end())
+    setBlocks(elem);
 }
 
 //---------------------------------------------------------------------------------------
 
-void Plux::setChannelSettings(ticpp::Iterator<ticpp::Element>const& )
+void Plux::setChannelSettings(ticpp::Iterator<ticpp::Element>const &father )
 {
-	throw std::invalid_argument( "Plux::setChannelSettings() - Plux class not yet implemented." );
+  #ifdef DEBUG
+    cout << "Plux: setChannelSettings" << endl;
+  #endif
+
+  ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(hw_chset_sel_,false));
+  if (elem != elem.end())
+    setChannelSelection(elem);
 }
 
 //---------------------------------------------------------------------------------------
@@ -115,6 +183,27 @@ void Plux::run()
 void Plux::stop() 
 {
 	throw std::invalid_argument( "Plux::stop() - Plux class not yet implemented." );
+}
+
+//-----------------------------------------------------------------------------
+
+void Plux::rethrowPluxException(  BP::Err &err )
+{
+    string message;
+    switch( err.GetType() )
+    {
+    case BP::Err::TYP_NOTIFICATION:
+      message = "BioPlux Notification: "; break;
+    case BP::Err::TYP_ERROR:
+      message = "BioPlux Error: "; break;
+    default:
+      message = "BioPlux Unknown Exception: "; break;
+    }
+
+    const char *tmp = err.GetDescription( );
+    message += tmp;
+
+    throw(std::runtime_error( message ));
 }
 
 //-----------------------------------------------------------------------------
