@@ -75,8 +75,13 @@ Plux::Plux(ticpp::Iterator<ticpp::Element> hw)
     device_ = BP::Device::Create( devstr_ );
 
     device_->GetDescription( devinfo_ );
+    if( devinfo_[ devinfo_.length()-1 ] == 13 )
+      devinfo_ = devinfo_.substr( 0, devinfo_.length() - 1 );
     setType( devinfo_ );
-  } PLUX_CATCH
+  } PLUX_THROW
+
+  if( !device_ )
+    throw std::runtime_error( "Error during BioPlux Device Initialization." );
 
   cout << endl;
   cout << " BioPlux Device: ";
@@ -173,28 +178,53 @@ void Plux::setChannelSettings(ticpp::Iterator<ticpp::Element>const &father )
 
 SampleBlock<double> Plux::getSyncData()
 {
-	throw std::invalid_argument( "Plux::getSyncData() - Plux class not yet implemented." );
+  #ifdef DEBUG
+    cout << "Plux: getSyncData" << endl;
+  #endif
+
+  return data_;
 }
 
 //---------------------------------------------------------------------------------------
 
 SampleBlock<double> Plux::getAsyncData()
 {
-	throw std::invalid_argument( "Plux::getAsyncData() - Plux class not yet implemented." );
+  #ifdef DEBUG
+    cout << "Plux: getAsyncData" << endl;
+  #endif
+
+  return data_;
 }
 
 //-----------------------------------------------------------------------------
 
 void Plux::run()  
 {
-	throw std::invalid_argument( "Plux::run() - Plux class not yet implemented." );
+  #ifdef DEBUG
+    cout << "Plux: run" << endl;
+  #endif
+
+  PLUX_TRY {
+    device_->BeginAcq();
+  } PLUX_THROW
+
+  cout << " * " << devinfo_ << " (" << devstr_ << ") sucessfully started." << endl;
 }
 
 //-----------------------------------------------------------------------------
 
 void Plux::stop() 
 {
-	throw std::invalid_argument( "Plux::stop() - Plux class not yet implemented." );
+  #ifdef DEBUG
+    cout << "Plux: stop" << endl;
+  #endif
+
+  PLUX_TRY {
+    device_->EndAcq();
+  } PLUX_THROW
+  
+
+  cout << " * " << devinfo_ << " (" << devstr_ << ") sucessfully stopped." << endl;
 }
 
 //-----------------------------------------------------------------------------
@@ -224,7 +254,7 @@ std::string Plux::findDevice( )
 
 //-----------------------------------------------------------------------------
 
-void Plux::rethrowPluxException(  BP::Err &err )
+void Plux::rethrowPluxException(  BP::Err &err, bool do_throw )
 {
     string message;
     switch( err.GetType() )
@@ -240,7 +270,10 @@ void Plux::rethrowPluxException(  BP::Err &err )
     const char *tmp = err.GetDescription( );
     message += tmp;
 
-    throw(std::runtime_error( message ));
+    if( do_throw )
+      throw(std::runtime_error( message ));
+    else
+      cout << " **** PLUX Exception:" << endl << "==============================================" << endl << message << endl << endl;
 }
 
 //-----------------------------------------------------------------------------

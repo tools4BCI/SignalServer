@@ -33,7 +33,8 @@
 
 <!-- =============================================================================== -->
 
-   <hardware name="bioplux" mac="00:07:80:4B:2C:A2" version="1.0" serial="">
+<!--   <hardware name="bioplux" mac="00:07:80:4B:2C:A2" version="1.0" serial=""> -->
+   <hardware name="bioplux" mac="Test" version="1.0" serial="">
     <mode> master </mode>
     <device_settings>
       <sampling_rate> 987 </sampling_rate>
