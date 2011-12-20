@@ -46,6 +46,7 @@ using std::cout;
 using std::endl;
 using std::pair;
 using std::string;
+using std::vector;
 
 //-----------------------------------------------------------------------------
 
@@ -67,14 +68,25 @@ Plux::Plux(ticpp::Iterator<ticpp::Element> hw)
     std::map<std::string, std::string>::const_iterator it = m_.find( "mac" );
 
     if( it == m_.end() )
-      device_ = BP::Device::Create( acquireDevice( ) );
+      devstr_ = findDevice( );
     else
-      device_ = BP::Device::Create( it->second );
+      devstr_ = it->second;
 
-    std::string dev_info;
-    device_->GetDescription( dev_info );
-    setType( dev_info );
+    device_ = BP::Device::Create( devstr_ );
+
+    device_->GetDescription( devinfo_ );
+    setType( devinfo_ );
   } PLUX_CATCH
+
+  cout << endl;
+  cout << " BioPlux Device: ";
+  cout << devstr_ << " - " << devinfo_ << endl;
+
+  if(!homogenous_signal_type_)
+  {
+    cout << "   ... NOTICE: Device is acquiring different signal types" << endl;
+    //cout << "     --  ensure that reference and ground settings are correctly set!" << endl;
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -183,6 +195,31 @@ void Plux::run()
 void Plux::stop() 
 {
 	throw std::invalid_argument( "Plux::stop() - Plux class not yet implemented." );
+}
+
+//-----------------------------------------------------------------------------
+    
+std::string Plux::findDevice( )
+{
+  #ifdef DEBUG
+    cout << "Plux: acquireDevice" << endl;
+  #endif
+  vector<string> devs;
+  BP::Device::FindDevices(devs);
+
+  if( devs.size() == 0 )
+    throw std::runtime_error( "No BioPlux Devices found." );
+
+  if( devs.size() > 1 )
+  {
+    string message( "Multiple BioPlux Devices found:\n" );
+    for(int i=0; i < devs.size(); i++)
+      message += "  " + devs[i] + "\n";
+    message += "Don't know which one I should use.";
+    throw std::runtime_error( message );
+  }
+
+  return devs.front( );
 }
 
 //-----------------------------------------------------------------------------

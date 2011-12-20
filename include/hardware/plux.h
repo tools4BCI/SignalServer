@@ -126,7 +126,7 @@ private:
     * @return std::string MAC adress of available device
     * @todo What if there is more than one device?.
     */
-    static std::string acquireDevice( );
+    static std::string findDevice( );
 
     /**
     * @brief Throws a standard exception with information obtained from a BioPlux excaption.
@@ -138,6 +138,9 @@ private:
 
     std::map<std::string, std::string> m_;	/// Attributes map -- to be renamed
     BP::Device *device_;
+
+    std::string devstr_;
+    std::string devinfo_;
 };
 
 } // Namespace tobiss
