@@ -408,27 +408,32 @@ The g.BSamp is acquired using National Instruments (Austin, TX, USA) DAQ cards.
       <hardware name="g.bsamp" version="2004" serial="BS-2004.08.02">
         <mode> master </mode>
         <device_settings>
-          <sampling_rate> 512 </sampling_rate>
-          <measurement_channels nr="1" names="eeg" type="eeg" />
+          <sampling_rate> 500 </sampling_rate>
+          <device_label> Dev1 </device_label>
+          <measurement_channels nr="16" names="eeg" type="eeg" />
           <blocksize> 1 </blocksize>
-          <filter type="eeg" f_high="100" notch="on" f_low="2" sense="0.1" />
-          <filter type="eog" f_high="100" notch="on" f_low="2" sense="1" />
-          <filter type="emg" f_high="100" notch="on" f_low="2" sense="5" />
-          <filter type="ecg" f_high="100" notch="on" f_low="2" sense="5" />
-          <notch f_center="50"/>
+
+          <jumper type="eeg" lowpass="100" notch="on" highpass="2" sense="0.1" />
+          <jumper type="emg" lowpass="100" notch="on" highpass="2" sense="5" />
+          <jumper type="ecg" lowpass="100" notch="on" highpass="2" sense="5" />
+          <jumper type="eog" lowpass="100" notch="on" highpass="2" sense="1" />
+
+          <daq_mode> rse </daq_mode>
         </device_settings>
 
         <channel_settings>
-          <selection>
-            <ch nr="01" name="eeg" type="eeg" />
-            <ch nr="02" name="eeg" type="eeg" />
-          </selection>
+        <selection>
+          <ch nr="01" name="eeg" type="eeg" />
+          <ch nr="02" name="eeg" type="eeg" />
 
-          <filter>
-            <ch nr="2"  type="eeg" f_high="30"  notch="off" f_low="0.01" sense="0.05"/>
-            <ch nr="15" type="ecg" f_high="100" notch="off" f_low="0.01" sense="5"/>
-          </filter>
-        </channel_settings>
+            <ch nr="15" name="eeg" type="ecg" />
+        </selection>
+
+        <jumper>
+          <ch nr="2"  type="eeg" lowpass="30"  notch="off" highpass="0.5" sense="0.05"/>
+          <ch nr="15" type="ecg" lowpass="100" notch="off" highpass="0.01" sense="5"/>
+        </jumper>
+      </channel_settings>
       </hardware>
 
 
