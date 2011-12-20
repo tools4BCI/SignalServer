@@ -144,7 +144,8 @@ SignalServer::SignalServer(XMLParser& config_parser, bool use_new_tia)
 
 SignalServer::~SignalServer()
 {
-  stop();
+  if( !stop_reading_ )
+    stop();
 
   if(tia_io_service_thread_)
     delete(tia_io_service_thread_);
