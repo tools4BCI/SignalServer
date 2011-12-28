@@ -226,6 +226,9 @@ void Plux::run()
   std::map<boost::uint16_t, std::pair<std::string, boost::uint32_t> >::const_iterator channel = channel_info_.begin( );
   for( ; channel != channel_info_.end(); channel++ )
   {
+    if( channel->first >= 9 )
+      continue;
+
     // m = 2^(cannel->first - 1) 
     BYTE m = 1;
     for( int p=0; p<channel->first-1; p++ )
@@ -279,12 +282,12 @@ void Plux::convertFrames2SampleBlock( const vector<BP::Device::Frame> &frames, S
     }
     else
     {    
-      /*std::map<boost::uint16_t, std::pair<std::string, boost::uint32_t> >::const_iterator channel = channel_info_.begin( );
-      for( ; channel != channel_info_.end(); channel++ )
-        samples_[scount++] = frame->an_in[channel->first - 1];*/
-      
-      for( int i=0; i<data->getNrOfChannels( ); i++ )
-        samples_[scount++] = frame->an_in[i];
+      std::map<boost::uint16_t, std::pair<std::string, boost::uint32_t> >::const_iterator channel = channel_info_.begin( );
+      for( int i=0; channel != channel_info_.end(); channel++, i++ )
+        if( channel->first == 9 )
+          samples_[scount++] = frame->dig_in;
+        else
+          samples_[scount++] = frame->an_in[i];
     }
 
     data->appendBlock( samples_, 1 );

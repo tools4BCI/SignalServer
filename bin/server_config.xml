@@ -74,8 +74,12 @@
         <ch nr="01" name="acc X" type="sensor" />
         <ch nr="02" name="acc Y" type="sensor" />
         <ch nr="03" name="acc Z" type="sensor" />
+        <ch nr="04" name="empty" type="sensor" />
+        <ch nr="05" name="empty" type="sensor" />
         <ch nr="06" name="light" type="sensor" />
+        <ch nr="07" name="empty" type="sensor" />
         <ch nr="08" name="plate" type="sensor" />
+        <ch nr="09" name="digin" type="sensor" />
       </selection>
     </channel_settings>
 
