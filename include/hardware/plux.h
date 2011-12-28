@@ -128,6 +128,28 @@ private:
     virtual void setChannelSettings(ticpp::Iterator<ticpp::Element>const &father);
 
     /**
+    * @brief convert PLUX frames into SampleBlock.
+    * @param[in] frames Vector of BP::Device::Frame elements.
+    * @param[out] data Pointer to a tobiss::SampleBlock
+    * @todo implement.
+    */
+    void convertFrames2SampleBlock( const std::vector<BP::Device::Frame> &frames, SampleBlock<double> *data );
+
+    /**
+    * @brief Check if the frame's sequence number correctly increments.
+    * @return bool true if everything is OK.
+    */
+    bool checkSequenceNumber( const BYTE id );
+
+    /**
+    * @brief convert PLUX frames into SampleBlock.
+    * @param[in] frames Vector of BP::Device::Frame elements.
+    * @param[out] data Pointer to a tobiss::SampleBlock
+    * @todo implement.
+    */
+    void acquireDevice( const std::vector<BP::Device::Frame> &frames, SampleBlock<double> *data );
+
+    /**
     * @brief Automatically selects an available PLUX device.
     * @return std::string MAC adress of available device
     * @todo What if there is more than one device?.
@@ -147,6 +169,12 @@ private:
 
     std::string devstr_;
     std::string devinfo_;
+
+    std::vector<BP::Device::Frame> frames_;
+
+    BYTE last_frame_seq_;
+
+    std::vector<double> samples_;
 };
 
 } // Namespace tobiss

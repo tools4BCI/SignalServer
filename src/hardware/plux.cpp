@@ -55,7 +55,7 @@ const HWThreadBuilderTemplateRegistratorWithoutIOService<Plux> Plux::FACTORY_REG
 //-----------------------------------------------------------------------------
 
 Plux::Plux(ticpp::Iterator<ticpp::Element> hw)
-  : HWThread(), device_(NULL)
+  : HWThread(), device_(NULL), last_frame_seq_(-1)
 {
   #ifdef DEBUG
     cout << "Plux: Constructor" << endl;
@@ -82,6 +82,9 @@ Plux::Plux(ticpp::Iterator<ticpp::Element> hw)
 
   if( !device_ )
     throw std::runtime_error( "Error during BioPlux Device Initialization." );
+
+  data_.init( blocks_, nr_ch_, channel_types_ );
+  frames_.resize( blocks_ );
 
   cout << endl;
   cout << " BioPlux Device: ";
@@ -182,6 +185,12 @@ SampleBlock<double> Plux::getSyncData()
     cout << "Plux: getSyncData" << endl;
   #endif
 
+  PLUX_TRY {
+    device_->GetFrames( blocks_, &frames_[0] );
+  } PLUX_THROW
+
+  convertFrames2SampleBlock( frames_, &data_ );
+
   return data_;
 }
 
@@ -192,6 +201,8 @@ SampleBlock<double> Plux::getAsyncData()
   #ifdef DEBUG
     cout << "Plux: getAsyncData" << endl;
   #endif
+
+  throw std::runtime_error( "Plux::getAsyncData -- Async data acquisition not available for PLUX yet!" );
 
   return data_;
 }
@@ -204,8 +215,27 @@ void Plux::run()
     cout << "Plux: run" << endl;
   #endif
 
+  last_frame_seq_ = -1;
+
+  BYTE nbits = 12;
+
+  int fs = boost::numeric_cast<int>( fs_ );
+
+  BYTE chmask = 0;
+
+  std::map<boost::uint16_t, std::pair<std::string, boost::uint32_t> >::const_iterator channel = channel_info_.begin( );
+  for( ; channel != channel_info_.end(); channel++ )
+  {
+    // m = 2^(cannel->first - 1) 
+    BYTE m = 1;
+    for( int p=0; p<channel->first-1; p++ )
+      m *= 2;
+
+    chmask += m;
+  }
+
   PLUX_TRY {
-    device_->BeginAcq();
+    device_->BeginAcq( fs, chmask, nbits );
   } PLUX_THROW
 
   cout << " * " << devinfo_ << " (" << devstr_ << ") sucessfully started." << endl;
@@ -225,6 +255,49 @@ void Plux::stop()
   
 
   cout << " * " << devinfo_ << " (" << devstr_ << ") sucessfully stopped." << endl;
+}
+
+//-----------------------------------------------------------------------------
+
+void Plux::convertFrames2SampleBlock( const vector<BP::Device::Frame> &frames, SampleBlock<double> *data )
+{
+  data->reset( );
+
+  samples_.resize( data->getNrOfChannels( ) );
+
+  vector<BP::Device::Frame>::const_iterator frame = frames.begin( );
+  for( ; frame!=frames.end(); frame++ )
+  {
+    int scount = 0;
+
+    if( !checkSequenceNumber( frame->seq ) )
+    {
+      cout << "PLUX: Frame-Loss detected: expected " << (int)last_frame_seq_ << ", got " << (int)frame->seq  << endl;
+
+      for( int i=0; i<data->getNrOfChannels( ); i++ )
+        samples_[scount++] = 0;
+    }
+    else
+    {    
+      /*std::map<boost::uint16_t, std::pair<std::string, boost::uint32_t> >::const_iterator channel = channel_info_.begin( );
+      for( ; channel != channel_info_.end(); channel++ )
+        samples_[scount++] = frame->an_in[channel->first - 1];*/
+      
+      for( int i=0; i<data->getNrOfChannels( ); i++ )
+        samples_[scount++] = frame->an_in[i];
+    }
+
+    data->appendBlock( samples_, 1 );
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+bool Plux::checkSequenceNumber( const BYTE id )
+{
+  if( last_frame_seq_ == 127 )
+    last_frame_seq_ = -1;
+  return ++last_frame_seq_ == id;
 }
 
 //-----------------------------------------------------------------------------
@@ -271,7 +344,10 @@ void Plux::rethrowPluxException(  BP::Err &err, bool do_throw )
     message += tmp;
 
     if( do_throw )
+    {
+      cout << " **** PLUX Exception:" << endl << "==============================================" << endl << message << endl << endl;
       throw(std::runtime_error( message ));
+    }
     else
       cout << " **** PLUX Exception:" << endl << "==============================================" << endl << message << endl << endl;
 }

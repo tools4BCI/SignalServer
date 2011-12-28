@@ -33,13 +33,40 @@
 
 <!-- =============================================================================== -->
 
-<!--   <hardware name="bioplux" mac="00:07:80:4B:2C:A2" version="1.0" serial=""> -->
-   <hardware name="bioplux" mac="Test" version="1.0" serial="">
+<!--<hardware name="sinegenerator" version="1.0" serial="">
     <mode> master </mode>
     <device_settings>
-      <sampling_rate> 987 </sampling_rate>
-<!--      <measurement_channels nr="1" names="emg" type="emg" /> -->
-      <blocksize> 10 </blocksize>
+      <sampling_rate> 1000 </sampling_rate>
+      <measurement_channels nr="1" names="eeg" type="eeg" />
+      <buffersize> 1 </buffersize>
+    </device_settings>
+
+    <channel_settings>
+      <selection>
+        <ch nr="01" name="A" type="emg" />
+        <ch nr="02" name="B" type="eeg" />
+        <ch nr="03" name="C" type="eeg" />
+        <ch nr="04" name="D" type="eeg" />
+        <ch nr="05" name="E" type="eeg" />
+        <ch nr="06" name="F" type="eeg" />
+        <ch nr="07" name="G" type="eeg" />
+        <ch nr="08" name="H" type="eeg" />
+        <ch nr="09" name="I" type="eeg" />
+        <ch nr="10" name="J" type="eeg" />
+        <ch nr="11" name="K" type="eog" />
+        <ch nr="12" name="L" type="eog" />
+        <ch nr="13" name="M" type="bp" />
+        <ch nr="14" name="N" type="bp" />
+      </selection>
+    </channel_settings>
+  </hardware> -->
+
+   <hardware name="bioplux" mac="00:07:80:4B:2C:A2" version="1.0" serial=""> 
+<!--   <hardware name="bioplux" mac="Test" version="1.0" serial=""> -->
+    <mode> master </mode>
+    <device_settings>
+      <sampling_rate> 1000 </sampling_rate>
+      <blocksize> 1 </blocksize>
     </device_settings>
 
    <channel_settings>
@@ -47,8 +74,8 @@
         <ch nr="01" name="acc X" type="sensor" />
         <ch nr="02" name="acc Y" type="sensor" />
         <ch nr="03" name="acc Z" type="sensor" />
-        <ch nr="05" name="emg" type="emg" />
-        <ch nr="06" name="emg" type="emg" />
+        <ch nr="06" name="light" type="sensor" />
+        <ch nr="08" name="plate" type="sensor" />
       </selection>
     </channel_settings>
 
