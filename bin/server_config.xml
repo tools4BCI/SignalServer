@@ -60,10 +60,25 @@
       </selection>
     </channel_settings>
   </hardware> -->
+  
+  <hardware name="bioplux" mac="Test" version="1.0" serial="">
+    <mode> master </mode>
+    <device_settings>
+      <sampling_rate> 1000 </sampling_rate>
+      <blocksize> 1 </blocksize>
+    </device_settings>
+
+   <channel_settings>
+      <selection>
+        <ch nr="01" name="sinus" type="eeg" />
+        <ch nr="09" name="digin" type="eeg" />
+      </selection>
+    </channel_settings>
+  </hardware>
 
    <hardware name="bioplux" mac="00:07:80:4B:2C:A2" version="1.0" serial=""> 
 <!--   <hardware name="bioplux" mac="Test" version="1.0" serial=""> -->
-    <mode> master </mode>
+    <mode> slave </mode>
     <device_settings>
       <sampling_rate> 1000 </sampling_rate>
       <blocksize> 1 </blocksize>
@@ -82,7 +97,6 @@
         <ch nr="09" name="digin" type="sensor" />
       </selection>
     </channel_settings>
-
   </hardware>
 
 <!-- =============================================================================== -->

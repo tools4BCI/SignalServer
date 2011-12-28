@@ -42,6 +42,8 @@
 namespace tobiss
 {
 
+using boost::thread;
+
 using std::cout;
 using std::endl;
 using std::pair;
@@ -196,15 +198,89 @@ SampleBlock<double> Plux::getSyncData()
 
 //---------------------------------------------------------------------------------------
 
+void _test( const BP::Device::Frame &frame )
+{
+  cout << (int)frame.seq << " ";
+}
+    
+void Plux::asyncAcquisitionThread( )
+{
+  #ifdef DEBUG
+    cout << "Plux: asyncAcquisitionThread" << endl;
+  #endif
+
+  cout << " **** GO **** " << endl;
+  while( run_async_ )
+  {
+    //boost::this_thread::sleep( boost::posix_time::milliseconds(100) );
+
+    BP::Device::Frame frame;
+    device_->GetFrames( 1, &frame );
+
+    boost::mutex::scoped_lock lock( async_buffer_mutex_ );
+
+    if( async_unread_ >= async_buffer_.capacity() )
+    {
+      cout << "Plux::asyncAcquisitionThread( ) - async_buffer overrun!" << endl;
+      //throw std::runtime_error( "Plux::asyncAcquisitionThread( ) - async_buffer overrun!" );
+    }
+    else
+      async_unread_++;
+
+    async_buffer_.push_front( frame );
+
+    lock.unlock( );
+  }
+  cout << " **** STOP **** " << endl;
+}
+
+//---------------------------------------------------------------------------------------
+
 SampleBlock<double> Plux::getAsyncData()
 {
   #ifdef DEBUG
     cout << "Plux: getAsyncData" << endl;
   #endif
 
-  throw std::runtime_error( "Plux::getAsyncData -- Async data acquisition not available for PLUX yet!" );
+  for( int i=0; i<blocks_; i++ )
+  {
+    boost::mutex::scoped_lock lock( async_buffer_mutex_ );
+
+    if( async_unread_ == 0 )
+    {
+      lock.unlock( );
+      cout << "Plux::getAsyncData( ) - async_buffer underrun!" << endl;
+      frames_[i] = BP::Device::Frame( );
+    }
+    else
+    {
+      frames_[i] = async_buffer_[--async_unread_];
+      lock.unlock( );
+    }
+  }
+
+  convertFrames2SampleBlock( frames_, &data_ );
 
   return data_;
+}
+
+//-----------------------------------------------------------------------------
+
+void Plux::startAsyncAquisition( size_t buffer_size )
+{
+  async_buffer_.resize( buffer_size );
+  async_unread_ = 0;
+  run_async_ = true;
+  async_acquisition_thread_ = thread( &Plux::asyncAcquisitionThread, this );
+}
+
+//-----------------------------------------------------------------------------
+
+void Plux::stopAsyncAquisition( bool blocking )
+{
+  run_async_ = false;
+  if( blocking )
+    async_acquisition_thread_.join( );
 }
 
 //-----------------------------------------------------------------------------
@@ -241,6 +317,9 @@ void Plux::run()
     device_->BeginAcq( fs, chmask, nbits );
   } PLUX_THROW
 
+  if( !isMaster() )
+    startAsyncAquisition( 100 );
+
   cout << " * " << devinfo_ << " (" << devstr_ << ") sucessfully started." << endl;
 }
 
@@ -251,6 +330,9 @@ void Plux::stop()
   #ifdef DEBUG
     cout << "Plux: stop" << endl;
   #endif
+
+  if( !isMaster() )
+    stopAsyncAquisition( );
 
   PLUX_TRY {
     device_->EndAcq();
@@ -275,10 +357,10 @@ void Plux::convertFrames2SampleBlock( const vector<BP::Device::Frame> &frames, S
 
     if( !checkSequenceNumber( frame->seq ) )
     {
-      cout << "PLUX: Frame-Loss detected: expected " << (int)last_frame_seq_ << ", got " << (int)frame->seq  << endl;
+      cout << "PLUX: Frame-Loss detected."  << endl;
 
       for( int i=0; i<data->getNrOfChannels( ); i++ )
-        samples_[scount++] = 0;
+        samples_[scount++] = samples_[scount];
     }
     else
     {    
@@ -300,7 +382,15 @@ bool Plux::checkSequenceNumber( const BYTE id )
 {
   if( last_frame_seq_ == 127 )
     last_frame_seq_ = -1;
-  return ++last_frame_seq_ == id;
+
+  last_frame_seq_++;
+
+  if( last_frame_seq_ == id )
+    return true;
+
+  last_frame_seq_ = id;
+
+  return false;
 }
 
 //-----------------------------------------------------------------------------

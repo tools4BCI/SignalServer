@@ -44,6 +44,9 @@
 
 #include "BioPlux.h"
 
+#include <boost/thread.hpp>
+#include "boost/circular_buffer.hpp"
+
 // Begin a PLUX try block
 #define PLUX_TRY try
 
@@ -107,6 +110,10 @@ public:
 
 private:
 
+    void startAsyncAquisition( size_t buffer_size );
+
+    void stopAsyncAquisition( bool blocking = true );
+
     /**
     * @brief Set the configuration of the Plux Device with a XML object
     * @param[in] hw ticpp::Element pointing to an \<hardware\> tag in the config file
@@ -142,14 +149,6 @@ private:
     bool checkSequenceNumber( const BYTE id );
 
     /**
-    * @brief convert PLUX frames into SampleBlock.
-    * @param[in] frames Vector of BP::Device::Frame elements.
-    * @param[out] data Pointer to a tobiss::SampleBlock
-    * @todo implement.
-    */
-    void acquireDevice( const std::vector<BP::Device::Frame> &frames, SampleBlock<double> *data );
-
-    /**
     * @brief Automatically selects an available PLUX device.
     * @return std::string MAC adress of available device
     * @todo What if there is more than one device?.
@@ -160,6 +159,13 @@ private:
     * @brief Throws a standard exception with information obtained from a BioPlux excaption.
     */
     static void rethrowPluxException(  BP::Err &err, bool do_throw );
+
+private:
+
+    /**
+    * @brief Asynchroneously collect data.
+    */
+    void asyncAcquisitionThread( );
 
     static const HWThreadBuilderTemplateRegistratorWithoutIOService<Plux> FACTORY_REGISTRATOR_;
 
@@ -175,6 +181,12 @@ private:
     BYTE last_frame_seq_;
 
     std::vector<double> samples_;
+
+    boost::circular_buffer<BP::Device::Frame> async_buffer_;
+    boost::thread async_acquisition_thread_;
+    boost::mutex async_buffer_mutex_;
+    bool run_async_;
+    size_t async_unread_;
 };
 
 } // Namespace tobiss
