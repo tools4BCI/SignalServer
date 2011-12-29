@@ -163,7 +163,7 @@ public:
   /**
     * @brief get next item (sample/frame/packet/...) from the buffer
     * @param[out] pItem DataBuffer::value_type* Pointer to storage
-    * @remark If the buffer is empty an exception of type std::runtime_error is thrown.
+    * @remark If the buffer is empty an exception of type std::runtime_error is thrown (*pItem remains unmodified).
     */
   void getNext_throwing( value_type *pItem )
   {
