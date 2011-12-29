@@ -27,6 +27,9 @@
     <Filter Include="Header Files\config">
       <UniqueIdentifier>{9964e67b-c53e-4098-8e6f-7a066ab16f35}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\misc">
+      <UniqueIdentifier>{5545f23d-121c-4fee-b4a4-71457f16fc84}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\signalserver\main.cpp">
@@ -156,6 +159,9 @@
     </ClInclude>
     <ClInclude Include="include\hardware\plux.h">
       <Filter>Header Files\hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="include\misc\databuffer.h">
+      <Filter>Header Files\misc</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

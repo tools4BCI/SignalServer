@@ -344,6 +344,7 @@
     <ClInclude Include="include\hardware\serial_port_base.h" />
     <ClInclude Include="include\hardware\sine_generator.h" />
     <ClInclude Include="include\hardware\usbamp.h" />
+    <ClInclude Include="include\misc\databuffer.h" />
     <ClInclude Include="include\sampleblock\sample_block.h" />
     <ClInclude Include="include\config\xml_parser.h" />
     <ClInclude Include="include\signalserver\signalserver.h" />
