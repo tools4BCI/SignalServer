@@ -107,6 +107,8 @@ Plux::~Plux( )
     cout << "Plux: Destructor" << endl;
   #endif
 
+  //async_acquisition_thread_.interrupt( );
+
   if( device_ )
     delete device_;
 }
@@ -210,7 +212,7 @@ void Plux::asyncAcquisitionThread( )
   #endif
 
   cout << " **** GO **** " << endl;
-  while( run_async_ )
+  while( !async_acquisition_thread_.interruption_requested() )
   {
     //boost::this_thread::sleep( boost::posix_time::milliseconds(100) );
 
@@ -270,7 +272,6 @@ void Plux::startAsyncAquisition( size_t buffer_size )
 {
   async_buffer_.resize( buffer_size );
   async_unread_ = 0;
-  run_async_ = true;
   async_acquisition_thread_ = thread( &Plux::asyncAcquisitionThread, this );
 }
 
@@ -278,7 +279,7 @@ void Plux::startAsyncAquisition( size_t buffer_size )
 
 void Plux::stopAsyncAquisition( bool blocking )
 {
-  run_async_ = false;
+  async_acquisition_thread_.interrupt( );
   if( blocking )
     async_acquisition_thread_.join( );
 }

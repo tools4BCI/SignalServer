@@ -185,7 +185,6 @@ private:
     boost::circular_buffer<BP::Device::Frame> async_buffer_;
     boost::thread async_acquisition_thread_;
     boost::mutex async_buffer_mutex_;
-    bool run_async_;
     size_t async_unread_;
 };
 
