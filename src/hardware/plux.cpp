@@ -10,6 +10,7 @@
 
     --------------------------------------------------
 
+
     GNU General Public License Usage
     Alternatively, this file may be used under the terms of the GNU
     General Public License version 3.0 as published by the Free Software
@@ -52,12 +53,21 @@ using std::vector;
 
 //-----------------------------------------------------------------------------
 
-const HWThreadBuilderTemplateRegistratorWithoutIOService<Plux> Plux::FACTORY_REGISTRATOR_ ("plux", "bioplux");
+enum id_check
+{
+  CHK_ID_REPEATED,
+  CHK_ID_OK,
+  CHK_ID_MISSED,
+};
+
+//-----------------------------------------------------------------------------
+
+const HWThreadBuilderTemplateRegistratorWithoutIOService<Plux> Plux::FACTORY_REGISTRATOR_( "plux", "bioplux" );
 
 //-----------------------------------------------------------------------------
 
 Plux::Plux(ticpp::Iterator<ticpp::Element> hw)
-  : HWThread(), device_(NULL), last_frame_seq_(-1), async_buffer_( 10 )
+  : HWThread(), device_(NULL), last_frame_seq_(-1), async_buffer_( 0 )
 {
   #ifdef DEBUG
     cout << "Plux: Constructor" << endl;
@@ -215,7 +225,14 @@ void Plux::asyncAcquisitionThread( )
 
     device_->GetFrames( 1, &frame );
 
-    async_buffer_.insert_blocking( frame );
+    try {
+      async_buffer_.insert_overwriting( frame );
+    }
+    catch( DataBuffer<BP::Device::Frame>::buffer_overrun &e )
+    {
+      cout << e.what( ) << endl;
+      throw e;
+    }
   }
   cout << " **** STOP **** " << endl;
 }
@@ -231,9 +248,10 @@ SampleBlock<double> Plux::getAsyncData()
   for( int i=0; i<blocks_; i++ )
   {
     try {
-      async_buffer_.getNext_throwing( &frames_[i] );
+      async_buffer_.getNext_throwing( &last_frame_ );
     }
     catch( DataBuffer<BP::Device::Frame>::buffer_underrun &e ) { }
+    frames_[i] = last_frame_;
   }
 
   convertFrames2SampleBlock( frames_, &data_ );
@@ -295,7 +313,7 @@ void Plux::run()
   } PLUX_THROW
 
   if( !isMaster() )
-    startAsyncAquisition( 100 );
+    startAsyncAquisition( 1000 );
 
   cout << " * " << devinfo_ << " (" << devstr_ << ") sucessfully started." << endl;
 }
@@ -332,15 +350,14 @@ void Plux::convertFrames2SampleBlock( const vector<BP::Device::Frame> &frames, S
   {
     int scount = 0;
 
-    if( !checkSequenceNumber( frame->seq ) )
-    {
-      frames_lost_++;
-      cout << "PLUX: Frame-Loss detected (" << frames_lost_ << ")" << endl;
+    //cout << devinfo_ << " - " << (int)last_frame_seq_ << endl;
 
-      for( int i=0; i<data->getNrOfChannels( ); i++ )
-        samples_[scount++] = samples_[scount];
-    }
-    else
+    switch( checkSequenceNumber( frame->seq ) )
+    {
+    default: throw std::invalid_argument( "unexpected checkSequenceNumber result." );
+    case CHK_ID_REPEATED:
+      cout << devinfo_ << ": Repeated Frame detected (" << (int)frame->seq << ")" << endl;  // no break here on purpose!
+    case CHK_ID_OK:
     {    
       std::map<boost::uint16_t, std::pair<std::string, boost::uint32_t> >::const_iterator channel = channel_info_.begin( );
       for( int i=0; channel != channel_info_.end(); channel++, i++ )
@@ -348,6 +365,15 @@ void Plux::convertFrames2SampleBlock( const vector<BP::Device::Frame> &frames, S
           samples_[scount++] = frame->dig_in;
         else
           samples_[scount++] = frame->an_in[i];
+    } break;
+    case CHK_ID_MISSED:
+    {
+      frames_lost_++;
+      cout << devinfo_ << ": Frame-Loss detected (" << frames_lost_ << ")" << endl;
+
+      for( int i=0; i<data->getNrOfChannels( ); i++ )
+        samples_[scount++] = samples_[scount];
+    } break;
     }
 
     data->appendBlock( samples_, 1 );
@@ -356,19 +382,22 @@ void Plux::convertFrames2SampleBlock( const vector<BP::Device::Frame> &frames, S
 
 //-----------------------------------------------------------------------------
 
-bool Plux::checkSequenceNumber( const BYTE id )
+int Plux::checkSequenceNumber( const BYTE id )
 {
   if( last_frame_seq_ == 127 )
     last_frame_seq_ = -1;
 
+  if( last_frame_seq_ == id )
+    return CHK_ID_REPEATED;
+
   last_frame_seq_++;
 
   if( last_frame_seq_ == id )
-    return true;
+    return CHK_ID_OK;
 
   last_frame_seq_ = id;
 
-  return false;
+  return CHK_ID_MISSED;
 }
 
 //-----------------------------------------------------------------------------

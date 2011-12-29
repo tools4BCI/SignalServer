@@ -144,12 +144,6 @@ private:
     void convertFrames2SampleBlock( const std::vector<BP::Device::Frame> &frames, SampleBlock<double> *data );
 
     /**
-    * @brief Check if the frame's sequence number correctly increments.
-    * @return bool true if everything is OK.
-    */
-    bool checkSequenceNumber( const BYTE id );
-
-    /**
     * @brief Automatically selects an available PLUX device.
     * @return std::string MAC adress of available device
     * @todo What if there is more than one device?.
@@ -163,12 +157,18 @@ private:
 
 private:
 
+    static const HWThreadBuilderTemplateRegistratorWithoutIOService<Plux> FACTORY_REGISTRATOR_;
+
     /**
     * @brief Asynchroneously collect data.
     */
     void asyncAcquisitionThread( );
 
-    static const HWThreadBuilderTemplateRegistratorWithoutIOService<Plux> FACTORY_REGISTRATOR_;
+    /**
+    * @brief Check if the frame's sequence number correctly increments.
+    * @return bool true if everything is OK.
+    */
+    int checkSequenceNumber( const BYTE id );
 
 
     std::map<std::string, std::string> m_;	/// Attributes map -- to be renamed
@@ -178,6 +178,7 @@ private:
     std::string devinfo_;
 
     BYTE last_frame_seq_;
+    BP::Device::Frame last_frame_;
 
     std::vector<BP::Device::Frame> frames_;
     std::vector<double> samples_;
