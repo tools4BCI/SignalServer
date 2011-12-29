@@ -22,6 +22,9 @@ public:
   typedef typename container_type::value_type value_type;
   typedef typename boost::call_traits<value_type>::param_type param_type;
 
+  class buffer_overrun : public std::runtime_error { public:  buffer_overrun( ):runtime_error("Attempted to insert into full DataBuffer."){ } };
+  class buffer_underrun : public std::runtime_error { public:  buffer_underrun( ):runtime_error("Attempted to read from an empty DataBuffer."){ } };
+
   /**
     * @brief Constructor
     * @param[in] capacity DataBuffer::size_type Buffer size
@@ -84,7 +87,7 @@ public:
     else
     {
       lock.unlock( ); // This unlock() is redundant. The scoped_lock's destructor should take care of unlocking the mutex.
-      throw std::runtime_error( "Attempted to insert into full DataBuffer." );
+      throw buffer_overrun( );
     }
   }  
 
@@ -135,7 +138,7 @@ public:
     else
     {
       lock.unlock( ); // This unlock() is redundant. The scoped_lock's destructor should take care of unlocking the mutex.
-      throw std::runtime_error( "Attempted to read from empty DataBuffer." );
+      throw buffer_underrun( );
     }
   }
 
