@@ -42,10 +42,11 @@
 #include "hw_thread.h"
 #include "hw_thread_builder.h"
 
+#include "misc/databuffer.h"
+
 #include "BioPlux.h"
 
 #include <boost/thread.hpp>
-#include "boost/circular_buffer.hpp"
 
 // Begin a PLUX try block
 #define PLUX_TRY try
@@ -176,16 +177,13 @@ private:
     std::string devstr_;
     std::string devinfo_;
 
-    std::vector<BP::Device::Frame> frames_;
-
     BYTE last_frame_seq_;
 
+    std::vector<BP::Device::Frame> frames_;
     std::vector<double> samples_;
+    DataBuffer<BP::Device::Frame> async_buffer_;
 
-    boost::circular_buffer<BP::Device::Frame> async_buffer_;
     boost::thread async_acquisition_thread_;
-    boost::mutex async_buffer_mutex_;
-    size_t async_unread_;
 };
 
 } // Namespace tobiss

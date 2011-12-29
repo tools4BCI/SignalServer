@@ -57,7 +57,7 @@ const HWThreadBuilderTemplateRegistratorWithoutIOService<Plux> Plux::FACTORY_REG
 //-----------------------------------------------------------------------------
 
 Plux::Plux(ticpp::Iterator<ticpp::Element> hw)
-  : HWThread(), device_(NULL), last_frame_seq_(-1)
+  : HWThread(), device_(NULL), last_frame_seq_(-1), async_buffer_( 10 )
 {
   #ifdef DEBUG
     cout << "Plux: Constructor" << endl;
@@ -199,39 +199,23 @@ SampleBlock<double> Plux::getSyncData()
 }
 
 //---------------------------------------------------------------------------------------
-
-void _test( const BP::Device::Frame &frame )
-{
-  cout << (int)frame.seq << " ";
-}
     
 void Plux::asyncAcquisitionThread( )
 {
   #ifdef DEBUG
     cout << "Plux: asyncAcquisitionThread" << endl;
   #endif
+    
+  BP::Device::Frame frame;
 
   cout << " **** GO **** " << endl;
   while( !async_acquisition_thread_.interruption_requested() )
   {
     //boost::this_thread::sleep( boost::posix_time::milliseconds(100) );
 
-    BP::Device::Frame frame;
     device_->GetFrames( 1, &frame );
 
-    boost::mutex::scoped_lock lock( async_buffer_mutex_ );
-
-    if( async_unread_ >= async_buffer_.capacity() )
-    {
-      cout << "Plux::asyncAcquisitionThread( ) - async_buffer overrun!" << endl;
-      //throw std::runtime_error( "Plux::asyncAcquisitionThread( ) - async_buffer overrun!" );
-    }
-    else
-      async_unread_++;
-
-    async_buffer_.push_front( frame );
-
-    lock.unlock( );
+    async_buffer_.insert_blocking( frame );
   }
   cout << " **** STOP **** " << endl;
 }
@@ -246,19 +230,10 @@ SampleBlock<double> Plux::getAsyncData()
 
   for( int i=0; i<blocks_; i++ )
   {
-    boost::mutex::scoped_lock lock( async_buffer_mutex_ );
-
-    if( async_unread_ == 0 )
-    {
-      lock.unlock( );
-      cout << "Plux::getAsyncData( ) - async_buffer underrun!" << endl;
-      frames_[i] = BP::Device::Frame( );
+    try {
+      async_buffer_.getNext_throwing( &frames_[i] );
     }
-    else
-    {
-      frames_[i] = async_buffer_[--async_unread_];
-      lock.unlock( );
-    }
+    catch( DataBuffer<BP::Device::Frame>::buffer_underrun &e ) { }
   }
 
   convertFrames2SampleBlock( frames_, &data_ );
@@ -271,7 +246,6 @@ SampleBlock<double> Plux::getAsyncData()
 void Plux::startAsyncAquisition( size_t buffer_size )
 {
   async_buffer_.resize( buffer_size );
-  async_unread_ = 0;
   async_acquisition_thread_ = thread( &Plux::asyncAcquisitionThread, this );
 }
 
