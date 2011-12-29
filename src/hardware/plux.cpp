@@ -288,6 +288,8 @@ void Plux::run()
     chmask += m;
   }
 
+  frames_lost_ = 0;
+
   PLUX_TRY {
     device_->BeginAcq( fs, chmask, nbits );
   } PLUX_THROW
@@ -332,7 +334,8 @@ void Plux::convertFrames2SampleBlock( const vector<BP::Device::Frame> &frames, S
 
     if( !checkSequenceNumber( frame->seq ) )
     {
-      cout << "PLUX: Frame-Loss detected."  << endl;
+      frames_lost_++;
+      cout << "PLUX: Frame-Loss detected (" << frames_lost_ << ")" << endl;
 
       for( int i=0; i<data->getNrOfChannels( ); i++ )
         samples_[scount++] = samples_[scount];

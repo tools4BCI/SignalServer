@@ -184,6 +184,7 @@ private:
     DataBuffer<BP::Device::Frame> async_buffer_;
 
     boost::thread async_acquisition_thread_;
+    unsigned long long frames_lost_;
 };
 
 } // Namespace tobiss
