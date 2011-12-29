@@ -26,7 +26,19 @@ public:
     * @brief Constructor
     * @param[in] capacity DataBuffer::size_type Buffer size
     */
-  explicit DataBuffer( size_type capacity ) : unread_(0), container_(capacity) { }
+  explicit DataBuffer( size_type capacity ) : unread_(0), container_(capacity) { }  
+
+  /**
+    * @brief Change Buffer Size
+    * @param[in] capacity DataBuffer::size_type Buffer size
+    * @remark May cause reallocation.
+    */
+  void resize( size_type capacity )
+  {
+    boost::mutex::scoped_lock lock( mutex_ );
+    container_.resize( capacity );
+    lock.unlock( );
+  }
 
   /**
     * @brief returns number of unread items available in the buffer.
@@ -59,7 +71,7 @@ public:
     * @param[in] item DataBuffer::param_type Item to insert
     * @remark If the buffer is full an exception of type std::runtime_error is thrown.
     */
-  void insert_async( param_type item )
+  void insert_throwing( param_type item )
   {
     boost::mutex::scoped_lock lock( mutex_ );
     if( is_not_full() )
@@ -82,7 +94,7 @@ public:
     * @remark If the buffer is full, the oldest item is dropped from the buffer
     * @warning Experimental and untested!
     */
-  void insert_overwrite( param_type item )
+  void insert_overwriting( param_type item )
   {
     boost::mutex::scoped_lock lock( mutex_ );
     container_.push_front( item );
@@ -111,7 +123,7 @@ public:
     * @param[out] pItem DataBuffer::value_type* Pointer to storage
     * @remark If the buffer is empty an exception of type std::runtime_error is thrown.
     */
-  void getNext_async( value_type *pItem )
+  void getNext_throwing( value_type *pItem )
   {
     boost::mutex::scoped_lock lock( mutex_ );
     if( is_not_empty() )
