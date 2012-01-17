@@ -258,12 +258,12 @@ SampleBlock<double> Plux::getAsyncData()
   {
     try {
       async_buffer_.getNext_throwing( &last_frame_ );
+
+      boost::posix_time::time_duration diff = boost::posix_time::microsec_clock::local_time() - last_frame_.second;
+      time_statistics_.update( diff.total_milliseconds() );
     }
     catch( DataBuffer<frametype>::buffer_underrun &e ) { }
     frames_[i] = last_frame_.first;
-
-    boost::posix_time::time_duration diff = boost::posix_time::microsec_clock::local_time() - last_frame_.second;
-    time_statistics_.update( diff.total_milliseconds() );
   }
 
   if( statistics_interval_ > 0 )
