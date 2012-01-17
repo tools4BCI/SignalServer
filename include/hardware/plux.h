@@ -163,7 +163,14 @@ private:
 
 private:
 
-    typedef std::pair<BP::Device::Frame,boost::posix_time::ptime> frametype;
+    struct frametype
+    {
+      frametype( ) : frame(), time() { }
+      frametype( BP::Device::Frame f, boost::posix_time::ptime t ) : frame(f), time(t) { }
+
+      BP::Device::Frame frame;
+      boost::posix_time::ptime time;
+    };
 
     static const HWThreadBuilderTemplateRegistratorWithoutIOService<Plux> FACTORY_REGISTRATOR_;
 
