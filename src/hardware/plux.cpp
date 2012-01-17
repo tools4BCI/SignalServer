@@ -39,6 +39,7 @@
 #include "hardware/plux.h"
 
 #include <boost/lexical_cast.hpp>
+#include <boost/date_time.hpp>
 #include <iostream>
 
 namespace tobiss
@@ -303,7 +304,9 @@ void Plux::stopAsyncAquisition( bool blocking )
 void Plux::printAsyncStatistics( )
 { 
   cout << endl;
+  cout << boost::posix_time::to_simple_string( boost::posix_time::microsec_clock::local_time() ) << endl;
   cout << devinfo_ << " (" << devstr_ << ") Framedelay (microseconds):" << endl;
+  cout << "  Unread Frames: " << async_buffer_.getNumAvail( ) << endl;
   cout << "           mean: " << time_statistics_.get_mean( ) << endl;
   cout << "  adaptive mean: " << time_statistics_.get_adaptive_mean() << endl;
   cout << "  adaptive  std: " << sqrt(time_statistics_.get_adaptive_var()) << endl;
