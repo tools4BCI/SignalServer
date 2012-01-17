@@ -308,6 +308,7 @@
     <ClCompile Include="src\hardware\gBSamp_win.cpp" />
     <ClCompile Include="src\hardware\kinect.cpp" />
     <ClCompile Include="src\hardware\plux.cpp" />
+    <ClCompile Include="src\misc\statistics.cpp" />
     <ClCompile Include="src\signalserver\main.cpp" />
     <ClCompile Include="src\hardware\artificial_signal_source.cpp" />
     <ClCompile Include="src\hardware\eeg_simulator.cpp" />
@@ -345,6 +346,7 @@
     <ClInclude Include="include\hardware\sine_generator.h" />
     <ClInclude Include="include\hardware\usbamp.h" />
     <ClInclude Include="include\misc\databuffer.h" />
+    <ClInclude Include="include\misc\statistics.h" />
     <ClInclude Include="include\sampleblock\sample_block.h" />
     <ClInclude Include="include\config\xml_parser.h" />
     <ClInclude Include="include\signalserver\signalserver.h" />

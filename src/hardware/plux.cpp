@@ -38,12 +38,14 @@
 
 #include "hardware/plux.h"
 
+#include <boost/lexical_cast.hpp>
 #include <iostream>
 
 namespace tobiss
 {
 
 using boost::thread;
+using boost::lexical_cast;
 
 using std::cout;
 using std::endl;
@@ -75,10 +77,11 @@ Plux::Plux(ticpp::Iterator<ticpp::Element> hw)
 
   setHardware(hw);
 
+  std::map<std::string, std::string>::const_iterator it;
+
   PLUX_TRY {
 
-    std::map<std::string, std::string>::const_iterator it = m_.find( "mac" );
-
+    it = m_.find( "mac" );
     if( it == m_.end() )
       devstr_ = findDevice( );
     else
@@ -101,6 +104,12 @@ Plux::Plux(ticpp::Iterator<ticpp::Element> hw)
   cout << endl;
   cout << " BioPlux Device: ";
   cout << devstr_ << " - " << devinfo_ << endl;
+
+  it = m_.find( "statupdate" );
+  if( it == m_.end() )
+    statistics_interval_ =0;
+  else
+    statistics_interval_ = lexical_cast<unsigned int>( it->second );
 
   if(!homogenous_signal_type_)
   {
@@ -226,9 +235,9 @@ void Plux::asyncAcquisitionThread( )
     device_->GetFrames( 1, &frame );
 
     try {
-      async_buffer_.insert_overwriting( frame );
+      async_buffer_.insert_overwriting( frametype( frame, boost::posix_time::microsec_clock::local_time() ) );
     }
-    catch( DataBuffer<BP::Device::Frame>::buffer_overrun &e )
+    catch( DataBuffer<frametype>::buffer_overrun &e )
     {
       cout << e.what( ) << endl;
       throw e;
@@ -250,8 +259,21 @@ SampleBlock<double> Plux::getAsyncData()
     try {
       async_buffer_.getNext_throwing( &last_frame_ );
     }
-    catch( DataBuffer<BP::Device::Frame>::buffer_underrun &e ) { }
-    frames_[i] = last_frame_;
+    catch( DataBuffer<frametype>::buffer_underrun &e ) { }
+    frames_[i] = last_frame_.first;
+
+    boost::posix_time::time_duration diff = boost::posix_time::microsec_clock::local_time() - last_frame_.second;
+    time_statistics_.update( diff.total_milliseconds() );
+  }
+
+  if( statistics_interval_ > 0 )
+  {
+    static boost::posix_time::ptime last = boost::posix_time::microsec_clock::local_time();
+    if( (boost::posix_time::microsec_clock::local_time() - last).total_seconds() > statistics_interval_ )
+    {
+      printAsyncStatistics( );
+      last = boost::posix_time::microsec_clock::local_time();
+    }
   }
 
   convertFrames2SampleBlock( frames_, &data_ );
@@ -274,6 +296,18 @@ void Plux::stopAsyncAquisition( bool blocking )
   async_acquisition_thread_.interrupt( );
   if( blocking )
     async_acquisition_thread_.join( );
+}
+
+//-----------------------------------------------------------------------------
+
+void Plux::printAsyncStatistics( )
+{ 
+  cout << endl;
+  cout << devinfo_ << " (" << devstr_ << ") Framedelay (microseconds):" << endl;
+  cout << "           mean: " << time_statistics_.get_mean( ) << endl;
+  cout << "  adaptive mean: " << time_statistics_.get_adaptive_mean() << endl;
+  cout << "  adaptive  std: " << sqrt(time_statistics_.get_adaptive_var()) << endl;
+  cout << "=============================" << endl;
 }
 
 //-----------------------------------------------------------------------------
@@ -327,6 +361,7 @@ void Plux::stop()
   #endif
 
   if( !isMaster() )
+
     stopAsyncAquisition( );
 
   PLUX_TRY {

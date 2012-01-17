@@ -42,6 +42,7 @@
 #include "hw_thread.h"
 #include "hw_thread_builder.h"
 
+#include "misc/statistics.h"
 #include "misc/databuffer.h"
 
 #include "BioPlux.h"
@@ -116,6 +117,11 @@ private:
     void stopAsyncAquisition( bool blocking = true );
 
     /**
+    * @brief Print statistics of time delays in async acquisition mode
+    */
+    void printAsyncStatistics( );
+
+    /**
     * @brief Set the configuration of the Plux Device with a XML object
     * @param[in] hw ticpp::Element pointing to an \<hardware\> tag in the config file
     * @throw std::invalid_argument if \<channel_settings\> is defined multiple times.
@@ -157,6 +163,8 @@ private:
 
 private:
 
+    typedef std::pair<BP::Device::Frame,boost::posix_time::ptime> frametype;
+
     static const HWThreadBuilderTemplateRegistratorWithoutIOService<Plux> FACTORY_REGISTRATOR_;
 
     /**
@@ -178,14 +186,17 @@ private:
     std::string devinfo_;
 
     BYTE last_frame_seq_;
-    BP::Device::Frame last_frame_;
+    frametype last_frame_;
 
     std::vector<BP::Device::Frame> frames_;
     std::vector<double> samples_;
-    DataBuffer<BP::Device::Frame> async_buffer_;
+    DataBuffer<frametype> async_buffer_;
 
     boost::thread async_acquisition_thread_;
     unsigned long long frames_lost_;
+
+    Statistics time_statistics_;
+    unsigned int statistics_interval_;
 };
 
 } // Namespace tobiss
