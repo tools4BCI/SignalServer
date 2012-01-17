@@ -143,11 +143,9 @@ private:
 
     /**
     * @brief convert PLUX frames into SampleBlock.
-    * @param[in] frames Vector of BP::Device::Frame elements.
-    * @param[out] data Pointer to a tobiss::SampleBlock
     * @todo implement.
     */
-    void convertFrames2SampleBlock( const std::vector<BP::Device::Frame> &frames, SampleBlock<double> *data );
+    void convertFrames2SampleBlock( );
 
     /**
     * @brief Automatically selects an available PLUX device.
@@ -170,6 +168,12 @@ private:
 
       BP::Device::Frame frame;
       boost::posix_time::ptime time;
+    };
+
+    enum flagstype
+    {
+      FRAME_OK = 0,
+      FRAME_SUBSTITUTED = 1,
     };
 
     static const HWThreadBuilderTemplateRegistratorWithoutIOService<Plux> FACTORY_REGISTRATOR_;
@@ -196,6 +200,7 @@ private:
     frametype last_frame_;
 
     std::vector<BP::Device::Frame> frames_;
+    std::vector<flagstype> frame_flags_;
     std::vector<double> samples_;
     DataBuffer<frametype> async_buffer_;
 

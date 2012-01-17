@@ -101,6 +101,7 @@ Plux::Plux(ticpp::Iterator<ticpp::Element> hw)
 
   data_.init( blocks_, nr_ch_, channel_types_ );
   frames_.resize( blocks_ );
+  frame_flags_.resize( blocks_ );
 
   cout << endl;
   cout << " BioPlux Device: ";
@@ -213,7 +214,11 @@ SampleBlock<double> Plux::getSyncData()
     device_->GetFrames( blocks_, &frames_[0] );
   } PLUX_THROW
 
-  convertFrames2SampleBlock( frames_, &data_ );
+  // TODO: I guess this could be done once, at the start of sync acquisition
+  for( size_t i=0; i<blocks_; i++ )
+    frame_flags_[i] = FRAME_OK;
+
+  convertFrames2SampleBlock( );
 
   return data_;
 }
@@ -259,11 +264,15 @@ SampleBlock<double> Plux::getAsyncData()
   {
     try {
       async_buffer_.getNext_throwing( &last_frame_ );
+      frame_flags_[i] = FRAME_OK;
 
       boost::posix_time::time_duration diff = boost::posix_time::microsec_clock::local_time() - last_frame_.time;
       time_statistics_.update( diff.total_milliseconds() );
     }
-    catch( DataBuffer<frametype>::buffer_underrun &e ) { }
+    catch( DataBuffer<frametype>::buffer_underrun &e )
+    {
+      frame_flags_[i] = FRAME_SUBSTITUTED;
+    }
     frames_[i] = last_frame_.frame;
   }
 
@@ -277,7 +286,7 @@ SampleBlock<double> Plux::getAsyncData()
     }
   }
 
-  convertFrames2SampleBlock( frames_, &data_ );
+  convertFrames2SampleBlock( );
 
   return data_;
 }
@@ -377,14 +386,14 @@ void Plux::stop()
 
 //-----------------------------------------------------------------------------
 
-void Plux::convertFrames2SampleBlock( const vector<BP::Device::Frame> &frames, SampleBlock<double> *data )
+void Plux::convertFrames2SampleBlock( )
 {
-  data->reset( );
+  data_.reset( );
 
-  samples_.resize( data->getNrOfChannels( ) );
+  samples_.resize( data_.getNrOfChannels( ) );
 
-  vector<BP::Device::Frame>::const_iterator frame = frames.begin( );
-  for( ; frame!=frames.end(); frame++ )
+  vector<BP::Device::Frame>::const_iterator frame = frames_.begin( );
+  for( ; frame!=frames_.end(); frame++ )
   {
     int scount = 0;
 
@@ -409,12 +418,12 @@ void Plux::convertFrames2SampleBlock( const vector<BP::Device::Frame> &frames, S
       frames_lost_++;
       cout << devinfo_ << ": Frame-Loss detected (" << frames_lost_ << ")" << endl;
 
-      for( int i=0; i<data->getNrOfChannels( ); i++ )
+      for( int i=0; i<data_.getNrOfChannels( ); i++ )
         samples_[scount++] = samples_[scount];
     } break;
     }
 
-    data->appendBlock( samples_, 1 );
+    data_.appendBlock( samples_, 1 );
   }
 }
 
