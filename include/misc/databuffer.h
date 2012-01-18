@@ -224,7 +224,7 @@ public:
     boost::mutex::scoped_lock lock( mutex_ );
     if( is_not_empty() )
     {
-      unread--;
+      unread_--;
     }
     lock.unlock( );
     cond_not_full_.notify_one( );
