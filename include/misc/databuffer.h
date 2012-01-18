@@ -144,10 +144,10 @@ public:
       unread_++;
     lock.unlock( );
     cond_not_empty_.notify_one( );
-  }  
+  }
 
   /**
-    * @brief get next item (sample/frame/packet/...) from the buffer
+    * @brief get next item (sample/frame/packet/...) from the buffer (item is removed from the buffer)
     * @param[out] pItem DataBuffer::value_type* Pointer to storage
     * @remark If the buffer is empty the function blocks until another thread inserts an item!
     */
@@ -161,7 +161,7 @@ public:
   }  
 
   /**
-    * @brief get next item (sample/frame/packet/...) from the buffer
+    * @brief get next item (sample/frame/packet/...) from the buffer (item is removed from the buffer)
     * @param[out] pItem DataBuffer::value_type* Pointer to storage
     * @remark If the buffer is empty an exception of type std::runtime_error is thrown (*pItem remains unmodified).
     */
@@ -179,6 +179,55 @@ public:
       lock.unlock( ); // This unlock() is redundant. The scoped_lock's destructor should take care of unlocking the mutex.
       throw buffer_underrun( );
     }
+  }
+
+  /**
+    * @brief get next item (sample/frame/packet/...) from the buffer (item remains in the buffer)
+    * @param[out] pItem DataBuffer::value_type* Pointer to storage
+    * @remark If the buffer is empty the function blocks until another thread inserts an item!
+    */
+  void peekNext_blocking( value_type *pItem )
+  {
+    boost::mutex::scoped_lock lock( mutex_ );
+    cond_not_empty_.wait( lock, boost::bind( &DataBuffer<value_type>::is_not_empty, this ) );
+    *pItem = container_[unread_-1];
+    lock.unlock( );
+  }  
+
+  /**
+    * @brief get next item (sample/frame/packet/...) from the buffer (item remains in the buffer)
+    * @param[out] pItem DataBuffer::value_type* Pointer to storage
+    * @remark If the buffer is empty an exception of type std::runtime_error is thrown (*pItem remains unmodified).
+    */
+  void peekNext_throwing( value_type *pItem )
+  {
+    boost::mutex::scoped_lock lock( mutex_ );
+    if( is_not_empty() )
+    {
+      *pItem = container_[unread_-1];
+      lock.unlock( );
+    }
+    else
+    {
+      lock.unlock( ); // This unlock() is redundant. The scoped_lock's destructor should take care of unlocking the mutex.
+      throw buffer_underrun( );
+    }
+  }
+
+  /**
+    * @Drop the oldest (first) item (sample/frame/packet/...) from the buffer
+    * @return bool True if an item was removed.
+    * @remark If the buffer is empty the function returns false.
+    */
+  bool dropOldest()
+  {
+    boost::mutex::scoped_lock lock( mutex_ );
+    if( is_not_empty() )
+    {
+      unread--;
+    }
+    lock.unlock( );
+    cond_not_full_.notify_one( );
   }
 
 private:
