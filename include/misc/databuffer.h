@@ -225,9 +225,12 @@ public:
     if( is_not_empty() )
     {
       unread_--;
+      lock.unlock( );
+      cond_not_full_.notify_one( );
+      return true;
     }
     lock.unlock( );
-    cond_not_full_.notify_one( );
+    return false;
   }
 
 private:
