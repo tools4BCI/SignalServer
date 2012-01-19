@@ -246,6 +246,8 @@ SampleBlock<double> Plux::getSyncData()
   }
 
   //boost::this_thread::sleep( boost::posix_time::milliseconds(1) );
+  
+  printAsyncStatistics( );
 
   convertFrames2SampleBlock( );
 
