@@ -71,6 +71,8 @@ public:
     */
   void update( double x );
 
+  void reset( );
+
   double get_mean( ) { return mean_; }
   double get_adaptive_mean( ) { return adaptive_mean_; }
   double get_adaptive_var( ) { return adaptive_var_; }

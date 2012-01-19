@@ -50,11 +50,8 @@ namespace tobiss
  
 Statistics::Statistics( )
 {
-  N = 0;
-  mean_ = 0;
-  adaptive_mean_ = 0;
+  reset( );
   update_coefficient_ = 0.01;
-  adaptive_var_ = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -75,6 +72,17 @@ void Statistics::update( double x )
 
   adaptive_mean_ = adaptive_mean_ * (1-update_coefficient_) + x * update_coefficient_;
   adaptive_var_ = adaptive_var_ * (1-update_coefficient_) + update_coefficient_ * ( x - adaptive_mean_ ) * ( x - adaptive_mean_ );
+}
+
+//-----------------------------------------------------------------------------
+ 
+void Statistics::reset( )
+{
+  sample_buffer_.clear( );
+  N = 0;
+  mean_ = 0;
+  adaptive_mean_ = 0;
+  adaptive_var_ = 0;
 }
 
 //-----------------------------------------------------------------------------
