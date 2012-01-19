@@ -212,6 +212,7 @@ SampleBlock<double> Plux::getSyncData()
 
   for( int i=0; i<blocks_; i++ )
   {
+
     try {
       device_->GetFrames( 1, &frame.frame );
     } catch( BP::Err &err ) { rethrowPluxException( err, true ); }
@@ -264,25 +265,27 @@ void Plux::asyncAcquisitionThread( )
     
   BP::Device::Frame frame;
 
-  cout << " **** GO **** " << endl;
-  while( !async_acquisition_thread_.interruption_requested() )
-  {
-    //boost::this_thread::sleep( boost::posix_time::milliseconds(100) );
+  //cout << " **** GO **** " << endl;
+  try {
+    while( !async_acquisition_thread_.interruption_requested() )
+    {
+      //boost::this_thread::sleep( boost::posix_time::milliseconds(100) );
 
-    device_->GetFrames( 1, &frame );
+      device_->GetFrames( 1, &frame );
 
-    try {
       //async_buffer_.insert_overwriting( frametype( frame, boost::posix_time::microsec_clock::local_time() ) );
       async_buffer_.insert_throwing( frametype( frame, boost::posix_time::microsec_clock::local_time() ) );
       //async_buffer_.insert_blocking( frametype( frame, boost::posix_time::microsec_clock::local_time() ) );
-    }
-    catch( DataBuffer<frametype>::buffer_overrun &e )
-    {
-      cout << e.what( ) << endl;
-      throw e;
+      
     }
   }
-  cout << " **** STOP **** " << endl;
+  catch( std::exception &e )
+  {
+    cout << "Plux::asyncAcquisitionThread( ): caught exception:" << endl;
+    cout << e.what( ) << endl;
+    throw e;
+  }
+  //cout << " **** STOP **** " << endl;
 }
 
 //---------------------------------------------------------------------------------------
@@ -344,11 +347,15 @@ SampleBlock<double> Plux::getAsyncData()
     frames_[i] = frame.frame;
   }
 
-  /*if( async_buffer_.getNumAvail() < 100 )
-      seq_expected--;
+  if( async_buffer_.getNumAvail() < 10 )
+  {
+    //statistics_.frames_lost_--;
+    statistics_.frames_delayed_++;
+    seq_expected--;
+  }
 
-  if( async_buffer_.getNumAvail() > 200 )
-      seq_expected++;*/
+  //if( async_buffer_.getNumAvail() > 50 )
+  //    seq_expected++;
   
   printAsyncStatistics( );
 
@@ -361,15 +368,17 @@ SampleBlock<double> Plux::getAsyncData()
 
 void Plux::startAsyncAquisition( )
 {
-  statistics_.reset( );
-
   // buffer size is 5 blocks or 250 milliseconds of data. (whichever is larger)
   async_buffer_.resize( std::max( 5*blocks_, boost::numeric_cast<int>(fs_*0.250) ) );
 
   async_acquisition_thread_ = thread( &Plux::asyncAcquisitionThread, this );
+
+  async_buffer_.blockWhileEmpty( );
     
   // buffer a few samples before we start (note that this causes some delay.)
-  while( async_buffer_.getNumAvail( ) <= 2 * blocks_ );
+  //while( async_buffer_.getNumAvail( ) <= 1 );
+    //cout << "Waiting: " << async_buffer_.getNumAvail( ) << endl;
+  cout << "In Buffer: " << async_buffer_.getNumAvail( ) << endl;
 }
 
 //-----------------------------------------------------------------------------
@@ -404,7 +413,7 @@ void Plux::printAsyncStatistics( )
         cout << endl;
         cout << boost::posix_time::to_simple_string( boost::posix_time::microsec_clock::local_time() ) << endl;
         cout << " Slave device: " << devinfo_ << " (" << devstr_ << ")" << endl;
-        cout << "  Lost: " << statistics_.frames_lost_ << endl;
+        cout << "  Lost: " << statistics_.frames_lost_ << "(" << statistics_.frames_delayed_ << " delayed)" << endl;
         cout << "  repeated: " << statistics_.frames_repeated_ << endl;
         cout << "  dropped: " << statistics_.frames_dropped_ << endl;
         cout << "  Bilanz: " << statistics_.frames_repeated_ - statistics_.frames_dropped_ << endl;
@@ -448,6 +457,7 @@ void Plux::run()
   }
 
   seq_expected.setInvalid( );
+  statistics_.reset( );
 
   try {
     device_->BeginAcq( fs, chmask, nbits );
@@ -469,6 +479,8 @@ void Plux::stop()
     cout << "Plux: stop" << endl;
   #endif
 
+  cout << "Stopping " << devinfo_ << " (" << devstr_ << ") .... ";
+
   if( !isMaster() )
     stopAsyncAquisition( );
 
@@ -477,7 +489,7 @@ void Plux::stop()
   } catch( BP::Err &err ) { rethrowPluxException( err, true ); }
   
 
-  cout << " * " << devinfo_ << " (" << devstr_ << ") sucessfully stopped." << endl;
+  cout << " OK" << endl;
 }
 
 //-----------------------------------------------------------------------------
@@ -549,7 +561,7 @@ void Plux::rethrowPluxException(  BP::Err &err, bool do_throw )
     
     if( do_throw )
     {
-      cout << " **** PLUX Exception:" << endl << "==============================================" << endl << message << endl << endl;
+      cout << " **** (" << devstr_ << ") PLUX Exception:" << endl << "==============================================" << endl << message << endl << endl;
       throw(std::runtime_error( message ));
     }
     else

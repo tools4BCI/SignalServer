@@ -47,6 +47,7 @@
 
 #include "BioPlux.h"
 
+#include <boost/chrono.hpp>
 #include <boost/thread.hpp>
 
 namespace tobiss
@@ -146,9 +147,9 @@ private:
     static std::string findDevice( );
 
     /**
-    * @brief Throws a standard exception with information obtained from a BioPlux excaption.
+    * @brief Throws a standard exception with information obtained from a BioPlux exception.
     */
-    static void rethrowPluxException(  BP::Err &err, bool do_throw );
+    void rethrowPluxException(  BP::Err &err, bool do_throw );
 
     /**
     * @brief Asynchroneously collect data.
@@ -230,8 +231,9 @@ private:
         frames_lost_ = 0;
         frames_repeated_ = 0;
         frames_dropped_ = 0;
+        frames_delayed_ = 0;
       }
-      long long frames_lost_, frames_repeated_, frames_dropped_;
+      long long frames_lost_, frames_repeated_, frames_dropped_, frames_delayed_;
       Statistics time_statistics_;
       unsigned int statistics_interval_;
       boost::posix_time::ptime last_printed_;
