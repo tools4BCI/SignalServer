@@ -70,7 +70,7 @@ const HWThreadBuilderTemplateRegistratorWithoutIOService<Plux> Plux::FACTORY_REG
 //-----------------------------------------------------------------------------
 
 Plux::Plux(ticpp::Iterator<ticpp::Element> hw)
-  : HWThread(), device_(NULL), last_frame_seq_(-1), async_buffer_( 0 )
+  : HWThread(), device_(NULL), async_buffer_( 0 )
 {
   #ifdef DEBUG
     cout << "Plux: Constructor" << endl;
@@ -101,7 +101,6 @@ Plux::Plux(ticpp::Iterator<ticpp::Element> hw)
 
   data_.init( blocks_, nr_ch_, channel_types_ );
   frames_.resize( blocks_ );
-  frame_flags_.resize( blocks_ );
 
   cout << endl;
   cout << " BioPlux Device: ";
@@ -109,14 +108,13 @@ Plux::Plux(ticpp::Iterator<ticpp::Element> hw)
 
   it = m_.find( "statupdate" );
   if( it == m_.end() )
-    statistics_interval_ =0;
+    slave_statistics_.statistics_interval_ = 0;
   else
-    statistics_interval_ = lexical_cast<unsigned int>( it->second );
+    slave_statistics_.statistics_interval_ = lexical_cast<unsigned int>( it->second );
 
   if(!homogenous_signal_type_)
   {
     cout << "   ... NOTICE: Device is acquiring different signal types" << endl;
-    //cout << "     --  ensure that reference and ground settings are correctly set!" << endl;
   }
 }
 
@@ -276,7 +274,7 @@ SampleBlock<double> Plux::getAsyncData()
           last_frame_ = frame;
           async_buffer_.dropOldest( );
           async_buffer_.peekNext_throwing( &frame );
-          frames_dropped_++;
+          slave_statistics_.frames_dropped_++;
         }
 
       if( !seq_expected.valid() || seq_expected == frame.frame.seq )
@@ -293,11 +291,11 @@ SampleBlock<double> Plux::getAsyncData()
         frame = frametype( last_frame_, frame, seq_expected );
         last_frame_ = frame;
         seq_expected++;
-        frames_lost_++;
+        slave_statistics_.frames_lost_++;
       }
 
       boost::posix_time::time_duration diff = boost::posix_time::microsec_clock::local_time() - last_frame_.time;
-      time_statistics_.update( diff.total_milliseconds() );
+      slave_statistics_.time_statistics_.update( diff.total_milliseconds() );
     }
     catch( DataBuffer<frametype>::buffer_underrun &e )
     {
@@ -306,7 +304,7 @@ SampleBlock<double> Plux::getAsyncData()
       frame = last_frame_;
       seq_expected++;
       last_frame_.frame.seq = seq_expected.cast<BYTE>();
-      frames_repeated_++;
+      slave_statistics_.frames_repeated_++;
     }
     frames_[i] = frame.frame;
   }
@@ -317,12 +315,12 @@ SampleBlock<double> Plux::getAsyncData()
   if( async_buffer_.getNumAvail() > 200 )
       seq_expected++;*/
 
-  if( statistics_interval_ > 0 )
-  {
-    static boost::posix_time::ptime last = boost::posix_time::microsec_clock::local_time();
-    if( (boost::posix_time::microsec_clock::local_time() - last).total_milliseconds() > 1000*statistics_interval_ )
+  if( slave_statistics_.statistics_interval_ > 0 )
+  {    
+    boost::posix_time::ptime now = boost::posix_time::microsec_clock::local_time();
+    if( (now - slave_statistics_.last_printed_).total_milliseconds() > 1000*slave_statistics_.statistics_interval_ )
     {
-      last = boost::posix_time::microsec_clock::local_time();
+      slave_statistics_.last_printed_ = now;
       printAsyncStatistics( );
     }
   }
@@ -336,8 +334,13 @@ SampleBlock<double> Plux::getAsyncData()
 
 void Plux::startAsyncAquisition( size_t buffer_size )
 {
+  slave_statistics_.reset( );
+
   async_buffer_.resize( buffer_size );
   async_acquisition_thread_ = thread( &Plux::asyncAcquisitionThread, this );
+    
+  // buffer a few samples...
+  while( async_buffer_.getNumAvail( ) <= 2 * blocks_ );
 }
 
 //-----------------------------------------------------------------------------
@@ -356,15 +359,15 @@ void Plux::printAsyncStatistics( )
   cout << endl;
   cout << boost::posix_time::to_simple_string( boost::posix_time::microsec_clock::local_time() ) << endl;
   cout << " Slave device: " << devinfo_ << " (" << devstr_ << ")" << endl;
-  cout << "  Lost: " << frames_lost_ << endl;
-  cout << "  dropped: " << frames_dropped_ << endl;
-  cout << "  repeated: " << frames_repeated_ << endl;
-  cout << "  Bilanz: " << frames_repeated_ - frames_dropped_ << endl;
+  cout << "  Lost: " << slave_statistics_.frames_lost_ << endl;
+  cout << "  repeated: " << slave_statistics_.frames_repeated_ << endl;
+  cout << "  dropped: " << slave_statistics_.frames_dropped_ << endl;
+  cout << "  Bilanz: " << slave_statistics_.frames_repeated_ - slave_statistics_.frames_dropped_ << endl;
   cout << "  Unread Frames: " << async_buffer_.getNumAvail( ) << endl;
   cout << "       Frame delay (milliseconds) " << endl;
-  cout << "           mean: " << time_statistics_.get_mean( ) << endl;
-  cout << "  adaptive mean: " << time_statistics_.get_adaptive_mean() << endl;
-  cout << "  adaptive  std: " << sqrt(time_statistics_.get_adaptive_var()) << endl;
+  cout << "           mean: " << slave_statistics_.time_statistics_.get_mean( ) << endl;
+  cout << "  adaptive mean: " << slave_statistics_.time_statistics_.get_adaptive_mean() << endl;
+  cout << "  adaptive  std: " << sqrt(slave_statistics_.time_statistics_.get_adaptive_var()) << endl;
   cout << "=============================" << endl;
 }
 
@@ -375,9 +378,6 @@ void Plux::run()
   #ifdef DEBUG
     cout << "Plux: run" << endl;
   #endif
-
-  last_frame_seq_ = -1;
-  first_frame_ = true;
 
   BYTE nbits = 12;
 
@@ -399,10 +399,6 @@ void Plux::run()
     chmask += m;
   }
 
-  frames_lost_ = 0;
-  frames_repeated_ = 0;
-  frames_dropped_ = 0;
-
   PLUX_TRY {
     device_->BeginAcq( fs, chmask, nbits );
   } PLUX_THROW
@@ -411,8 +407,6 @@ void Plux::run()
   {
     startAsyncAquisition( 1000 );
 
-    // buffer a few samples...
-    while( async_buffer_.getNumAvail( ) <= 2 * blocks_ );
   }
 
   cout << " * " << devinfo_ << " (" << devstr_ << ") sucessfully started." << endl;
@@ -464,7 +458,7 @@ void Plux::convertFrames2SampleBlock( )
 
 //-----------------------------------------------------------------------------
 
-int Plux::checkSequenceNumber( const BYTE id )
+/*int Plux::checkSequenceNumber( const BYTE id )
 {
   if( last_frame_seq_ == 127 )
     last_frame_seq_ = -1;
@@ -480,7 +474,7 @@ int Plux::checkSequenceNumber( const BYTE id )
   last_frame_seq_ = id;
 
   return CHK_ID_MISSED;
-}
+}*/
 
 //-----------------------------------------------------------------------------
     
@@ -620,5 +614,23 @@ bool Plux::SequenceNumber::operator>( const seqtype &s ) const
 }
 
 //-----------------------------------------------------------------------------
+
+
+Plux::frametype::frametype( const frametype &a, const frametype &b, const SequenceNumber &seq )
+{        
+  double factor = (seq.cast<double>()-a.frame.seq)/(b.frame.seq-a.frame.seq);
+
+  time = a.time + boost::posix_time::microseconds( (b.time - a.time).total_microseconds() * factor );
+
+  for( int i=0; i<8; i++ )
+    frame.an_in[i] = a.frame.an_in[i] + boost::numeric_cast<int>( (b.frame.an_in[i] - a.frame.an_in[i]) * factor );
+
+  if( factor < 0.5 )
+    frame.dig_in = a.frame.dig_in;
+  else
+    frame.dig_in = b.frame.dig_in;
+
+  frame.seq = seq.cast<BYTE>();
+}
 
 } // Namespace tobiss

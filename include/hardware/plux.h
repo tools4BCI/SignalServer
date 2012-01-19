@@ -197,22 +197,7 @@ private:
       /**
       * @brief Constructor (interpolating).
       */
-      frametype( const frametype &a, const frametype &b, const SequenceNumber &seq )
-      {        
-        double factor = (seq.cast<double>()-a.frame.seq)/(b.frame.seq-a.frame.seq);
-
-        time = a.time + boost::posix_time::microseconds( (b.time - a.time).total_microseconds() * factor );
-
-        for( int i=0; i<8; i++ )
-          frame.an_in[i] = a.frame.an_in[i] + boost::numeric_cast<int>( (b.frame.an_in[i] - a.frame.an_in[i]) * factor );
-
-        if( factor < 0.5 )
-          frame.dig_in = a.frame.dig_in;
-        else
-          frame.dig_in = b.frame.dig_in;
-
-        frame.seq = seq.cast<BYTE>();
-      }
+      frametype( const frametype &a, const frametype &b, const SequenceNumber &seq );
 
       BP::Device::Frame frame;
       boost::posix_time::ptime time;
@@ -229,7 +214,7 @@ private:
     * @brief Check if the frame's sequence number correctly increments.
     * @return bool true if everything is OK.
     */
-    int checkSequenceNumber( const BYTE id );
+    //int checkSequenceNumber( const BYTE id );
 
 
     std::map<std::string, std::string> m_;	/// Attributes map -- to be renamed
@@ -238,22 +223,31 @@ private:
     std::string devstr_;
     std::string devinfo_;
 
-    BYTE last_frame_seq_;
+    //BYTE last_frame_seq_;
     frametype last_frame_;
-    bool first_frame_;
+    //bool first_frame_;
     SequenceNumber seq_expected;
 
     std::vector<BP::Device::Frame> frames_;
-    std::vector<unsigned int> frame_flags_;
     std::vector<double> samples_;
     DataBuffer<frametype> async_buffer_;
 
     boost::thread async_acquisition_thread_;
-    long long frames_lost_, frames_repeated_, frames_dropped_;
-    DataBuffer<frametype>::size_type frames_buffered_;
 
-    Statistics time_statistics_;
-    unsigned int statistics_interval_;
+    struct {
+      void reset( )
+      {
+        time_statistics_.reset( );
+        last_printed_ = boost::posix_time::microsec_clock::local_time();
+        frames_lost_ = 0;
+        frames_repeated_ = 0;
+        frames_dropped_ = 0;
+      }
+      long long frames_lost_, frames_repeated_, frames_dropped_;
+      Statistics time_statistics_;
+      unsigned int statistics_interval_;
+      boost::posix_time::ptime last_printed_;
+    } slave_statistics_;
 };
 
 } // Namespace tobiss
