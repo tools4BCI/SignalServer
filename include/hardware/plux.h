@@ -235,7 +235,7 @@ private:
       Statistics time_statistics_;
       unsigned int statistics_interval_;
       boost::posix_time::ptime last_printed_;
-    } slave_statistics_;
+    } statistics_;
 };
 
 } // Namespace tobiss

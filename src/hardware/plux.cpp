@@ -108,9 +108,9 @@ Plux::Plux(ticpp::Iterator<ticpp::Element> hw)
 
   it = m_.find( "statupdate" );
   if( it == m_.end() )
-    slave_statistics_.statistics_interval_ = 0;
+    statistics_.statistics_interval_ = 0;
   else
-    slave_statistics_.statistics_interval_ = lexical_cast<unsigned int>( it->second );
+    statistics_.statistics_interval_ = lexical_cast<unsigned int>( it->second );
 
   if(!homogenous_signal_type_)
   {
@@ -225,6 +225,7 @@ SampleBlock<double> Plux::getSyncData()
         last_frame_ = iframe;
         seq_expected++;
         frames_[i] = iframe.frame;
+        statistics_.frames_lost_++;
       }
 
     if( !seq_expected.valid() || seq_expected == frame.frame.seq )
@@ -306,7 +307,7 @@ SampleBlock<double> Plux::getAsyncData()
           last_frame_ = frame;
           async_buffer_.dropOldest( );
           async_buffer_.peekNext_throwing( &frame );
-          slave_statistics_.frames_dropped_++;
+          statistics_.frames_dropped_++;
         }
 
       if( !seq_expected.valid() || seq_expected == frame.frame.seq )
@@ -323,11 +324,11 @@ SampleBlock<double> Plux::getAsyncData()
         frame = frametype( last_frame_, frame, seq_expected );
         last_frame_ = frame;
         seq_expected++;
-        slave_statistics_.frames_lost_++;
+        statistics_.frames_lost_++;
       }
 
       boost::posix_time::time_duration diff = boost::posix_time::microsec_clock::local_time() - last_frame_.time;
-      slave_statistics_.time_statistics_.update( diff.total_milliseconds() );
+      statistics_.time_statistics_.update( diff.total_milliseconds() );
     }
     catch( DataBuffer<frametype>::buffer_underrun &e )
     {
@@ -336,7 +337,7 @@ SampleBlock<double> Plux::getAsyncData()
       frame = last_frame_;
       seq_expected++;
       last_frame_.frame.seq = seq_expected.cast<BYTE>();
-      slave_statistics_.frames_repeated_++;
+      statistics_.frames_repeated_++;
     }
     frames_[i] = frame.frame;
   }
@@ -346,16 +347,8 @@ SampleBlock<double> Plux::getAsyncData()
 
   if( async_buffer_.getNumAvail() > 200 )
       seq_expected++;*/
-
-  if( slave_statistics_.statistics_interval_ > 0 )
-  {    
-    boost::posix_time::ptime now = boost::posix_time::microsec_clock::local_time();
-    if( (now - slave_statistics_.last_printed_).total_milliseconds() > 1000*slave_statistics_.statistics_interval_ )
-    {
-      slave_statistics_.last_printed_ = now;
-      printAsyncStatistics( );
-    }
-  }
+  
+  printAsyncStatistics( );
 
   convertFrames2SampleBlock( );
 
@@ -366,7 +359,7 @@ SampleBlock<double> Plux::getAsyncData()
 
 void Plux::startAsyncAquisition( )
 {
-  slave_statistics_.reset( );
+  statistics_.reset( );
 
   // buffer size is 5 blocks or 250 milliseconds of data. (whichever is larger)
   async_buffer_.resize( std::max( 5*blocks_, boost::numeric_cast<int>(fs_*0.250) ) );
@@ -390,19 +383,38 @@ void Plux::stopAsyncAquisition( bool blocking )
 
 void Plux::printAsyncStatistics( )
 { 
-  cout << endl;
-  cout << boost::posix_time::to_simple_string( boost::posix_time::microsec_clock::local_time() ) << endl;
-  cout << " Slave device: " << devinfo_ << " (" << devstr_ << ")" << endl;
-  cout << "  Lost: " << slave_statistics_.frames_lost_ << endl;
-  cout << "  repeated: " << slave_statistics_.frames_repeated_ << endl;
-  cout << "  dropped: " << slave_statistics_.frames_dropped_ << endl;
-  cout << "  Bilanz: " << slave_statistics_.frames_repeated_ - slave_statistics_.frames_dropped_ << endl;
-  cout << "  Unread Frames: " << async_buffer_.getNumAvail( ) << endl;
-  cout << "       Frame delay (milliseconds) " << endl;
-  cout << "           mean: " << slave_statistics_.time_statistics_.get_mean( ) << endl;
-  cout << "  adaptive mean: " << slave_statistics_.time_statistics_.get_adaptive_mean() << endl;
-  cout << "  adaptive  std: " << sqrt(slave_statistics_.time_statistics_.get_adaptive_var()) << endl;
-  cout << "=============================" << endl;
+  if( statistics_.statistics_interval_ > 0 )
+  {    
+    boost::posix_time::ptime now = boost::posix_time::microsec_clock::local_time();
+    if( (now - statistics_.last_printed_).total_milliseconds() > 1000*statistics_.statistics_interval_ )
+    {
+      statistics_.last_printed_ = now;
+      if( isMaster() )
+      {
+        cout << endl;
+        cout << boost::posix_time::to_simple_string( boost::posix_time::microsec_clock::local_time() ) << endl;
+        cout << " Master device: " << devinfo_ << " (" << devstr_ << ")" << endl;
+        cout << "  Lost: " << statistics_.frames_lost_ << endl;
+        cout << "=============================" << endl;
+      }
+      else
+      {
+        cout << endl;
+        cout << boost::posix_time::to_simple_string( boost::posix_time::microsec_clock::local_time() ) << endl;
+        cout << " Slave device: " << devinfo_ << " (" << devstr_ << ")" << endl;
+        cout << "  Lost: " << statistics_.frames_lost_ << endl;
+        cout << "  repeated: " << statistics_.frames_repeated_ << endl;
+        cout << "  dropped: " << statistics_.frames_dropped_ << endl;
+        cout << "  Bilanz: " << statistics_.frames_repeated_ - statistics_.frames_dropped_ << endl;
+        cout << "  Unread Frames: " << async_buffer_.getNumAvail( ) << endl;
+        cout << "       Frame delay (milliseconds) " << endl;
+        cout << "           mean: " << statistics_.time_statistics_.get_mean( ) << endl;
+        cout << "  adaptive mean: " << statistics_.time_statistics_.get_adaptive_mean() << endl;
+        cout << "  adaptive  std: " << sqrt(statistics_.time_statistics_.get_adaptive_var()) << endl;
+        cout << "=============================" << endl;
+      }
+    }
+  }
 }
 
 //-----------------------------------------------------------------------------
