@@ -94,6 +94,26 @@ public:
   }
 
   /**
+    * @brief If the buffer is empty, block until another threads inserts an item.
+    */
+  void blockWhileEmpty( )
+  {
+    boost::mutex::scoped_lock lock( mutex_ );
+    cond_not_empty_.wait( lock, boost::bind( &DataBuffer<value_type>::is_not_empty, this ) );
+    lock.unlock( );
+  }
+
+   /**
+    * @brief If the buffer is full, block until another threads removes an item.
+    */
+  void blockWhileFull( )
+  {
+    boost::mutex::scoped_lock lock( mutex_ );
+    cond_not_full_.wait( lock, boost::bind( &DataBuffer<value_type>::is_not_full, this ) );
+    lock.unlock( );
+  }
+
+  /**
     * @brief Insert a new item (sample/frame/packet/...) in the buffer
     * @param[in] item DataBuffer::param_type Item to insert
     * @remark If the buffer is full the function blocks until another thread retrieves an item!
