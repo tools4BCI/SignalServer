@@ -431,6 +431,8 @@ void Plux::run()
     chmask += m;
   }
 
+  seq_expected.setInvalid( );
+
   try {
     device_->BeginAcq( fs, chmask, nbits );
   } catch( BP::Err &err ) { rethrowPluxException( err, true ); }

@@ -150,8 +150,22 @@ private:
     */
     static void rethrowPluxException(  BP::Err &err, bool do_throw );
 
-private:
+    /**
+    * @brief Asynchroneously collect data.
+    */
+    void asyncAcquisitionThread( );
 
+    /**
+    * @brief Check if the frame's sequence number correctly increments.
+    * @return bool true if everything is OK.
+    */
+    //int checkSequenceNumber( const BYTE id );
+
+private:
+  
+    /**
+    * @brief Class for validating the Sequence number returned by the PLUX device.
+    */
     class SequenceNumber
     {
     public:
@@ -160,6 +174,8 @@ private:
       virtual ~SequenceNumber( ) { }
 
       bool valid( );
+
+      void setInvalid( ) { seq = -1; }
       
       void operator++( int ); //prefix operator
       void operator--( int ); //prefix operator
@@ -195,17 +211,6 @@ private:
     };
 
     static const HWThreadBuilderTemplateRegistratorWithoutIOService<Plux> FACTORY_REGISTRATOR_;
-
-    /**
-    * @brief Asynchroneously collect data.
-    */
-    void asyncAcquisitionThread( );
-
-    /**
-    * @brief Check if the frame's sequence number correctly increments.
-    * @return bool true if everything is OK.
-    */
-    //int checkSequenceNumber( const BYTE id );
 
 
     std::map<std::string, std::string> m_;	/// Attributes map -- to be renamed
