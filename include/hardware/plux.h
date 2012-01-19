@@ -149,7 +149,7 @@ private:
     /**
     * @brief Throws a standard exception with information obtained from a BioPlux exception.
     */
-    void rethrowPluxException(  BP::Err &err, bool do_throw );
+    void rethrowPluxException( std::string where, BP::Err &err, bool do_throw );
 
     /**
     * @brief Asynchroneously collect data.

@@ -94,7 +94,7 @@ Plux::Plux(ticpp::Iterator<ticpp::Element> hw)
     if( devinfo_[ devinfo_.length()-1 ] == 13 )
       devinfo_ = devinfo_.substr( 0, devinfo_.length() - 1 );
     setType( devinfo_ );
-  } catch( BP::Err &err ) { rethrowPluxException( err, true ); }
+  } catch( BP::Err &err ) { rethrowPluxException( "Plux::Plux()", err, true ); }
 
   if( !device_ )
     throw std::runtime_error( "Error during BioPlux Device Initialization." );
@@ -215,7 +215,7 @@ SampleBlock<double> Plux::getSyncData()
 
     try {
       device_->GetFrames( 1, &frame.frame );
-    } catch( BP::Err &err ) { rethrowPluxException( err, true ); }
+    } catch( BP::Err &err ) { rethrowPluxException( "Plux::getSyncData()", err, true ); }
 
     if( seq_expected.valid() )
       while( seq_expected < frame.frame.seq )
@@ -354,8 +354,8 @@ SampleBlock<double> Plux::getAsyncData()
     seq_expected--;
   }
 
-  //if( async_buffer_.getNumAvail() > 50 )
-  //    seq_expected++;
+  if( async_buffer_.getNumAvail() > 50 )
+      seq_expected++;
   
   printAsyncStatistics( );
 
@@ -369,7 +369,7 @@ SampleBlock<double> Plux::getAsyncData()
 void Plux::startAsyncAquisition( )
 {
   // buffer size is 5 blocks or 250 milliseconds of data. (whichever is larger)
-  async_buffer_.resize( std::max( 5*blocks_, boost::numeric_cast<int>(fs_*0.250) ) );
+  async_buffer_.resize( std::max( 5*blocks_, boost::numeric_cast<int>(fs_*10*0.250) ) );
 
   async_acquisition_thread_ = thread( &Plux::asyncAcquisitionThread, this );
 
@@ -461,7 +461,7 @@ void Plux::run()
 
   try {
     device_->BeginAcq( fs, chmask, nbits );
-  } catch( BP::Err &err ) { rethrowPluxException( err, true ); }
+  } catch( BP::Err &err ) { rethrowPluxException( "Plux::run()", err, true ); }
 
   if( !isMaster() )
   {
@@ -479,15 +479,18 @@ void Plux::stop()
     cout << "Plux: stop" << endl;
   #endif
 
-  cout << "Stopping " << devinfo_ << " (" << devstr_ << ") .... ";
+  cout << "Stopping " << devinfo_ << " (" << devstr_ << ") .";
 
   if( !isMaster() )
     stopAsyncAquisition( );
 
+  cout << ".";
+
   try {
     device_->EndAcq();
-  } catch( BP::Err &err ) { rethrowPluxException( err, true ); }
-  
+  } catch( BP::Err &err ) { rethrowPluxException( "Plux::stop()", err, true ); }
+
+  cout << ".";  
 
   cout << " OK" << endl;
 }
@@ -496,6 +499,9 @@ void Plux::stop()
 
 void Plux::convertFrames2SampleBlock( )
 {
+
+  static boost::posix_time::ptime starttime = boost::posix_time::microsec_clock::local_time();
+
   data_.reset( );
 
   samples_.resize( data_.getNrOfChannels( ) );
@@ -507,10 +513,16 @@ void Plux::convertFrames2SampleBlock( )
     int scount = 0;
     std::map<boost::uint16_t, std::pair<std::string, boost::uint32_t> >::const_iterator channel = channel_info_.begin( );
     for( int i=0; channel != channel_info_.end(); channel++, i++ )
-      if( channel->first == 9 )
-        samples_[scount++] = frame->dig_in;
-      else
+      if( channel->first < 9 )
         samples_[scount++] = frame->an_in[i];
+      else switch( channel->first )
+      {
+      case 9: samples_[scount++] = frame->dig_in; break;
+      case 10: samples_[scount++] = async_buffer_.getNumAvail( ); break;
+      case 11: samples_[scount++] = statistics_.time_statistics_.get_adaptive_mean( ); break;
+      case 12: samples_[scount++] = (boost::posix_time::microsec_clock::local_time() - starttime).total_microseconds() / (1e6); break;
+      default: throw std::exception( "Unsopported channel number." );
+      }
 
     data_.appendBlock( samples_, 1 );
   }
@@ -543,7 +555,7 @@ std::string Plux::findDevice( )
 
 //-----------------------------------------------------------------------------
 
-void Plux::rethrowPluxException(  BP::Err &err, bool do_throw )
+void Plux::rethrowPluxException( std::string where, BP::Err &err, bool do_throw )
 {
     string message;
     switch( err.GetType() )
@@ -559,13 +571,11 @@ void Plux::rethrowPluxException(  BP::Err &err, bool do_throw )
     const char *tmp = err.GetDescription( );
     message += tmp;
     
+    cout << " **** (" << devstr_ << ") PLUX Exception in " << where << endl << "==============================================" << endl << message << endl << endl;
     if( do_throw )
     {
-      cout << " **** (" << devstr_ << ") PLUX Exception:" << endl << "==============================================" << endl << message << endl << endl;
       throw(std::runtime_error( message ));
     }
-    else
-      cout << " **** PLUX Exception:" << endl << "==============================================" << endl << message << endl << endl;
 }
 
 //-----------------------------------------------------------------------------
