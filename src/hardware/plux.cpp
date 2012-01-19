@@ -214,9 +214,7 @@ SampleBlock<double> Plux::getSyncData()
     device_->GetFrames( blocks_, &frames_[0] );
   } PLUX_THROW
 
-  // TODO: I guess this could be done once, at the start of sync acquisition
-  for( size_t i=0; i<blocks_; i++ )
-    frame_flags_[i] = FRAME_OK;
+  //boost::this_thread::sleep( boost::posix_time::milliseconds(1) );
 
   convertFrames2SampleBlock( );
 
@@ -241,7 +239,9 @@ void Plux::asyncAcquisitionThread( )
     device_->GetFrames( 1, &frame );
 
     try {
-      async_buffer_.insert_overwriting( frametype( frame, boost::posix_time::microsec_clock::local_time() ) );
+      //async_buffer_.insert_overwriting( frametype( frame, boost::posix_time::microsec_clock::local_time() ) );
+      async_buffer_.insert_throwing( frametype( frame, boost::posix_time::microsec_clock::local_time() ) );
+      //async_buffer_.insert_blocking( frametype( frame, boost::posix_time::microsec_clock::local_time() ) );
     }
     catch( DataBuffer<frametype>::buffer_overrun &e )
     {
@@ -260,29 +260,70 @@ SampleBlock<double> Plux::getAsyncData()
     cout << "Plux: getAsyncData" << endl;
   #endif
 
+  frametype frame;
+
   for( int i=0; i<blocks_; i++ )
   {
     try {
-      async_buffer_.getNext_throwing( &last_frame_ );
-      frame_flags_[i] = FRAME_OK;
+      async_buffer_.peekNext_throwing( &frame );
+
+      if( seq_expected.valid() )
+        while( seq_expected > frame.frame.seq )
+        {
+          // Frame is older than expected. Likely it was substituted previously.
+          // Drop it.
+          // But still use it as last_frame. (TODO: is that a good idea?)
+          last_frame_ = frame;
+          async_buffer_.dropOldest( );
+          async_buffer_.peekNext_throwing( &frame );
+          frames_dropped_++;
+        }
+
+      if( !seq_expected.valid() || seq_expected == frame.frame.seq )
+      {
+        // Exactly what we expected. Just use that frame.
+        last_frame_ = frame;
+        seq_expected = frame.frame.seq + 1;
+        async_buffer_.dropOldest( );
+      }
+      else
+      {
+        // Frame is newer than expected. That can only mean packets were lost.
+        // Leave in buffer, interpolate.
+        frame = frametype( last_frame_, frame, seq_expected );
+        last_frame_ = frame;
+        seq_expected++;
+        frames_lost_++;
+      }
 
       boost::posix_time::time_duration diff = boost::posix_time::microsec_clock::local_time() - last_frame_.time;
       time_statistics_.update( diff.total_milliseconds() );
     }
     catch( DataBuffer<frametype>::buffer_underrun &e )
     {
-      frame_flags_[i] = FRAME_SUBSTITUTED;
+      // No sample available.
+      // Substitute some data... (re-use last frame)
+      frame = last_frame_;
+      seq_expected++;
+      last_frame_.frame.seq = seq_expected.cast<BYTE>();
+      frames_repeated_++;
     }
-    frames_[i] = last_frame_.frame;
+    frames_[i] = frame.frame;
   }
+
+  /*if( async_buffer_.getNumAvail() < 100 )
+      seq_expected--;
+
+  if( async_buffer_.getNumAvail() > 200 )
+      seq_expected++;*/
 
   if( statistics_interval_ > 0 )
   {
     static boost::posix_time::ptime last = boost::posix_time::microsec_clock::local_time();
-    if( (boost::posix_time::microsec_clock::local_time() - last).total_seconds() > statistics_interval_ )
+    if( (boost::posix_time::microsec_clock::local_time() - last).total_milliseconds() > 1000*statistics_interval_ )
     {
-      printAsyncStatistics( );
       last = boost::posix_time::microsec_clock::local_time();
+      printAsyncStatistics( );
     }
   }
 
@@ -314,8 +355,13 @@ void Plux::printAsyncStatistics( )
 { 
   cout << endl;
   cout << boost::posix_time::to_simple_string( boost::posix_time::microsec_clock::local_time() ) << endl;
-  cout << devinfo_ << " (" << devstr_ << ") Framedelay (microseconds):" << endl;
+  cout << " Slave device: " << devinfo_ << " (" << devstr_ << ")" << endl;
+  cout << "  Lost: " << frames_lost_ << endl;
+  cout << "  dropped: " << frames_dropped_ << endl;
+  cout << "  repeated: " << frames_repeated_ << endl;
+  cout << "  Bilanz: " << frames_repeated_ - frames_dropped_ << endl;
   cout << "  Unread Frames: " << async_buffer_.getNumAvail( ) << endl;
+  cout << "       Frame delay (milliseconds) " << endl;
   cout << "           mean: " << time_statistics_.get_mean( ) << endl;
   cout << "  adaptive mean: " << time_statistics_.get_adaptive_mean() << endl;
   cout << "  adaptive  std: " << sqrt(time_statistics_.get_adaptive_var()) << endl;
@@ -331,6 +377,7 @@ void Plux::run()
   #endif
 
   last_frame_seq_ = -1;
+  first_frame_ = true;
 
   BYTE nbits = 12;
 
@@ -353,13 +400,20 @@ void Plux::run()
   }
 
   frames_lost_ = 0;
+  frames_repeated_ = 0;
+  frames_dropped_ = 0;
 
   PLUX_TRY {
     device_->BeginAcq( fs, chmask, nbits );
   } PLUX_THROW
 
   if( !isMaster() )
+  {
     startAsyncAquisition( 1000 );
+
+    // buffer a few samples...
+    while( async_buffer_.getNumAvail( ) <= 2 * blocks_ );
+  }
 
   cout << " * " << devinfo_ << " (" << devstr_ << ") sucessfully started." << endl;
 }
@@ -395,33 +449,14 @@ void Plux::convertFrames2SampleBlock( )
   vector<BP::Device::Frame>::const_iterator frame = frames_.begin( );
   for( ; frame!=frames_.end(); frame++ )
   {
+
     int scount = 0;
-
-    //cout << devinfo_ << " - " << (int)last_frame_seq_ << endl;
-
-    switch( checkSequenceNumber( frame->seq ) )
-    {
-    default: throw std::invalid_argument( "unexpected checkSequenceNumber result." );
-    case CHK_ID_REPEATED:
-      cout << devinfo_ << ": Repeated Frame detected (" << (int)frame->seq << ")" << endl;  // no break here on purpose!
-    case CHK_ID_OK:
-    {    
-      std::map<boost::uint16_t, std::pair<std::string, boost::uint32_t> >::const_iterator channel = channel_info_.begin( );
-      for( int i=0; channel != channel_info_.end(); channel++, i++ )
-        if( channel->first == 9 )
-          samples_[scount++] = frame->dig_in;
-        else
-          samples_[scount++] = frame->an_in[i];
-    } break;
-    case CHK_ID_MISSED:
-    {
-      frames_lost_++;
-      cout << devinfo_ << ": Frame-Loss detected (" << frames_lost_ << ")" << endl;
-
-      for( int i=0; i<data_.getNrOfChannels( ); i++ )
-        samples_[scount++] = samples_[scount];
-    } break;
-    }
+    std::map<boost::uint16_t, std::pair<std::string, boost::uint32_t> >::const_iterator channel = channel_info_.begin( );
+    for( int i=0; channel != channel_info_.end(); channel++, i++ )
+      if( channel->first == 9 )
+        samples_[scount++] = frame->dig_in;
+      else
+        samples_[scount++] = frame->an_in[i];
 
     data_.appendBlock( samples_, 1 );
   }
@@ -489,7 +524,7 @@ void Plux::rethrowPluxException(  BP::Err &err, bool do_throw )
 
     const char *tmp = err.GetDescription( );
     message += tmp;
-
+    
     if( do_throw )
     {
       cout << " **** PLUX Exception:" << endl << "==============================================" << endl << message << endl << endl;
@@ -497,6 +532,91 @@ void Plux::rethrowPluxException(  BP::Err &err, bool do_throw )
     }
     else
       cout << " **** PLUX Exception:" << endl << "==============================================" << endl << message << endl << endl;
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+Plux::SequenceNumber::SequenceNumber( int s )
+{
+  if( s < 0 )
+    s = -1;
+  else while( s >= 128 )
+    s -= 128;
+  seq = s;
+}
+
+//-----------------------------------------------------------------------------
+
+
+bool Plux::SequenceNumber::valid( )
+{
+  return seq >= 0;
+}
+
+//-----------------------------------------------------------------------------
+
+void Plux::SequenceNumber::operator++( int )
+{
+  if( seq == 127 )
+    seq = 0;
+  else
+    seq++;
+}
+
+//-----------------------------------------------------------------------------
+
+void Plux::SequenceNumber::operator--( int )
+{
+  if( seq == 0 )
+    seq = 127;
+  else
+    seq--;
+}
+
+//-----------------------------------------------------------------------------
+
+bool Plux::SequenceNumber::operator==( const seqtype &s ) const
+{
+  return seq == s;
+}
+
+//-----------------------------------------------------------------------------
+
+bool Plux::SequenceNumber::operator<( const seqtype &s ) const
+{
+  if( seq == s )
+    return false;
+
+  if( seq < s )
+    if( s-seq >= 64 )
+      return false;
+    else
+      return true;
+  else
+    if( seq-s > 64 )
+      return true;
+    else
+      return false;
+}
+
+//-----------------------------------------------------------------------------
+
+bool Plux::SequenceNumber::operator>( const seqtype &s ) const
+{
+  if( seq == s )
+    return false;
+
+  if( seq < s )
+    if( s-seq >= 64 )
+      return true;
+    else
+      return false;
+  else
+    if( seq-s > 64 )
+      return false;
+    else
+      return true;
 }
 
 //-----------------------------------------------------------------------------

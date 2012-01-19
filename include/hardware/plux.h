@@ -161,19 +161,61 @@ private:
 
 private:
 
+    class SequenceNumber
+    {
+    public:
+      typedef char seqtype;
+      SequenceNumber( int s = -1 );
+      virtual ~SequenceNumber( ) { }
+
+      bool valid( );
+      
+      void operator++( int ); //prefix operator
+      void operator--( int ); //prefix operator
+      bool operator==( const seqtype &s ) const;
+      bool operator>( const seqtype &s ) const;
+      bool operator<( const seqtype &s ) const;
+
+      template<typename T> T cast( ) const { return boost::numeric_cast<T>( seq ); }
+
+    private:
+      seqtype seq;
+    };
+
     struct frametype
     {
+      /**
+      * @brief Constructor (default).
+      */
       frametype( ) : frame(), time() { }
+
+      /**
+      * @brief Constructor (assigning).
+      */
       frametype( BP::Device::Frame f, boost::posix_time::ptime t ) : frame(f), time(t) { }
+
+      /**
+      * @brief Constructor (interpolating).
+      */
+      frametype( const frametype &a, const frametype &b, const SequenceNumber &seq )
+      {        
+        double factor = (seq.cast<double>()-a.frame.seq)/(b.frame.seq-a.frame.seq);
+
+        time = a.time + boost::posix_time::microseconds( (b.time - a.time).total_microseconds() * factor );
+
+        for( int i=0; i<8; i++ )
+          frame.an_in[i] = a.frame.an_in[i] + boost::numeric_cast<int>( (b.frame.an_in[i] - a.frame.an_in[i]) * factor );
+
+        if( factor < 0.5 )
+          frame.dig_in = a.frame.dig_in;
+        else
+          frame.dig_in = b.frame.dig_in;
+
+        frame.seq = seq.cast<BYTE>();
+      }
 
       BP::Device::Frame frame;
       boost::posix_time::ptime time;
-    };
-
-    enum flagstype
-    {
-      FRAME_OK = 0,
-      FRAME_SUBSTITUTED = 1,
     };
 
     static const HWThreadBuilderTemplateRegistratorWithoutIOService<Plux> FACTORY_REGISTRATOR_;
@@ -198,14 +240,17 @@ private:
 
     BYTE last_frame_seq_;
     frametype last_frame_;
+    bool first_frame_;
+    SequenceNumber seq_expected;
 
     std::vector<BP::Device::Frame> frames_;
-    std::vector<flagstype> frame_flags_;
+    std::vector<unsigned int> frame_flags_;
     std::vector<double> samples_;
     DataBuffer<frametype> async_buffer_;
 
     boost::thread async_acquisition_thread_;
-    unsigned long long frames_lost_;
+    long long frames_lost_, frames_repeated_, frames_dropped_;
+    DataBuffer<frametype>::size_type frames_buffered_;
 
     Statistics time_statistics_;
     unsigned int statistics_interval_;
