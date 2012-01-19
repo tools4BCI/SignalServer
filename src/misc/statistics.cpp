@@ -76,6 +76,15 @@ void Statistics::update( double x )
 
 //-----------------------------------------------------------------------------
  
+void Statistics::print( std::ostream &out )
+{
+  out << "           mean: " << get_mean( ) << std::endl;
+  out << "  adaptive mean: " << get_adaptive_mean() << std::endl;
+  out << "  adaptive  std: " << sqrt(get_adaptive_var()) << std::endl;
+}
+
+//-----------------------------------------------------------------------------
+ 
 void Statistics::reset( )
 {
   sample_buffer_.clear( );

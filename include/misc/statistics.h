@@ -71,6 +71,14 @@ public:
     */
   void update( double x );
 
+  /**
+    * @brief Print statistics to specified stream.
+    */
+  void print( std::ostream &out = std::cout );
+
+  /**
+    * @brief Set everything to initial values.
+    */
   void reset( );
 
   double get_mean( ) { return mean_; }
