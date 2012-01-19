@@ -208,9 +208,41 @@ SampleBlock<double> Plux::getSyncData()
     cout << "Plux: getSyncData" << endl;
   #endif
 
-  try {
-    device_->GetFrames( blocks_, &frames_[0] );
-  } catch( BP::Err &err ) { rethrowPluxException( err, true ); }
+  frametype frame;
+
+  for( int i=0; i<blocks_; i++ )
+  {
+    try {
+      device_->GetFrames( 1, &frame.frame );
+    } catch( BP::Err &err ) { rethrowPluxException( err, true ); }
+
+    if( seq_expected.valid() )
+      while( seq_expected < frame.frame.seq )
+      {
+        // Frame is newer than expected. That can only mean packets were lost.
+        // interpolate.
+        frametype iframe = frametype( last_frame_, frame, seq_expected );
+        last_frame_ = iframe;
+        seq_expected++;
+        frames_[i] = iframe.frame;
+      }
+
+    if( !seq_expected.valid() || seq_expected == frame.frame.seq )
+    {
+      // Exactly what we expected. Just use that frame.
+      last_frame_ = frame;
+      seq_expected = frame.frame.seq + 1;
+      frames_[i] = frame.frame;
+    }
+    else
+    {
+      // Frame is older than expected. That cannot happen in synch mode.
+      // -> critiical failure
+      std::cout << "Plux::getSyncData(): Unexpected Sample Number." << endl;
+      throw std::runtime_error( "Plux::getSyncData(): Unexpected Sample Number." );
+    }
+
+  }
 
   //boost::this_thread::sleep( boost::posix_time::milliseconds(1) );
 
