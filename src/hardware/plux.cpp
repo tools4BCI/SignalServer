@@ -80,7 +80,7 @@ Plux::Plux(ticpp::Iterator<ticpp::Element> hw)
 
   std::map<std::string, std::string>::const_iterator it;
 
-  PLUX_TRY {
+  try {
 
     it = m_.find( "mac" );
     if( it == m_.end() )
@@ -94,7 +94,7 @@ Plux::Plux(ticpp::Iterator<ticpp::Element> hw)
     if( devinfo_[ devinfo_.length()-1 ] == 13 )
       devinfo_ = devinfo_.substr( 0, devinfo_.length() - 1 );
     setType( devinfo_ );
-  } PLUX_THROW
+  } catch( BP::Err &err ) { rethrowPluxException( err, true ); }
 
   if( !device_ )
     throw std::runtime_error( "Error during BioPlux Device Initialization." );
@@ -208,9 +208,9 @@ SampleBlock<double> Plux::getSyncData()
     cout << "Plux: getSyncData" << endl;
   #endif
 
-  PLUX_TRY {
+  try {
     device_->GetFrames( blocks_, &frames_[0] );
-  } PLUX_THROW
+  } catch( BP::Err &err ) { rethrowPluxException( err, true ); }
 
   //boost::this_thread::sleep( boost::posix_time::milliseconds(1) );
 
@@ -399,9 +399,9 @@ void Plux::run()
     chmask += m;
   }
 
-  PLUX_TRY {
+  try {
     device_->BeginAcq( fs, chmask, nbits );
-  } PLUX_THROW
+  } catch( BP::Err &err ) { rethrowPluxException( err, true ); }
 
   if( !isMaster() )
   {
@@ -424,9 +424,9 @@ void Plux::stop()
 
     stopAsyncAquisition( );
 
-  PLUX_TRY {
+  try {
     device_->EndAcq();
-  } PLUX_THROW
+  } catch( BP::Err &err ) { rethrowPluxException( err, true ); }
   
 
   cout << " * " << devinfo_ << " (" << devstr_ << ") sucessfully stopped." << endl;

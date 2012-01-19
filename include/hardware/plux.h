@@ -49,15 +49,6 @@
 
 #include <boost/thread.hpp>
 
-// Begin a PLUX try block
-#define PLUX_TRY try
-
-// Catch a PLUX exception and throw a std::runtime_error
-#define PLUX_THROW catch( BP::Err err ) { rethrowPluxException( err, true ); }
-
-// Catch a PLUX exception and print the message
-#define PLUX_CATCH catch( BP::Err err ) { rethrowPluxException( err, false ); }
-
 namespace tobiss
 {
 //-----------------------------------------------------------------------------
