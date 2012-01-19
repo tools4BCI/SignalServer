@@ -364,14 +364,16 @@ SampleBlock<double> Plux::getAsyncData()
 
 //-----------------------------------------------------------------------------
 
-void Plux::startAsyncAquisition( size_t buffer_size )
+void Plux::startAsyncAquisition( )
 {
   slave_statistics_.reset( );
 
-  async_buffer_.resize( buffer_size );
+  // buffer size is 5 blocks or 250 milliseconds of data. (whichever is larger)
+  async_buffer_.resize( std::max( 5*blocks_, boost::numeric_cast<int>(fs_*0.250) ) );
+
   async_acquisition_thread_ = thread( &Plux::asyncAcquisitionThread, this );
     
-  // buffer a few samples...
+  // buffer a few samples before we start (note that this causes some delay.)
   while( async_buffer_.getNumAvail( ) <= 2 * blocks_ );
 }
 
@@ -439,8 +441,7 @@ void Plux::run()
 
   if( !isMaster() )
   {
-    startAsyncAquisition( 1000 );
-
+    startAsyncAquisition( );
   }
 
   cout << " * " << devinfo_ << " (" << devstr_ << ") sucessfully started." << endl;
@@ -455,7 +456,6 @@ void Plux::stop()
   #endif
 
   if( !isMaster() )
-
     stopAsyncAquisition( );
 
   try {
@@ -489,26 +489,6 @@ void Plux::convertFrames2SampleBlock( )
     data_.appendBlock( samples_, 1 );
   }
 }
-
-//-----------------------------------------------------------------------------
-
-/*int Plux::checkSequenceNumber( const BYTE id )
-{
-  if( last_frame_seq_ == 127 )
-    last_frame_seq_ = -1;
-
-  if( last_frame_seq_ == id )
-    return CHK_ID_REPEATED;
-
-  last_frame_seq_++;
-
-  if( last_frame_seq_ == id )
-    return CHK_ID_OK;
-
-  last_frame_seq_ = id;
-
-  return CHK_ID_MISSED;
-}*/
 
 //-----------------------------------------------------------------------------
     

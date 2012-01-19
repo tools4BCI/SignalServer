@@ -103,7 +103,7 @@ public:
 
 private:
 
-    void startAsyncAquisition( size_t buffer_size );
+    void startAsyncAquisition( );
 
     void stopAsyncAquisition( bool blocking = true );
 
@@ -154,12 +154,6 @@ private:
     * @brief Asynchroneously collect data.
     */
     void asyncAcquisitionThread( );
-
-    /**
-    * @brief Check if the frame's sequence number correctly increments.
-    * @return bool true if everything is OK.
-    */
-    //int checkSequenceNumber( const BYTE id );
 
 private:
   
@@ -219,9 +213,7 @@ private:
     std::string devstr_;
     std::string devinfo_;
 
-    //BYTE last_frame_seq_;
     frametype last_frame_;
-    //bool first_frame_;
     SequenceNumber seq_expected;
 
     std::vector<BP::Device::Frame> frames_;
