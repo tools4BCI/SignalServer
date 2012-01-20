@@ -56,15 +56,6 @@ using std::vector;
 
 //-----------------------------------------------------------------------------
 
-enum id_check
-{
-  CHK_ID_REPEATED,
-  CHK_ID_OK,
-  CHK_ID_MISSED,
-};
-
-//-----------------------------------------------------------------------------
-
 const HWThreadBuilderTemplateRegistratorWithoutIOService<Plux> Plux::FACTORY_REGISTRATOR_( "plux", "bioplux" );
 
 //-----------------------------------------------------------------------------
@@ -82,40 +73,43 @@ Plux::Plux(ticpp::Iterator<ticpp::Element> hw)
 
   try {
 
+    // Try to discover the BioPlux device name, if no mac address was provided.
     it = m_.find( "mac" );
     if( it == m_.end() )
       devstr_ = findDevice( );
     else
       devstr_ = it->second;
 
+    // Initialize BioPlux Device instance.
     device_ = BP::Device::Create( devstr_ );
 
+    // Put device description into HWThread type info.
     device_->GetDescription( devinfo_ );
     if( devinfo_[ devinfo_.length()-1 ] == 13 )
       devinfo_ = devinfo_.substr( 0, devinfo_.length() - 1 );
     setType( devinfo_ );
+
   } catch( BP::Err &err ) { rethrowPluxException( "Plux::Plux()", err, true ); }
 
   if( !device_ )
     throw std::runtime_error( "Error during BioPlux Device Initialization." );
 
+  // Initialize and pre-allocate members.
   data_.init( blocks_, nr_ch_, channel_types_ );
   frames_.resize( blocks_ );
+  statistics_.reset( );
 
-  cout << endl;
-  cout << " BioPlux Device: ";
-  cout << devstr_ << " - " << devinfo_ << endl;
-
-  it = m_.find( "statupdate" );
+  // Set statistics output interval, or disable the output.
+  it = m_.find( "statoutput" );
   if( it == m_.end() )
     statistics_.statistics_interval_ = 0;
   else
     statistics_.statistics_interval_ = lexical_cast<unsigned int>( it->second );
 
-  if(!homogenous_signal_type_)
-  {
-    cout << "   ... NOTICE: Device is acquiring different signal types" << endl;
-  }
+  // Print some information.
+  cout << endl;
+  cout << " BioPlux Device: ";
+  cout << devstr_ << " - " << devinfo_ << endl;
 }
 
 //-----------------------------------------------------------------------------
@@ -126,7 +120,8 @@ Plux::~Plux( )
     cout << "Plux: Destructor" << endl;
   #endif
 
-  //async_acquisition_thread_.interrupt( );
+  if( !isMaster() )
+    stopAsyncAquisition( true );
 
   if( device_ )
     delete device_;
@@ -208,11 +203,11 @@ SampleBlock<double> Plux::getSyncData()
     cout << "Plux: getSyncData" << endl;
   #endif
 
-  frametype frame;
 
   for( int i=0; i<blocks_; i++ )
   {
-
+    // Get frame from device (blocking)
+    frametype frame;
     try {
       device_->GetFrames( 1, &frame.frame );
     } catch( BP::Err &err ) { rethrowPluxException( "Plux::getSyncData()", err, true ); }
@@ -245,10 +240,8 @@ SampleBlock<double> Plux::getSyncData()
     }
 
   }
-
-  //boost::this_thread::sleep( boost::posix_time::milliseconds(1) );
   
-  printAsyncStatistics( );
+  printStatistics( );
 
   convertFrames2SampleBlock( );
 
@@ -262,14 +255,11 @@ void Plux::asyncAcquisitionThread( )
   #ifdef DEBUG
     cout << "Plux: asyncAcquisitionThread" << endl;
   #endif
-    
-  BP::Device::Frame frame;
 
-  //cout << " **** GO **** " << endl;
   try {
     while( !async_acquisition_thread_.interruption_requested() )
     {
-      //boost::this_thread::sleep( boost::posix_time::milliseconds(100) );
+      BP::Device::Frame frame;
 
       device_->GetFrames( 1, &frame );
 
@@ -285,7 +275,6 @@ void Plux::asyncAcquisitionThread( )
     cout << e.what( ) << endl;
     throw e;
   }
-  //cout << " **** STOP **** " << endl;
 }
 
 //---------------------------------------------------------------------------------------
@@ -296,19 +285,18 @@ SampleBlock<double> Plux::getAsyncData()
     cout << "Plux: getAsyncData" << endl;
   #endif
 
-  frametype frame;
-
   for( int i=0; i<blocks_; i++ )
   {
+    frametype frame;
     try {
+      // Try to get the next frame from the buffer, but don't remove it from the buffer yet.
       async_buffer_.peekNext_throwing( &frame );
 
       if( seq_expected.valid() )
         while( seq_expected > frame.frame.seq )
         {
           // Frame is older than expected. Likely it was substituted previously.
-          // Drop it.
-          // But still use it as last_frame. (TODO: is that a good idea?)
+          // Drop it, but still use it as last_frame (for interpolation).
           last_frame_ = frame;
           async_buffer_.dropOldest( );
           async_buffer_.peekNext_throwing( &frame );
@@ -317,7 +305,7 @@ SampleBlock<double> Plux::getAsyncData()
 
       if( !seq_expected.valid() || seq_expected == frame.frame.seq )
       {
-        // Exactly what we expected. Just use that frame.
+        // Exactly what we expected. Just use that frame and remove it from the buffer.
         last_frame_ = frame;
         seq_expected = frame.frame.seq + 1;
         async_buffer_.dropOldest( );
@@ -332,6 +320,7 @@ SampleBlock<double> Plux::getAsyncData()
         statistics_.frames_lost_++;
       }
 
+      // record statistics of how long samples remained in the buffer
       boost::posix_time::time_duration diff = boost::posix_time::microsec_clock::local_time() - last_frame_.time;
       statistics_.time_statistics_.update( diff.total_milliseconds() );
     }
@@ -347,17 +336,29 @@ SampleBlock<double> Plux::getAsyncData()
     frames_[i] = frame.frame;
   }
 
-  if( async_buffer_.getNumAvail() < 10 )
+  // Take care that there are not too many, and not too few samples in the buffer.
+  // This is accomplished by manipulating the expected sequence number. Beware of black magic!  
+
+  if( async_buffer_.getNumAvail() < 5 ) // FIXME ... hard coded value!
   {
-    //statistics_.frames_lost_--;
-    statistics_.frames_delayed_++;
+    // Too few samples remain in the buffer.
+    // Reducing seq_expected makes the code above believe that a frame was lost.
+    // Subsequently, the next frame is delayed, and an artificial frame is 
+    // inserted, to replace the 'lost' frame.
+
     seq_expected--;
+    //statistics_.frames_lost_--;
+    statistics_.frames_delayed_++;    
   }
 
-  if( async_buffer_.getNumAvail() > 50 )
-      seq_expected++;
+  if( async_buffer_.getNumAvail() > 50 ) // FIXME ... hard coded value!
+  {
+    // Too many samples in the buffer.
+    // Increasing seq_expected by X makes the code above drop the next X samples.
+    seq_expected++;
+  }
   
-  printAsyncStatistics( );
+  printStatistics( );
 
   convertFrames2SampleBlock( );
 
@@ -369,15 +370,14 @@ SampleBlock<double> Plux::getAsyncData()
 void Plux::startAsyncAquisition( )
 {
   // buffer size is 5 blocks or 250 milliseconds of data. (whichever is larger)
+  // FIXME ... hard coded values!
   async_buffer_.resize( std::max( 5*blocks_, boost::numeric_cast<int>(fs_*10*0.250) ) );
 
+  // Start the acquisition thread
   async_acquisition_thread_ = thread( &Plux::asyncAcquisitionThread, this );
 
+  // Wait until the thread starts producing data
   async_buffer_.blockWhileEmpty( );
-    
-  // buffer a few samples before we start (note that this causes some delay.)
-  //while( async_buffer_.getNumAvail( ) <= 1 );
-    //cout << "Waiting: " << async_buffer_.getNumAvail( ) << endl;
   cout << "In Buffer: " << async_buffer_.getNumAvail( ) << endl;
 }
 
@@ -392,7 +392,7 @@ void Plux::stopAsyncAquisition( bool blocking )
 
 //-----------------------------------------------------------------------------
 
-void Plux::printAsyncStatistics( )
+void Plux::printStatistics( )
 { 
   if( statistics_.statistics_interval_ > 0 )
   {    
@@ -436,12 +436,18 @@ void Plux::run()
     cout << "Plux: run" << endl;
   #endif
 
+  // Number of bits per sample to record. 8 or 12
+  // FIXME ... hard coded value!
   BYTE nbits = 12;
 
+  // Plux requires integer sampling rates
   int fs = boost::numeric_cast<int>( fs_ );
+  if( boost::numeric_cast<double>( fs ) != fs_ )
+    throw std::invalid_argument( "Plux::run() - Invalid Sampling Rate." );
 
+  // Create channel mask.
+  // That is a bit mask which tells the Plux Device what channels to record.
   BYTE chmask = 0;
-
   std::map<boost::uint16_t, std::pair<std::string, boost::uint32_t> >::const_iterator channel = channel_info_.begin( );
   for( ; channel != channel_info_.end(); channel++ )
   {
@@ -456,6 +462,7 @@ void Plux::run()
     chmask += m;
   }
 
+  // set initial conditions
   seq_expected.setInvalid( );
   statistics_.reset( );
 
@@ -509,7 +516,6 @@ void Plux::convertFrames2SampleBlock( )
   vector<BP::Device::Frame>::const_iterator frame = frames_.begin( );
   for( ; frame!=frames_.end(); frame++ )
   {
-
     int scount = 0;
     std::map<boost::uint16_t, std::pair<std::string, boost::uint32_t> >::const_iterator channel = channel_info_.begin( );
     for( int i=0; channel != channel_info_.end(); channel++, i++ )
@@ -517,11 +523,12 @@ void Plux::convertFrames2SampleBlock( )
         samples_[scount++] = frame->an_in[i];
       else switch( channel->first )
       {
-      case 9: samples_[scount++] = frame->dig_in; break;
-      case 10: samples_[scount++] = async_buffer_.getNumAvail( ); break;
-      case 11: samples_[scount++] = statistics_.time_statistics_.get_adaptive_mean( ); break;
-      case 12: samples_[scount++] = (boost::posix_time::microsec_clock::local_time() - starttime).total_microseconds() / (1e6); break;
-      default: throw std::exception( "Unsopported channel number." );
+        //treat special case channels
+        case 9: samples_[scount++] = frame->dig_in; break;
+        case 10: samples_[scount++] = async_buffer_.getNumAvail( ); break;
+        case 11: samples_[scount++] = statistics_.time_statistics_.get_adaptive_mean( ); break;
+        case 12: samples_[scount++] = (boost::posix_time::microsec_clock::local_time() - starttime).total_microseconds() / (1e6); break;
+        default: throw std::exception( "Unsopported channel number." );
       }
 
     data_.appendBlock( samples_, 1 );
@@ -533,7 +540,7 @@ void Plux::convertFrames2SampleBlock( )
 std::string Plux::findDevice( )
 {
   #ifdef DEBUG
-    cout << "Plux: acquireDevice" << endl;
+    cout << "Plux: findDevice" << endl;
   #endif
   vector<string> devs;
   BP::Device::FindDevices(devs);

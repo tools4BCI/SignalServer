@@ -57,7 +57,16 @@ namespace tobiss
 /**
 * @class Plux
 * @brief A class to access BioPlux Devices.
-* @todo Everything.
+*
+* Implements HWThread access to BioPlux.
+* Devices are identified by their MAC addresses. (The test device has MAC string set to "Test".)
+* If no MAC is specified, the class attempts to autodetect the device.
+* The BioPlux API returns a sequence number for each acquired frame (=sample). By tracking the
+* sequence number lost samples can be identified. Lost samples are replaced by linear interpolation.
+* In asynchroneous (slave) mode, frames are stored in a ring buffer. This inevitably causes some delay.
+* When reading from an empty buffer, artificial frames are created. When too many frames end up in the
+* buffer, some are dropped. Both measures are required to gracefully handle imprecisions in the timing
+* of different devices.
 */
 class Plux : public HWThread
 {
@@ -95,8 +104,8 @@ public:
     /**
     * @brief Method to start data acquisition.
     */
-
     virtual void run();
+
     /**
     * @brief Method to stop data acquisition.
     */
@@ -104,14 +113,24 @@ public:
 
 private:
 
+    /**
+    * @brief Start async acquisition.
+    *
+    * This essentially launches a thread that uses blocking data acquisition to write
+    * Data to async_buffer_.
+    */
     void startAsyncAquisition( );
 
+   /**
+    * @brief Stop async acquisition.
+    * @param[in] blocking bool True causes the function to block until the thread is stopped.
+    */
     void stopAsyncAquisition( bool blocking = true );
 
     /**
-    * @brief Print statistics of time delays in async acquisition mode
+    * @brief Print statistics about data acquisition.
     */
-    void printAsyncStatistics( );
+    void printStatistics( );
 
     /**
     * @brief Set the configuration of the Plux Device with a XML object
@@ -172,8 +191,8 @@ private:
 
       void setInvalid( ) { seq = -1; }
       
-      void operator++( int ); //prefix operator
-      void operator--( int ); //prefix operator
+      void operator++( int ); //postfix operator
+      void operator--( int ); //postfix operator
       bool operator==( const seqtype &s ) const;
       bool operator>( const seqtype &s ) const;
       bool operator<( const seqtype &s ) const;
@@ -198,31 +217,35 @@ private:
 
       /**
       * @brief Constructor (interpolating).
+      *
+      * The frame is interpolated between a and b, using the sequence numbers.
       */
       frametype( const frametype &a, const frametype &b, const SequenceNumber &seq );
 
-      BP::Device::Frame frame;
-      boost::posix_time::ptime time;
+      BP::Device::Frame frame;        ///< BioPlux Frames
+      boost::posix_time::ptime time;  ///< Corresponding acquisition time
     };
 
     static const HWThreadBuilderTemplateRegistratorWithoutIOService<Plux> FACTORY_REGISTRATOR_;
 
+    std::map<std::string, std::string> m_;	///< Attributes map -- to be renamed
+    
+    BP::Device *device_;      ///< BioPlux Device handle
+    std::string devstr_;      ///< Device Identifier
+    std::string devinfo_;     ///< Device Description
 
-    std::map<std::string, std::string> m_;	/// Attributes map -- to be renamed
-    BP::Device *device_;
+    frametype last_frame_;        ///< Last frame that was processed
+    SequenceNumber seq_expected;  ///< Next expected sequence number
 
-    std::string devstr_;
-    std::string devinfo_;
+    std::vector<BP::Device::Frame> frames_;   ///< Pre-allocated buffer with BioPlux frames
+    std::vector<double> samples_;             ///< Pre-allocated samples for writing to the SampleBlock
 
-    frametype last_frame_;
-    SequenceNumber seq_expected;
+    boost::thread async_acquisition_thread_;  ///< Handle to the async acquisition thread
+    DataBuffer<frametype> async_buffer_;      ///< Ring buffer for async acquisition (thread safe!)
 
-    std::vector<BP::Device::Frame> frames_;
-    std::vector<double> samples_;
-    DataBuffer<frametype> async_buffer_;
-
-    boost::thread async_acquisition_thread_;
-
+    /**
+     * @brief Various acquisition statistics.
+     */
     struct {
       void reset( )
       {
