@@ -64,9 +64,9 @@ namespace tobiss
 * The BioPlux API returns a sequence number for each acquired frame (=sample). By tracking the
 * sequence number lost samples can be identified. Lost samples are replaced by linear interpolation.
 * In asynchroneous (slave) mode, frames are stored in a ring buffer. This inevitably causes some delay.
-* When reading from an empty buffer, artificial frames are created. When too many frames end up in the
-* buffer, some are dropped. Both measures are required to gracefully handle imprecisions in the timing
-* of different devices.
+* When the buffer is full, old frames are overwritten. Thus, choosing the buffer size is a trade-off 
+* between frame delay and chance of losing a sample. When reading from an empty buffer, an artificial
+* sample is inserted.
 */
 class Plux : public HWThread
 {
@@ -228,6 +228,8 @@ private:
 
     static const HWThreadBuilderTemplateRegistratorWithoutIOService<Plux> FACTORY_REGISTRATOR_;
 
+    static const std::string hw_buffersize_;     ///< xml-tag hardware: buffersize
+
     std::map<std::string, std::string> m_;	///< Attributes map -- to be renamed
     
     BP::Device *device_;      ///< BioPlux Device handle
@@ -236,12 +238,14 @@ private:
 
     frametype last_frame_;        ///< Last frame that was processed
     SequenceNumber seq_expected;  ///< Next expected sequence number
+    unsigned long long num_frames_total_;  ///< Total number of frames processed
 
     std::vector<BP::Device::Frame> frames_;   ///< Pre-allocated buffer with BioPlux frames
     std::vector<double> samples_;             ///< Pre-allocated samples for writing to the SampleBlock
 
-    boost::thread async_acquisition_thread_;  ///< Handle to the async acquisition thread
-    DataBuffer<frametype> async_buffer_;      ///< Ring buffer for async acquisition (thread safe!)
+    boost::thread async_acquisition_thread_;      ///< Handle to the async acquisition thread
+    DataBuffer<frametype> async_buffer_;          ///< Ring buffer for async acquisition (thread safe!)
+    DataBuffer<frametype>::size_type buffersize_; ///< Maximum size of the async buffer
 
     /**
      * @brief Various acquisition statistics.
@@ -254,9 +258,8 @@ private:
         frames_lost_ = 0;
         frames_repeated_ = 0;
         frames_dropped_ = 0;
-        frames_delayed_ = 0;
       }
-      long long frames_lost_, frames_repeated_, frames_dropped_, frames_delayed_;
+      long long frames_lost_, frames_repeated_, frames_dropped_;
       Statistics time_statistics_;
       unsigned int statistics_interval_;
       boost::posix_time::ptime last_printed_;

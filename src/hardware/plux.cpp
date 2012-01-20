@@ -56,6 +56,10 @@ using std::vector;
 
 //-----------------------------------------------------------------------------
 
+const string Plux::hw_buffersize_("buffersize");
+
+//-----------------------------------------------------------------------------
+
 const HWThreadBuilderTemplateRegistratorWithoutIOService<Plux> Plux::FACTORY_REGISTRATOR_( "plux", "bioplux" );
 
 //-----------------------------------------------------------------------------
@@ -94,17 +98,17 @@ Plux::Plux(ticpp::Iterator<ticpp::Element> hw)
   if( !device_ )
     throw std::runtime_error( "Error during BioPlux Device Initialization." );
 
-  // Initialize and pre-allocate members.
-  data_.init( blocks_, nr_ch_, channel_types_ );
-  frames_.resize( blocks_ );
-  statistics_.reset( );
-
   // Set statistics output interval, or disable the output.
   it = m_.find( "statoutput" );
   if( it == m_.end() )
     statistics_.statistics_interval_ = 0;
   else
     statistics_.statistics_interval_ = lexical_cast<unsigned int>( it->second );
+
+  // Initialize and pre-allocate members.
+  data_.init( blocks_, nr_ch_, channel_types_ );
+  frames_.resize( blocks_ );
+  statistics_.reset( );
 
   // Print some information.
   cout << endl;
@@ -180,6 +184,11 @@ void Plux::setDeviceSettings(ticpp::Iterator<ticpp::Element>const &father)
   elem = father->FirstChildElement(hw_blocksize_,false);
   if(elem != elem.end())
     setBlocks(elem);
+
+  buffersize_ = 50;  // FIXME ... hard coded default
+  elem = father->FirstChildElement(hw_buffersize_,false);
+  if(elem != elem.end())
+    buffersize_ = lexical_cast<DataBuffer<frametype>::size_type>(elem->GetText(true));
 }
 
 //---------------------------------------------------------------------------------------
@@ -213,7 +222,7 @@ SampleBlock<double> Plux::getSyncData()
     } catch( BP::Err &err ) { rethrowPluxException( "Plux::getSyncData()", err, true ); }
 
     if( seq_expected.valid() )
-      while( seq_expected < frame.frame.seq )
+      while( seq_expected < frame.frame.seq && i < blocks_ )
       {
         // Frame is newer than expected. That can only mean packets were lost.
         // interpolate.
@@ -222,6 +231,7 @@ SampleBlock<double> Plux::getSyncData()
         seq_expected++;
         frames_[i] = iframe.frame;
         statistics_.frames_lost_++;
+        i++;
       }
 
     if( !seq_expected.valid() || seq_expected == frame.frame.seq )
@@ -240,6 +250,8 @@ SampleBlock<double> Plux::getSyncData()
     }
 
   }
+  
+  num_frames_total_ += blocks_;
   
   printStatistics( );
 
@@ -263,8 +275,8 @@ void Plux::asyncAcquisitionThread( )
 
       device_->GetFrames( 1, &frame );
 
-      //async_buffer_.insert_overwriting( frametype( frame, boost::posix_time::microsec_clock::local_time() ) );
-      async_buffer_.insert_throwing( frametype( frame, boost::posix_time::microsec_clock::local_time() ) );
+      async_buffer_.insert_overwriting( frametype( frame, boost::posix_time::microsec_clock::local_time() ) );
+      //async_buffer_.insert_throwing( frametype( frame, boost::posix_time::microsec_clock::local_time() ) );
       //async_buffer_.insert_blocking( frametype( frame, boost::posix_time::microsec_clock::local_time() ) );
       
     }
@@ -329,34 +341,14 @@ SampleBlock<double> Plux::getAsyncData()
       // No sample available.
       // Substitute some data... (re-use last frame)
       frame = last_frame_;
-      seq_expected++;
+      //seq_expected++;
       last_frame_.frame.seq = seq_expected.cast<BYTE>();
       statistics_.frames_repeated_++;
     }
     frames_[i] = frame.frame;
   }
 
-  // Take care that there are not too many, and not too few samples in the buffer.
-  // This is accomplished by manipulating the expected sequence number. Beware of black magic!  
-
-  if( async_buffer_.getNumAvail() < 5 ) // FIXME ... hard coded value!
-  {
-    // Too few samples remain in the buffer.
-    // Reducing seq_expected makes the code above believe that a frame was lost.
-    // Subsequently, the next frame is delayed, and an artificial frame is 
-    // inserted, to replace the 'lost' frame.
-
-    seq_expected--;
-    //statistics_.frames_lost_--;
-    statistics_.frames_delayed_++;    
-  }
-
-  if( async_buffer_.getNumAvail() > 50 ) // FIXME ... hard coded value!
-  {
-    // Too many samples in the buffer.
-    // Increasing seq_expected by X makes the code above drop the next X samples.
-    seq_expected++;
-  }
+  num_frames_total_ += blocks_;
   
   printStatistics( );
 
@@ -369,9 +361,7 @@ SampleBlock<double> Plux::getAsyncData()
 
 void Plux::startAsyncAquisition( )
 {
-  // buffer size is 5 blocks or 250 milliseconds of data. (whichever is larger)
-  // FIXME ... hard coded values!
-  async_buffer_.resize( std::max( 5*blocks_, boost::numeric_cast<int>(fs_*10*0.250) ) );
+  async_buffer_.resize( buffersize_ );
 
   // Start the acquisition thread
   async_acquisition_thread_ = thread( &Plux::asyncAcquisitionThread, this );
@@ -395,7 +385,8 @@ void Plux::stopAsyncAquisition( bool blocking )
 void Plux::printStatistics( )
 { 
   if( statistics_.statistics_interval_ > 0 )
-  {    
+  {
+    double runtime = num_frames_total_ / fs_;
     boost::posix_time::ptime now = boost::posix_time::microsec_clock::local_time();
     if( (now - statistics_.last_printed_).total_milliseconds() > 1000*statistics_.statistics_interval_ )
     {
@@ -405,7 +396,7 @@ void Plux::printStatistics( )
         cout << endl;
         cout << boost::posix_time::to_simple_string( boost::posix_time::microsec_clock::local_time() ) << endl;
         cout << " Master device: " << devinfo_ << " (" << devstr_ << ")" << endl;
-        cout << "  Lost: " << statistics_.frames_lost_ << endl;
+        cout << "  Frames Lost : " << statistics_.frames_lost_ << "  (" << statistics_.frames_lost_/runtime << " per sec)" << endl;
         cout << "=============================" << endl;
       }
       else
@@ -413,11 +404,10 @@ void Plux::printStatistics( )
         cout << endl;
         cout << boost::posix_time::to_simple_string( boost::posix_time::microsec_clock::local_time() ) << endl;
         cout << " Slave device: " << devinfo_ << " (" << devstr_ << ")" << endl;
-        cout << "  Lost: " << statistics_.frames_lost_ << "(" << statistics_.frames_delayed_ << " delayed)" << endl;
-        cout << "  repeated: " << statistics_.frames_repeated_ << endl;
-        cout << "  dropped: " << statistics_.frames_dropped_ << endl;
-        cout << "  Bilanz: " << statistics_.frames_repeated_ - statistics_.frames_dropped_ << endl;
-        cout << "  Unread Frames: " << async_buffer_.getNumAvail( ) << endl;
+        cout << "  Frames Lost    : " << statistics_.frames_lost_ << "  (" << statistics_.frames_lost_/runtime << " per sec)" << endl;
+        cout << "  Frames inserted: " << statistics_.frames_repeated_ << "  (" << statistics_.frames_repeated_/runtime << " per sec)" << endl;
+        cout << "  Frames dropped : " << statistics_.frames_dropped_ << "  (" << statistics_.frames_dropped_/runtime << " per sec)" << endl;
+        cout << "  Unread Frames  : " << async_buffer_.getNumAvail( ) << endl;
         cout << "       Frame delay (milliseconds) " << endl;
         cout << "           mean: " << statistics_.time_statistics_.get_mean( ) << endl;
         cout << "  adaptive mean: " << statistics_.time_statistics_.get_adaptive_mean() << endl;
@@ -465,6 +455,7 @@ void Plux::run()
   // set initial conditions
   seq_expected.setInvalid( );
   statistics_.reset( );
+  num_frames_total_ = 0;
 
   try {
     device_->BeginAcq( fs, chmask, nbits );
