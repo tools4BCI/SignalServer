@@ -89,6 +89,7 @@ public:
   size_type getNumAvail(  )
   {
     boost::mutex::scoped_lock lock( mutex_ );
+    assert( unread_ <= container_.size() );
     return unread_;
     // the mutex is unlocked by scoped_lock's destructor.
   }
