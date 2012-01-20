@@ -33,55 +33,43 @@
 
 <!-- =============================================================================== -->
 
-<!--<hardware name="sinegenerator" version="1.0" serial="">
+ <hardware name="sinegenerator" version="1.0" serial="">
     <mode> master </mode>
     <device_settings>
-      <sampling_rate> 1000 </sampling_rate>
+      <sampling_rate> 500 </sampling_rate>
       <measurement_channels nr="1" names="eeg" type="eeg" />
-      <buffersize> 1 </buffersize>
+      <blocksize> 2 </blocksize>
     </device_settings>
 
     <channel_settings>
       <selection>
-        <ch nr="01" name="A" type="emg" />
-        <ch nr="02" name="B" type="eeg" />
-        <ch nr="03" name="C" type="eeg" />
-        <ch nr="04" name="D" type="eeg" />
-        <ch nr="05" name="E" type="eeg" />
-        <ch nr="06" name="F" type="eeg" />
-        <ch nr="07" name="G" type="eeg" />
-        <ch nr="08" name="H" type="eeg" />
-        <ch nr="09" name="I" type="eeg" />
-        <ch nr="10" name="J" type="eeg" />
-        <ch nr="11" name="K" type="eog" />
-        <ch nr="12" name="L" type="eog" />
-        <ch nr="13" name="M" type="bp" />
-        <ch nr="14" name="N" type="bp" />
+        <ch nr="01" name="A" type="eeg" />
       </selection>
     </channel_settings>
-  </hardware> -->
+  </hardware>
   
-  <hardware name="bioplux" mac="Test" version="1.0" serial="">
+  <!-- <hardware name="bioplux" mac="Test" statoutput="10" version="1.0" serial="">
     <mode> master </mode>
     <device_settings>
-      <sampling_rate> 1000 </sampling_rate>
-      <blocksize> 1 </blocksize>
+      <sampling_rate> 500 </sampling_rate>
+      <blocksize> 10 </blocksize>
     </device_settings>
 
    <channel_settings>
       <selection>
         <ch nr="01" name="sinus" type="eeg" />
-        <ch nr="09" name="digin" type="eeg" />
+        <ch nr="02" name="digin" type="eeg" />
       </selection>
     </channel_settings>
-  </hardware>
+  </hardware> -->
 
-<!--   <hardware name="bioplux" mac="00:07:80:4B:2C:A2" version="1.0" serial="">  -->
-   <hardware name="bioplux" mac="Test" statupdate="15" version="1.0" serial=""> 
+  <hardware name="bioplux" mac="Test" statoutput="10" version="1.0" serial="">
+  <!-- <hardware name="bioplux" mac="00:07:80:4B:2C:A2" statoutput="10" version="1.0" serial=""> -->
     <mode> slave </mode>
     <device_settings>
       <sampling_rate> 1000 </sampling_rate>
-      <blocksize> 1 </blocksize>
+      <blocksize> 4</blocksize>
+	  <buffersize> 40 </buffersize>
     </device_settings>
 
    <channel_settings>
@@ -95,27 +83,43 @@
         <ch nr="07" name="empty" type="sensor" />
         <ch nr="08" name="plate" type="sensor" />
         <ch nr="09" name="digin" type="sensor" />
+        <ch nr="10" name="buffer" type="sensor" />
+        <ch nr="11" name="delay" type="sensor" />
+        <ch nr="12" name="time" type="sensor" />
       </selection>
     </channel_settings>
   </hardware>
 
 <!-- =============================================================================== -->
 
-<!--
-  <hardware name="sinegenerator" version="1.0" serial="">
-    <mode> slave </mode>
+<!--  <hardware name="sinegenerator" version="1.0" serial="">
+    <mode> master </mode>
     <device_settings>
-      <sampling_rate> 300 </sampling_rate>
+      <sampling_rate> 1000 </sampling_rate>
       <measurement_channels nr="2" names="sensor" type="sensor" />
       <blocksize> 10 </blocksize>
     </device_settings>
 
    <channel_settings>
       <selection>
+        <ch nr="01" name="eeg1" type="eeg" />
+        <ch nr="02" name="eeg2" type="emg" />
+      </selection>
+    </channel_settings>
+  </hardware>
+
+   <hardware name="sinegenerator" version="1.0" serial="">
+    <mode> slave </mode>
+    <device_settings>
+      <sampling_rate> 1000 </sampling_rate>
+      <measurement_channels nr="2" names="sensor" type="sensor" />
+      <blocksize> 5 </blocksize>
+    </device_settings>
+
+   <channel_settings>
+      <selection>
         <ch nr="01" name="bp1" type="bp" />
         <ch nr="02" name="bp2" type="bp" />
-        <ch nr="03" name="asdfg" type="hr" />
-        <ch nr="04" name="speed" type="sensor" />
       </selection>
     </channel_settings>
   </hardware> -->
