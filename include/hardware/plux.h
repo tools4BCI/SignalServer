@@ -64,9 +64,9 @@ namespace tobiss
 * The BioPlux API returns a sequence number for each acquired frame (=sample). By tracking the
 * sequence number lost samples can be identified. Lost samples are replaced by linear interpolation.
 * In asynchroneous (slave) mode, frames are stored in a ring buffer. This inevitably causes some delay.
-* When the buffer is full, old frames are overwritten. Thus, choosing the buffer size is a trade-off 
-* between frame delay and chance of losing a sample. When reading from an empty buffer, an artificial
-* sample is inserted.
+* When the buffer is full, old frames are overwritten. When reading from an empty buffer, an artificial
+* sample is inserted. Under bad timing conditions (imprecise synchronization of devices) the buffer size
+* provides a trade-off between frame delay and chance of frame loss.
 */
 class Plux : public HWThread
 {
