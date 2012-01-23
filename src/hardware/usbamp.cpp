@@ -180,8 +180,8 @@ USBamp::USBamp(ticpp::Iterator<ticpp::Element> hw)
 
   error_msg_ = new CHAR[USBAMP_ERROR_MSG_SIZE];
 
-  data_.init(blocks_, nr_ch_, channel_types_);
-  samples_.resize(expected_values_, 0);
+  data_.init(blocks_ / downsampling_factor_, nr_ch_, channel_types_);
+  samples_.resize(nr_ch_ * blocks_ / downsampling_factor_, 0);
 
   initUSBamp();
 
@@ -395,9 +395,9 @@ void USBamp::fillSampleBlock()
 {
   unsigned int pos = 0;
   for(unsigned int k = 0; k < expected_values_/blocks_ ; k++)
-    for(unsigned int j = 0; j < blocks_; j++)
+    for(unsigned int j = 0; j < blocks_; j+=downsampling_factor_)
     {
-      pos = (k*blocks_) + j;
+      pos = (k*blocks_) + j / downsampling_factor_;
       samples_[ pos ] = *(reinterpret_cast<float*>(driver_buffer_[current_overlapped_] + HEADER_SIZE + (k +(j* expected_values_/blocks_) )*sizeof(float) ));
 
       if( isnan( samples_[pos] ) )
@@ -595,6 +595,13 @@ void USBamp::setDeviceSettings(ticpp::Iterator<ticpp::Element>const &father)
 
   //---- optional ---
 
+  // Important to set downsampling before Filters, because it changes the sampling rate.
+  elem = father->FirstChildElement(hw_downsamplingfactor_,false);
+  if(elem != elem.end())
+    setDownsamplingFactor(elem);
+  hwfs_ = boost::numeric_cast<WORD>(fs_);  
+  fs_ /= downsampling_factor_;
+
   elem = father->FirstChildElement(hw_filter_,false);
   if(elem != elem.end())
     setDeviceFilterSettings(elem);
@@ -630,12 +637,6 @@ void USBamp::setDeviceSettings(ticpp::Iterator<ticpp::Element>const &father)
   elem = father->FirstChildElement(hw_drl_,false);
   if(elem != elem.end())
     setDrivenRightLeg(elem);
-
-  elem = father->FirstChildElement(hw_downsamplingfactor_,true);
-  if(elem != elem.end())
-    setDownsamplingFactor(elem);
-  hwfs_ = boost::numeric_cast<WORD>(fs_);  
-  fs_ /= downsampling_factor_;
 }
 
 //---------------------------------------------------------------------------------------
@@ -762,6 +763,11 @@ void USBamp::setDownsamplingFactor(ticpp::Iterator<ticpp::Element> &elem)
   if(factor <= 1)
   {
     string ex_str(type_ + " -- Downsampling: value is <= 1!");
+    throw(std::invalid_argument(ex_str));
+  }
+  else if(blocks_ % factor != 0)
+  {
+    string ex_str(type_ + " -- Downsampling: " + hw_blocksize_ + " must be an integer multiple of " + hw_downsamplingfactor_ + "!");
     throw(std::invalid_argument(ex_str));
   }
 
