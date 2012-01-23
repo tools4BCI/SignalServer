@@ -91,6 +91,8 @@ const string USBamp::hw_filter_high_("f_high");
 const string USBamp::hw_notch_("notch");
 const string USBamp::hw_notch_center_("f_center");
 
+const string USBamp::hw_downsamplingfactor_("downsampling");
+
 const string USBamp::hw_opmode_("operation_mode");
 const string USBamp::hw_sc_("shortcut");
 const string USBamp::hw_trigger_line_("trigger_line");
@@ -589,6 +591,10 @@ void USBamp::setDeviceSettings(ticpp::Iterator<ticpp::Element>const &father)
 
   //---- optional ---
 
+  elem = father->FirstChildElement(hw_downsamplingfactor_,true);
+  if(elem != elem.end())
+    setDownsamplingFactor(elem);
+
   elem = father->FirstChildElement(hw_filter_,false);
   if(elem != elem.end())
     setDeviceFilterSettings(elem);
@@ -675,6 +681,8 @@ void USBamp::setDefaultSettings()
 
   //FIXME   --  if needed, implementation of other operation modes
 
+  downsampling_factor_ = 1;
+
   is_usbamp_master_ = 0;
   enable_sc_ = 1;
 
@@ -721,6 +729,34 @@ void USBamp::setDefaultSettings()
   drl_channels_.Channel14 = 0;
   drl_channels_.Channel15 = 0;
   drl_channels_.Channel16 = 0;
+}
+
+//---------------------------------------------------------------------------------------
+    
+void USBamp::setDownsamplingFactor(ticpp::Iterator<ticpp::Element> &elem)
+{
+  #ifdef DEBUG
+    cout << "USBamp: setDownsamplingFactor" << endl;
+  #endif
+
+  unsigned int factor;
+
+  try
+  {
+    factor = lexical_cast<unsigned int>(elem->GetText(true));
+  }
+  catch(bad_lexical_cast &)
+  {
+    string ex_str(type_ + " -- Downsampling: value is not a number!");
+    throw(std::invalid_argument(ex_str));
+  }
+  if(factor <= 1)
+  {
+    string ex_str(type_ + " -- Downsampling: value is <= 1!");
+    throw(std::invalid_argument(ex_str));
+  }
+
+  downsampling_factor_ = factor;
 }
 
 //---------------------------------------------------------------------------------------
