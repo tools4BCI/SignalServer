@@ -168,7 +168,7 @@ USBamp::USBamp(ticpp::Iterator<ticpp::Element> hw)
   initFilterPtrs();
   setHardware(hw);
 
-  expected_values_ = nr_ch_ * blocks_;
+  expected_values_ = nr_ch_ * blocks_ * downsampling_factor_;
 
   driver_buffer_size_ = expected_values_ * sizeof(float) + HEADER_SIZE;
 
@@ -180,8 +180,8 @@ USBamp::USBamp(ticpp::Iterator<ticpp::Element> hw)
 
   error_msg_ = new CHAR[USBAMP_ERROR_MSG_SIZE];
 
-  data_.init(blocks_ / downsampling_factor_, nr_ch_, channel_types_);
-  samples_.resize(nr_ch_ * blocks_ / downsampling_factor_, 0);
+  data_.init(blocks_, nr_ch_, channel_types_);
+  samples_.resize(nr_ch_ * blocks_, 0);
 
   initUSBamp();
 
@@ -259,28 +259,24 @@ SampleBlock<double> USBamp::getSyncData()
   }
 
   boost::unique_lock<boost::shared_mutex> lock(rw_);
+  bytes_received_[current_overlapped_] = 0;
 
-  for( unsigned int i=0; i<downsampling_factor_; i++ )
+  if(!first_run_)
   {
-    bytes_received_[current_overlapped_] = 0;
-
-    if(!first_run_)
-    {
-      for(uint32_t n = 0; n < slave_devices_.size(); n++)
-        slave_devices_[n]->callGT_GetData();
-      callGT_GetData();
-    }
-    else
-      first_run_ = false;
-
     for(uint32_t n = 0; n < slave_devices_.size(); n++)
-      slave_devices_[n]->fillSyncBuffer();
-    fillSyncBuffer();
-
-    fillSampleBlock();
-    for(uint32_t n = 0; n < slave_devices_.size(); n++)
-      slave_devices_[n]->fillSampleBlock();
+      slave_devices_[n]->callGT_GetData();
+    callGT_GetData();
   }
+  else
+    first_run_ = false;
+
+  for(uint32_t n = 0; n < slave_devices_.size(); n++)
+    slave_devices_[n]->fillSyncBuffer();
+  fillSyncBuffer();
+
+  fillSampleBlock();
+  for(uint32_t n = 0; n < slave_devices_.size(); n++)
+    slave_devices_[n]->fillSampleBlock();
 
   lock.unlock();
   return(data_);
@@ -394,10 +390,10 @@ void USBamp::fillSyncBuffer()
 void USBamp::fillSampleBlock()
 {
   unsigned int pos = 0;
-  for(unsigned int k = 0; k < expected_values_/blocks_ ; k++)
-    for(unsigned int j = 0; j < blocks_; j+=downsampling_factor_)
+  for(unsigned int k = 0; k < nr_ch_ ; k++)
+    for(unsigned int j = 0; j < blocks_; j++)
     {
-      pos = (k*blocks_) + j / downsampling_factor_;
+      pos = (k*blocks_) + j;
       samples_[ pos ] = *(reinterpret_cast<float*>(driver_buffer_[current_overlapped_] + HEADER_SIZE + (k +(j* expected_values_/blocks_) )*sizeof(float) ));
 
       if( isnan( samples_[pos] ) )
@@ -760,16 +756,16 @@ void USBamp::setDownsamplingFactor(ticpp::Iterator<ticpp::Element> &elem)
     string ex_str(type_ + " -- Downsampling: value is not a number!");
     throw(std::invalid_argument(ex_str));
   }
-  if(factor <= 1)
+  if(factor < 1)
   {
-    string ex_str(type_ + " -- Downsampling: value is <= 1!");
+    string ex_str(type_ + " -- Downsampling: value is < 1!");
     throw(std::invalid_argument(ex_str));
   }
-  else if(blocks_ % factor != 0)
+  /*else if(blocks_ % factor != 0)
   {
     string ex_str(type_ + " -- Downsampling: " + hw_blocksize_ + " must be an integer multiple of " + hw_downsamplingfactor_ + "!");
     throw(std::invalid_argument(ex_str));
-  }
+  }*/
 
   downsampling_factor_ = factor;
 }
@@ -1700,7 +1696,7 @@ void USBamp::initUSBamp()
   if( !usb_amp_.setSampleRate(h_, hwfs_ ))
     throw(std::runtime_error("USBamp::initUSBamp -- Error setting sampling rate!"));
 
-  if( !usb_amp_.setBufferSize(h_, blocks_))
+  if( !usb_amp_.setBufferSize(h_, blocks_ * downsampling_factor_))
     throw(std::runtime_error("USBamp::initUSBamp -- Error setting buffer size!"));
 
   setUSBampChannels();
