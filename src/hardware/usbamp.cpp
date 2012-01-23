@@ -91,6 +91,8 @@ const string USBamp::hw_filter_high_("f_high");
 const string USBamp::hw_notch_("notch");
 const string USBamp::hw_notch_center_("f_center");
 
+const string USBamp::hw_downsamplingfactor_("downsampling");
+
 const string USBamp::hw_opmode_("operation_mode");
 const string USBamp::hw_sc_("shortcut");
 const string USBamp::hw_trigger_line_("trigger_line");
@@ -166,7 +168,7 @@ USBamp::USBamp(ticpp::Iterator<ticpp::Element> hw)
   initFilterPtrs();
   setHardware(hw);
 
-  expected_values_ = nr_ch_ * blocks_;
+  expected_values_ = nr_ch_ * blocks_ * downsampling_factor_;
 
   driver_buffer_size_ = expected_values_ * sizeof(float) + HEADER_SIZE;
 
@@ -179,7 +181,7 @@ USBamp::USBamp(ticpp::Iterator<ticpp::Element> hw)
   error_msg_ = new CHAR[USBAMP_ERROR_MSG_SIZE];
 
   data_.init(blocks_, nr_ch_, channel_types_);
-  samples_.resize(expected_values_, 0);
+  samples_.resize(nr_ch_ * blocks_, 0);
 
   initUSBamp();
 
@@ -388,7 +390,7 @@ void USBamp::fillSyncBuffer()
 void USBamp::fillSampleBlock()
 {
   unsigned int pos = 0;
-  for(unsigned int k = 0; k < expected_values_/blocks_ ; k++)
+  for(unsigned int k = 0; k < nr_ch_ ; k++)
     for(unsigned int j = 0; j < blocks_; j++)
     {
       pos = (k*blocks_) + j;
@@ -589,6 +591,13 @@ void USBamp::setDeviceSettings(ticpp::Iterator<ticpp::Element>const &father)
 
   //---- optional ---
 
+  // Important to set downsampling before Filters, because it changes the sampling rate.
+  elem = father->FirstChildElement(hw_downsamplingfactor_,false);
+  if(elem != elem.end())
+    setDownsamplingFactor(elem);
+  hwfs_ = boost::numeric_cast<WORD>(fs_);  
+  fs_ /= downsampling_factor_;
+
   elem = father->FirstChildElement(hw_filter_,false);
   if(elem != elem.end())
     setDeviceFilterSettings(elem);
@@ -675,6 +684,8 @@ void USBamp::setDefaultSettings()
 
   //FIXME   --  if needed, implementation of other operation modes
 
+  downsampling_factor_ = 1;
+
   is_usbamp_master_ = 0;
   enable_sc_ = 1;
 
@@ -721,6 +732,39 @@ void USBamp::setDefaultSettings()
   drl_channels_.Channel14 = 0;
   drl_channels_.Channel15 = 0;
   drl_channels_.Channel16 = 0;
+}
+
+//---------------------------------------------------------------------------------------
+    
+void USBamp::setDownsamplingFactor(ticpp::Iterator<ticpp::Element> &elem)
+{
+  #ifdef DEBUG
+    cout << "USBamp: setDownsamplingFactor" << endl;
+  #endif
+
+  unsigned int factor;
+
+  try
+  {
+    factor = lexical_cast<unsigned int>(elem->GetText(true));
+  }
+  catch(bad_lexical_cast &)
+  {
+    string ex_str(type_ + " -- Downsampling: value is not a number!");
+    throw(std::invalid_argument(ex_str));
+  }
+  if(factor < 1)
+  {
+    string ex_str(type_ + " -- Downsampling: value is < 1!");
+    throw(std::invalid_argument(ex_str));
+  }
+  /*else if(blocks_ % factor != 0)
+  {
+    string ex_str(type_ + " -- Downsampling: " + hw_blocksize_ + " must be an integer multiple of " + hw_downsamplingfactor_ + "!");
+    throw(std::invalid_argument(ex_str));
+  }*/
+
+  downsampling_factor_ = factor;
 }
 
 //---------------------------------------------------------------------------------------
@@ -883,7 +927,7 @@ int USBamp::search4FilterID(unsigned int type, unsigned int order, double f_low,
 
   for(int n = 0; n < nr_of_bp_filters_; n++)
   {
-    if(( roundD(bp_filters_[n].fs)  == fs_)      &&  ( roundD(bp_filters_[n].type) == type) && \
+    if(( roundD(bp_filters_[n].fs)  == hwfs_)      &&  ( roundD(bp_filters_[n].type) == type) && \
        ( roundD(bp_filters_[n].order) == order) &&  ( roundD(bp_filters_[n].fu)  == f_low) && \
        ( roundD(bp_filters_[n].fo)    == f_high) )
       id = n;
@@ -893,7 +937,7 @@ int USBamp::search4FilterID(unsigned int type, unsigned int order, double f_low,
   {
     printPossibleBandPassFilters();
     string ex_str = "USBamp::search4FilterID -- Filter settings not possible -- ";
-    ex_str = ex_str + "Fs: "   + lexical_cast<string>(boost::format("%d") % fs_)  +  ", ";
+    ex_str = ex_str + "Fs: "   + lexical_cast<string>(boost::format("%d") % hwfs_)  +  ", ";
     ex_str = ex_str + "Type: "   + getUSBampFilterName(type)  +  ", ";
     ex_str = ex_str + "Order: "  + lexical_cast<string>(order) +  ", ";
     ex_str = ex_str + "f_low: "  + lexical_cast<string>(boost::format("%d") % f_low) +  ", ";
@@ -931,7 +975,7 @@ void USBamp::printPossibleBandPassFilters()
 
 
   for(int n = 0; n < nr_of_bp_filters_; n++)
-    if(fs_ == bp_filters_[n].fs)
+    if(hwfs_ == bp_filters_[n].fs)
     {
     cout << right;
     cout.width(9);
@@ -981,7 +1025,7 @@ void USBamp::printPossibleNotchFilters()
   cout << endl;
 
   for(int n = 0; n < nr_of_notch_filters_; n++)
-    if(fs_ == notch_filters_[n].fs)
+    if(hwfs_ == notch_filters_[n].fs)
     {
       cout << right;
       cout.width(9);
@@ -1142,7 +1186,7 @@ int USBamp::search4NotchID(float f_center)
 
   for(int n = 0; n < nr_of_notch_filters_; n++)
   {
-    if( ( roundD(notch_filters_[n].fs)  == fs_) && \
+    if( ( roundD(notch_filters_[n].fs)  == hwfs_) && \
       ( roundD(notch_filters_[n].fu) == f_center - USBAMP_NOTCH_HALF_WIDTH ) && \
       ( roundD(notch_filters_[n].fo) == f_center + USBAMP_NOTCH_HALF_WIDTH ) )
       id = n;
@@ -1646,10 +1690,10 @@ void USBamp::initUSBamp()
   if( !usb_amp_.setMode (h_, M_NORMAL) )
     throw(std::runtime_error("USBamp::initUSBamp -- Error setting mode!"));
 
-  if( !usb_amp_.setSampleRate(h_, boost::numeric_cast<WORD>(fs_) ))
+  if( !usb_amp_.setSampleRate(h_, hwfs_ ))
     throw(std::runtime_error("USBamp::initUSBamp -- Error setting sampling rate!"));
 
-  if( !usb_amp_.setBufferSize(h_, blocks_))
+  if( !usb_amp_.setBufferSize(h_, blocks_ * downsampling_factor_))
     throw(std::runtime_error("USBamp::initUSBamp -- Error setting buffer size!"));
 
   setUSBampChannels();
