@@ -742,9 +742,6 @@ void USBamp::setDownsamplingFactor(ticpp::Iterator<ticpp::Element> &elem)
     cout << "USBamp: setDownsamplingFactor" << endl;
   #endif
 
-  if( !isMaster() )
-    throw( std::invalid_argument( "Downsampling can only be set at the master device, and affects all USBamp slaves." ) );
-
   unsigned int factor;
 
   try
