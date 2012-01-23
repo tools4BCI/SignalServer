@@ -253,6 +253,7 @@ class USBamp : public HWThread
     GTECUSBampWrapper usb_amp_;
 
     unsigned int downsampling_factor_;
+    WORD hwfs_; ///< Actual sampling rate the hardware runs with
 
     std::map<std::string, std::string> m_;	/// Attributes mab -- to be renamed
 

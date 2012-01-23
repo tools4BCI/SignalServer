@@ -33,7 +33,7 @@
 
 <!-- =============================================================================== -->
 
-   <hardware name="sinegenerator" version="1.0" serial="">
+   <!-- <hardware name="sinegenerator" version="1.0" serial="">
     <mode> master </mode>
     <device_settings>
       <sampling_rate> 600 </sampling_rate>
@@ -41,7 +41,7 @@
       <blocksize> 10 </blocksize>
     </device_settings>
 
-  </hardware>
+  </hardware> -->
 
 <!-- =============================================================================== -->
 
@@ -100,7 +100,7 @@
 
 <!-- =============================================================================== -->
 
-<!--<hardware name="g.usbamp" version="B" serial="UB-2009.07.07">
+<hardware name="g.usbamp" version="B" serial="UB-2009.07.07">
     <mode> master </mode>
     <device_settings>
       <sampling_rate> 512 </sampling_rate>
@@ -130,7 +130,7 @@
         <cr block="d" value="1" />
       </common_reference>
     </device_settings>
-  </hardware>-->
+  </hardware>
 
 <!-- =============================================================================== -->
 <!--
