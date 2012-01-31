@@ -360,10 +360,56 @@ attribute "with" is subtracted from the channel given by "nr". The Signal Server
 An option to supress the channel defined by "with" is planned.
 
   ..  code-block:: xml
+      :linenos:
 
       <bipolar>
         <ch nr="1" with="05" />
       </bipolar>
+
+
+bioPlux
+^^^^^^^
+
+The bioPlux is a biosignal (EMG, ECG) and sensor DAQ device produced by PLUX, Engenharia De Biosensores LDA. Up to now only a 32 bit Windows API is available.
+
+  ..  code-block:: xml
+      :linenos:
+
+      <hardware name="bioplux" mac="00:07:80:4B:2C:A2" statoutput="0" version="1.0" serial="">
+          <mode> master </mode>
+          <device_settings>
+            <sampling_rate> 1000 </sampling_rate>
+            <blocksize> 10 </blocksize>
+          </device_settings>
+
+          <channel_settings>
+            <selection>
+              <ch nr="01" name="arm" type="emg" />
+              <ch nr="02" name="leg" type="emg" />
+              <ch nr="05" name="preasure" type="sensor" />
+            </selection>
+          </channel_settings>
+      </hardware>
+
+
+Every bioPlux device is identified with a unique mac address. The API also provides a software emulated test device that is identified with "Test" instead of the mac address.
+If statoutput is provided and not "0", the module prints statistical information (samples lost, dropped, delayed, etc.) to the standard output.
+When operating in Slave mode, data is read into a FIFO buffer to allow asynchroneous acquisition. In case of a buffer underrun, the last sample is repeated. In case of a buffer overrun, the oldest sample is dropped from the buffer. Lost samples are detected and linearly interpolated.
+
+A buffersize tag in the device_settings can be used to set the size of the buffer in slave mode.
+  .. code-block:: xml
+     :linenos:
+
+     <device_settings>
+       ...
+       <buffersize> 40 </buffersize>
+       ...
+     <device_settings>
+
+While the digital output is not supported, the digital input is mapped to channel 9.
+Channels 10, 11 and 12 provide debugging information (time, frame delay, buffer count).
+
+
 
 g.Mobilab
 ^^^^^^^^^
