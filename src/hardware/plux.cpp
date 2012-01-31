@@ -516,9 +516,9 @@ void Plux::convertFrames2SampleBlock( )
       {
         //treat special case channels
         case 9: samples_[scount++] = frame->dig_in; break;
-        case 10: samples_[scount++] = async_buffer_.getNumAvail( ); break;
+        case 12: samples_[scount++] = async_buffer_.getNumAvail( ); break;
         case 11: samples_[scount++] = statistics_.time_statistics_.get_adaptive_mean( ); break;
-        case 12: samples_[scount++] = (boost::posix_time::microsec_clock::local_time() - starttime).total_microseconds() / (1e6); break;
+        case 10: samples_[scount++] = (boost::posix_time::microsec_clock::local_time() - starttime).total_microseconds() / (1e6); break;
         default: throw std::exception( "Unsopported channel number." );
       }
 
