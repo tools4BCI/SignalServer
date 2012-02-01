@@ -155,7 +155,6 @@ public:
     * @brief Insert a new item (sample/frame/packet/...) in the buffer
     * @param[in] item DataBuffer::param_type Item to insert
     * @remark If the buffer is full, the oldest item is dropped from the buffer
-    * @warning Experimental and untested!
     */
   void insert_overwriting( param_type item )
   {
@@ -252,6 +251,19 @@ public:
     }
     lock.unlock( );
     return false;
+  }
+
+  /**
+    * @Remove all unread items from the buffer
+    * @return bool True if an item was removed.
+    * @remark If the buffer is empty the function returns false.
+    */
+  void clearAll()
+  {
+    boost::mutex::scoped_lock lock( mutex_ );
+    unread_ = 0;
+    lock.unlock( );
+    cond_not_full_.notify_one( );
   }
 
 private:
