@@ -83,9 +83,9 @@
         <ch nr="07" name="empty" type="sensor" />
         <ch nr="08" name="plate" type="sensor" />
         <ch nr="09" name="digin" type="sensor" />
-        <ch nr="10" name="buffer" type="sensor" />
+        <ch nr="10" name="time" type="sensor" />
         <ch nr="11" name="delay" type="sensor" />
-        <ch nr="12" name="time" type="sensor" />
+        <ch nr="12" name="buffer" type="sensor" />
       </selection>
     </channel_settings>
   </hardware>
