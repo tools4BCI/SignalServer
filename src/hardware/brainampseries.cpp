@@ -41,6 +41,7 @@
 #include <boost/algorithm/string.hpp>
 #include <math.h>
 
+#include "tia/constants.h"
 #include "hardware/brainampseries.h"
 
 namespace tobiss
@@ -1003,7 +1004,7 @@ void BrainAmpSeries::setTriggerLine(ticpp::Iterator<ticpp::Element>const &elem)
 
   trigger_line_enabled_ = equalsOnOrOff(elem->GetText(true));
 
-  Constants cst;
+  tia::Constants cst;
   if(elem->HasAttribute(hw_ch_type_))
     trigger_line_sig_type_ = cst.getSignalFlag( elem->GetAttribute(hw_ch_type_) );
 }

@@ -636,3 +636,110 @@ the needed values are highlighted with "*":
 
 .. _WinDDK: http://msdn.microsoft.com/en-us/windows/hardware/gg487428
 .. _libusb-win32: http://sourceforge.net/apps/trac/libusb-win32
+
+
+DataQ Instruments Devices
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The SignalServer supports data acquisition from DataQ Instruments devices. Currently
+only the DI-720-USB is supported, but can be extended to other devices with minimal effort.
+
+**NOTICE**
+
+The minimum burst rate (sampling rate * nr. of channels) is 500 Hz, and the maximum rate is 200000 Hz.
+This values have to be met by setting the nr. of channels and the sampling rate properly.
+
+
+  ..  code-block:: xml
+      :linenos:
+
+      <hardware name="di-720" version="1.0" serial="">
+      <mode> master </mode>
+      
+      <device_settings>
+        <sampling_rate> 1000 </sampling_rate>
+        <measurement_channels nr="2" names="eeg" type="eeg" />
+        <blocksize> 1 </blocksize>
+
+        <range> 10 </range>
+        <bipolar> on </bipolar>
+      </device_settings>
+
+      <channel_settings>
+        <selection>
+          <ch nr="01" name="ch1" type="eeg" />
+          <ch nr="02" name="ch2" type="eeg" />
+        </selection>
+        
+        <range>
+          <ch nr="01" value="5"/>
+          <ch nr="02" value="10"/>
+        </range>
+
+        <bipolar>
+          <ch nr="01" value="on" />
+          <ch nr="02" value="on" />
+        </bipolar>
+      </channel_settings>
+
+      </hardware>
+
+
+**Voltage Range**
+
+
+DataQ devices support data acquisition of different voltage ranges. This range can be set either
+for the whole device or also individually for single channels.
+
+  Setting the voltage range for the whole device:
+  
+  ..  code-block:: xml
+
+      <range> 10 </range>
+
+    Possible values are 10, 5, 2.5 and 1.25 volts.
+
+
+  Setting the voltage range for single channels (those channels have to be set for recording too!):
+  
+  ..  code-block:: xml
+
+      <channel_settings>
+        <range>
+          <ch nr="01" value="5"/>
+          <ch nr="02" value="10"/>
+        </range>
+      </channel_settings>
+
+
+**Bipolar recording**
+
+
+DataQ devices further allow bipolar recording. Without a bipolar recording, every input channel
+is referenced against ground whereas in a bipolar case channel 1 is referenced to channel 9,
+ch. 2 to ch. 10 ... and ch. 8 to ch. 16. Ongoing, using both input plugs of a DataQ device, 
+ch. 17 is referenced to ch. 25 ... (based on the DataQ `DI-720 hardware manual`_, pages 23ff, 28.2.2012).
+
+
+  Setting bipolar recording for the whole device:
+  
+  ..  code-block:: xml
+
+      <bipolar> on </bipolar>
+
+  Setting bipolar recording for single channels:
+  
+  (those channels have to be set for recording too,
+  bipolar reference channels, e.g. ch. 9, must not be set for recording!)
+  
+  ..  code-block:: xml
+
+      <channel_settings>
+        <bipolar>
+          <ch nr="01" value="on" />
+          <ch nr="02" value="on" />
+        </bipolar>
+      </channel_settings>
+
+
+.. _DI-720 hardware manual: http://www.dataq.com/support/documentation/pdf/manual_pdfs/720_730.pdf

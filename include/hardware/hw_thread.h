@@ -275,6 +275,26 @@ class HWThread
       type_ = s;
     }
 
+    /**
+    * @brief Get the position of the respective channel (e.g. ch nr. 7 is the second acuqired channel)
+    * @return boost::uint16_t The channel position.
+    */
+    boost::uint16_t getChannelPosition(boost::uint16_t ch_nr)
+    {
+      unsigned int n = 0;
+      for(std::map<boost::uint16_t, std::pair<std::string, boost::uint32_t> >::iterator it(channel_info_.begin());
+          it != channel_info_.end(); it++)
+      {
+        if(it->first == ch_nr)
+          break;
+        n++;
+      }
+      if(n > channel_info_.size())
+        throw(std::runtime_error("HWThread::getChannelPosition -- Channel not found in channel_info!"));
+
+      return(n);
+    }
+
 //-----------------------------------------------
 
   protected:
@@ -305,6 +325,7 @@ class HWThread
     SampleBlock<double> data_;
 
     std::string   type_;
+
 
     //-----------------------------------------------
     // Constant variables & methods:

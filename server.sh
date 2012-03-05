@@ -17,6 +17,8 @@ else
 fi
 
 export PATH LD_LIBRARY_PATH
-exec ./bin/${CMD}  $1 $2
 
+# exec ./bin/${CMD}  $1 $2
+exec valgrind  ./bin/${CMD}  $1 $2
+# exec valgrind  --leak-check=full --show-reachable=yes ./bin/${CMD}  $1 $2
 

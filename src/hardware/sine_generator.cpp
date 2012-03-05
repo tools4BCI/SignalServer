@@ -36,6 +36,7 @@
 **/
 
 #include "hardware/sine_generator.h"
+#include <boost/current_function.hpp>
 
 #include <cmath>
 
@@ -67,8 +68,27 @@ SineGenerator::SineGenerator(boost::asio::io_service& io, ticpp::Iterator<ticpp:
 
 SineGenerator::~SineGenerator()
 {
-
 }
+
+////-----------------------------------------------------------------------------
+
+//void SineGenerator::run()
+//{
+//  std::cout << BOOST_CURRENT_FUNCTION << std::endl << std::flush;
+
+//  shd_ptr_.reset(this);
+//  ArtificialSignalSource::run();
+//}
+
+////-----------------------------------------------------------------------------
+
+//void SineGenerator::stop()
+//{
+//  std::cout << BOOST_CURRENT_FUNCTION << std::endl << std::flush;
+
+//  shd_ptr_.reset();
+//  ArtificialSignalSource::stop();
+//}
 
 //-----------------------------------------------------------------------------
 
@@ -127,7 +147,7 @@ void SineGenerator::genSine()
     }
   }
   if(running_)
-    t_->async_wait(boost::bind(&SineGenerator::genSine, this));
+    t_->async_wait(boost::bind(&SineGenerator::genSine, this ));
 }
 
 //-----------------------------------------------------------------------------
