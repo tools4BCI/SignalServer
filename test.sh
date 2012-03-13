@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CMD="tia-client"
+CMD="test"
 
 if [ ! -f bin/${CMD} ]; then
   echo "** ERROR - bin/${CMD} does not exist."
@@ -8,7 +8,6 @@ if [ ! -f bin/${CMD} ]; then
 fi
 
 PLATFORM=$(uname -m)
-
 
 if [ "$PLATFORM" == "x86_64" ]
 then
@@ -19,3 +18,5 @@ fi
 
 export PATH LD_LIBRARY_PATH
 exec ./bin/${CMD}  $1 $2
+
+
