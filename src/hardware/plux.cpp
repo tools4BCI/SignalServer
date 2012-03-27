@@ -206,6 +206,54 @@ void Plux::setChannelSettings(ticpp::Iterator<ticpp::Element>const &father )
 
 //---------------------------------------------------------------------------------------
 
+Plux::frametype Plux::getNextFrame( )
+{
+  //frametype frame;
+
+  boost::posix_time::ptime now =  boost::posix_time::microsec_clock::local_time();
+
+  if( !frame_pending_ )
+  {
+    try {
+      device_->GetFrames( 1, &pending_frame_.frame );
+      pending_frame_.time = now;
+      frame_pending_ = true;
+    } catch( BP::Err &err ) { rethrowPluxException( "Plux::getNextFrame()", err, true ); }
+  }
+
+  if( !seq_expected.valid() || seq_expected == pending_frame_.frame.seq )
+  {
+    last_frame_ = pending_frame_;
+    seq_expected++;
+    frame_pending_ = false;
+  }
+  else
+  //if( seq_expected.valid() && seq_expected < frame.frame.seq )
+  {
+    // Frame is newer than expected. That can only mean packets were lost.
+    // interpolate.
+    frametype iframe = frametype( last_frame_, pending_frame_, seq_expected );
+    last_frame_ = iframe;
+    seq_expected++;
+    statistics_.frames_lost_++;
+  }
+  /*else
+  {
+    // Frame is older than expected. That cannot happen in synch mode.
+    // -> critical failure
+    std::cout << "Plux::getNextFrame(): Unexpected Sample Number." << endl;
+    throw std::runtime_error( "Plux::getNextFrame(): Unexpected Sample Number." );
+  }*/
+
+  statistics_.rate_statistics_.update( (now - last_time_).total_microseconds() );
+  last_time_ = now;
+
+  return last_frame_;
+
+}
+
+//---------------------------------------------------------------------------------------
+
 SampleBlock<double> Plux::getSyncData()
 {
   #ifdef DEBUG
@@ -215,40 +263,7 @@ SampleBlock<double> Plux::getSyncData()
 
   for( int i=0; i<blocks_; i++ )
   {
-    // Get frame from device (blocking)
-    frametype frame;
-    try {
-      device_->GetFrames( 1, &frame.frame );
-    } catch( BP::Err &err ) { rethrowPluxException( "Plux::getSyncData()", err, true ); }
-
-    if( seq_expected.valid() )
-      while( seq_expected < frame.frame.seq && i < blocks_ )
-      {
-        // Frame is newer than expected. That can only mean packets were lost.
-        // interpolate.
-        frametype iframe = frametype( last_frame_, frame, seq_expected );
-        last_frame_ = iframe;
-        seq_expected++;
-        frames_[i] = iframe.frame;
-        statistics_.frames_lost_++;
-        i++;
-      }
-
-    if( !seq_expected.valid() || seq_expected == frame.frame.seq )
-    {
-      // Exactly what we expected. Just use that frame.
-      last_frame_ = frame;
-      seq_expected = frame.frame.seq + 1;
-      frames_[i] = frame.frame;
-    }
-    else
-    {
-      // Frame is older than expected. That cannot happen in synch mode.
-      // -> critiical failure
-      std::cout << "Plux::getSyncData(): Unexpected Sample Number." << endl;
-      throw std::runtime_error( "Plux::getSyncData(): Unexpected Sample Number." );
-    }
-
+    frames_[i] = getNextFrame( ).frame;
   }
   
   num_frames_total_ += blocks_;
@@ -268,24 +283,12 @@ void Plux::asyncAcquisitionThread( )
     cout << "Plux: asyncAcquisitionThread" << endl;
   #endif
 
-  boost::posix_time::ptime last = boost::posix_time::microsec_clock::local_time();
-
   try {
     while( !async_acquisition_thread_.interruption_requested() )
     {
-      BP::Device::Frame frame;
-
-      device_->GetFrames( 1, &frame );
-
-      boost::posix_time::ptime now =  boost::posix_time::microsec_clock::local_time();
-
-      async_buffer_.insert_overwriting( frametype( frame, now ) );
-      //async_buffer_.insert_throwing( frametype( frame, now ) );
-      //async_buffer_.insert_blocking( frametype( frame, now ) );
-
-      statistics_.rate_statistics_.update( (now - last).total_microseconds() );
-      
-      last = now;
+      async_buffer_.insert_overwriting( getNextFrame( ) );
+      //async_buffer_.insert_throwing( getNextFrame( ) );
+      //async_buffer_.insert_blocking( getNextFrame( ) );
     }
   }
   catch( std::exception &e )
@@ -307,51 +310,15 @@ SampleBlock<double> Plux::getAsyncData()
   for( int i=0; i<blocks_; i++ )
   {
     frametype frame;
-    try {
-      // Try to get the next frame from the buffer, but don't remove it from the buffer yet.
-      async_buffer_.peekNext_throwing( &frame );
-
-      if( seq_expected.valid() )
-        while( seq_expected > frame.frame.seq )
-        {
-          // Frame is older than expected. Likely it was substituted previously.
-          // Drop it, but still use it as last_frame (for interpolation).
-          last_frame_ = frame;
-          async_buffer_.dropOldest( );
-          async_buffer_.peekNext_throwing( &frame );
-          statistics_.frames_dropped_++;
-        }
-
-      if( !seq_expected.valid() || seq_expected == frame.frame.seq )
-      {
-        // Exactly what we expected. Just use that frame and remove it from the buffer.
-        last_frame_ = frame;
-        seq_expected = frame.frame.seq + 1;
-        async_buffer_.dropOldest( );
-      }
-      else
-      {
-        // Frame is newer than expected. That can only mean packets were lost.
-        // Leave in buffer, interpolate.
-        frame = frametype( last_frame_, frame, seq_expected );
-        last_frame_ = frame;
-        seq_expected++;
-        statistics_.frames_lost_++;
-      }
-
-      // record statistics of how long samples remained in the buffer
-      boost::posix_time::time_duration diff = boost::posix_time::microsec_clock::local_time() - last_frame_.time;
-      statistics_.time_statistics_.update( diff.total_milliseconds() );
-    }
-    catch( DataBuffer<frametype>::buffer_underrun &e )
+    if( async_buffer_.getNext_substituting( &frame ) )
     {
-      // No sample available.
-      // Substitute some data... (re-use last frame)
-      frame = last_frame_;
-      //seq_expected++;
-      last_frame_.frame.seq = seq_expected.cast<BYTE>();
       statistics_.frames_repeated_++;
     }
+
+    // record statistics of how long samples remained in the buffer
+    boost::posix_time::time_duration diff = boost::posix_time::microsec_clock::local_time() - last_frame_.time;
+    statistics_.time_statistics_.update( diff.total_milliseconds() );
+
     frames_[i] = frame.frame;
   }
 
@@ -471,6 +438,7 @@ void Plux::run()
   seq_expected.setInvalid( );
   statistics_.reset( );
   num_frames_total_ = 0;
+  frame_pending_ = false;
 
   try {
     device_->BeginAcq( fs, chmask, nbits );

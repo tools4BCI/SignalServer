@@ -226,6 +226,11 @@ private:
       boost::posix_time::ptime time;  ///< Corresponding acquisition time
     };
 
+    /**
+    * @brief Read next data frame
+    */
+    frametype getNextFrame( );
+
     static const HWThreadBuilderTemplateRegistratorWithoutIOService<Plux> FACTORY_REGISTRATOR_;
 
     static const std::string hw_buffersize_;     ///< xml-tag hardware: buffersize
@@ -236,7 +241,10 @@ private:
     std::string devstr_;      ///< Device Identifier
     std::string devinfo_;     ///< Device Description
 
+    boost::posix_time::ptime last_time_;
     frametype last_frame_;        ///< Last frame that was processed
+    frametype pending_frame_;     ///< Unprocessed frame
+    bool frame_pending_;
     SequenceNumber seq_expected;  ///< Next expected sequence number
     unsigned long long num_frames_total_;  ///< Total number of frames processed
 
