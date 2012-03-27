@@ -268,6 +268,8 @@ void Plux::asyncAcquisitionThread( )
     cout << "Plux: asyncAcquisitionThread" << endl;
   #endif
 
+  boost::posix_time::ptime last = boost::posix_time::microsec_clock::local_time();
+
   try {
     while( !async_acquisition_thread_.interruption_requested() )
     {
@@ -275,10 +277,15 @@ void Plux::asyncAcquisitionThread( )
 
       device_->GetFrames( 1, &frame );
 
-      async_buffer_.insert_overwriting( frametype( frame, boost::posix_time::microsec_clock::local_time() ) );
-      //async_buffer_.insert_throwing( frametype( frame, boost::posix_time::microsec_clock::local_time() ) );
-      //async_buffer_.insert_blocking( frametype( frame, boost::posix_time::microsec_clock::local_time() ) );
+      boost::posix_time::ptime now =  boost::posix_time::microsec_clock::local_time();
+
+      async_buffer_.insert_overwriting( frametype( frame, now ) );
+      //async_buffer_.insert_throwing( frametype( frame, now ) );
+      //async_buffer_.insert_blocking( frametype( frame, now ) );
+
+      statistics_.rate_statistics_.update( (now - last).total_microseconds() );
       
+      last = now;
     }
   }
   catch( std::exception &e )
@@ -365,6 +372,10 @@ void Plux::startAsyncAquisition( )
 
   // Start the acquisition thread
   async_acquisition_thread_ = thread( &Plux::asyncAcquisitionThread, this );
+  #ifdef WIN32
+   SetPriorityClass(async_acquisition_thread_.native_handle(),  HIGH_PRIORITY_CLASS);
+   SetThreadPriority(async_acquisition_thread_.native_handle(), THREAD_PRIORITY_HIGHEST );
+  #endif
 
   // Wait until the thread starts producing data
   async_buffer_.blockWhileEmpty( );
@@ -412,6 +423,10 @@ void Plux::printStatistics( )
         cout << "           mean: " << statistics_.time_statistics_.get_mean( ) << endl;
         cout << "  adaptive mean: " << statistics_.time_statistics_.get_adaptive_mean() << endl;
         cout << "  adaptive  std: " << sqrt(statistics_.time_statistics_.get_adaptive_var()) << endl;
+        cout << "       Sampling rate (milliseconds) " << endl;
+        cout << "           mean: " << 1e6 / statistics_.rate_statistics_.get_mean( ) << endl;
+        cout << "  adaptive mean: " << 1e6 / statistics_.rate_statistics_.get_adaptive_mean() << endl;
+        cout << "  adaptive  std: " << 1e6 / sqrt(statistics_.rate_statistics_.get_adaptive_var()) << endl;
         cout << "=============================" << endl;
       }
     }
@@ -671,7 +686,8 @@ Plux::frametype::frametype( const frametype &a, const frametype &b, const Sequen
   time = a.time + boost::posix_time::microseconds( (b.time - a.time).total_microseconds() * factor );
 
   for( int i=0; i<8; i++ )
-    frame.an_in[i] = a.frame.an_in[i] + boost::numeric_cast<int>( (b.frame.an_in[i] - a.frame.an_in[i]) * factor );
+    //frame.an_in[i] = a.frame.an_in[i] + boost::numeric_cast<int>( (b.frame.an_in[i] - a.frame.an_in[i]) * factor );
+    frame.an_in[i] = a.frame.an_in[i];
 
   if( factor < 0.5 )
     frame.dig_in = a.frame.dig_in;

@@ -261,6 +261,7 @@ private:
       }
       long long frames_lost_, frames_repeated_, frames_dropped_;
       Statistics time_statistics_;
+      Statistics rate_statistics_;
       unsigned int statistics_interval_;
       boost::posix_time::ptime last_printed_;
     } statistics_;
