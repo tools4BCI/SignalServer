@@ -116,7 +116,7 @@
       <AdditionalDependencies>libticppd.lib;SDL.lib;libusb0.lib;tiad.lib;tobicored.lib;tobiidd.lib;TiDServerd.lib;GDFd.lib;BioPlux_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>extern\lib\libgdf\win;extern\lib\tobi_libs\win;extern\lib\TiDlib\win;$(SolutionDir)extern\lib\ticpp\win\$(Platform);$(SolutionDir)extern\lib\tia\win\$(Platform);$(SolutionDir)extern\lib\sdl\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\libusb\win\$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>extern\lib\plux\win;extern\lib\libgdf\win;extern\lib\tobi_libs\win;extern\lib\TiDlib\win;$(SolutionDir)extern\lib\ticpp\win\$(Platform);$(SolutionDir)extern\lib\tia\win\$(Platform);$(SolutionDir)extern\lib\sdl\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\libusb\win\$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -221,7 +221,7 @@
       <AdditionalDependencies>tia.lib;libticpp.lib;SDL.lib;libusb0.lib;tobiid.lib;tobicore.lib;TiDServer.lib;GDF.lib;BioPlux.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>extern\lib\libgdf\win;extern\lib\tobi_libs\win;extern\lib\TiDlib\win;$(SolutionDir)extern\lib\ticpp\win\$(Platform);$(SolutionDir)extern\lib\tia\win\$(Platform);$(SolutionDir)extern\lib\sdl\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\libusb\win\$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>extern\lib\plux\win;extern\lib\libgdf\win;extern\lib\tobi_libs\win;extern\lib\TiDlib\win;$(SolutionDir)extern\lib\ticpp\win\$(Platform);$(SolutionDir)extern\lib\tia\win\$(Platform);$(SolutionDir)extern\lib\sdl\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\libusb\win\$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>false</GenerateDebugInformation>
