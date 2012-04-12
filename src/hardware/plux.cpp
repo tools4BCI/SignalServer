@@ -85,7 +85,11 @@ Plux::Plux(ticpp::Iterator<ticpp::Element> hw)
       devstr_ = it->second;
 
     // Initialize BioPlux Device instance.
+#ifdef DISABLE_PLUX_COMPILE
+    throw std::runtime_error( std::string("BioPlux support is disabled in this build of SignalServer: ") + DISABLE_PLUX_REASON );
+#else
     device_ = BP::Device::Create( devstr_ );
+#endif
 
     // Put device description into HWThread type info.
     device_->GetDescription( devinfo_ );
@@ -516,7 +520,12 @@ std::string Plux::findDevice( )
   #ifdef DEBUG
     cout << "Plux: findDevice" << endl;
   #endif
+
+#ifdef DISABLE_PLUX_COMPILE
+    return "";
+#else
   vector<string> devs;
+
   BP::Device::FindDevices(devs);
 
   if( devs.size() == 0 )
@@ -532,12 +541,14 @@ std::string Plux::findDevice( )
   }
 
   return devs.front( );
+#endif
 }
 
 //-----------------------------------------------------------------------------
 
 void Plux::rethrowPluxException( std::string where, BP::Err &err, bool do_throw )
 {
+#ifndef DISABLE_PLUX_COMPILE
     string message;
     switch( err.GetType() )
     {
@@ -557,6 +568,7 @@ void Plux::rethrowPluxException( std::string where, BP::Err &err, bool do_throw 
     {
       throw(std::runtime_error( message ));
     }
+#endif
 }
 
 //-----------------------------------------------------------------------------
