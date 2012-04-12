@@ -69,7 +69,7 @@ using std::dec;
 //-----------------------------------------------------------------------------
 
 HWAccess::HWAccess(boost::asio::io_service& io, XMLParser& parser)
-  : master_(0)
+  : master_(0), acqu_running_(0)
 {
   #ifdef DEBUG
     cout << "HWAccess Constructor" << endl;
@@ -119,6 +119,10 @@ HWAccess::~HWAccess()
   #ifdef DEBUG
     cout << "HWaccess: Destructor" << endl;
   #endif
+
+  if(acqu_running_)
+    stopDataAcquisition();
+
   for (unsigned int n=0; n < slaves_.size(); n++)
     if(slaves_[n])
       delete slaves_[n];
@@ -297,6 +301,9 @@ void HWAccess::startDataAcquisition()
 
   cout << endl;
 
+  if(acqu_running_)
+    return;
+
   if(slaves_.size())
     cout << endl << " Slaves:" << endl;
   for(unsigned int n = 0; n < slaves_.size(); n++)
@@ -316,6 +323,8 @@ void HWAccess::startDataAcquisition()
   cout << endl << " Master:" << endl;
   master_->run();
   cout << " * " << master_->getType() << " successfully started" << endl;
+
+  acqu_running_ = true;
 }
 
 //-----------------------------------------------------------------------------
@@ -326,6 +335,9 @@ void HWAccess::stopDataAcquisition()
     cout << "HWAccess: stopDataAcquisition" << endl;
   #endif
 
+  if(!acqu_running_)
+    return;
+
   cout << endl;
   master_->stop();
   cout << " * " << master_->getType() << " successfully stopped" << endl;
@@ -334,6 +346,8 @@ void HWAccess::stopDataAcquisition()
     slaves_[n]->stop();
     cout << " * " << slaves_[n]->getType() << " successfully started" << endl;
   }
+
+  acqu_running_ = false;
 }
 
 //-----------------------------------------------------------------------------

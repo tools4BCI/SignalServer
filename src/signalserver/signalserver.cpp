@@ -66,6 +66,9 @@ SignalServer::SignalServer(XMLParser& config_parser, bool use_new_tia)
       ,gdf_writer_(0)
     #endif
 {
+  #ifdef DEBUG
+    std::cout << "SignalServer: Constructor" << std::endl;
+  #endif
 
   tia_server_ = new tia::TiAServer(tia_io_service_, use_new_tia);
   hw_access_ = new HWAccess(hw_access_io_service_, config_parser_);
@@ -144,6 +147,10 @@ SignalServer::SignalServer(XMLParser& config_parser, bool use_new_tia)
 
 SignalServer::~SignalServer()
 {
+  #ifdef DEBUG
+    std::cout << "SignalServer: Destructor" << std::endl;
+  #endif
+    
   if( !stop_reading_ )
     stop();
 
@@ -182,6 +189,10 @@ SignalServer::~SignalServer()
 
 void SignalServer::stop()
 {
+  #ifdef DEBUG
+    std::cout << "SignalServer: stop" << std::endl;
+  #endif
+
   stop_reading_ = true;
 
   hw_access_io_service_.stop();
@@ -205,6 +216,10 @@ void SignalServer::stop()
 
 void SignalServer::readPackets()
 {
+  #ifdef DEBUG
+    std::cout << "SignalServer: readPackets" << std::endl;
+  #endif
+
   #ifdef USE_TID_SERVER
     std::vector<IDMessage> msgs;
     msgs.reserve(100);
@@ -372,6 +387,10 @@ void SignalServer::initGdf()
 
 std::vector<std::string> SignalServer::getPossibleHardwareNames()
 {
+  #ifdef DEBUG
+    std::cout << "SignalServer: getPossibleHardwareNames" << std::endl;
+  #endif
+
   return(HWAccess::getPossibleHardwareNames());
 }
 

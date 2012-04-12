@@ -53,10 +53,12 @@
 #include <map>
 
 #include <boost/cstdint.hpp>
+#include <boost/enable_shared_from_this.hpp>
 
 #include "hw_thread.h"
 #include "hardware/hw_thread_builder.h"
 #include "hardware/artificial_signal_source.h"
+
 
 namespace tobiss
 {
@@ -74,7 +76,7 @@ namespace tobiss
 *
 * @bug Sometimes the SineGenerator crashes in Windows, especially using high sampling rates.
 */
-class SineGenerator : public ArtificialSignalSource
+class SineGenerator : public ArtificialSignalSource /*, public boost::enable_shared_from_this<SineGenerator>*/
 {
   public:
      /**
@@ -88,6 +90,9 @@ class SineGenerator : public ArtificialSignalSource
     * @brief Destructor
     */
     virtual ~SineGenerator();
+
+//    virtual void run();
+//    virtual void stop();
 
 //-----------------------------------------------
 
@@ -137,6 +142,8 @@ class SineGenerator : public ArtificialSignalSource
 
   private:
     static const HWThreadBuilderTemplateRegistrator<SineGenerator> factory_registrator_;
+
+    boost::shared_ptr<SineGenerator>    shd_ptr_;
 };
 
 } // Namespace tobiss

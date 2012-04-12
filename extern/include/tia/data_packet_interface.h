@@ -43,6 +43,7 @@
 
 #include <vector>
 #include <boost/cstdint.hpp>
+#include <iostream>
 
 namespace tia
 {
@@ -95,6 +96,14 @@ class DataPacket
     virtual boost::uint32_t getRawMemorySize() = 0;
     virtual boost::uint32_t getRequiredRawMemorySize() = 0;
     virtual boost::uint32_t getRequiredRawMemorySize(void* mem, boost::uint32_t bytes_available) = 0;
+
+  protected:
+    DataPacket() {}
+
+  private:
+    DataPacket(const DataPacket &src) { }
+    virtual DataPacket& operator=(const DataPacket &src)  {return *this;};
+
 
 };
 

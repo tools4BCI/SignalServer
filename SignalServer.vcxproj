@@ -75,10 +75,8 @@
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</IgnoreImportLibrary>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">signalserver_debug</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">signalserver_debug</TargetName>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">extern\include;$(IncludePath)</IncludePath>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">extern\include;$(IncludePath)</IncludePath>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">signalserver</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">signalserver</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">signalserver</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">signalserver</TargetName>
   </PropertyGroup>
@@ -102,9 +100,6 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
-      <ObjectFileName>$(IntDir)</ObjectFileName>
-      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -156,9 +151,6 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
-      <ObjectFileName>$(IntDir)</ObjectFileName>
-      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -213,9 +205,6 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
-      <ObjectFileName>$(IntDir)</ObjectFileName>
-      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -269,9 +258,6 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
-      <ObjectFileName>$(IntDir)</ObjectFileName>
-      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -303,9 +289,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\hardware\brainampseries.cpp" />
+    <ClCompile Include="src\hardware\dataq.cpp" />
     <ClCompile Include="src\hardware\eeg_sim_msg_parser.cpp" />
     <ClCompile Include="src\hardware\gBSamp_base.cpp" />
     <ClCompile Include="src\hardware\gBSamp_win.cpp" />
+    <ClCompile Include="src\hardware\g_mobilab.cpp" />
     <ClCompile Include="src\hardware\kinect.cpp" />
     <ClCompile Include="src\hardware\plux.cpp" />
     <ClCompile Include="src\misc\statistics.cpp" />
@@ -327,11 +316,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\hardware\artificial_signal_source.h" />
+    <ClInclude Include="include\hardware\brainampseries.h" />
+    <ClInclude Include="include\hardware\dataq.h" />
+    <ClInclude Include="include\hardware\dataq_wrapper.h" />
     <ClInclude Include="include\hardware\eeg_simulator.h" />
     <ClInclude Include="include\hardware\eeg_sim_msg_parser.h" />
     <ClInclude Include="include\hardware\gBSamp_base.h" />
     <ClInclude Include="include\hardware\gBSamp_win.h" />
     <ClInclude Include="include\hardware\gtec_usbamp_wrapper.h" />
+    <ClInclude Include="include\hardware\g_mobilab.h" />
     <ClInclude Include="include\hardware\hw_access.h" />
     <ClInclude Include="include\hardware\hw_thread.h" />
     <ClInclude Include="include\hardware\hw_thread_builder.h" />

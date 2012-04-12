@@ -98,6 +98,15 @@
     <ClCompile Include="src\misc\statistics.cpp">
       <Filter>Source Files\misc</Filter>
     </ClCompile>
+    <ClCompile Include="src\hardware\dataq.cpp">
+      <Filter>Source Files\hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hardware\g_mobilab.cpp">
+      <Filter>Source Files\hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hardware\brainampseries.cpp">
+      <Filter>Source Files\hardware</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\hardware\artificial_signal_source.h">
@@ -171,6 +180,18 @@
     </ClInclude>
     <ClInclude Include="include\misc\statistics.h">
       <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\hardware\dataq.h">
+      <Filter>Header Files\hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="include\hardware\dataq_wrapper.h">
+      <Filter>Header Files\hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="include\hardware\g_mobilab.h">
+      <Filter>Header Files\hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="include\hardware\brainampseries.h">
+      <Filter>Header Files\hardware</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

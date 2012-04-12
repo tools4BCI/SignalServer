@@ -470,7 +470,7 @@ template<class T> void SampleBlock<T>::getSignalByNr(boost::uint32_t nr, std::ve
 template<class T> void SampleBlock<T>::appendBlock(std::vector<T> v, boost::uint16_t nr_blocks)
 {
   #ifdef DEBUG
-    std::cout << "SampleBlock: appendBlock" << std::endl;
+    //std::cout << "SampleBlock: appendBlock" << std::endl;
   #endif
 
   if(v.size() != channels_)

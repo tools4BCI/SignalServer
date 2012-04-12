@@ -285,6 +285,8 @@ class HWAccess
 
     std::map<boost::uint32_t, std::vector<std::string> > channel_naming_;  ///< map containing ( type,  channel names )
 
+    bool    acqu_running_;
+
   #ifdef TIMING_TEST
   private:
     bool  lpt_flag_;

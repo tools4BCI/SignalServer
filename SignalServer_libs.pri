@@ -13,8 +13,7 @@ unix {
         -lcomedi
 
     HARDWARE_PLATFORM = $$system(uname -m)
-    contains( HARDWARE_PLATFORM, x86_64 )::
-    {
+    contains( HARDWARE_PLATFORM, x86_64 )::{
         # 64-bit Linux
         LIBS += -Lextern/lib/ticpp/linux  -lticpp_64 \
                 -Lextern/lib/tia/linux/x64 -ltia

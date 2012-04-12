@@ -196,7 +196,9 @@ public:
 
     virtual HWThread* createInstance (boost::asio::io_service&, ticpp::Iterator<ticpp::Element> hw) const
     {
-        return new T (hw);
+//      boost::shared_ptr<HWThread> shrd_ptr = boost::shared_ptr<HWThread>(new T (hw));
+//      return ( shrd_ptr.get() );
+      return ( new T (hw) );
     }
 
 private:
