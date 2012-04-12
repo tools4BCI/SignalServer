@@ -54,8 +54,7 @@ SOURCES += src/signalserver/main.cpp \
     src/hardware/eeg_sim_msg_parser.cpp \
     src/signalserver/signalserver.cpp \
     src/hardware/gBSamp_base.cpp \
-    src/hardware/kinect.cpp \
-    src/hardware/plux.cpp
+    src/hardware/kinect.cpp 
 #    src/hardware/event_listener.cpp \
 unix {
   SOURCES += src/hardware/mouse_linux.cpp \
