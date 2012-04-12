@@ -506,7 +506,7 @@ void Plux::convertFrames2SampleBlock( )
         case 12: samples_[scount++] = async_buffer_.getNumAvail( ); break;
         case 11: samples_[scount++] = statistics_.time_statistics_.get_adaptive_mean( ); break;
         case 10: samples_[scount++] = (boost::posix_time::microsec_clock::local_time() - starttime).total_microseconds() / (1e6); break;
-        default: throw std::exception( "Unsopported channel number." );
+        default: throw std::invalid_argument( "Unsopported channel number." );
       }
 
     data_.appendBlock( samples_, 1 );
