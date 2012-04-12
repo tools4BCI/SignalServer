@@ -42,6 +42,7 @@
 
 #include <boost/circular_buffer.hpp>
 #include <list>
+#include <iostream>
 
 namespace tobiss
 {
