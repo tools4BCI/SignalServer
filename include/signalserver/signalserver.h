@@ -63,7 +63,8 @@ namespace tobiss
 
 class XMLParser;
 class HWAccess;
-
+class EventSource;
+class FileWriter;
 
 //-----------------------------------------------------------------------------
 
@@ -80,6 +81,8 @@ class SignalServer
 
   private:
     void initGdf(); ///< Initialize writing acquired data into a .gdf file.
+
+    void fustyReadPackets();
 
     HWAccess*                   hw_access_;
     tia::TiAServer*             tia_server_;
@@ -103,6 +106,9 @@ class SignalServer
     std::vector<boost::uint32_t>                            sampling_rate_per_sig_type_;
 
     tia::DataPacket*                                        packet_;
+
+    EventSource*                        event_source_;
+    FileWriter*                         file_writer_;
 
     #ifdef USE_TID_SERVER
       TiD::TiDServer*             tid_server_;

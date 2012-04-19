@@ -67,7 +67,7 @@ SignalServer::SignalServer(XMLParser& config_parser, bool use_new_tia)
     #endif
 {
   #ifdef DEBUG
-    std::cout << "SignalServer: Constructor" << std::endl;
+    std::cout << BOOST_CURRENT_FUNCTION <<  std::endl;
   #endif
 
   tia_server_ = new tia::TiAServer(tia_io_service_, use_new_tia);
@@ -148,7 +148,7 @@ SignalServer::SignalServer(XMLParser& config_parser, bool use_new_tia)
 SignalServer::~SignalServer()
 {
   #ifdef DEBUG
-    std::cout << "SignalServer: Destructor" << std::endl;
+    std::cout << BOOST_CURRENT_FUNCTION <<  std::endl;
   #endif
     
   if( !stop_reading_ )
@@ -190,7 +190,7 @@ SignalServer::~SignalServer()
 void SignalServer::stop()
 {
   #ifdef DEBUG
-    std::cout << "SignalServer: stop" << std::endl;
+    std::cout << BOOST_CURRENT_FUNCTION <<  std::endl;
   #endif
 
   stop_reading_ = true;
@@ -217,7 +217,26 @@ void SignalServer::stop()
 void SignalServer::readPackets()
 {
   #ifdef DEBUG
-    std::cout << "SignalServer: readPackets" << std::endl;
+    std::cout << BOOST_CURRENT_FUNCTION <<  std::endl;
+  #endif
+
+  boost::uint64_t sample_count = 0;
+
+  while (!stop_reading_)
+  {
+    sample_count += master_blocksize_;
+
+    hw_access_->fillDataPacket(packet_);
+    tia_server_->sendDataPacket();
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+void SignalServer::fustyReadPackets()
+{
+  #ifdef DEBUG
+    std::cout << BOOST_CURRENT_FUNCTION <<  std::endl;
   #endif
 
   #ifdef USE_TID_SERVER
