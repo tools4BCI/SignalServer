@@ -47,7 +47,7 @@
 #include "TiDlib/tid_server.h"
 
 
-#include "libgdf/GDF/Writer.h"
+//#include "libgdf/GDF/Writer.h"
 
 namespace tobiss
 {
