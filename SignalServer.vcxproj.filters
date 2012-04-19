@@ -27,6 +27,12 @@
     <Filter Include="Header Files\config">
       <UniqueIdentifier>{9964e67b-c53e-4098-8e6f-7a066ab16f35}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\misc">
+      <UniqueIdentifier>{5545f23d-121c-4fee-b4a4-71457f16fc84}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\misc">
+      <UniqueIdentifier>{46f80592-2b72-468a-8fe1-aeb9f5a20942}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\signalserver\main.cpp">
@@ -85,6 +91,12 @@
     </ClCompile>
     <ClCompile Include="src\hardware\kinect.cpp">
       <Filter>Source Files\hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hardware\plux.cpp">
+      <Filter>Source Files\hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="src\misc\statistics.cpp">
+      <Filter>Source Files\misc</Filter>
     </ClCompile>
     <ClCompile Include="src\hardware\dataq.cpp">
       <Filter>Source Files\hardware</Filter>
@@ -159,6 +171,15 @@
     </ClInclude>
     <ClInclude Include="include\hardware\kinect.h">
       <Filter>Header Files\hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="include\hardware\plux.h">
+      <Filter>Header Files\hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="include\misc\databuffer.h">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\misc\statistics.h">
+      <Filter>Header Files\misc</Filter>
     </ClInclude>
     <ClInclude Include="include\hardware\dataq.h">
       <Filter>Header Files\hardware</Filter>

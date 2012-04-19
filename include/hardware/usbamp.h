@@ -154,6 +154,7 @@ class USBamp : public HWThread
     void setBipolar(ticpp::Iterator<ticpp::Element>const &father);
     void setDrivenRightLeg(ticpp::Iterator<ticpp::Element>const &father);
     void setIndividualDrivenRightLeg(ticpp::Iterator<ticpp::Element> &elem);
+    void setDownsamplingFactor(ticpp::Iterator<ticpp::Element> &elem);
 
     void checkFilterAttributes(ticpp::Iterator<ticpp::Element>const &elem);
     void getFilterParams(ticpp::Iterator<ticpp::Element>const &elem,\
@@ -251,7 +252,10 @@ class USBamp : public HWThread
 
     GTECUSBampWrapper usb_amp_;
 
-    std::map<std::string, std::string> m_;	/// Attributes map -- to be renamed
+    unsigned int downsampling_factor_;
+    WORD hwfs_; ///< Actual sampling rate the hardware runs with
+
+    std::map<std::string, std::string> m_;	/// Attributes mab -- to be renamed
 
     //-----------------------------------------------
     // Constants
@@ -265,6 +269,8 @@ class USBamp : public HWThread
 
     static const std::string hw_notch_;   ///< xml-tag hardware: notch_filter
     static const std::string hw_notch_center_;    ///< xml-tag hardware: notch center freq.
+
+    static const std::string hw_downsamplingfactor_; ///< xml-tag hardware: downsampling factor
 
 
     static const std::string hw_opmode_;       ///< USBamp specific

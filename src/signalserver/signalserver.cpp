@@ -150,8 +150,9 @@ SignalServer::~SignalServer()
   #ifdef DEBUG
     std::cout << "SignalServer: Destructor" << std::endl;
   #endif
-
-  stop();
+    
+  if( !stop_reading_ )
+    stop();
 
   if(tia_io_service_thread_)
     delete(tia_io_service_thread_);

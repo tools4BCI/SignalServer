@@ -36,13 +36,15 @@
 * @file statistics.cpp
 **/
 
-#include "misc/statistics.h"
+#include "include/misc/statistics.h"
 
+#include <boost/current_function.hpp>
 #include <functional>
 #include <algorithm>
 #include <numeric>
 #include <math.h>
 #include <vector>
+#include <limits>
 
 namespace tobiss
 {
@@ -102,8 +104,8 @@ void Statistics::update( double x )
 void Statistics::printAll( std::ostream &out )
 {
   out << "           mean: " << get_mean( ) << std::endl;
-  out << "           min: "  << get_min( ) << std::endl;
-  out << "           max: "  << get_max( ) << std::endl;
+  out << "            min: " << get_min( ) << std::endl;
+  out << "            max: " << get_max( ) << std::endl;
 
   if(buffer_data_)
   {
@@ -116,6 +118,7 @@ void Statistics::printAll( std::ostream &out )
 
   if(buffer_data_)
   {
+    out << "    window size: " << window_size_ << std::endl;
     out << "    window mean: " << get_window_mean( ) << std::endl;
     out << "  window median: " << get_window_median( ) << std::endl;
     out << "     window min: " << get_window_min( ) << std::endl;
@@ -130,6 +133,7 @@ void Statistics::printWindowStatistics( std::ostream &out )
 {
   if(buffer_data_)
   {
+    out << "    window size: " << window_size_ << std::endl;
     out << "    window mean: " << get_window_mean( ) << std::endl;
     out << "  window median: " << get_window_median( ) << std::endl;
     out << "     window min: " << get_window_min( ) << std::endl;
@@ -168,7 +172,7 @@ void Statistics::reset( )
   N = 0;
   mean_ = 0;
   var_  = 0;
-  min_  = INFINITY;
+  min_  = std::numeric_limits<double>::infinity();
   max_  = 0;
   adaptive_mean_ = 0;
   adaptive_var_ = 0;
@@ -190,7 +194,13 @@ void Statistics::getSamples( size_t buffersize, std::list<double>::iterator begi
 double Statistics::get_window_median()
 {
   if(!buffer_data_)
-    return(NAN);
+    return(std::numeric_limits<double>::quiet_NaN());
+
+  if( window_buffer_.size() == 0 )
+  {
+    std::cerr << "Error -- " << BOOST_CURRENT_FUNCTION << " -- No samples in the window buffer!"  << std::endl;
+    return(0);
+  }
 
   sort_win_buffer();
   return(window_buffer_sorted_[ window_buffer_sorted_.size()/2 ]);
@@ -201,7 +211,13 @@ double Statistics::get_window_median()
 double Statistics::get_window_mean()
 {
   if(!buffer_data_)
-    return(NAN);
+    return(std::numeric_limits<double>::quiet_NaN());
+
+  if( window_buffer_.size() == 0 )
+  {
+    std::cerr << "Error -- " << BOOST_CURRENT_FUNCTION << " -- No samples in the window buffer!"  << std::endl;
+    return(0);
+  }
 
   return(std::accumulate(window_buffer_.begin(),window_buffer_.end(),0.0)/double(window_buffer_.size()));
 }
@@ -211,7 +227,13 @@ double Statistics::get_window_mean()
 double Statistics::get_window_min()
 {
   if(!buffer_data_)
-    return(NAN);
+    return(std::numeric_limits<double>::quiet_NaN());
+
+  if( window_buffer_.size() == 0 )
+  {
+    std::cerr << "Error -- " << BOOST_CURRENT_FUNCTION << " -- No samples in the window buffer!"  << std::endl;
+    return(0);
+  }
 
   sort_win_buffer();
   return( window_buffer_sorted_.front() );
@@ -222,7 +244,13 @@ double Statistics::get_window_min()
 double Statistics::get_window_max()
 {
   if(!buffer_data_)
-    return(NAN);
+    return(std::numeric_limits<double>::quiet_NaN());
+
+  if( window_buffer_.size() == 0 )
+  {
+    std::cerr << "Error -- " << BOOST_CURRENT_FUNCTION << " -- No samples in the window buffer!"  << std::endl;
+    return(0);
+  }
 
   sort_win_buffer();
   return( window_buffer_sorted_.back() );
@@ -233,7 +261,13 @@ double Statistics::get_window_max()
 double Statistics::get_window_var()
 {
   if(!buffer_data_)
-    return(NAN);
+    return(std::numeric_limits<double>::quiet_NaN());
+
+  if( window_buffer_.size() == 0 )
+  {
+    std::cerr << "Error -- " << BOOST_CURRENT_FUNCTION << " -- No samples in the window buffer!"  << std::endl;
+    return(0);
+  }
 
   std::vector<double> zero_mean( window_buffer_.begin(), window_buffer_.end() );
   transform( zero_mean.begin(), zero_mean.end(), zero_mean.begin(),bind2nd( std::minus<double>(), get_window_mean() ) );
@@ -269,7 +303,13 @@ void Statistics::sort_sample_buffer()
 double Statistics::get_median()
 {
   if(!buffer_data_)
-    return(NAN);
+    return(std::numeric_limits<double>::quiet_NaN());
+
+  if( sample_buffer_.size() == 0 )
+  {
+    std::cerr << "Error -- " << BOOST_CURRENT_FUNCTION << " -- No samples in the sample buffer!"  << std::endl;
+    return(0);
+  }
 
   sort_sample_buffer();
   std::list<double>::iterator it(sample_buffer_.begin());
@@ -284,7 +324,13 @@ double Statistics::get_median()
 double Statistics::get_var()
 {
   if(!buffer_data_)
-    return(NAN);
+    return(std::numeric_limits<double>::quiet_NaN());
+
+  if( sample_buffer_.size() == 0 )
+  {
+    std::cerr << "Error -- " << BOOST_CURRENT_FUNCTION << " -- No samples in the sample buffer!"  << std::endl;
+    return(0);
+  }
 
   std::vector<double> zero_mean( sample_buffer_.begin(), sample_buffer_.end() );
   transform( zero_mean.begin(), zero_mean.end(), zero_mean.begin(),bind2nd( std::minus<double>(), mean_ ) );

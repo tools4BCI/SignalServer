@@ -68,7 +68,7 @@ public:
     * @brief Constructor
     * @param[in] capacity DataBuffer::size_type Buffer size
     */
-  explicit DataBuffer( size_type capacity ) : unread_(0), container_(capacity) { }  
+  explicit DataBuffer( size_type capacity ) : unread_(0), container_(capacity), last_read_() { }  
 
   /**
     * @brief Change Buffer Size
@@ -178,7 +178,7 @@ public:
     *pItem = container_[--unread_];
     lock.unlock( );
     cond_not_full_.notify_one( );
-  }  
+  }
 
   /**
     * @brief get next item (sample/frame/packet/...) from the buffer (item is removed from the buffer)
@@ -198,6 +198,31 @@ public:
     {
       lock.unlock( ); // This unlock() is redundant. The scoped_lock's destructor should take care of unlocking the mutex.
       throw buffer_underrun( );
+    }
+  }
+
+  /**
+    * @brief get next item (sample/frame/packet/...) from the buffer (item is removed from the buffer)
+    * @param[out] pItem DataBuffer::value_type* Pointer to storage
+    * @returns true if substitution occured.
+    * @remark If the buffer is empty, the last item that was read with this function is repeated.
+    */
+  bool getNext_substituting( value_type *pItem )
+  {
+    boost::mutex::scoped_lock lock( mutex_ );
+    if( is_not_empty() )
+    {
+      *pItem = container_[--unread_];
+      last_read_ = *pItem;
+      lock.unlock( );
+      cond_not_full_.notify_one( );
+      return false;
+    }
+    else
+    {
+      *pItem = last_read_;
+      lock.unlock( ); // This unlock() is redundant. The scoped_lock's destructor should take care of unlocking the mutex.
+      return true;
     }
   }
 
@@ -275,6 +300,8 @@ private:
 
   size_type unread_;
   container_type container_;
+
+  value_type last_read_;
 
   boost::mutex mutex_;
   boost::condition_variable cond_not_empty_;
