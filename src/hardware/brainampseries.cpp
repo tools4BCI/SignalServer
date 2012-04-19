@@ -39,6 +39,7 @@
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/current_function.hpp>
 #include <math.h>
 
 #include "tia/constants.h"
@@ -89,6 +90,10 @@ BrainAmpSeries::BrainAmpSeries(ticpp::Iterator<ticpp::Element> hw)
   : acqu_type_(DataAcqu), dev_handle_(INVALID_HANDLE_VALUE), driver_version_(0),
     ds_factor_(0), trigger_line_enabled_(0), trigger_line_sig_type_(SIG_UNDEFINED)
 {
+  #ifdef DEBUG
+    cout << BOOST_CURRENT_FUNCTION << endl;
+  #endif
+
   setType("Brainamp Series");
 
   resolution_names_.insert(make_pair("100nv",  0)); // nV is in lower case because of to_lower_copy
@@ -199,6 +204,10 @@ BrainAmpSeries::BrainAmpSeries(ticpp::Iterator<ticpp::Element> hw)
 
 BrainAmpSeries::~BrainAmpSeries()
 {
+  #ifdef DEBUG
+    cout << BOOST_CURRENT_FUNCTION << endl;
+  #endif
+    
   if(running_)
     stop();
 
@@ -210,6 +219,10 @@ BrainAmpSeries::~BrainAmpSeries()
 
 void BrainAmpSeries::run()
 {
+  #ifdef DEBUG
+    cout << BOOST_CURRENT_FUNCTION << endl;
+  #endif
+
 	uint16_t pullup = 0;
 	DWORD bytes_returned = 0;
 	if (!DeviceIoControl(dev_handle_, IOCTL_BA_DIGITALINPUT_PULL_UP, &pullup, sizeof(pullup),
@@ -236,6 +249,10 @@ void BrainAmpSeries::run()
 
 void BrainAmpSeries::stop()
 {
+  #ifdef DEBUG
+    cout << BOOST_CURRENT_FUNCTION << endl;
+  #endif
+
   running_ = 0;
   DWORD bytes_returned = 0;
   if(!DeviceIoControl(dev_handle_, IOCTL_BA_STOP, NULL, 0, NULL, 0, &bytes_returned, NULL))
@@ -278,6 +295,10 @@ SampleBlock<double> BrainAmpSeries::getAsyncData()
 
 void BrainAmpSeries::setHardware(ticpp::Iterator<ticpp::Element>const &hw)
 {
+  #ifdef DEBUG
+    cout << BOOST_CURRENT_FUNCTION << endl;
+  #endif
+
   checkMandatoryHardwareTags(hw);
   ticpp::Iterator<ticpp::Element> ds(hw->FirstChildElement(hw_devset_, true));
 
@@ -304,6 +325,10 @@ void BrainAmpSeries::setHardware(ticpp::Iterator<ticpp::Element>const &hw)
 
 void BrainAmpSeries::setDeviceSettings(ticpp::Iterator<ticpp::Element>const &father)
 {
+  #ifdef DEBUG
+    cout << BOOST_CURRENT_FUNCTION << endl;
+  #endif
+
   //  fs_ = BRAINAMP_SAMPLING_RATE;
 
   ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(hw_fs_,true));
@@ -354,6 +379,10 @@ void BrainAmpSeries::setDeviceSettings(ticpp::Iterator<ticpp::Element>const &fat
 
 void BrainAmpSeries::setChannelSettings(ticpp::Iterator<ticpp::Element>const &father)
 {
+  #ifdef DEBUG
+    cout << BOOST_CURRENT_FUNCTION << endl;
+  #endif
+
   ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(hw_chset_sel_,false));
   if (elem != elem.end())
     setChannelSelection(elem);
@@ -379,6 +408,10 @@ void BrainAmpSeries::setChannelSettings(ticpp::Iterator<ticpp::Element>const &fa
 
 std::string BrainAmpSeries::getErrorMsg(int error_code)
 {
+  #ifdef DEBUG
+    cout << BOOST_CURRENT_FUNCTION << endl;
+  #endif
+
 	uint32_t code = error_code & 0xffff;
 
 	switch (code)
@@ -415,6 +448,10 @@ std::string BrainAmpSeries::getErrorMsg(int error_code)
 
 bool BrainAmpSeries::OpenUSBDevice()
 {
+  #ifdef DEBUG
+    cout << BOOST_CURRENT_FUNCTION << endl;
+  #endif
+
   DWORD dwFlags = FILE_ATTRIBUTE_NORMAL | FILE_FLAG_WRITE_THROUGH;
 
   dev_handle_ = CreateFile(DEVICE_USB, GENERIC_READ | GENERIC_WRITE, 0, NULL,
@@ -434,6 +471,10 @@ bool BrainAmpSeries::OpenUSBDevice()
 
 std::vector<BrainAmpSeries::AmpType> BrainAmpSeries::GetConnectedAmps()
 {
+  #ifdef DEBUG
+    cout << BOOST_CURRENT_FUNCTION << endl;
+  #endif
+
 	vector<AmpType> amplifiers(MAX_NR_OF_AMPS, None);
 
 	USHORT amps[MAX_NR_OF_AMPS];
@@ -452,6 +493,10 @@ std::vector<BrainAmpSeries::AmpType> BrainAmpSeries::GetConnectedAmps()
 
 void BrainAmpSeries::checkHighestChannelNr(std::vector<AmpType> amps)
 {
+  #ifdef DEBUG
+    cout << BOOST_CURRENT_FUNCTION << endl;
+  #endif
+
 	int highest_ch = 0;
 	for(int i = 0; i < brainamp_settings_.nChannels; i++)
 		highest_ch = max(brainamp_settings_.nChannelList[i], highest_ch);
@@ -486,6 +531,10 @@ void BrainAmpSeries::checkHighestChannelNr(std::vector<AmpType> amps)
 
 void BrainAmpSeries::printConnectedAmplifiers(std::vector<AmpType> amps)
 {
+  #ifdef DEBUG
+    cout << BOOST_CURRENT_FUNCTION << endl;
+  #endif
+
 	std::map<AmpType, std::pair<std::string, unsigned int> >::iterator it;
 
 	cout << "    Connected BrainProducts amplifiers:" << endl;
@@ -508,24 +557,36 @@ void BrainAmpSeries::printConnectedAmplifiers(std::vector<AmpType> amps)
 void BrainAmpSeries::setBrainAmpChannelList()
 {
   #ifdef DEBUG
-    cout << "BrainAmpSeries: setBrainAmpChannels" << endl;
+    cout << BOOST_CURRENT_FUNCTION << endl;
   #endif
 
   map<uint16_t, pair<string, uint32_t> >::iterator it(channel_info_.begin());
   map<uint16_t, pair<string, uint32_t> >::iterator stop(channel_info_.end());
   unsigned int n = 0;
 
-  for(  ; it != stop; it++)
+  try
   {
-    brainamp_settings_.nChannelList[n] = boost::numeric_cast<CHAR>( it->first) -1;
-    n++;
+    for(  ; it != stop; it++)
+    {
+      brainamp_settings_.nChannelList[n] = boost::numeric_cast<CHAR>( it->first -1);
+      n++;
+    }
   }
+  catch(boost::numeric::bad_numeric_cast& e)
+  {
+    throw(std::invalid_argument("Error -- " + BOOST_CURRENT_FUNCTION + " -- " + e.what())  );
+  }
+
 }
 
 //-----------------------------------------------------------------------------
 
 void BrainAmpSeries::setBrainAmpSamplingRate(ticpp::Iterator<ticpp::Element>const &elem)
 {
+  #ifdef DEBUG
+    cout << BOOST_CURRENT_FUNCTION << endl;
+  #endif
+
   setSamplingRate(elem);
 
   if(BRAINAMP_SAMPLING_RATE < fs_)
@@ -549,6 +610,10 @@ void BrainAmpSeries::setBrainAmpSamplingRate(ticpp::Iterator<ticpp::Element>cons
 
 void BrainAmpSeries::setDeviceLowImp(ticpp::Iterator<ticpp::Element>const &elem)
 {
+  #ifdef DEBUG
+    cout << BOOST_CURRENT_FUNCTION << endl;
+  #endif
+
   if(equalsYesOrNo(elem->GetText(true)))
     brainamp_settings_.nLowImpedance = 10;
   else
@@ -559,6 +624,10 @@ void BrainAmpSeries::setDeviceLowImp(ticpp::Iterator<ticpp::Element>const &elem)
 
 void BrainAmpSeries::setDeviceTriggerValue(ticpp::Iterator<ticpp::Element>const &elem)
 {
+  #ifdef DEBUG
+    cout << BOOST_CURRENT_FUNCTION << endl;
+  #endif
+
   uint16_t value = 0;
   try{
     value = lexical_cast<uint16_t>( elem->GetText(true) );
@@ -577,6 +646,10 @@ void BrainAmpSeries::setDeviceTriggerValue(ticpp::Iterator<ticpp::Element>const 
 
 void BrainAmpSeries::setDeviceLowpass250(ticpp::Iterator<ticpp::Element>const &elem)
 {
+  #ifdef DEBUG
+    cout << BOOST_CURRENT_FUNCTION << endl;
+  #endif
+
   bool lp250 = equalsOnOrOff(elem->GetText(true));
   for (unsigned int n = 0; n < nr_ch_; n++)
     brainamp_settings_.n250Hertz[n] = lp250;
@@ -586,6 +659,10 @@ void BrainAmpSeries::setDeviceLowpass250(ticpp::Iterator<ticpp::Element>const &e
 
 void BrainAmpSeries::setDeviceDCCoupling(ticpp::Iterator<ticpp::Element>const &elem)
 {
+  #ifdef DEBUG
+    cout << BOOST_CURRENT_FUNCTION << endl;
+  #endif
+
   bool dc = equalsOnOrOff(elem->GetText(true));
   for (unsigned int n = 0; n < nr_ch_; n++)
     brainamp_settings_.nDCCoupling[n] = dc;
@@ -595,6 +672,10 @@ void BrainAmpSeries::setDeviceDCCoupling(ticpp::Iterator<ticpp::Element>const &e
 
 void BrainAmpSeries::setDeviceResolution(ticpp::Iterator<ticpp::Element>const &elem)
 {
+  #ifdef DEBUG
+    cout << BOOST_CURRENT_FUNCTION << endl;
+  #endif
+
   string str(elem->GetText(true));
   map<string, unsigned int>::iterator it;
   it = resolution_names_.find(to_lower_copy(str));
@@ -618,6 +699,10 @@ void BrainAmpSeries::setDeviceResolution(ticpp::Iterator<ticpp::Element>const &e
 
 void BrainAmpSeries::setDeviceCalibrationMode(ticpp::Iterator<ticpp::Element>const &elem)
 {
+  #ifdef DEBUG
+    cout << BOOST_CURRENT_FUNCTION << endl;
+  #endif
+
   if(!elem.Get()->HasAttribute(hw_calib_on_))
   {
     string ex_str(type_ + " -- ");
@@ -672,6 +757,8 @@ void BrainAmpSeries::setDeviceCalibrationMode(ticpp::Iterator<ticpp::Element>con
   brainamp_calibration_settings_.nFrequency =
       boost::numeric_cast<uint32_t>(floor(freq * 1000));  // value has to be in millihertz
 
+  // TODO: implement different test signals
+
   if(equalsYesOrNo( elem.Get()->GetAttribute(hw_calib_on_) ) )
   {
     acqu_type_ = TestSignal;
@@ -691,6 +778,10 @@ void BrainAmpSeries::setDeviceCalibrationMode(ticpp::Iterator<ticpp::Element>con
 
 void BrainAmpSeries::setChannelLowpass250(ticpp::Iterator<ticpp::Element>const &father)
 {
+  #ifdef DEBUG
+    cout << BOOST_CURRENT_FUNCTION << endl;
+  #endif
+
   ticpp::Iterator<ticpp::Element> elem = father->FirstChildElement(hw_chset_ch_,false);
 
   cout << " * Brainamp -- 250 Hz lowpass filter activated on channels:" << endl;
@@ -743,6 +834,10 @@ void BrainAmpSeries::setChannelLowpass250(ticpp::Iterator<ticpp::Element>const &
 
 void BrainAmpSeries::setChannelDCDecoupling(ticpp::Iterator<ticpp::Element>const &father)
 {
+  #ifdef DEBUG
+    cout << BOOST_CURRENT_FUNCTION << endl;
+  #endif
+
   ticpp::Iterator<ticpp::Element> elem = father->FirstChildElement(hw_chset_ch_,false);
 
   cout << " * Brainamp -- DC coupling activated on channels:" << endl;
@@ -793,6 +888,10 @@ void BrainAmpSeries::setChannelDCDecoupling(ticpp::Iterator<ticpp::Element>const
 
 void BrainAmpSeries::setChannelResolution(ticpp::Iterator<ticpp::Element>const &father)
 {
+  #ifdef DEBUG
+    cout << BOOST_CURRENT_FUNCTION << endl;
+  #endif
+
   ticpp::Iterator<ticpp::Element> elem = father->FirstChildElement(hw_chset_ch_,false);
 
   cout << " * Brainamp -- Individual resolution set on channels:" << endl;
@@ -856,6 +955,10 @@ void BrainAmpSeries::setChannelResolution(ticpp::Iterator<ticpp::Element>const &
 
 void BrainAmpSeries::initDownsamplingFilters()
 {
+  #ifdef DEBUG
+    cout << BOOST_CURRENT_FUNCTION << endl;
+  #endif
+
   for (unsigned int n = 0; n < nr_ch_; n++)
     lp_filters_.push_back( IIRButterLpf<double>( BRAINAMP_SAMPLING_RATE, fs_/2.0, 5, 4, 0) );
 }
@@ -999,7 +1102,7 @@ void BrainAmpSeries::doDownSamplingAndFillSampleVector()
 void BrainAmpSeries::setTriggerLine(ticpp::Iterator<ticpp::Element>const &elem)
 {
   #ifdef DEBUG
-    cout << "BrainAmpSeries: setTriggerLine" << endl;
+    cout << BOOST_CURRENT_FUNCTION << endl;
   #endif
 
   trigger_line_enabled_ = equalsOnOrOff(elem->GetText(true));
@@ -1014,7 +1117,7 @@ void BrainAmpSeries::setTriggerLine(ticpp::Iterator<ticpp::Element>const &elem)
 void BrainAmpSeries::checkTriggerLineChannel()
 {
   #ifdef DEBUG
-    cout << "BrainAmpSeries: checkTriggerLineChannel" << endl;
+    cout << BOOST_CURRENT_FUNCTION << endl;
   #endif
 
   if(trigger_line_enabled_)
@@ -1032,6 +1135,10 @@ void BrainAmpSeries::checkTriggerLineChannel()
 
 unsigned int BrainAmpSeries::findChannelPostionInChannelList(boost::uint32_t ch)
 {
+  #ifdef DEBUG
+    cout << BOOST_CURRENT_FUNCTION << endl;
+  #endif
+
   for(int n = 0; n < brainamp_settings_.nChannels; n++)
     if(brainamp_settings_.nChannelList[n] == ch-1)
       return(n);
