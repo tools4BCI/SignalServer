@@ -66,7 +66,6 @@ MouseBase::MouseBase(ticpp::Iterator<ticpp::Element> hw)
 
   ticpp::Iterator<ticpp::Element> ds(hw->FirstChildElement(hw_devset_, true));
   setDeviceSettings(ds);
-//  DS = ds;
   data_.init(1, channel_types_.size() , channel_types_);
 
   vector<boost::uint32_t> v;
@@ -99,7 +98,7 @@ void MouseBase::setVendorId(ticpp::Iterator<ticpp::Element>const &elem)
     string ex_str(type_ + " -- VendorId: value is not a decimal or hxadecimal number!");
     throw(std::invalid_argument(ex_str));
   }
-  if(blocks_ == 0)
+  if(vid_ == 0)
   {
     string ex_str(type_ + " -- VendorId: value is 0!");
     throw(std::invalid_argument(ex_str));
@@ -122,7 +121,7 @@ void MouseBase::setProductId(ticpp::Iterator<ticpp::Element>const &elem)
     string ex_str(type_ + " -- ProductId: value is not a decimal or hxadecimal number!");
     throw(std::invalid_argument(ex_str));
   }
-  if(blocks_ == 0)
+  if(pid_ == 0)
   {
     string ex_str(type_ + " -- ProductId: value is 0!");
     throw(std::invalid_argument(ex_str));
@@ -146,7 +145,7 @@ void MouseBase::setUsbPort(ticpp::Iterator<ticpp::Element>const &elem)
     string ex_str(type_ + " -- Usb port: value is not a decimal or hxadecimal number!");
     throw(std::invalid_argument(ex_str));
   }
-  if(blocks_ == 0)
+  if(usb_port_ == 0)
   {
     string ex_str(type_ + " -- Usb port: value is 0!");
     throw(std::invalid_argument(ex_str));
@@ -174,24 +173,24 @@ void MouseBase::setDeviceSettings(ticpp::Iterator<ticpp::Element>const& father)
   string type;
 
   if(buttons_)
-    channel_types_.push_back(SIG_MBUTTON);
+    channel_types_.push_back(SIG_BUTTON);
   for(boost::uint32_t n = 0; n < buttons_; n++)
-    channel_types_.push_back(SIG_MBUTTON);
+    channel_types_.push_back(SIG_BUTTON);
 
   if(axes_)
-    channel_types_.push_back(SIG_MOUSE);
+    channel_types_.push_back(SIG_AXIS);
   for(boost::uint32_t n = 0; n < axes_; n++)
-   channel_types_.push_back(SIG_MOUSE);
+   channel_types_.push_back(SIG_AXIS);
   nr_ch_= channel_types_.size();
 
   boost::uint16_t n = 1;
   if(buttons_)
     for( ; n <= buttons_ +1; n++)
-      channel_info_.insert(pair<boost::uint16_t, pair<string, boost::uint32_t> >(n, pair<string, boost::uint32_t>(naming, SIG_MBUTTON)));
+      channel_info_.insert(pair<boost::uint16_t, pair<string, boost::uint32_t> >(n, pair<string, boost::uint32_t>(naming, SIG_BUTTON)));
 
   if(axes_)
     for( ; n <= axes_ + buttons_ +2; n++)
-      channel_info_.insert(pair<boost::uint16_t, pair<string, boost::uint32_t> >(n, pair<string, boost::uint32_t>(naming, SIG_MOUSE)));
+      channel_info_.insert(pair<boost::uint16_t, pair<string, boost::uint32_t> >(n, pair<string, boost::uint32_t>(naming, SIG_AXIS)));
 
 
   homogenous_signal_type_ = 0;

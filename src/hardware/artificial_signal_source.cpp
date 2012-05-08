@@ -102,8 +102,6 @@ void ArtificialSignalSource::run()
     cout << "ArtificialSignalSource: run" << endl;
   #endif
 
-  std::cout << BOOST_CURRENT_FUNCTION << std::endl << std::flush;
-
   running_ = 1;
   generateSignal();
 }

@@ -574,7 +574,7 @@ void BrainAmpSeries::setBrainAmpChannelList()
   }
   catch(boost::numeric::bad_numeric_cast& e)
   {
-    throw(std::invalid_argument("Error -- " + BOOST_CURRENT_FUNCTION + " -- " + e.what())  );
+    throw(std::invalid_argument("Error -- " + std::string(BOOST_CURRENT_FUNCTION) + " -- " + e.what())  );
   }
 
 }

@@ -63,13 +63,13 @@ Mouse::Mouse(ticpp::Iterator<ticpp::Element> hw)
     throw(std::runtime_error("MouseBase::Constructor -- Spaces in the devcon_path are forbidden!"));
 
   if(!boost::filesystem::exists(devcon_path_.c_str()))
-    throw(std::invalid_argument("Mouse::Constructor -- Devcon-path does not exist!"));
+    throw(std::invalid_argument("Mouse::Constructor -- Devcon-path <" + devcon_path_ +  "> does not exist!"));
 
-  elem = ds->FirstChildElement(inf_file_path_,true);
+  elem = ds->FirstChildElement(hw_inf_file_path_,true);
   inf_file_path_ = elem->GetText(true);
 
   if(!boost::filesystem::exists(inf_file_path_.c_str()))
-    throw(std::invalid_argument("Mouse::Constructor -- Inf-file path does not exist!"));
+    throw(std::invalid_argument("Mouse::Constructor -- Inf-file path: <" + inf_file_path_ +  "> does not exist!"));
 
   string VID, PID;
   std::ostringstream v,p;
@@ -183,6 +183,10 @@ int Mouse::freeKernelDriver()
   CreateProcess(const_cast<LPCSTR>(devcon_path_.c_str()),
   " rescan",0,0,FALSE,CREATE_NEW_CONSOLE,0,0,&siStartupInfo,&piProcessInfo);
   WaitForSingleObject(piProcessInfo.hProcess, 1000);
+
+  //  CreateProcess(const_cast<LPCSTR>(devcon_path_.c_str()),
+  //" update",0,0,FALSE,CREATE_NEW_CONSOLE,0,0,&siStartupInfo,&piProcessInfo);
+  //WaitForSingleObject(piProcessInfo.hProcess, 1000);
 
   return 0;
 }

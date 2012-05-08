@@ -108,14 +108,14 @@ void JStick::setDeviceSettings(ticpp::Iterator<ticpp::Element>const&)
     channel_types_.push_back(SIG_BUTTON);
 
   if(axes_)
-    channel_types_.push_back(SIG_JOYSTICK);
+    channel_types_.push_back(SIG_AXIS);
   for(boost::uint32_t n = 0; n < axes_; n++)
-    channel_types_.push_back(SIG_JOYSTICK);
+    channel_types_.push_back(SIG_AXIS);
 
   if(balls_)
-    channel_types_.push_back(SIG_JOYSTICK);
+    channel_types_.push_back(SIG_AXIS);
   for(boost::int32_t n = 0; n < 2*balls_; n++)
-    channel_types_.push_back(SIG_JOYSTICK);
+    channel_types_.push_back(SIG_AXIS);
 
   nr_ch_= channel_types_.size();
 
@@ -126,11 +126,11 @@ void JStick::setDeviceSettings(ticpp::Iterator<ticpp::Element>const&)
 
   if(axes_)
     for( ; n <= axes_ + buttons_ +2; n++)
-      channel_info_.insert(pair<boost::uint16_t, pair<string, boost::uint32_t> >(n, pair<string, boost::uint32_t>(naming, SIG_JOYSTICK)));
+      channel_info_.insert(pair<boost::uint16_t, pair<string, boost::uint32_t> >(n, pair<string, boost::uint32_t>(naming, SIG_AXIS)));
 
   if(balls_)
     for( ; n <= (2*balls_)+ axes_ + buttons_ +3; n++)
-      channel_info_.insert(pair<boost::uint16_t, pair<string, boost::uint32_t> >(n, pair<string, boost::uint32_t>(naming, SIG_JOYSTICK)));
+      channel_info_.insert(pair<boost::uint16_t, pair<string, boost::uint32_t> >(n, pair<string, boost::uint32_t>(naming, SIG_AXIS)));
 
   homogenous_signal_type_ = 0;
 
