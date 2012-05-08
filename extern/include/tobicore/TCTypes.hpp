@@ -24,5 +24,6 @@
 #define TCSTATUS_VERSIONNODE		"version"
 #define TCSTATUS_COMPONENTNODE		"component"
 #define TCSTATUS_STATUSNODE			"status"
+#define TCSTATUS_FRAMENODE			"frame"
 
 #endif

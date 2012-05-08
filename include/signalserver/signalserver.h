@@ -38,12 +38,12 @@
 #include <boost/thread.hpp>
 
 
-#ifdef USE_TID_SERVER
-  namespace TiD
-  {
-    class TiDServer;
-  }
-#endif
+
+namespace TiD
+{
+  class TiDServer;
+}
+
 
 #ifdef USE_GDF_SAVER
   namespace gdf
@@ -109,12 +109,10 @@ class SignalServer
 
     EventSource*                        event_source_;
     FileWriter*                         file_writer_;
+    
+    
+    TiD::TiDServer*                     tid_server_;
 
-    #ifdef USE_TID_SERVER
-      TiD::TiDServer*             tid_server_;
-      boost::asio::io_service     tid_io_service_;
-      boost::thread*              tid_io_service_thread_;
-    #endif
 
     #ifdef USE_GDF_SAVER
       gdf::Writer*                gdf_writer_;

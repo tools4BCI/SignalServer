@@ -23,41 +23,51 @@
 
 /*! \brief Exception class
  * 
- * Implements a simple exception 
+ * \ingroup tobicore
  */
 class TCException {
 	public:
 		/*! \brief Constructor
-		  \param info 		Exception message
-		  \param caller		Method that raised the exception (default: "undef")
+		 *
+		 * \param info Exception message
+		 * \param caller Method that raised the exception (default: "undef")
 		 */
 		TCException(std::string info, std::string caller = "undef");
+
+		/*! \brief Destructor
+		 */
 		virtual ~TCException(void);
 
-		/*! \brief Returns caller
-		  \return Caller 
+		/*! \brief Caller getter
+		 * \return Caller
 		 */
 		virtual std::string GetCaller(void) const;
-		/*! \brief Returns exception message
-		  \return Message
+
+		/*! \brief Message getter
+		 * \return Message
 		 */
 		virtual std::string GetInfo(void) const;
 		
 	public:
 		/*! \brief Operator << overload
+		 * \return std::ostream
 		 */
 		friend std::ostream &operator<<(std::ostream& output, 
 				const TCException&);
+	
 		/*! \brief Operator << overload
+		 * \return std::ostream
 		 */
 		friend std::ostream &operator<<(std::ostream& output, 
 				const TCException*);
+		
 		/*! \brief Operator == overload
 		 * 
 		 * To compare two different exceptions
 		 * \return True if the exception message are different
 		 */
 		bool operator==(const TCException& right);
+
 		/*! \brief Operator != overload
 		 *
 		 * To compare two different exceptions
@@ -66,7 +76,16 @@ class TCException {
 		bool operator!=(const TCException& right);
 
 	private:
+		/*! \brief Information message
+		 *
+		 * i.e. 'Out of tomato exception'
+		 */
 		std::string _info;
+		
+		/*! \brief Caller/thrower 
+		 *
+		 * i.e. 'void Pizza::Make(uint32 id)'
+		 */
 		std::string _caller;
 };
 

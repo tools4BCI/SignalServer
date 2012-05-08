@@ -189,10 +189,9 @@ map<string,string> XMLParser::parseServerSettings()
   elem = server_settings_->FirstChildElement(cst_.ss_udp_port, true);
   m.insert(pair<string, string>(elem->Value(), elem->GetText(false)));
 
-  #ifdef USE_TID_SERVER
-    elem = server_settings_->FirstChildElement(cst_.ss_tid_port, true);
-    m.insert(pair<string, string>(elem->Value(), elem->GetText(false)));
-  #endif
+  elem = server_settings_->FirstChildElement(cst_.ss_tid_port, true);
+  m.insert(pair<string, string>(elem->Value(), elem->GetText(false)));
+
 
   for(elem = server_settings_->FirstChildElement(true) ; elem != elem.end(); elem++)
   {

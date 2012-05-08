@@ -19,26 +19,94 @@
 #ifndef TCLANGUAGE_HPP 
 #define TCLANGUAGE_HPP 
 
+#include "TCBlock.hpp"
 #include <string>
 
+/*! \brief Language model
+ *
+ * \ingroup tobicore
+ */
 class TCLanguage {
 	public:
-		std::string Status(const int component, const int status);
+		/*! \brief Creates a status message. 
+		 *
+		 * \arg component Component ID (i.e.: iA, iB, iC...)
+		 * \arg status Return code
+		 * \arg fidx Frame index
+		 * \return Status message
+		 */
+		std::string Status(const int component, const int status, 
+				const int fidx  = TCBlock::BlockIdxUnset);
+
+		/*! \brief Checks if message is compatible
+		 *
+		 * Checks if a status message is compatible.
+		 *
+		 * \arg message A status message
+		 * \return True if compatible, false otherwise
+		 */
 		bool CheckVersion(const std::string& message);
-		bool IsStatus(const std::string& message, int* component, int* status);
 		
+		/*! \brief 
+		 *
+		 * \arg component
+		 * \arg status
+		 * \arg fidx
+		 * \return 
+		 */
+		bool IsStatus(const std::string& message, int* component, int* status,
+				int* fidx);
+		
+		/*! \brief 
+		 *
+		 * \arg component
+		 * \arg status
+		 * \arg fidx
+		 * \return 
+		 */
 		std::string GetComponent(int component);
+		
+		/*! \brief 
+		 *
+		 * \arg component
+		 * \arg status
+		 * \arg fidx
+		 * \return 
+		 */
 		std::string GetStatus(int component);
 
 	public:
+		/*
+		//! \brief Supported components
+		enum { IA, IB, IC, ID, Otherwise };
+
+		//! \brief Error codes
+		enum { Ready = 0, Quit, ErrorGeneric, ErrorNotSupported };
+		 */
+
+		//! \brief TOBI iA
 		const static int IA = 1;
+		
+		//! \brief TOBI iB
 		const static int IB = 2;
+		
+		//! \brief TOBI iC
 		const static int IC = 3;
+		
+		//! \brief TOBI iD
 		const static int ID = 4;
 
+		//! \brief Ready return code
 		const static int Ready = 1;
+		
+		//! \brief Quit return code
 		const static int Quit  = 2;
+		
+		//! \brief Generic error code
 		const static int ErrorGeneric = -1;
+		
+		//! \brief Not-supported error code
+		const static int ErrorNotSupported = -2;
 };
 
 #endif

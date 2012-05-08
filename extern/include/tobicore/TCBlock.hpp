@@ -24,27 +24,64 @@
 
 typedef struct timeval TCTimeval;
 
+/*! \brief Data block
+ * 
+ * \ingroup tobicore
+ * 
+ * Each communication blocks in the BCI should carry a frame index
+ * value (generally set by the acquisition module), an absolute timestamp (i.e.
+ * 2011-11-19, 22:00:00.00.00) and a relative timestamp (i.e. 200 seconds).
+ */
 class TCBlock {
 	public:
-		TCBlock(void);
-		/*! \brief Sets frame index value
-		 *
+		/*! \brief Constructor
 		 */
-		virtual int SetBlockIdx(int fidx = 0);
-		/*! \brief Gets frame index value
+		TCBlock(void);
+
+		/*! \brief Frame index setter
+		 */
+		virtual int SetBlockIdx(int fidx = TCBlock::BlockIdxUnset);
+
+		/*! \brief Frame index getter
 		 */
 		virtual int GetBlockIdx(void) const;
-		/*! \brief Increments frame index value
+
+		/*! \brief Increments frame index
 		 */
 		virtual int IncBlockIdx(void);
+
+		/*! \brief Unsets (invalidates) frame index
+		 * 
+		 * If the frame index is unset, it means a particular 
+		 * communication blocks has not been generated within the BCI
+		 * pipeline. For example, a BCI-controlled robot on the moon 
+		 * will send messages without setting the frame index. 
+		 * A neurofeedback will receive and generate communication blocks 
+		 * that carry both a correct frame index and all the timestamp
+		 * information.
+		 */
 		virtual void UnsetBlockIdx(void);
+
+		/*! \brief Checks if frame index is set (valid)
+		 * \return True if set, false otherwise
+		 */
 		virtual bool IsSetBlockIdx(void) const;
 
 	public:
+		/*! \brief Unset frame index value
+		 */
 		static const int BlockIdxUnset = -1;
+		
+		/*! \brief  Absolute timestamp
+		 */
 		TCTimestamp absolute;
+		
+		/*! \brief  Relative timestamp
+		 */
 		TCTimestamp relative;
 	protected:
+		/*! \brief Frame index 
+		 */
 		int _blockidx;
 };
 

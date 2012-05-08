@@ -72,14 +72,14 @@
 #define SIG_HR 0x10
 #define SIG_BP 0x20
 #define SIG_BUTTON 0x40
-#define SIG_JOYSTICK 0x80
+#define SIG_AXIS 0x80
 #define SIG_SENSOR 0x100
 
 #define SIG_NIRS 0x200
 #define SIG_FMRI 0x400
 
-#define SIG_MOUSE 0x800
-#define SIG_MBUTTON 0x1000
+//#define SIG_MOUSE 0x800
+//#define SIG_MBUTTON 0x1000
 
 #define SIG_USER_1    0x10000
 #define SIG_USER_2    0x20000

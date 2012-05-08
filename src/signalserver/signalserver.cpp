@@ -43,11 +43,11 @@
 #include "config/xml_parser.h"
 
 
-#include <tobiid/IDMessage.hpp>
-#include "TiDlib/tid_server.h"
+#include "tobiid/IDMessage.hpp"
+#include "libtid/tid_server.h"
 
 
-#include "libgdf/GDF/Writer.h"
+//#include "libgdf/GDF/Writer.h"
 
 namespace tobiss
 {
@@ -58,10 +58,7 @@ SignalServer::SignalServer(XMLParser& config_parser, bool use_new_tia)
     config_parser_(config_parser),
     stop_reading_(false), write_file_(false),
     master_blocksize_( 0 ),
-    master_samplingrate_( 0 )
-    #ifdef USE_TID_SERVER
-      ,tid_server_(0),tid_io_service_thread_(0)
-    #endif
+    master_samplingrate_( 0 ) ,tid_server_(0)
     #ifdef USE_GDF_SAVER
       ,gdf_writer_(0)
     #endif
@@ -95,14 +92,10 @@ SignalServer::SignalServer(XMLParser& config_parser, bool use_new_tia)
   packet_ = tia_server_->getEmptyDataPacket();
   packet_->reset();
 
-  #ifdef USE_TID_SERVER
-    tid_server_ = new TiD::TiDServer(tid_io_service_);
-    tid_server_->bind ( boost::lexical_cast<unsigned int>(server_settings_[tia::Constants::ss_tid_port]));
-    tid_server_->listen();
-
-    tid_io_service_thread_ = new boost::thread(boost::bind(&boost::asio::io_service::run,
-                                                           &tid_io_service_));
-  #endif
+  tid_server_ = new TiD::TiDServer();
+  tid_server_->bind ( boost::lexical_cast<unsigned int>(server_settings_[tia::Constants::ss_tid_port]));
+  tid_server_->reserveNrOfMsgs(1024);
+  tid_server_->start();
 
 
   #ifdef USE_GDF_SAVER
@@ -134,12 +127,6 @@ SignalServer::SignalServer(XMLParser& config_parser, bool use_new_tia)
 
   SetPriorityClass(hw_access_io_service_thread_->native_handle(), REALTIME_PRIORITY_CLASS);
   SetThreadPriority(hw_access_io_service_thread_->native_handle(), THREAD_PRIORITY_TIME_CRITICAL );
-
-  #ifdef USE_TID_SERVER
-    SetPriorityClass(tid_io_service_thread_->native_handle(), REALTIME_PRIORITY_CLASS);
-    SetThreadPriority(tid_io_service_thread_->native_handle(), THREAD_PRIORITY_TIME_CRITICAL );
-  #endif
-
 #endif
 }
 
@@ -168,13 +155,9 @@ SignalServer::~SignalServer()
     delete(hw_access_);
 
 
-  #ifdef USE_TID_SERVER
-    if(tid_io_service_thread_)
-      delete(tid_io_service_thread_);
+  if(tid_server_)
+    delete(tid_server_);
 
-    if(tid_server_)
-      delete(tid_server_);
-  #endif
 
   #ifdef USE_GDF_SAVER
     if(gdf_writer_)
@@ -203,11 +186,7 @@ void SignalServer::stop()
   tia_io_service_thread_->interrupt();
   tia_io_service_thread_->join();
 
-  #ifdef USE_TID_SERVER
-    tid_io_service_.stop();
-    tid_io_service_thread_->interrupt();
-    tid_io_service_thread_->join();
-  #endif
+  tid_server_->stop();
 
   hw_access_->stopDataAcquisition();
 }
@@ -222,12 +201,22 @@ void SignalServer::readPackets()
 
   boost::uint64_t sample_count = 0;
 
+  std::vector<IDMessage> msgs;
+  msgs.reserve(100);
+
   while (!stop_reading_)
   {
     sample_count += master_blocksize_;
-
+       
     hw_access_->fillDataPacket(packet_);
+    tid_server_->update(packet_->getTimestamp(),packet_->getPacketID());
     tia_server_->sendDataPacket();
+
+    if(tid_server_->newMessagesAvailable())
+    {
+      tid_server_->getLastMessages(msgs);
+      msgs.clear();
+    }
   }
 }
 

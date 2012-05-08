@@ -21,15 +21,41 @@
 
 #include <string>
 
-/*! \brief TC Tools class.
+/*! \brief Static tools class.
  *
- * It exposes some static methods to perform data conversion.
+ * \ingroup tobicore
+ *
+ * It provides some static methods to perform data conversion. 
  */
 class TCTools {
 	public:	
+		/*! \brief Classic itoa
+		 * \arg value Integer to convert
+		 * \arg result Reference to char array containing the converted integer
+		 * \arg base Base for conversion
+		 * \return Reference to char array containing the converted integer upon
+		 * success, NULL otherwise.
+		 */
 		static char* itoa(int value, char* result, int base = 10);
+
+		/*! \brief Classic ftoa
+		 * \arg value Float to convert
+		 * \arg result Reference to char array containing the converted float
+		 * \return Reference to char array containing the converted float upon
+		 * success, NULL otherwise.
+		 */
 		static int ftoa(float value, char* result);
+		
+		/*! \brief Classic atof
+		 * \arg value String to convert
+		 * \return Converted float
+		 */
 		static float atof(const char* value);
+		
+		/*! \brief Classic itos
+		 * \arg Value to convert
+		 * \return Converted integer as string
+		 */
 		static std::string itos(int value);
 };
 
