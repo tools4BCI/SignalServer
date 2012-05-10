@@ -16,18 +16,22 @@ unix {
     contains( HARDWARE_PLATFORM, x86_64 )::{
         # 64-bit Linux
         LIBS += -Lextern/lib/ticpp/linux  -lticpp_64 \
-                -Lextern/lib/tia/linux/x64 -ltia
+                -Lextern/lib/tia/linux/amd64 -ltia \
+                -Lextern/lib/tobicore/linux/amd64 -ltobicore \
+                -Lextern/lib/tobiid/linux/amd64 -ltobiid \
+                -Lextern/lib/libtid/linux/amd64 -ltid
 
-        contains( DEFINES, USE_TID_SERVER )::LIBS += extern/lib/TiDlib/linux/libTiDserver_64.a
         contains( DEFINES, USE_GDF_SAVER )::LIBS += extern/lib/libgdf/linux/libGDF_64.a
 
     }else::{
 
         # 32-bit Linux
         LIBS += -Lextern/lib/ticpp/linux  -lticpp \
-                -Lextern/lib/tia/linux/x86 -ltia
+                -Lextern/lib/tia/linux/x86 -ltia \
+                -Lextern/lib/tobicore/linux/x86 -ltobicore \
+                -Lextern/lib/tobiid/linux/x86 -ltobiid \
+                -Lextern/lib/libtid/linux/x86 -ltid
 
-        contains( DEFINES, USE_TID_SERVER )::USE_TID_SERVER:LIBS += extern/lib/TiDlib/linux/libTiDserver_32.a
         contains( DEFINES, USE_GDF_SAVER )::LIBS += extern/lib/libgdf/linux/libGDF_32.a
     }
 }

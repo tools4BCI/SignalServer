@@ -115,8 +115,6 @@ void ArtificialSignalSource::stop()
     cout << "ArtificialSignalSource: stop" << endl;
   #endif
 
-  std::cout << BOOST_CURRENT_FUNCTION << std::endl << std::flush;
-
   running_ = 0;
   cond_.notify_all();
 }
