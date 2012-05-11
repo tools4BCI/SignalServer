@@ -39,10 +39,9 @@
 #ifndef JSTICK_H
 #define JSTICK_H
 
-#ifdef WIN32
-    #pragma comment(lib, "SDL.lib")
-    #pragma comment(lib, "SDLmain.lib")
-#endif
+//#ifdef WIN32
+//    #pragma comment(lib, "SDL.lib")
+//#endif
 
 #include <boost/cstdint.hpp>
 
@@ -50,6 +49,8 @@
 
 #include "hw_thread.h"
 #include "hw_thread_builder.h"
+
+struct _SDL_Joystick;
 
 namespace tobiss
 {
@@ -120,7 +121,7 @@ class JStick : public HWThread
   private:
     static std::set<boost::uint16_t> used_ids_;        ///<  every Joystick has a unique ID
 
-    void* joy_;   //FIXME: should be of type SDL_Joystick  ... problems with includes
+    _SDL_Joystick* joy_;   //FIXME: should be of type SDL_Joystick  ... problems with includes
     boost::uint16_t id_;
 
     boost::uint16_t buttons_;

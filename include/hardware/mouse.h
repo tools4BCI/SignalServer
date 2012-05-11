@@ -48,6 +48,9 @@
 #include "hw_thread.h"
 #include "hw_thread_builder.h"
 
+#define PRE_DEFINED_NR_MOUSE_AXIS_    2
+#define PRE_DEFINED_NR_MOUSE_BUTTONS_ 3
+
 namespace tobiss
 {
 //-----------------------------------------------------------------------------
@@ -126,6 +129,11 @@ class MouseBase : public HWThread
     /**
     * @brief Sets vendorId for Mousedevice.
     */
+    void setDetachFromOS(ticpp::Iterator<ticpp::Element>const &elem);
+
+    /**
+    * @brief Sets vendorId for Mousedevice.
+    */
     void setVendorId(ticpp::Iterator<ticpp::Element>const &elem);
 
     /**
@@ -150,33 +158,32 @@ class MouseBase : public HWThread
     //-----------------------------------------------
 
   protected:
+    bool            dirty_;
+    bool            detach_from_os_;
 
     boost::uint32_t vid_;
     boost::uint32_t pid_;
     boost::uint32_t usb_port_;
 
     SampleBlock<double> empty_block_;
-
     boost::thread*  async_acqu_thread_;
-    //    std::vector<boost::int16_t>  raw_data_;
-    int async_data_x_;
-    int async_data_y_;
-    int async_data_buttons_;
-
-  private:
-
-    static std::set<boost::uint16_t> used_ids_;
-    boost::uint16_t id_;
-
-    static const std::string str_hw_vid_;
-    static const std::string str_hw_pid_;
-    static const std::string str_usb_port_;
 
     boost::uint16_t buttons_;
     std::vector<bool> buttons_values_;
 
     boost::uint16_t axes_;
     std::vector<boost::int16_t> axes_values_;
+
+  private:
+
+    static std::set<boost::uint16_t> used_ids_;
+    boost::uint16_t id_;
+
+    static const std::string str_detach_from_os_;
+    static const std::string str_hw_vid_;
+    static const std::string str_hw_pid_;
+    static const std::string str_usb_port_;
+
 
 };
 

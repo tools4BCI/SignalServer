@@ -31,6 +31,8 @@
     Contact: SignalServer@tobi-project.org
 */
 
+#include "extern\include\libusb\usb.h"
+
 #include "hardware/mouse_win.h"
 #include "tia/constants.h"
 #include "boost/filesystem.hpp"
@@ -50,38 +52,40 @@ const HWThreadBuilderTemplateRegistratorWithoutIOService<Mouse> Mouse::FACTORY_R
 //-----------------------------------------------------------------------------
 
 Mouse::Mouse(ticpp::Iterator<ticpp::Element> hw)
-: MouseBase(hw)
+: MouseBase(hw), dev_handle_(0)
 {
   tia::Constants cst;
   ticpp::Iterator<ticpp::Element> ds(hw->FirstChildElement(hw_devset_, true));
 
-  ticpp::Iterator<ticpp::Element> elem(ds->FirstChildElement(hw_dc_path_,true));
-  devcon_path_ = elem->GetText(true);
-  size_t found = devcon_path_.find(" ");
+  if(detach_from_os_)
+  {
+    ticpp::Iterator<ticpp::Element> elem(ds->FirstChildElement(hw_dc_path_,true));
+    devcon_path_ = elem->GetText(true);
+    size_t found = devcon_path_.find(" ");
 
-  if(found != string::npos)
-    throw(std::runtime_error("MouseBase::Constructor -- Spaces in the devcon_path are forbidden!"));
+    if(found != string::npos)
+      throw(std::runtime_error("MouseBase::Constructor -- Spaces in the devcon_path are forbidden!"));
 
-  if(!boost::filesystem::exists(devcon_path_.c_str()))
-    throw(std::invalid_argument("Mouse::Constructor -- Devcon-path <" + devcon_path_ +  "> does not exist!"));
+    if(!boost::filesystem::exists(devcon_path_.c_str()))
+      throw(std::invalid_argument("Mouse::Constructor -- Devcon-path <" + devcon_path_ +  "> does not exist!"));
 
-  elem = ds->FirstChildElement(hw_inf_file_path_,true);
-  inf_file_path_ = elem->GetText(true);
+    elem = ds->FirstChildElement(hw_inf_file_path_,true);
+    inf_file_path_ = elem->GetText(true);
 
-  if(!boost::filesystem::exists(inf_file_path_.c_str()))
-    throw(std::invalid_argument("Mouse::Constructor -- Inf-file path: <" + inf_file_path_ +  "> does not exist!"));
+    if(!boost::filesystem::exists(inf_file_path_.c_str()))
+      throw(std::invalid_argument("Mouse::Constructor -- Inf-file path: <" + inf_file_path_ +  "> does not exist!"));
 
-  string VID, PID;
-  std::ostringstream v,p;
-  v << std::setw(4) << std::setfill('0') << std::hex << vid_;
-  p << std::setw(4) << std::setfill('0') << std::hex << pid_;
-  VID = v.str();
-  PID = p.str();
-  hw_id_ = "\"USB\\VID_"+VID+"&PID_"+PID+"\"";
+    string VID, PID;
+    std::ostringstream v,p;
+    v << std::setw(4) << std::setfill('0') << std::hex << vid_;
+    p << std::setw(4) << std::setfill('0') << std::hex << pid_;
+    VID = v.str();
+    PID = p.str();
+    hw_id_ = "\"USB\\VID_"+VID+"&PID_"+PID+"\"";
 
-  int ret = blockKernelDriver();
-  if(ret)
-    throw(std::runtime_error("MouseBase::initMouse -- Mouse device could not be connected (check rights)!"));
+    if(blockKernelDriver())
+      throw(std::runtime_error("MouseBase::initMouse -- Mouse device could not be connected (check rights)!"));
+  }
 
   setType("Mouse");
 
@@ -95,7 +99,9 @@ Mouse::~Mouse()
   async_acqu_thread_->join();
   if(async_acqu_thread_)
     delete async_acqu_thread_;
-  freeKernelDriver();
+  
+  if(detach_from_os_)
+    freeKernelDriver();
 }
 
 //-----------------------------------------------------------------------------
@@ -198,34 +204,91 @@ void Mouse::acquireData()
 {
   while(running_)
   {
-    bool unchanged = false;
-    boost::unique_lock<boost::shared_mutex> lock(rw_);
-    char async_data_[5];
-    int r = usb_interrupt_read(dev_handle_,usb_port_, async_data_, sizeof(async_data_), 10000);
-    if(r == LIBUSB_ERROR_TIMEOUT){
-      //cout<<"   Mouse: Timeout!"<<endl;
-      unchanged = true;
-    }
-    else if(r == LIBUSB_ERROR_PORT){
+    
+    if(detach_from_os_)
+      getDataFromLibUSB();
+    else
+    {
+      dirty_ = false;
+      boost::unique_lock<boost::shared_mutex> lock(rw_);
+
+      bool button_pressed[PRE_DEFINED_NR_MOUSE_BUTTONS_] = {0};
+
+      button_pressed[0] = (GetAsyncKeyState(VK_LBUTTON) != 0);
+      button_pressed[1] = (GetAsyncKeyState(VK_MBUTTON) != 0);
+      button_pressed[2] = (GetAsyncKeyState(VK_RBUTTON) != 0);
+
+      if( (buttons_values_[0] != button_pressed[0]) || 
+          (buttons_values_[1] != button_pressed[1]) ||
+          (buttons_values_[2] != button_pressed[2]) )
+      {
+        buttons_values_[0] = button_pressed[0];
+        buttons_values_[1] = button_pressed[1];
+        buttons_values_[2] = button_pressed[2];
+        dirty_ = true;
+      }
+      
+      POINT cursorPos;
+      GetCursorPos(&cursorPos);
+
+      if( (axes_values_[0] != cursorPos.x) || (axes_values_[1] != cursorPos.y) )
+      {
+        axes_values_[0] = cursorPos.x;
+        axes_values_[1] = cursorPos.y;
+        dirty_ = true;
+      }
+
       lock.unlock();
-      throw(std::runtime_error("Mouse::acquireData -- Mouse device could not be read! Check usb-port!"));
     }
-    else if(r<0){
-      lock.unlock();
-      throw(std::runtime_error("Mouse::acquireData -- Mouse device could not be read! Problem with libusb!"));
-    }
-    if(!unchanged){
-      async_data_buttons_ = static_cast<int>(static_cast<char>(async_data_[0]));
-      async_data_x_ = static_cast<int>(static_cast<char>(async_data_[1]));
-      async_data_y_ = static_cast<int>(static_cast<char>(async_data_[2]));
-    }
-    lock.unlock();
   }
 }
 
 //-----------------------------------------------------------------------------
 
+void Mouse::getDataFromLibUSB()
+{
+  boost::unique_lock<boost::shared_mutex> lock(rw_);
 
+  dirty_ = false;
+  char async_data_[3];
+  int r = usb_interrupt_read(dev_handle_,usb_port_, async_data_, sizeof(async_data_), 10000);
+
+  if(r == LIBUSB_ERROR_TIMEOUT)
+  {
+    //cout<<"   Mouse: Timeout!"<<endl;
+    return;
+  }
+  else if(r == LIBUSB_ERROR_PORT)
+  {
+    lock.unlock();
+    throw(std::runtime_error("Mouse::acquireData -- Mouse device could not be read! Check usb-port!"));
+  }
+  else if(r<0)
+  {
+    lock.unlock();
+    throw(std::runtime_error("Mouse::acquireData -- Mouse device could not be read! Problem with libusb!"));
+  }
+
+  dirty_ = true;
+  int async_data_buttons_ = static_cast<int>(async_data_[0] );
+  axes_values_[0] += static_cast<int>( async_data_[1] );
+  axes_values_[1] += static_cast<int>( async_data_[2] );
+
+  for(unsigned int n = 0; n < buttons_values_.size(); n++)
+  {
+    bool value = 0;
+
+    if ( async_data_buttons_ & static_cast<int>( 1 << n ) )
+      value = 1;
+
+    if( value != buttons_values_[n])
+      buttons_values_[n] = value;
+  }
+
+  lock.unlock();
+}
+
+//-----------------------------------------------------------------------------
 
 } // Namespace tobiss
 

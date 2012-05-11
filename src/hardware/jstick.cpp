@@ -88,7 +88,7 @@ JStick::JStick(ticpp::Iterator<ticpp::Element> hw)
 JStick::~JStick()
 {
   if(SDL_JoystickOpened(id_))
-    SDL_JoystickClose(static_cast<SDL_Joystick*>(joy_));
+    SDL_JoystickClose(joy_);
 }
 
 //-----------------------------------------------------------------------------
@@ -163,24 +163,24 @@ SampleBlock<double> JStick::getAsyncData()
   SDL_JoystickUpdate();
 
   for(boost::uint8_t n = 0; n < buttons_values_.size(); n++)
-    if(SDL_JoystickGetButton(static_cast<SDL_Joystick*>(joy_), n) != buttons_values_[n])
+    if(SDL_JoystickGetButton(joy_, n) != buttons_values_[n])
     {
       dirty = 1;
-      buttons_values_[n] = SDL_JoystickGetButton(static_cast<SDL_Joystick*>(joy_), n);
+      buttons_values_[n] = SDL_JoystickGetButton(joy_, n);
     }
 
   for(boost::uint8_t n = 0; n < axes_values_.size(); n++)
-    if(SDL_JoystickGetAxis(static_cast<SDL_Joystick*>(joy_), n) != axes_values_[n])
+    if(SDL_JoystickGetAxis(joy_, n) != axes_values_[n])
     {
       dirty = 1;
-      axes_values_[n] = SDL_JoystickGetAxis(static_cast<SDL_Joystick*>(joy_), n);
+      axes_values_[n] = SDL_JoystickGetAxis(joy_, n);
     }
 
   for(boost::uint8_t n = 0; n < balls_values_.size(); n++)
   {
     int dx = 0;
     int dy = 0;
-    SDL_JoystickGetBall(static_cast<SDL_Joystick*>(joy_), n, &dx, &dy);
+    SDL_JoystickGetBall(joy_, n, &dx, &dy);
     pair<int,int> dxy = make_pair(dx,dy);
     if(dxy != balls_values_[n])
     {
@@ -243,7 +243,7 @@ void JStick::initJoystick()
     if(used_ids_.find(n) == used_ids_.end())
     {
       joy_ = SDL_JoystickOpen(n);
-      if(!static_cast<SDL_Joystick*>(joy_))
+      if(!joy_)
         throw(std::runtime_error("JStick::initJoystick -- Unable to open joystick at position: " + n));
       name_= SDL_JoystickName(n);
       id_ = n;
@@ -251,12 +251,12 @@ void JStick::initJoystick()
       break;
     }
 
-  if(!static_cast<SDL_Joystick*>(joy_))
+  if(!joy_)
     throw(std::runtime_error("JStick::initJoystick -- Joystick already opened!"));
 
-  axes_    = SDL_JoystickNumAxes(static_cast<SDL_Joystick*>(joy_));
-  buttons_ = SDL_JoystickNumButtons(static_cast<SDL_Joystick*>(joy_));
-  balls_   = SDL_JoystickNumBalls(static_cast<SDL_Joystick*>(joy_));
+  axes_    = SDL_JoystickNumAxes(joy_);
+  buttons_ = SDL_JoystickNumButtons(joy_);
+  balls_   = SDL_JoystickNumBalls(joy_);
 
   axes_values_.resize(axes_,0);
   balls_values_.resize(balls_, make_pair(0,0) );

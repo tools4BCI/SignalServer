@@ -44,7 +44,8 @@
 #include <cmath>
 
 #include "mouse.h"
-#include "extern\include\libusb\usb.h"
+
+struct usb_dev_handle;
 
 namespace tobiss
 {
@@ -80,8 +81,7 @@ class Mouse : public MouseBase
     */
     virtual void acquireData();
 
-
-
+    void getDataFromLibUSB();
 
   private:
     usb_dev_handle    *dev_handle_; //a device handle

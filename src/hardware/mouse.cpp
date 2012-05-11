@@ -32,6 +32,7 @@
 */
 
 #include "hardware/mouse.h"
+#include <boost/current_function.hpp>
 
 namespace tobiss
 {
@@ -47,22 +48,29 @@ using std::set;
 
 set<boost::uint16_t> MouseBase::used_ids_;
 
+const string MouseBase::str_detach_from_os_("detach_from_os");
 const string MouseBase::str_hw_vid_("vendorid");
 const string MouseBase::str_hw_pid_("productid");
 const string MouseBase::str_usb_port_("usb_port");
 
 //-----------------------------------------------------------------------------
 MouseBase::MouseBase(ticpp::Iterator<ticpp::Element> hw)
-        : HWThread()
+  : HWThread(), dirty_(1), vid_(0), pid_(0), usb_port_(0), async_acqu_thread_(0),
+    id_(0), detach_from_os_(0)
 {
   #ifdef DEBUG
-    cout << "MouseBase: Constructor" << endl;
+    cout <<  BOOST_CURRENT_FUNCTION << endl;
   #endif
 
   checkMandatoryHardwareTags(hw);
   if(mode_ != APERIODIC)
     throw(std::invalid_argument("Mouse has to be started as aperiodic device!"));
   initMouse();
+
+  id_ = 0;
+  while(used_ids_.find(id_) != used_ids_.end() )
+    id_++;
+  used_ids_.insert(id_);
 
   ticpp::Iterator<ticpp::Element> ds(hw->FirstChildElement(hw_devset_, true));
   setDeviceSettings(ds);
@@ -79,6 +87,20 @@ MouseBase::MouseBase(ticpp::Iterator<ticpp::Element> hw)
 
 MouseBase::~MouseBase()
 {
+  #ifdef DEBUG
+    cout <<  BOOST_CURRENT_FUNCTION << endl;
+  #endif
+}
+
+//---------------------------------------------------------------------------------------
+
+void MouseBase::setDetachFromOS(ticpp::Iterator<ticpp::Element>const &elem)
+{
+  #ifdef DEBUG
+    cout <<  BOOST_CURRENT_FUNCTION << endl;
+  #endif
+
+    detach_from_os_ = equalsOnOrOff(elem->GetText(true));
 }
 
 //---------------------------------------------------------------------------------------
@@ -86,7 +108,7 @@ MouseBase::~MouseBase()
 void MouseBase::setVendorId(ticpp::Iterator<ticpp::Element>const &elem)
 {
   #ifdef DEBUG
-    cout << "HWThread: setVendorId" << endl;
+    cout <<  BOOST_CURRENT_FUNCTION << endl;
   #endif
 
   try
@@ -109,7 +131,7 @@ void MouseBase::setVendorId(ticpp::Iterator<ticpp::Element>const &elem)
 void MouseBase::setProductId(ticpp::Iterator<ticpp::Element>const &elem)
 {
   #ifdef DEBUG
-    cout << "HWThread: setProductId" << endl;
+    cout <<  BOOST_CURRENT_FUNCTION << endl;
   #endif
 
   try
@@ -133,7 +155,7 @@ void MouseBase::setProductId(ticpp::Iterator<ticpp::Element>const &elem)
 void MouseBase::setUsbPort(ticpp::Iterator<ticpp::Element>const &elem)
 {
   #ifdef DEBUG
-    cout << "HWThread: setUsbPort" << endl;
+    cout <<  BOOST_CURRENT_FUNCTION << endl;
   #endif
 
   try
@@ -157,17 +179,23 @@ void MouseBase::setUsbPort(ticpp::Iterator<ticpp::Element>const &elem)
 void MouseBase::setDeviceSettings(ticpp::Iterator<ticpp::Element>const& father)
 {
   #ifdef DEBUG
-    cout << "MouseBase: setDeviceSettings" << endl;
+    cout <<  BOOST_CURRENT_FUNCTION << endl;
   #endif
 
-  ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(str_hw_vid_,true));
-  setVendorId(elem);
+  ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(str_detach_from_os_,true));
+  setDetachFromOS(elem);
 
-  ticpp::Iterator<ticpp::Element> elem2(father->FirstChildElement(str_hw_pid_,true));
-  setProductId(elem2);
+  if(detach_from_os_)
+  {
+    ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(str_hw_vid_,true));
+    setVendorId(elem);
 
-  ticpp::Iterator<ticpp::Element> elem3(father->FirstChildElement(str_usb_port_,true));
-  setUsbPort(elem3);
+    ticpp::Iterator<ticpp::Element> elem2(father->FirstChildElement(str_hw_pid_,true));
+    setProductId(elem2);
+
+    ticpp::Iterator<ticpp::Element> elem3(father->FirstChildElement(str_usb_port_,true));
+    setUsbPort(elem3);
+  }
 
   string naming;
   string type;
@@ -202,7 +230,7 @@ void MouseBase::setDeviceSettings(ticpp::Iterator<ticpp::Element>const& father)
 void MouseBase::setChannelSettings(ticpp::Iterator<ticpp::Element>const& )
 {
   #ifdef DEBUG
-    std::cout << "MouseBase: setChannelSettings" << std::endl;
+    cout <<  BOOST_CURRENT_FUNCTION << endl;
   #endif
 
 }
@@ -212,38 +240,15 @@ void MouseBase::setChannelSettings(ticpp::Iterator<ticpp::Element>const& )
 SampleBlock<double> MouseBase::getAsyncData()
 {
   #ifdef DEBUG
-  cout << "MouseBase: getAsyncData" << endl;
+    cout <<  BOOST_CURRENT_FUNCTION << endl;
   #endif
 
   if(!running_)
     return(empty_block_);
 
-  bool dirty = 0;
+  boost::shared_lock<boost::shared_mutex> lock(rw_);
 
-  for(unsigned int n = 0; n < buttons_values_.size(); n++)
-  {
-    bool value = 0;
-    int state_n = (async_data_buttons_ & static_cast<int>( 1 << n ));
-
-    if (state_n != value)
-      value = 1;
-
-    if( value != buttons_values_[n])
-    {
-      dirty = 1;
-      buttons_values_[n] = value;
-    }
-  }
-
-  if(async_data_x_!=0 || async_data_y_!=0)
-  {
-    dirty = 1;
-    axes_values_[0]+=async_data_x_;
-    axes_values_[1]+=async_data_y_;
-
-  }
-
-  if(!dirty)
+  if(!dirty_)
     return(empty_block_);
 
   vector<double> v;
@@ -286,18 +291,11 @@ void MouseBase::initMouse()
 {
   set<boost::uint16_t>::iterator it(used_ids_.begin());
 
-  axes_    = 2;
-  buttons_ = 3;
+  axes_    = PRE_DEFINED_NR_MOUSE_AXIS_;
+  buttons_ = PRE_DEFINED_NR_MOUSE_BUTTONS_;
 
   axes_values_.resize(axes_,0);
   buttons_values_.resize(buttons_,0);
-
-  axes_values_[0] = 0;
-  axes_values_[1] = 0;
-
-  async_data_x_ = 0;
-  async_data_y_ = 0;
-  async_data_buttons_ = 0;
 }
 
 //-----------------------------------------------------------------------------

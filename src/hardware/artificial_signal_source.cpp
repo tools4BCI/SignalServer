@@ -62,7 +62,7 @@ ArtificialSignalSource::ArtificialSignalSource(boost::asio::io_service& io, ticp
 : acquiring_(0), io_(io), current_block_(0), td_(0)
 {
   #ifdef DEBUG
-    cout << "ArtificialSignalSource: Constructor" << endl;
+    cout <<  BOOST_CURRENT_FUNCTION << endl;
   #endif
 }
 
@@ -70,6 +70,10 @@ ArtificialSignalSource::ArtificialSignalSource(boost::asio::io_service& io, ticp
 
 ArtificialSignalSource::~ArtificialSignalSource()
 {
+  #ifdef DEBUG
+    cout <<  BOOST_CURRENT_FUNCTION << endl;
+  #endif
+
   delete t_;
 }
 
@@ -77,6 +81,9 @@ ArtificialSignalSource::~ArtificialSignalSource()
 
 void ArtificialSignalSource::init()
 {
+  #ifdef DEBUG
+    cout <<  BOOST_CURRENT_FUNCTION << endl;
+  #endif
 
   step_ = 1/static_cast<float>(fs_);
   cycle_dur_ = 1/static_cast<float>(fs_);
@@ -99,7 +106,7 @@ void ArtificialSignalSource::init()
 void ArtificialSignalSource::run()
 {
   #ifdef DEBUG
-    cout << "ArtificialSignalSource: run" << endl;
+    cout <<  BOOST_CURRENT_FUNCTION << endl;
   #endif
 
   running_ = 1;
@@ -112,10 +119,8 @@ void ArtificialSignalSource::run()
 void ArtificialSignalSource::stop()
 {
   #ifdef DEBUG
-    cout << "ArtificialSignalSource: stop" << endl;
+    cout <<  BOOST_CURRENT_FUNCTION << endl;
   #endif
-
-  std::cout << BOOST_CURRENT_FUNCTION << std::endl << std::flush;
 
   running_ = 0;
   cond_.notify_all();
@@ -126,7 +131,7 @@ void ArtificialSignalSource::stop()
 SampleBlock<double> ArtificialSignalSource::getSyncData()
 {
   #ifdef DEBUG
-    cout << "ArtificialSignalSource: getSyncData" << endl;
+    cout <<  BOOST_CURRENT_FUNCTION << endl;
   #endif
 
   if(!acquiring_)
@@ -148,8 +153,9 @@ SampleBlock<double> ArtificialSignalSource::getSyncData()
 SampleBlock<double> ArtificialSignalSource::getAsyncData()
 {
   #ifdef DEBUG
-    cout << "ArtificialSignalSource: getAsyncData" << endl;
+    cout <<  BOOST_CURRENT_FUNCTION << endl;
   #endif
+
   boost::shared_lock<boost::shared_mutex> lock(rw_);
   samples_available_ = false;
   lock.unlock();
