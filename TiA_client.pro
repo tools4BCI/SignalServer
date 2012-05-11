@@ -12,7 +12,7 @@ QT -= core \
 DEFINES += TIXML_USE_TICPP
 # TIMING_TEST
 
-TARGET = tia_client
+TARGET = tia-client
 
 DESTDIR = bin
 OBJECTS_DIR = tmp
@@ -28,8 +28,7 @@ QMAKE_CXXFLAGS_WARN_ON = -Wall -pedantic
 # ------------------------------------------
 
 HARDWARE_PLATFORM = $$system(uname -m)
-contains( HARDWARE_PLATFORM, x86_64 )::
-  {
+contains( HARDWARE_PLATFORM, x86_64 )::{
     message(Building 64 bit )
   }else::{
     message(Building 32 bit )
@@ -45,11 +44,10 @@ unix {
     LIBS += -lboost_thread -lboost_system
 
     HARDWARE_PLATFORM = $$system(uname -m)
-    contains( HARDWARE_PLATFORM, x86_64 )::
-    {
+    contains( HARDWARE_PLATFORM, x86_64 )::{
         # 64-bit Linux
         LIBS += -Lextern/lib/ticpp/linux  \
-                -Lextern/lib/tia/linux/x64 \
+                -Lextern/lib/tia/linux/amd64 \
                 -ltia  -lticpp_64
     }else::{
         # 32-bit Linux

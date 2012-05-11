@@ -105,16 +105,16 @@ class TiAClientDataReader
             try {
               client_.getDataPacket(*packet_);
 
-              if(packet_->hasFlag(SIG_MOUSE))
+              if(packet_->hasFlag(SIG_AXIS))
               {
-                v = packet_->getSingleDataBlock(SIG_MOUSE);
-                cout << "mousepos: "<< packet_->getSingleDataBlock(SIG_MOUSE)[1]<<","<<packet_->getSingleDataBlock(SIG_MOUSE)[2];
+                v = packet_->getSingleDataBlock(SIG_AXIS);
+                cout << "mousepos: "<< packet_->getSingleDataBlock(SIG_AXIS)[1]<<","<<packet_->getSingleDataBlock(SIG_AXIS)[2];
               }
 
-              if(packet_->hasFlag(SIG_MBUTTON))
+              if(packet_->hasFlag(SIG_BUTTON))
               {
-                v = packet_->getSingleDataBlock(SIG_MBUTTON);
-                cout<<" ... buttons: "<<packet_->getSingleDataBlock(SIG_MBUTTON)[1]<<packet_->getSingleDataBlock(SIG_MBUTTON)[2]<<packet_->getSingleDataBlock(SIG_MBUTTON)[3]<<endl;
+                v = packet_->getSingleDataBlock(SIG_BUTTON);
+                cout<<" ... buttons: "<<packet_->getSingleDataBlock(SIG_BUTTON)[1]<<packet_->getSingleDataBlock(SIG_BUTTON)[2]<<packet_->getSingleDataBlock(SIG_BUTTON)[3]<<endl;
               }
               if( ((client_.config().signal_info.masterSamplingRate()/client_.config().signal_info.masterBlockSize()) < 1) ||
                 (counter%(
