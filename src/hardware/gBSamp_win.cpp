@@ -32,6 +32,7 @@
 */
 
 #include <Windows.h>
+#include <boost/thread/locks.hpp>
 
 #include "hardware/gBSamp_win.h"
 #include "hardware/nidaqmx_wrapper.h"

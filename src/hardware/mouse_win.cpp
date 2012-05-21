@@ -31,7 +31,11 @@
     Contact: SignalServer@tobi-project.org
 */
 
+#include <boost/thread.hpp>
+#include <iomanip>
+
 #include "extern\include\libusb\usb.h"
+
 
 #include "hardware/mouse_win.h"
 #include "tia/constants.h"

@@ -58,13 +58,15 @@ class KeyLoggerBase: public HWThread
     virtual void acquireData() = 0;
 
   protected:
-    bool                      dirty_;
+    static bool               dirty_;
     bool                      detach_from_os_;
     boost::thread*            async_acqu_thread_;
     SampleBlock<double>       empty_block_;
 
-    bool                                 released_;
-    boost::circular_buffer<char>         pressed_keycodes_;
+    bool                                        released_;
+    static boost::circular_buffer<char>         pressed_keycodes_;
+
+    static boost::shared_mutex                  static_rw_;
 
   private:
 

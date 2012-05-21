@@ -51,6 +51,11 @@
 #define PRE_DEFINED_NR_MOUSE_AXIS_    2
 #define PRE_DEFINED_NR_MOUSE_BUTTONS_ 3
 
+namespace boost
+{
+  class thread;
+}
+
 namespace tobiss
 {
 //-----------------------------------------------------------------------------

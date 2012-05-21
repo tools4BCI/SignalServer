@@ -21,12 +21,15 @@ namespace tobiss
 
 std::set<boost::uint16_t> KeyLoggerBase::used_ids_;
 
-const std::string KeyLoggerBase::str_detach_from_os_("detach_from_os");
+const std::string               KeyLoggerBase::str_detach_from_os_("detach_from_os");
+boost::circular_buffer<char>    KeyLoggerBase::pressed_keycodes_(32);
+boost::shared_mutex             KeyLoggerBase::static_rw_;
+bool                            KeyLoggerBase::dirty_(1);
 
 //-----------------------------------------------------------------------------
 
 KeyLoggerBase::KeyLoggerBase(ticpp::Iterator<ticpp::Element> hw)
-  : dirty_(1), detach_from_os_(0), async_acqu_thread_(0), released_(1),
+  : detach_from_os_(0), async_acqu_thread_(0), released_(1),
     id_(0)
 {
   #ifdef DEBUG
@@ -138,10 +141,13 @@ void KeyLoggerBase::stop()
 
 SampleBlock<double> KeyLoggerBase::getAsyncData()
 {
+
+  //cout <<  BOOST_CURRENT_FUNCTION << endl;
+
   if(!running_)
     return(empty_block_);
 
-  boost::shared_lock<boost::shared_mutex> lock(rw_);
+  boost::shared_lock<boost::shared_mutex> lock(static_rw_);
 
   if(!dirty_)
     return(empty_block_);
@@ -153,10 +159,12 @@ SampleBlock<double> KeyLoggerBase::getAsyncData()
   {
     v.push_back(pressed_keycodes_.front());
     pressed_keycodes_.pop_front();
-    std::cout << static_cast<int>(v.back());
+    //std::cout << static_cast<unsigned int>(v.back());
+    //std::cout << static_cast<char>(v.back());
   }
-  std::cout << std::endl;
+  //std::cout <<  std::endl;
   pressed_keycodes_.clear();
+  lock.unlock();
 
   channel_types_.resize(v.size(),SIG_BUTTON);
   data_.init(1, v.size() , channel_types_);
