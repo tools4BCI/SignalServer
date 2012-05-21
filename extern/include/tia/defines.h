@@ -78,8 +78,6 @@
 #define SIG_NIRS 0x200
 #define SIG_FMRI 0x400
 
-//#define SIG_MOUSE 0x800
-//#define SIG_MBUTTON 0x1000
 
 #define SIG_USER_1    0x10000
 #define SIG_USER_2    0x20000

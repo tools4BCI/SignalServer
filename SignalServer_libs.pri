@@ -10,7 +10,9 @@ unix {
         -lboost_program_options\
         -lSDL \
         -lusb-1.0 \
-        -lcomedi
+        -lcomedi\
+        -lXrandr \
+        -lX11
 
     HARDWARE_PLATFORM = $$system(uname -m)
     contains( HARDWARE_PLATFORM, x86_64 )::{

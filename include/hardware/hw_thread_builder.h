@@ -55,9 +55,10 @@ namespace tobiss
 */
 class HWThreadBuilder
 {
-public:
+  public:
     virtual HWThread* createInstance (boost::asio::io_service& io, ticpp::Iterator<ticpp::Element> hw) const = 0;
-protected:
+    virtual ~HWThreadBuilder() {}
+  protected:
     HWThreadBuilder () {}
 };
 

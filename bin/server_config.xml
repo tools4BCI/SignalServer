@@ -33,106 +33,45 @@
 
 <!-- =============================================================================== -->
 
- <hardware name="sinegenerator" version="1.0" serial="">
+   <hardware name="sinegenerator" version="1.0" serial="">
     <mode> master </mode>
     <device_settings>
-      <sampling_rate> 500 </sampling_rate>
-      <measurement_channels nr="1" names="eeg" type="eeg" />
-      <blocksize> 2 </blocksize>
-    </device_settings>
-
-    <channel_settings>
-      <selection>
-        <ch nr="01" name="A" type="eeg" />
-      </selection>
-    </channel_settings>
-  </hardware>
-  
-  <!-- <hardware name="bioplux" mac="Test" statoutput="10" version="1.0" serial="">
-    <mode> master </mode>
-    <device_settings>
-      <sampling_rate> 500 </sampling_rate>
+      <sampling_rate> 600 </sampling_rate>
+      <measurement_channels nr="16" names="eeg" type="eeg" />
       <blocksize> 10 </blocksize>
     </device_settings>
 
-   <channel_settings>
-      <selection>
-        <ch nr="01" name="sinus" type="eeg" />
-        <ch nr="02" name="digin" type="eeg" />
-      </selection>
-    </channel_settings>
-  </hardware> -->
-
-  <hardware name="bioplux" mac="Test" statoutput="10" version="1.0" serial="">
-  <!-- <hardware name="bioplux" mac="00:07:80:4B:2C:A2" statoutput="10" version="1.0" serial=""> -->
-    <mode> slave </mode>
-    <device_settings>
-      <sampling_rate> 1000 </sampling_rate>
-      <blocksize> 4</blocksize>
-	  <buffersize> 40 </buffersize>
-    </device_settings>
-
-   <channel_settings>
-      <selection>
-        <ch nr="01" name="acc X" type="sensor" />
-        <ch nr="02" name="acc Y" type="sensor" />
-        <ch nr="03" name="acc Z" type="sensor" />
-        <ch nr="04" name="empty" type="sensor" />
-        <ch nr="05" name="empty" type="sensor" />
-        <ch nr="06" name="light" type="sensor" />
-        <ch nr="07" name="empty" type="sensor" />
-        <ch nr="08" name="plate" type="sensor" />
-        <ch nr="09" name="digin" type="sensor" />
-        <ch nr="10" name="time" type="sensor" />
-        <ch nr="11" name="delay" type="sensor" />
-        <ch nr="12" name="buffer" type="sensor" />
-      </selection>
-    </channel_settings>
   </hardware>
 
 <!-- =============================================================================== -->
 
-<!--  <hardware name="sinegenerator" version="1.0" serial="">
-    <mode> master </mode>
-    <device_settings>
-      <sampling_rate> 1000 </sampling_rate>
-      <measurement_channels nr="2" names="sensor" type="sensor" />
-      <blocksize> 10 </blocksize>
-    </device_settings>
-
-   <channel_settings>
-      <selection>
-        <ch nr="01" name="eeg1" type="eeg" />
-        <ch nr="02" name="eeg2" type="emg" />
-      </selection>
-    </channel_settings>
-  </hardware>
-
-   <hardware name="sinegenerator" version="1.0" serial="">
+<!--
+  <hardware name="sinegenerator" version="1.0" serial="">
     <mode> slave </mode>
     <device_settings>
-      <sampling_rate> 1000 </sampling_rate>
+      <sampling_rate> 300 </sampling_rate>
       <measurement_channels nr="2" names="sensor" type="sensor" />
-      <blocksize> 5 </blocksize>
+      <blocksize> 10 </blocksize>
     </device_settings>
 
    <channel_settings>
       <selection>
         <ch nr="01" name="bp1" type="bp" />
         <ch nr="02" name="bp2" type="bp" />
+        <ch nr="03" name="asdfg" type="hr" />
+        <ch nr="04" name="speed" type="sensor" />
       </selection>
     </channel_settings>
   </hardware> -->
 
 <!-- =============================================================================== -->
 
- <!-- <hardware name="g.usbamp" version="1.4" serial="UB-2009.10.11">
+<!--  <hardware name="g.usbamp" version="1.4" serial="UB-2008.06.42">
     <mode> master </mode>
     <device_settings>
-      <sampling_rate> 512 </sampling_rate>
+      <sampling_rate> 256 </sampling_rate>
       <measurement_channels nr="1" names="eeg" type="eeg" />
-      <blocksize> 16 </blocksize>
-	  <downsampling> 8 </downsampling>
+      <blocksize> 8 </blocksize>
 
       <filter type="chebyshev" order="8" f_low="0.5" f_high="100"/>
       <notch f_center="50"/>
@@ -157,44 +96,11 @@
       </common_reference>
       <driven_right_leg> no </driven_right_leg>
     </device_settings>
-	</hardware>
-	
-<hardware name="g.usbamp" version="1.4" serial="UB-2009.07.07">
-    <mode> slave </mode>
-    <device_settings>
-      <sampling_rate> 128 </sampling_rate>
-      <measurement_channels nr="1" names="emg" type="emg" />
-      <blocksize> 8 </blocksize>
-	  <downsampling> 4 </downsampling>
-
-      <filter type="chebyshev" order="8" f_low="0.5" f_high="60"/>
-      <notch f_center="50"/>
-      <operation_mode> normal </operation_mode>
-
-      <shortcut> on </shortcut>
-
-      <usbamp_master> no </usbamp_master>
-
-      <common_ground>
-        <gnd block="a" value="1" />
-        <gnd block="b" value="1" />
-        <gnd block="c" value="1" />
-        <gnd block="d" value="1" />
-      </common_ground>
-
-      <common_reference>
-        <cr block="a" value="1" />
-        <cr block="b" value="1" />
-        <cr block="c" value="1" />
-        <cr block="d" value="1" />
-      </common_reference>
-      <driven_right_leg> no </driven_right_leg>
-    </device_settings>
-	</hardware> -->
+	</hardware>-->
 
 <!-- =============================================================================== -->
 
-<!-- <hardware name="g.usbamp" version="B" serial="UB-2009.07.07">
+<!--<hardware name="g.usbamp" version="B" serial="UB-2009.07.07">
     <mode> master </mode>
     <device_settings>
       <sampling_rate> 512 </sampling_rate>
@@ -224,7 +130,7 @@
         <cr block="d" value="1" />
       </common_reference>
     </device_settings>
-  </hardware> -->
+  </hardware>-->
 
 <!-- =============================================================================== -->
 <!--

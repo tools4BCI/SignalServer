@@ -37,6 +37,8 @@
 #include "tia/constants.h"
 #include "boost/filesystem.hpp"
 
+#define ACYNC_DATA_RECV_SIZE 16
+
 namespace tobiss
 {
 using std::string;
@@ -54,6 +56,10 @@ const HWThreadBuilderTemplateRegistratorWithoutIOService<Mouse> Mouse::FACTORY_R
 Mouse::Mouse(ticpp::Iterator<ticpp::Element> hw)
 : MouseBase(hw), dev_handle_(0)
 {
+  #ifdef DEBUG
+    cout <<  BOOST_CURRENT_FUNCTION << endl;
+  #endif
+
   tia::Constants cst;
   ticpp::Iterator<ticpp::Element> ds(hw->FirstChildElement(hw_devset_, true));
 
@@ -95,11 +101,14 @@ Mouse::Mouse(ticpp::Iterator<ticpp::Element> hw)
 
 Mouse::~Mouse()
 {
+  #ifdef DEBUG
+    cout <<  BOOST_CURRENT_FUNCTION << endl;
+  #endif
   running_ = false;
   async_acqu_thread_->join();
   if(async_acqu_thread_)
     delete async_acqu_thread_;
-  
+
   if(detach_from_os_)
     freeKernelDriver();
 }
@@ -108,6 +117,9 @@ Mouse::~Mouse()
 
 int Mouse::blockKernelDriver()
 {
+  #ifdef DEBUG
+    cout <<  BOOST_CURRENT_FUNCTION << endl;
+  #endif
   // create all parameter needed to open an extern tool (CreateProcess)
   STARTUPINFO         siStartupInfo;
   PROCESS_INFORMATION piProcessInfo;
@@ -166,6 +178,9 @@ int Mouse::blockKernelDriver()
 
 int Mouse::freeKernelDriver()
 {
+  #ifdef DEBUG
+    cout <<  BOOST_CURRENT_FUNCTION << endl;
+  #endif
   // release the interface end close the usb-handle
   usb_release_interface(dev_handle_,0);
   usb_close(dev_handle_);
@@ -202,9 +217,11 @@ int Mouse::freeKernelDriver()
 
 void Mouse::acquireData()
 {
+  #ifdef DEBUG
+    cout <<  BOOST_CURRENT_FUNCTION << endl;
+  #endif
   while(running_)
   {
-    
     if(detach_from_os_)
       getDataFromLibUSB();
     else
@@ -218,7 +235,7 @@ void Mouse::acquireData()
       button_pressed[1] = (GetAsyncKeyState(VK_MBUTTON) != 0);
       button_pressed[2] = (GetAsyncKeyState(VK_RBUTTON) != 0);
 
-      if( (buttons_values_[0] != button_pressed[0]) || 
+      if( (buttons_values_[0] != button_pressed[0]) ||
           (buttons_values_[1] != button_pressed[1]) ||
           (buttons_values_[2] != button_pressed[2]) )
       {
@@ -227,7 +244,7 @@ void Mouse::acquireData()
         buttons_values_[2] = button_pressed[2];
         dirty_ = true;
       }
-      
+
       POINT cursorPos;
       GetCursorPos(&cursorPos);
 
@@ -237,8 +254,6 @@ void Mouse::acquireData()
         axes_values_[1] = cursorPos.y;
         dirty_ = true;
       }
-
-      lock.unlock();
     }
   }
 }
@@ -250,8 +265,8 @@ void Mouse::getDataFromLibUSB()
   boost::unique_lock<boost::shared_mutex> lock(rw_);
 
   dirty_ = false;
-  char async_data_[3];
-  int r = usb_interrupt_read(dev_handle_,usb_port_, async_data_, sizeof(async_data_), 10000);
+  char async_data_[ACYNC_DATA_RECV_SIZE];
+  int r = usb_interrupt_read(dev_handle_,usb_port_, async_data_, ACYNC_DATA_RECV_SIZE, 100);
 
   if(r == LIBUSB_ERROR_TIMEOUT)
   {
@@ -271,8 +286,8 @@ void Mouse::getDataFromLibUSB()
 
   dirty_ = true;
   int async_data_buttons_ = static_cast<int>(async_data_[0] );
-  axes_values_[0] += static_cast<int>( async_data_[1] );
-  axes_values_[1] += static_cast<int>( async_data_[2] );
+  axes_values_[0] = static_cast<int>( async_data_[1] );
+  axes_values_[1] = static_cast<int>( async_data_[2] );
 
   for(unsigned int n = 0; n < buttons_values_.size(); n++)
   {

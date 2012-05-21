@@ -33,6 +33,8 @@
 
 #include "hardware/mouse.h"
 #include <boost/current_function.hpp>
+#include <boost/bind.hpp>
+#include <boost/thread.hpp>
 
 namespace tobiss
 {
@@ -56,7 +58,7 @@ const string MouseBase::str_usb_port_("usb_port");
 //-----------------------------------------------------------------------------
 MouseBase::MouseBase(ticpp::Iterator<ticpp::Element> hw)
   : HWThread(), dirty_(1), vid_(0), pid_(0), usb_port_(0), async_acqu_thread_(0),
-    id_(0), detach_from_os_(0)
+    id_(0)
 {
   #ifdef DEBUG
     cout <<  BOOST_CURRENT_FUNCTION << endl;
@@ -67,7 +69,7 @@ MouseBase::MouseBase(ticpp::Iterator<ticpp::Element> hw)
     throw(std::invalid_argument("Mouse has to be started as aperiodic device!"));
   initMouse();
 
-  id_ = 0;
+  id_ = 128;
   while(used_ids_.find(id_) != used_ids_.end() )
     id_++;
   used_ids_.insert(id_);
@@ -100,7 +102,7 @@ void MouseBase::setDetachFromOS(ticpp::Iterator<ticpp::Element>const &elem)
     cout <<  BOOST_CURRENT_FUNCTION << endl;
   #endif
 
-    detach_from_os_ = equalsOnOrOff(elem->GetText(true));
+  detach_from_os_ = equalsOnOrOff(elem->GetText(true));
 }
 
 //---------------------------------------------------------------------------------------
@@ -197,9 +199,6 @@ void MouseBase::setDeviceSettings(ticpp::Iterator<ticpp::Element>const& father)
     setUsbPort(elem3);
   }
 
-  string naming;
-  string type;
-
   if(buttons_)
     channel_types_.push_back(SIG_BUTTON);
   for(boost::uint32_t n = 0; n < buttons_; n++)
@@ -211,14 +210,21 @@ void MouseBase::setDeviceSettings(ticpp::Iterator<ticpp::Element>const& father)
    channel_types_.push_back(SIG_AXIS);
   nr_ch_= channel_types_.size();
 
+  std::string naming("Mouse Button ");
   boost::uint16_t n = 1;
   if(buttons_)
     for( ; n <= buttons_ +1; n++)
+    {
+      naming += boost::lexical_cast<std::string>(n);
       channel_info_.insert(pair<boost::uint16_t, pair<string, boost::uint32_t> >(n, pair<string, boost::uint32_t>(naming, SIG_BUTTON)));
-
+    }
+  naming = "Mouse Axis ";
   if(axes_)
     for( ; n <= axes_ + buttons_ +2; n++)
+    {
+      naming += boost::lexical_cast<std::string>(n - buttons_);
       channel_info_.insert(pair<boost::uint16_t, pair<string, boost::uint32_t> >(n, pair<string, boost::uint32_t>(naming, SIG_AXIS)));
+    }
 
 
   homogenous_signal_type_ = 0;
@@ -239,10 +245,6 @@ void MouseBase::setChannelSettings(ticpp::Iterator<ticpp::Element>const& )
 
 SampleBlock<double> MouseBase::getAsyncData()
 {
-  #ifdef DEBUG
-    cout <<  BOOST_CURRENT_FUNCTION << endl;
-  #endif
-
   if(!running_)
     return(empty_block_);
 
@@ -265,6 +267,7 @@ SampleBlock<double> MouseBase::getAsyncData()
 
   data_.setSamples(v);
 
+  dirty_ = false;
   return(data_);
 }
 
@@ -281,7 +284,8 @@ void MouseBase::run()
 
 //-----------------------------------------------------------------------------
 
-void MouseBase::stop() {
+void MouseBase::stop()
+{
   running_ =false;
 }
 

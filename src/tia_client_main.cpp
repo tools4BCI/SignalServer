@@ -116,14 +116,15 @@ class TiAClientDataReader
                 v = packet_->getSingleDataBlock(SIG_BUTTON);
                 cout<<" ... buttons: "<<packet_->getSingleDataBlock(SIG_BUTTON)[1]<<packet_->getSingleDataBlock(SIG_BUTTON)[2]<<packet_->getSingleDataBlock(SIG_BUTTON)[3]<<endl;
               }
-              if( ((client_.config().signal_info.masterSamplingRate()/client_.config().signal_info.masterBlockSize()) < 1) ||
-                (counter%(
-                (client_.config().signal_info.masterSamplingRate()/client_.config().signal_info.masterBlockSize()) *2 ) == 0) )
-              {
-                std::cout << " -- Nr:" << packet_->getPacketID() << std::endl;
-                client_.requestConfig();
-                cerr << " -- got config ... "  << endl;
-              }
+
+              //              if( ((client_.config().signal_info.masterSamplingRate()/client_.config().signal_info.masterBlockSize()) < 1) ||
+              //                (counter%(
+              //                (client_.config().signal_info.masterSamplingRate()/client_.config().signal_info.masterBlockSize()) *2 ) == 0) )
+              //              {
+              //                std::cout << " -- Nr:" << packet_->getPacketID() << std::endl;
+              //                client_.requestConfig();
+              //                cerr << " -- got config ... "  << endl;
+              //              }
 
               sample_nr_old = sample_nr;
               packet_nr_old = packet_nr;

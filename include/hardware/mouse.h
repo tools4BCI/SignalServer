@@ -101,8 +101,6 @@ class MouseBase : public HWThread
 
     virtual void setChannelSettings(ticpp::Iterator<ticpp::Element>const &father);
 
-    virtual SampleBlock<double> getSyncData()   {return data_; }
-
 
     /**
     * @brief Method to detach kernel driver from the system and open connection to the mouse device.
@@ -154,6 +152,8 @@ class MouseBase : public HWThread
         std::istringstream iss(s);
         return !(iss >> f >> t).fail();
     }
+
+    virtual SampleBlock<double> getSyncData()   {return data_; }
 
     //-----------------------------------------------
 

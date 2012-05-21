@@ -35,49 +35,94 @@
 
 #include "hardware/mouse_linux.h"
 #include <string>
+#include <boost/current_function.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/thread.hpp>
+
+#include <usb.h>
+#include <libusb-1.0/libusb.h>
+//#include "extern/include/libusb/libusb.h"
+
+#include <X11/Xlib.h>
+#include<X11/extensions/Xrandr.h>
+
+#define STR_CHAR_ARRAY_SIZE 256
+#define ACYNC_DATA_RECV_SIZE 16
+
+using std::cout;
+using std::endl;
 
 namespace tobiss
 {
 
 const HWThreadBuilderTemplateRegistratorWithoutIOService<Mouse> Mouse::FACTORY_REGISTRATOR_ ("mouse");
 
+//-----------------------------------------------------------------------------
+
 Mouse::Mouse(ticpp::Iterator<ticpp::Element> hw)
-: MouseBase(hw)
+: MouseBase(hw),
+  devs_(0), dev_handle_(0), ctx_(0), dsp_(0), event_(0),
+  screen_number_(-1), screen_width_(-1), screen_height_(-1)
 {
-  int ret = blockKernelDriver();
-  if(ret)
-    throw(std::runtime_error("MouseBase::initMouse -- Mouse device could not be connected (check rights)!"));
-
-  struct libusb_device_descriptor desc;
-
-
-  struct libusb_device* dev = libusb_get_device(dev_handle_);
-  if(dev == 0)
-    throw(std::runtime_error("MouseBase::initMouse -- Failed to get device pointer!"));
-
-  int r = libusb_get_device_descriptor( dev, &desc);
-  if(r < 0)
-    throw(std::runtime_error("MouseBase::initMouse -- Failed to get device descriptor!"));
+  #ifdef DEBUG
+    cout <<  BOOST_CURRENT_FUNCTION << endl;
+  #endif
 
   std::string name;
-  unsigned char str[256];
 
-  ret = 0;
-  ret = libusb_get_string_descriptor_ascii(dev_handle_, desc.iManufacturer, str, sizeof(str) );
-  if(ret)
+  if(detach_from_os_)
   {
-    name += " -- ";
-    name.append( reinterpret_cast<char*>(str));
-  }
-  ret = libusb_get_string_descriptor_ascii(dev_handle_, desc.iProduct, str, sizeof(str) );
-  if(ret)
-  {
-    name += ", ";
-    name.append( reinterpret_cast<char*>(str));
-  }
+    int ret = blockKernelDriver();
+    if(ret)
+      throw(std::runtime_error("MouseBase::initMouse -- Mouse device could not be connected (check rights)!"));
 
-  name += " (vid/pid: " + boost::lexical_cast<std::string>(vid_);
-  name += "/"  + boost::lexical_cast<std::string>(pid_) + ")";
+    struct libusb_device_descriptor desc;
+
+    struct libusb_device* dev = libusb_get_device(dev_handle_);
+    if(dev == 0)
+      throw(std::runtime_error("MouseBase::initMouse -- Failed to get device pointer!"));
+
+    ret = libusb_get_device_descriptor( dev, &desc);
+    if(ret < 0)
+      throw(std::runtime_error("MouseBase::initMouse -- Failed to get device descriptor!"));
+
+
+    unsigned char str[STR_CHAR_ARRAY_SIZE];
+
+    ret = libusb_get_string_descriptor_ascii(dev_handle_, desc.iManufacturer, str, STR_CHAR_ARRAY_SIZE );
+    if(ret)
+      name += " -- " + std::string(reinterpret_cast<char*>(&str));
+
+    ret = libusb_get_string_descriptor_ascii(dev_handle_, desc.iProduct, str, STR_CHAR_ARRAY_SIZE );
+    if(ret)
+      name += ", " + std::string(reinterpret_cast<char*>(&str));
+
+    name += " (vid/pid: " + boost::lexical_cast<std::string>(vid_);
+    name += "/"  + boost::lexical_cast<std::string>(pid_) + ")";
+  }
+  else
+  {
+    dsp_ = XOpenDisplay( NULL );
+    if( !dsp_ )
+      throw(std::runtime_error( "Error -- " + std::string(BOOST_CURRENT_FUNCTION) + "Unable to open display!" ));
+
+    screen_number_ = DefaultScreen(dsp_);
+
+    int num_sizes;
+
+
+    Window root = DefaultRootWindow(dsp_);
+    XRRScreenSize *xrrs = XRRSizes(dsp_, 0, &num_sizes);
+    XRRScreenConfiguration *conf = XRRGetScreenInfo(dsp_, root);
+    //short original_rate = XRRConfigCurrentRate(conf);
+    Rotation original_rotation;
+    SizeID original_size_id = XRRConfigCurrentConfiguration(conf, &original_rotation);
+
+    screen_width_ = xrrs[original_size_id].width;
+    screen_height_ = xrrs[original_size_id].height;
+
+    event_ = new XEvent;
+  }
 
 
 //  cout << " --> Mouse ID: " << id_ << ",  Name: " << name_;
@@ -90,17 +135,31 @@ Mouse::Mouse(ticpp::Iterator<ticpp::Element> hw)
 
 Mouse::~Mouse()
 {
+  #ifdef DEBUG
+    cout <<  BOOST_CURRENT_FUNCTION << endl;
+  #endif
+
   running_ = false;
   async_acqu_thread_->join();
   if(async_acqu_thread_)
     delete async_acqu_thread_;
-  freeKernelDriver();
+  if(detach_from_os_)
+    freeKernelDriver();
+  else
+    XCloseDisplay(dsp_);
+
+  if(event_)
+    delete(event_);
 }
 
 //-----------------------------------------------------------------------------
 
 int Mouse::blockKernelDriver()
 {
+  #ifdef DEBUG
+    cout <<  BOOST_CURRENT_FUNCTION << endl;
+  #endif
+
   int ret;
   // setup interface
   ret = libusb_init(&ctx_);
@@ -126,6 +185,10 @@ int Mouse::blockKernelDriver()
 
 int Mouse::freeKernelDriver()
 {
+  #ifdef DEBUG
+    cout <<  BOOST_CURRENT_FUNCTION << endl;
+  #endif
+
   int ret;
   ret = libusb_release_interface(dev_handle_, 0);
   if(ret)
@@ -144,38 +207,105 @@ int Mouse::freeKernelDriver()
 
 void Mouse::acquireData()
 {
+  #ifdef DEBUG
+    std::cout <<  BOOST_CURRENT_FUNCTION << std::endl;
+  #endif
+
   while(running_)
   {
-    bool unchanged = false;
-    boost::unique_lock<boost::shared_mutex> lock(rw_);
-    int actual_length;
-    unsigned char async_data_[10];
-    int r = libusb_interrupt_transfer(dev_handle_, usb_port_, async_data_,
-                                      sizeof(async_data_), &actual_length, 100);
+    if(detach_from_os_)
+      getDataFromLibUSB();
+    else
+    {
+      boost::unique_lock<boost::shared_mutex> lock(rw_);
 
-    if(r == LIBUSB_ERROR_TIMEOUT)
-    {
-      //cout<<"   Mouse: Timeout!"<<endl;
-      unchanged = true;
-    }
-    else if (r == LIBUSB_ERROR_NO_DEVICE)
-    {
+      XQueryPointer(dsp_, RootWindow(dsp_, screen_number_),
+                    &event_->xbutton.root,    &event_->xbutton.window,
+                    &event_->xbutton.x_root,  &event_->xbutton.y_root,
+                    &event_->xbutton.x,       &event_->xbutton.y,
+                    &event_->xbutton.state);
+
+      bool button_pressed[PRE_DEFINED_NR_MOUSE_BUTTONS_] = {0};
+
+      button_pressed[0] = ( event_->xbutton.state & (Button1Mask) ) >0;
+      button_pressed[1] = ( event_->xbutton.state & (Button2Mask) ) >0;
+      button_pressed[2] = ( event_->xbutton.state & (Button3Mask) ) >0;
+
+      if( (buttons_values_[0] != button_pressed[0]) ||
+          (buttons_values_[1] != button_pressed[1]) ||
+          (buttons_values_[2] != button_pressed[2]) )
+      {
+        buttons_values_[0] = button_pressed[0];
+        buttons_values_[1] = button_pressed[1];
+        buttons_values_[2] = button_pressed[2];
+        dirty_ = true;
+      }
+
+      if( (axes_values_[0] != event_->xbutton.x) || (axes_values_[1] != event_->xbutton.y) )
+      {
+        axes_values_[0] = event_->xbutton.x;
+        axes_values_[1] = event_->xbutton.y;
+        dirty_ = true;
+      }
       lock.unlock();
-      throw(std::runtime_error("Mouse::acquireData -- Mouse device could not be read! Check usb-port!"));
+      boost::this_thread::sleep(boost::posix_time::milliseconds(10));
+      //      if(dirty_)
+      //      {
+      //        cout << "Mouse Corodinates: "<<  axes_values_[0] << "," << axes_values_[1] << " -- ";
+      //        cout << buttons_values_[0] << ",";
+      //        cout << buttons_values_[1] << ",";
+      //        cout << buttons_values_[2];
+      //        cout << endl << std::flush;
+      //      }
     }
-    else if(r<0)
-    {
-      lock.unlock();
-      throw(std::runtime_error("Mouse::acquireData -- Mouse device could not be read! Problem with libusb!"));
-    }
-    if(!unchanged)
-    {
-      async_data_buttons_ = static_cast<int>(static_cast<char>(async_data_[0]));
-      async_data_x_ = static_cast<int>(static_cast<char>(async_data_[1]));
-      async_data_y_ = static_cast<int>(static_cast<char>(async_data_[2]));
-    }
-    lock.unlock();
   }
+}
+
+//-----------------------------------------------------------------------------
+
+void Mouse::getDataFromLibUSB()
+{
+  boost::unique_lock<boost::shared_mutex> lock(rw_);
+  dirty_ = false;
+
+  int actual_length;
+  unsigned char async_data_[ACYNC_DATA_RECV_SIZE];
+  int r = libusb_interrupt_transfer(dev_handle_, usb_port_, async_data_,
+                                    ACYNC_DATA_RECV_SIZE, &actual_length, 100);
+
+  if(r == LIBUSB_ERROR_TIMEOUT)
+  {
+    //cout<<"   Mouse: Timeout!"<<endl;
+    return;
+  }
+  else if (r == LIBUSB_ERROR_NO_DEVICE)
+  {
+    lock.unlock();
+    throw(std::runtime_error("Mouse::acquireData -- Mouse device could not be read! Check usb-port!"));
+  }
+  else if(r<0)
+  {
+    lock.unlock();
+    throw(std::runtime_error("Mouse::acquireData -- Mouse device could not be read! Problem with libusb!"));
+  }
+
+  dirty_ = true;
+  int async_data_buttons_ = static_cast<int>(async_data_[0] );
+  axes_values_[0] = static_cast<int>( async_data_[1] );
+  axes_values_[1] = static_cast<int>( async_data_[2] );
+
+  for(unsigned int n = 0; n < buttons_values_.size(); n++)
+  {
+    bool value = 0;
+
+    if ( async_data_buttons_ & static_cast<int>( 1 << n ) )
+      value = 1;
+
+    if( value != buttons_values_[n])
+      buttons_values_[n] = value;
+  }
+
+  lock.unlock();
 }
 
 //-----------------------------------------------------------------------------

@@ -75,12 +75,20 @@ JStick::JStick(ticpp::Iterator<ticpp::Element> hw)
 
   vector<boost::uint32_t> v;
   empty_block_.init(0,0, v);
-//  cout << " * Joystick sucessfully initialized -- running as aperiodic: ";
-//  cout << (mode_ == APERIODIC) << ";  ";
-  cout << " --> Jostick ID: " << id_ << ",  Name: " << name_ << endl;
-  cout << " ... buttons: " << buttons_;
-  cout << ", axes: " << axes_;
-  cout << ", balls: " << balls_ << endl;
+  //  cout << " * Joystick sucessfully initialized -- running as aperiodic: ";
+  //  cout << (mode_ == APERIODIC) << ";  ";
+  //  cout << " --> Jostick ID: " << id_ << ",  Name: " << name_ << endl;
+  //  cout << " ... buttons: " << buttons_;
+  //  cout << ", axes: " << axes_;
+  //  cout << ", balls: " << balls_ << endl;
+
+  std::string name("Joystick -- ID: ");
+  name += boost::lexical_cast<std::string>(id_) + ", " + name_;
+  name += ";  buttons/axis/balls: ";
+  name += boost::lexical_cast<std::string>(buttons_) + "/" ;
+  name += boost::lexical_cast<std::string>(axes_) + "/" ;
+  name += boost::lexical_cast<std::string>(balls_);
+  setType(name);
 }
 
 //-----------------------------------------------------------------------------
@@ -99,9 +107,6 @@ void JStick::setDeviceSettings(ticpp::Iterator<ticpp::Element>const&)
     cout << "JStick: setDeviceSettings" << endl;
   #endif
 
-  string naming;
-  string type;
-
   if(buttons_)
     channel_types_.push_back(SIG_BUTTON);
   for(boost::uint32_t n = 0; n < buttons_; n++)
@@ -119,19 +124,30 @@ void JStick::setDeviceSettings(ticpp::Iterator<ticpp::Element>const&)
 
   nr_ch_= channel_types_.size();
 
+  string naming("Joystick Button ");
   boost::uint16_t n = 1;
   if(buttons_)
     for( ; n <= buttons_ +1; n++)
+    {
+      naming += boost::lexical_cast<std::string>(n);
       channel_info_.insert(pair<boost::uint16_t, pair<string, boost::uint32_t> >(n, pair<string, boost::uint32_t>(naming, SIG_BUTTON)));
+    }
 
+  naming = "Joystick Axis ";
   if(axes_)
     for( ; n <= axes_ + buttons_ +2; n++)
+    {
+      naming += boost::lexical_cast<std::string>(n - buttons_);
       channel_info_.insert(pair<boost::uint16_t, pair<string, boost::uint32_t> >(n, pair<string, boost::uint32_t>(naming, SIG_AXIS)));
+    }
 
+  naming = "Joystick Balls ";
   if(balls_)
     for( ; n <= (2*balls_)+ axes_ + buttons_ +3; n++)
+    {
+      naming += boost::lexical_cast<std::string>(n - buttons_ - axes_);
       channel_info_.insert(pair<boost::uint16_t, pair<string, boost::uint32_t> >(n, pair<string, boost::uint32_t>(naming, SIG_AXIS)));
-
+    }
   homogenous_signal_type_ = 0;
 
 }

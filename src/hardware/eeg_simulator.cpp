@@ -41,6 +41,7 @@
 
 #include <boost/lexical_cast.hpp>
 #include <boost/cstdint.hpp>
+#include <boost/bind.hpp>
 
 namespace tobiss
 {

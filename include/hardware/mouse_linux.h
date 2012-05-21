@@ -44,10 +44,14 @@
 #ifndef MOUSE_LINUX_H
 #define MOUSE_LINUX_H
 
-#include <usb.h>
 #include "mouse.h"
-//#include "extern/include/libusb/libusb.h"
-#include <libusb-1.0/libusb.h>
+
+struct _XDisplay;
+union _XEvent;
+
+class libusb_device;
+class libusb_device_handle;
+class libusb_context;
 
 namespace tobiss
 {
@@ -71,7 +75,7 @@ class Mouse : public MouseBase
     virtual ~Mouse();
 
   //-----------------------------------------------
-  protected:
+  private:
     /**
     * @brief Method to detach kernel driver from the system and open connection to the mouse device.
     * @return ret<int>
@@ -86,11 +90,19 @@ class Mouse : public MouseBase
     * @brief Method to acquire data from the mouse device.
     */
     virtual void acquireData();
+    void getDataFromLibUSB();
 
-    libusb_device **devs_; //pointer to pointer of device, used to retrieve a list of devices
-    libusb_device_handle *dev_handle_; //a device handle
-    libusb_context *ctx_; //a libusb session
+  private:
+    libusb_device**         devs_; //pointer to pointer of device, used to retrieve a list of devices
+    libusb_device_handle*   dev_handle_; //a device handle
+    libusb_context*         ctx_; //a libusb session
 
+    _XDisplay*              dsp_;
+    _XEvent*                event_;
+
+    int                     screen_number_;
+    int                     screen_width_;
+    int                     screen_height_;
 
     static const HWThreadBuilderTemplateRegistratorWithoutIOService<Mouse> FACTORY_REGISTRATOR_;
 };

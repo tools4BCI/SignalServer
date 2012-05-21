@@ -46,7 +46,7 @@
 #include <map>
 #include <string>
 
-#include <boost/thread.hpp>
+#include <boost/thread/shared_mutex.hpp>
 #include <boost/cstdint.hpp>
 
 #include "ticpp/ticpp.h"

@@ -37,6 +37,7 @@
 
 #include "hardware/sine_generator.h"
 #include <boost/current_function.hpp>
+#include <boost/bind.hpp>
 
 #include <cmath>
 

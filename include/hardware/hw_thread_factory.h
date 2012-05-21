@@ -67,7 +67,7 @@ public:
     /**
     * @brief deletes all prototypes
     */
-    ~HWThreadFactory ();
+    virtual ~HWThreadFactory ();
 
     /**
     * @brief takes ownership of the HWThreadBuilder pointer (it will be destroyed

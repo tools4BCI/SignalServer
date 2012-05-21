@@ -221,12 +221,12 @@ void printVersion()
 {
   cout << endl;
   cout << "SignalServer -- Version: " << MAJOR_VERSION;
-  cout << " (build " << BUILD_NUMBER << ")";
-  #ifndef WIN32
-    cout << " -- " << BUILD_STR;
-  #else
+  //  cout << " (build " << BUILD_NUMBER << ")";
+  //  #ifndef WIN32
+  //    cout << " -- " << BUILD_STR;
+  //  #else
     cout << " -- " << __DATE__ << " " << __TIME__;
-  #endif
+  //  #endif
   cout << endl << endl;
   cout << "Laboratory of Brain-Computer Interfaces" << endl;
   cout << "Graz University of Technology" << endl;
