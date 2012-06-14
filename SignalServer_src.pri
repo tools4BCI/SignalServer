@@ -16,8 +16,8 @@ HEADERS += include/config/xml_parser.h \
     include/hardware/eeg_sim_msg_parser.h \
     include/signalserver/signalserver.h \
     include/hardware/gBSamp_base.h \
-    include/hardware/kinect.h \
-    include/hardware/keylogger_base.h
+    include/hardware/kinect.h
+#    include/hardware/keylogger_base.h
 #    include/hardware/event_listener.h \
 unix {
   HEADERS += include/hardware/mouse_linux.h\
@@ -57,8 +57,8 @@ SOURCES += src/signalserver/main.cpp \
     src/hardware/eeg_sim_msg_parser.cpp \
     src/signalserver/signalserver.cpp \
     src/hardware/gBSamp_base.cpp \
-    src/hardware/kinect.cpp \
-    src/hardware/keylogger_base.cpp
+    src/hardware/kinect.cpp
+#    src/hardware/keylogger_base.cpp
 #    src/hardware/event_listener.cpp \
 unix {
   SOURCES += src/hardware/mouse_linux.cpp \
