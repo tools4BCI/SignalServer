@@ -22,8 +22,8 @@ HEADERS += include/config/xml_parser.h \
 unix {
   HEADERS += include/hardware/mouse_linux.h\
              include/hardware/nidaqmx_wrapper.h \
-             include/hardware/gBSamp_unix.h \
-             include/hardware/keylogger_linux.h
+             include/hardware/gBSamp_unix.h
+#             include/hardware/keylogger_linux.h
 }
 win32 {
   HEADERS += include/hardware/mouse_win.h \
@@ -34,8 +34,8 @@ win32 {
              include/hardware/dataq_wrapper.h \
              include/hardware/dataq.h \
              include/hardware/nirscout.h \
-             include/hardware/plux.h \
-             include/hardware/keylogger_win.h
+             include/hardware/plux.h
+#             include/hardware/keylogger_win.h
 }
 contains( DEFINES, TIMING_TEST )::HEADERS += extern/include/LptTools/LptTools.h
 
@@ -62,8 +62,8 @@ SOURCES += src/signalserver/main.cpp \
 #    src/hardware/event_listener.cpp \
 unix {
   SOURCES += src/hardware/mouse_linux.cpp \
-             src/hardware/gBSamp_unix.cpp \
-             src/hardware/keylogger_linux.cpp
+             src/hardware/gBSamp_unix.cpp
+#             src/hardware/keylogger_linux.cpp
   contains( DEFINES, TIMING_TEST )::SOURCES += extern/include/LptTools/LptToolsLinux.cpp
 }
 
@@ -74,8 +74,8 @@ win32 {
              src/hardware/usbamp.cpp\
              src/hardware/dataq.cpp\
              src/hardware/nirscout.cpp \
-             src/hardware/plux.cpp \
-             src/hardware/keylogger_win.cpp
+             src/hardware/plux.cpp
+#             src/hardware/keylogger_win.cpp
   contains( DEFINES, TIMING_TEST )::SOURCES += extern/include/LptTools/LptTools_.cpp
 }
 
