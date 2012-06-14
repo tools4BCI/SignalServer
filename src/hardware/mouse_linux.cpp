@@ -72,6 +72,8 @@ Mouse::Mouse(ticpp::Iterator<ticpp::Element> hw)
 
   if(detach_from_os_)
   {
+	name = "Mouse";
+  
     int ret = blockKernelDriver();
     if(ret)
       throw(std::runtime_error("MouseBase::initMouse -- Mouse device could not be connected (check rights)!"));
@@ -102,6 +104,8 @@ Mouse::Mouse(ticpp::Iterator<ticpp::Element> hw)
   }
   else
   {
+	name = "MouseLogger";
+  
     dsp_ = XOpenDisplay( NULL );
     if( !dsp_ )
       throw(std::runtime_error( "Error -- " + std::string(BOOST_CURRENT_FUNCTION) + "Unable to open display!" ));
@@ -128,7 +132,8 @@ Mouse::Mouse(ticpp::Iterator<ticpp::Element> hw)
 //  cout << " --> Mouse ID: " << id_ << ",  Name: " << name_;
 //  cout<<", vid: "<<vid_<<", pid: "<<pid_<<endl;
 
-  setType("Mouse" + name);
+  setType(name);
+  fs_ = 100;
 }
 
 //-----------------------------------------------------------------------------
@@ -213,6 +218,8 @@ void Mouse::acquireData()
 
   while(running_)
   {
+//    cout <<  " -- " << dirty_ << std::flush;
+
     if(detach_from_os_)
       getDataFromLibUSB();
     else
@@ -247,8 +254,7 @@ void Mouse::acquireData()
         axes_values_[1] = event_->xbutton.y;
         dirty_ = true;
       }
-      lock.unlock();
-      boost::this_thread::sleep(boost::posix_time::milliseconds(10));
+
       //      if(dirty_)
       //      {
       //        cout << "Mouse Corodinates: "<<  axes_values_[0] << "," << axes_values_[1] << " -- ";
@@ -257,6 +263,9 @@ void Mouse::acquireData()
       //        cout << buttons_values_[2];
       //        cout << endl << std::flush;
       //      }
+
+      lock.unlock();
+      boost::this_thread::sleep(boost::posix_time::milliseconds(10));
     }
   }
 }

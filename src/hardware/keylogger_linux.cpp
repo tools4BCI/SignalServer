@@ -14,8 +14,6 @@ const HWThreadBuilderTemplateRegistratorWithoutIOService<KeyLogger> KeyLogger::F
 KeyLogger::KeyLogger(ticpp::Iterator<ticpp::Element> hw)
   : KeyLoggerBase(hw)
 {
-  pressed_keycodes_.resize(32);
-
   if(!detach_from_os_)
   {
     dsp_ = XOpenDisplay( NULL );
@@ -39,6 +37,8 @@ KeyLogger::~KeyLogger()
 
 void KeyLogger::acquireData()
 {
+  char last_char = 0;
+
   while(running_)
   {
     if(!detach_from_os_)
@@ -50,6 +50,7 @@ void KeyLogger::acquireData()
 
       unsigned int keys_hit = 0;
 
+      if(!dirty_)
       for (int i=0; i<32; i++)
       {
         if (keys_return[i] != 0)
@@ -61,14 +62,20 @@ void KeyLogger::acquireData()
           {
             if ((num & 0x01) == 1)
             {
-              keys_hit++;
 
-              if(released_)
+              //pressed_keycodes_.push_back(XkbKeycodeToKeysym(dsp_, i*8+pos, 0));
+
+              char current = XKeycodeToKeysym(dsp_, i*8+pos, 0);
+
+              if(current && (current != last_char))
               {
+                keys_hit++;
                 dirty_ = true;
-                pressed_keycodes_.push_back(XKeycodeToKeysym(dsp_, i*8+pos, 0));
-                released_ = false;
+                pressed_keycodes_.push_back(current);
+                last_char = current;
+//                std::cout << current << std::flush;
               }
+
               // XKeysymToString(sym) --> to get a char*
             }
 
@@ -79,10 +86,10 @@ void KeyLogger::acquireData()
       }
 
       if(!keys_hit)
-        released_ = true;
+        last_char = 0;
 
       lock.unlock();
-      boost::this_thread::sleep(boost::posix_time::milliseconds(10));
+      boost::this_thread::sleep(boost::posix_time::milliseconds(50));
     }
   }
 }

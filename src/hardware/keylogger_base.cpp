@@ -76,14 +76,14 @@ void KeyLoggerBase::setDeviceSettings(ticpp::Iterator<ticpp::Element>const &fath
   ticpp::Iterator<ticpp::Element> elem(father->FirstChildElement(str_detach_from_os_,true));
   setDetachFromOS(elem);
 
-  channel_types_.push_back(SIG_BUTTON);
-  channel_types_.push_back(SIG_BUTTON);
+  channel_types_.push_back(SIG_KEYCODE);
+  channel_types_.push_back(SIG_KEYCODE);
 
   std::string naming("KeyCode ");
   for(unsigned int n = 0 ; n < 2; n++)
   {
     naming += boost::lexical_cast<std::string>(n);
-    channel_info_.insert(pair<boost::uint16_t, pair<string, boost::uint32_t> >(n, pair<string, boost::uint32_t>(naming, SIG_BUTTON)));
+    channel_info_.insert(pair<boost::uint16_t, pair<string, boost::uint32_t> >(n, pair<string, boost::uint32_t>(naming, SIG_KEYCODE)));
   }
 }
 
@@ -159,14 +159,14 @@ SampleBlock<double> KeyLoggerBase::getAsyncData()
   {
     v.push_back(pressed_keycodes_.front());
     pressed_keycodes_.pop_front();
-    //std::cout << static_cast<unsigned int>(v.back());
-    //std::cout << static_cast<char>(v.back());
+//    std::cout << v.back() << " -- ";
+//    std::cout << static_cast<char>(v.back()) << std::flush;
   }
   //std::cout <<  std::endl;
   pressed_keycodes_.clear();
   lock.unlock();
 
-  channel_types_.resize(v.size(),SIG_BUTTON);
+  channel_types_.resize(v.size(),SIG_KEYCODE);
   data_.init(1, v.size() , channel_types_);
   data_.setSamples(v);
 

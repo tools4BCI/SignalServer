@@ -1,13 +1,18 @@
 # -----------------------------------------------------------------------
 TEMPLATE += app
 CONFIG += console \
-    release \
     thread \
     warn_on \
     exceptions \
     stl
 QT -= core \
     gui
+
+CONFIG( debug, debug|release ) {
+    DEFINES += DEBUG
+} else {
+
+}
 
 DEFINES += TIXML_USE_TICPP
 #DEFINES += USE_TID_SERVER

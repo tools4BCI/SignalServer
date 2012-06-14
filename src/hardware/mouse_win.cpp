@@ -43,8 +43,12 @@
 
 #define ACYNC_DATA_RECV_SIZE 16
 
+using std::cout;
+using std::endl;
+
 namespace tobiss
 {
+
 using std::string;
 
 static const int LIBUSB_ERROR_PORT  = -22;      // by trial, no definitions where found in libusb-win32
@@ -61,11 +65,13 @@ Mouse::Mouse(ticpp::Iterator<ticpp::Element> hw)
 : MouseBase(hw), dev_handle_(0)
 {
   #ifdef DEBUG
-    cout <<  BOOST_CURRENT_FUNCTION << endl;
+    std::cout <<  BOOST_CURRENT_FUNCTION << std::endl;
   #endif
 
   tia::Constants cst;
   ticpp::Iterator<ticpp::Element> ds(hw->FirstChildElement(hw_devset_, true));
+
+  std::string name("Mouse");
 
   if(detach_from_os_)
   {
@@ -96,9 +102,18 @@ Mouse::Mouse(ticpp::Iterator<ticpp::Element> hw)
     if(blockKernelDriver())
       throw(std::runtime_error("MouseBase::initMouse -- Mouse device could not be connected (check rights)!"));
   }
+  else
+  {
+    int cx = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+    int cy = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+    int screens = GetSystemMetrics(SM_CMONITORS);
+    name = "Mouse Logger -- Nr of screens: " + boost::lexical_cast<string>(screens) + ";  ";
+    name += "Screen size x: " + boost::lexical_cast<string>(cx) + ", y: ";
+    name += boost::lexical_cast<string>(cy);
+  }
 
-  setType("Mouse");
-
+  setType(name);
+  fs_ = 256;
 }
 
 //-----------------------------------------------------------------------------
@@ -106,7 +121,7 @@ Mouse::Mouse(ticpp::Iterator<ticpp::Element> hw)
 Mouse::~Mouse()
 {
   #ifdef DEBUG
-    cout <<  BOOST_CURRENT_FUNCTION << endl;
+    std::cout <<  BOOST_CURRENT_FUNCTION << std::endl;
   #endif
   running_ = false;
   async_acqu_thread_->join();
@@ -122,7 +137,7 @@ Mouse::~Mouse()
 int Mouse::blockKernelDriver()
 {
   #ifdef DEBUG
-    cout <<  BOOST_CURRENT_FUNCTION << endl;
+    std::cout <<  BOOST_CURRENT_FUNCTION << std::endl;
   #endif
   // create all parameter needed to open an extern tool (CreateProcess)
   STARTUPINFO         siStartupInfo;
@@ -183,7 +198,7 @@ int Mouse::blockKernelDriver()
 int Mouse::freeKernelDriver()
 {
   #ifdef DEBUG
-    cout <<  BOOST_CURRENT_FUNCTION << endl;
+    std::cout <<  BOOST_CURRENT_FUNCTION << std::endl;
   #endif
   // release the interface end close the usb-handle
   usb_release_interface(dev_handle_,0);
@@ -222,7 +237,7 @@ int Mouse::freeKernelDriver()
 void Mouse::acquireData()
 {
   #ifdef DEBUG
-    cout <<  BOOST_CURRENT_FUNCTION << endl;
+    std::cout <<  BOOST_CURRENT_FUNCTION << std::endl;
   #endif
   while(running_)
   {
@@ -258,6 +273,8 @@ void Mouse::acquireData()
         axes_values_[1] = cursorPos.y;
         dirty_ = true;
       }
+      lock.unlock();
+      boost::this_thread::sleep(boost::posix_time::milliseconds(10));
     }
   }
 }

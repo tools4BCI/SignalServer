@@ -34,7 +34,8 @@ win32 {
              include/hardware/dataq_wrapper.h \
              include/hardware/dataq.h \
              include/hardware/nirscout.h \
-             include/hardware/plux.h
+             include/hardware/plux.h \
+             include/hardware/keylogger_win.h
 }
 contains( DEFINES, TIMING_TEST )::HEADERS += extern/include/LptTools/LptTools.h
 
@@ -73,7 +74,8 @@ win32 {
              src/hardware/usbamp.cpp\
              src/hardware/dataq.cpp\
              src/hardware/nirscout.cpp \
-             src/hardware/plux.cpp
+             src/hardware/plux.cpp \
+             src/hardware/keylogger_win.cpp
   contains( DEFINES, TIMING_TEST )::SOURCES += extern/include/LptTools/LptTools_.cpp
 }
 

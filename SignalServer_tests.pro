@@ -13,7 +13,13 @@ INCLUDEPATH += $$PWD/. \
 DEPENDPATH += $$INCLUDEPATH
 
 DEFINES += TIXML_USE_TICPP
-#DEFINES += DEBUG
+CONFIG( debug, debug|release ) {
+    DEFINES += DEBUG
+} else {
+
+}
+
+
 
 #QMAKE_CXXFLAGS += -fprofile-arcs -ftest-coverage
 #QMAKE_LFLAGS += -fprofile-arcs -ftest-coverage

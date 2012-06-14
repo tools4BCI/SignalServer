@@ -255,6 +255,17 @@ SampleBlock<double> MouseBase::getAsyncData()
 
   vector<double> v;
 
+  #ifdef DEBUG
+    if(dirty_)
+    {
+      cout << "Mouse Corodinates: "<<  axes_values_[0] << "," << axes_values_[1] << " -- ";
+      cout << buttons_values_[0] << ",";
+      cout << buttons_values_[1] << ",";
+      cout << buttons_values_[2];
+      cout << endl << std::flush;
+    }
+  #endif
+
   if(buttons_)
     v.push_back(id_);
   for(boost::uint8_t n = 0; n < buttons_values_.size(); n++)
@@ -264,6 +275,8 @@ SampleBlock<double> MouseBase::getAsyncData()
     v.push_back(id_);
   for(boost::uint8_t n = 0; n < axes_values_.size(); n++)
     v.push_back(axes_values_[n]);
+
+  lock.unlock();
 
   data_.setSamples(v);
 
@@ -275,11 +288,11 @@ SampleBlock<double> MouseBase::getAsyncData()
 
 void MouseBase::run()
 {
+  running_ = true;
   if(mode_ == APERIODIC)
   {
     async_acqu_thread_ = new boost::thread( boost::bind(&MouseBase::acquireData, this) );
   }
-  running_ = true;
 }
 
 //-----------------------------------------------------------------------------

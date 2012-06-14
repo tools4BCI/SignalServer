@@ -1,7 +1,6 @@
 # -----------------------------------------------------------------------
 TEMPLATE = app
-CONFIG += release \
-    console \
+CONFIG += console \
     thread \
     warn_on \
     exceptions \
