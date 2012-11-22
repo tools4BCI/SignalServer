@@ -47,12 +47,15 @@
   #define DECL_EXPORT
 #endif
 
+#include "tia/custom_signal_info.h"
+
 namespace tia
 {
 // forward declarations
 class DataPacket;
 class TiAClientImplBase;
 class SSConfig;
+
 
 /**
 * @class TiAClient
@@ -149,6 +152,42 @@ public:
    * @sa requestConfig()
    */
   virtual SSConfig config() const;
+
+  /**
+   * @brief Returns a custom signal info extracted from meta data information prevoisly requested from the server
+   * \sa requestConfig()
+   */
+  virtual CustomSignalInfoPtr getConfigAsCustomConfig() const;
+
+  /**
+   * @brief Asks the server to use a custom signal info for this client
+   * The caller will be blocked until the server returns its answer or an error has occurred.
+   * @param custom_sig_info: the customized signal info that the server should use
+   * @param error_msg: when an error occurs the reason is stored into this string
+   * @throw std::ios_base::failure if the client is not connected or if an error occurred
+   * @throw std::runtime_error for all implementations that do not support this
+   * feature due to they are deprecated versions
+   */
+  virtual bool trySetCustomSignalInfo(CustomSignalInfoPtr custom_sig_info, std::string &error_msg);
+
+  /**
+   * @brief Establishes a DataConnection to the server either
+   * using udp (if use_udp is set) or tcp as underlying protocol.
+   * The caller will be blocked until the DataConnection is established or an error has occurred.
+   * @param use_udp if \c true data will be received via UDP broadcast instead of TCP
+   * @throw std::ios_base::failure if the client is not connected or if an error occurred
+   * \sa startReceiving(), stopReceiving(), receiving(), getDataPacket()
+   */
+  virtual void createDataConnection(bool use_udp);
+
+  /**
+   * @brief Turns the client into receiving state. Can be called after the client established a
+   * DataConnection with createDataConnection().
+   * The caller will be blocked until the client is ready to receive or an error has occurred.
+   * \sa stopReceiving(), receiving(), getDataPacket()
+   */
+  virtual void startReceiving();
+
   /**
    * @brief Turns the client into receiving state
    * The caller will be blocked until the client is ready to receive or an error has occurred.
@@ -183,6 +222,9 @@ public:
   * @brief todo
   */
   virtual DataPacket* getEmptyDataPacket();
+
+  virtual DataPacket* createDataPacket();
+
 
   virtual void getDataPacket(DataPacket& packet);
   /**

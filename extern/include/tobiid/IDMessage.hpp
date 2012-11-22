@@ -28,43 +28,46 @@
  *
  */
 class IDMessage : public TCBlock {
-	friend class IDSerializerRapid;
-	public:
-		IDMessage(void);
-		IDMessage(IDMessage* const other);
-		IDMessage(IDFtype familyType, IDevent event);
-		virtual ~IDMessage(void);
-		
-		virtual void Copy(IDMessage* const other);
-		virtual std::string GetDescription(void) const;
-		virtual void SetDescription(const std::string& description);
-		virtual IDFvalue GetFamily(void) const;
-		virtual bool SetFamilyType(const IDFtype type);
-		virtual bool SetFamilyType(const std::string& type);
-		virtual IDFtype GetFamilyType(void) const;
-		virtual void SetEvent(const IDevent event);
-		virtual IDevent GetEvent(void) const;
-		/*! \brief Prints internal data
-		 */
-		virtual void Dump(void) const;
-		static const IDFtype FamilyType(IDFvalue family);
-	private:
-		virtual void Init(void);
+  friend class IDSerializerRapid;
+  public:
+    IDMessage(void);
+    IDMessage(IDMessage* const other);
+    IDMessage(IDFtype familyType, IDevent event);
+    virtual ~IDMessage(void);
 
-	public:
-		static const IDFtype FamilyUndef = -1;
-		static const IDFtype FamilyBiosig = 0;
-		static const IDFtype FamilyCustom = 1;
+    virtual void Copy(IDMessage* const other);
+    virtual std::string GetDescription(void) const;
+    virtual void SetDescription(const std::string& description);
+    virtual std::string GetSource(void) const;
+    virtual void SetSource(const std::string& description);
+    virtual IDFvalue GetFamily(void) const;
+    virtual bool SetFamilyType(const IDFtype type);
+    virtual bool SetFamilyType(const std::string& type);
+    virtual IDFtype GetFamilyType(void) const;
+    virtual void SetEvent(const IDevent event);
+    virtual IDevent GetEvent(void) const;
+    /*! \brief Prints internal data
+     */
+    virtual void Dump(void) const;
+    static const IDFtype FamilyType(IDFvalue family);
+  private:
+    virtual void Init(void);
 
-		static const IDevent EventNull = -1;
-		
-		static std::string TxtFamilyUndef;
-		static std::string TxtFamilyBiosig;
-		static std::string TxtFamilyCustom;
-	private:
-		IDFtype _familyType;
-		IDevent _event;
-		std::string _description;
+  public:
+    static const IDFtype FamilyUndef = -1;
+    static const IDFtype FamilyBiosig = 0;
+    static const IDFtype FamilyCustom = 1;
+
+    static const IDevent EventNull = -1;
+
+    static std::string TxtFamilyUndef;
+    static std::string TxtFamilyBiosig;
+    static std::string TxtFamilyCustom;
+  private:
+    IDFtype _familyType;
+    IDevent _event;
+    std::string _description;
+    std::string _source;
 };
 
 #endif

@@ -65,26 +65,29 @@
 #define BITS4PACKETVERSION 6
 #define BYTES4SIGNALFLAGS 3
 
-#define SIG_EEG 0x01
-#define SIG_EMG 0x02
-#define SIG_EOG 0x04
-#define SIG_ECG 0x08
-#define SIG_HR 0x10
-#define SIG_BP 0x20
-#define SIG_BUTTON 0x40
-#define SIG_AXIS 0x80
-#define SIG_SENSOR 0x100
+#include <boost/cstdint.hpp>
 
-#define SIG_NIRS 0x200
-#define SIG_FMRI 0x400
+typedef boost::uint32_t SignalTypeFlag;
 
+SignalTypeFlag const SIG_EEG        = 0x1;
+SignalTypeFlag const SIG_EMG        = 0x1 << 1;
+SignalTypeFlag const SIG_EOG        = 0x1 << 2;
+SignalTypeFlag const SIG_ECG        = 0x1 << 3;
+SignalTypeFlag const SIG_HR         = 0x1 << 4;
+SignalTypeFlag const SIG_BP         = 0x1 << 5;
+SignalTypeFlag const SIG_BUTTON     = 0x1 << 6;
+SignalTypeFlag const SIG_AXIS       = 0x1 << 7;
+SignalTypeFlag const SIG_SENSOR     = 0x1 << 8;
+SignalTypeFlag const SIG_NIRS       = 0x1 << 9;
+SignalTypeFlag const SIG_FMRI       = 0x1 << 10;
+SignalTypeFlag const SIG_KEYCODE    = 0x1 << 11;
 
-#define SIG_USER_1    0x10000
-#define SIG_USER_2    0x20000
-#define SIG_USER_3    0x40000
-#define SIG_USER_4    0x80000
-#define SIG_UNDEFINED 0x100000
-#define SIG_EVENT     0x200000
+SignalTypeFlag const SIG_USER_1     = 0x1 << 16;
+SignalTypeFlag const SIG_USER_2     = 0x1 << 17;
+SignalTypeFlag const SIG_USER_3     = 0x1 << 18;
+SignalTypeFlag const SIG_USER_4     = 0x1 << 19;
+SignalTypeFlag const SIG_UNDEFINED  = 0x1 << 20;
+SignalTypeFlag const SIG_EVENT      = 0x1 << 21;
 
 /*! @} */
 

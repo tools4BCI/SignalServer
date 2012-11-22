@@ -24,15 +24,25 @@
 #define IDTYPES_FAMILY_BIOSIG		"biosig"
 #define IDTYPES_FAMILY_CUSTOM		"custom"
 
-#define IDMESSAGE_VERSION 			"0.0.2.1"
+#define IDMESSAGE_VERSION_SUPPORTED 			"0.0.2.1"
+#define IDMESSAGE_VERSION 			"0.1.0.0"
+
 #define IDMESSAGE_ROOTNODE 			"tobiid"
 #define IDMESSAGE_VERSIONNODE		"version"
+
 #define IDMESSAGE_FRAMENODE			"frame"
+#define IDMESSAGE_FRAMENODE_2			"block"
+
 #define IDMESSAGE_DESCRIPTIONNODE	"description"
 #define IDMESSAGE_FAMILYNODE		"family"
 #define IDMESSAGE_EVENTNODE 		"event"
 #define IDMESSAGE_TIMESTAMPNODE		"timestamp"
 #define IDMESSAGE_REFERENCENODE		"reference"
+
+#define IDMESSAGE_TIMESTAMPNODE_2		"absolute"
+#define IDMESSAGE_REFERENCENODE_2		"relative"
+
+#define IDMESSAGE_SOURCENODE    		"source"
 
 /*! \brief TOBI iD family type
  *
