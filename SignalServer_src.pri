@@ -1,6 +1,7 @@
 # -----------------------------------------------------------------------
 
 HEADERS += include/config/xml_parser.h \
+    include/config/xml_tags.h \
     include/hardware/hw_access.h \
     include/hardware/hw_thread.h \
     include/hardware/sine_generator.h \
@@ -16,7 +17,12 @@ HEADERS += include/config/xml_parser.h \
     include/hardware/eeg_sim_msg_parser.h \
     include/signalserver/signalserver.h \
     include/hardware/gBSamp_base.h \
-    include/hardware/kinect.h
+    include/hardware/kinect.h \
+    include/filewriter/file_writer.h \
+    include/filewriter/file_writer_data_types.h \
+    include/filewriter/file_writer_impl_base.h\
+    include/filewriter/gdf_writer_impl.h
+
 #    include/hardware/keylogger_base.h
 #    include/hardware/event_listener.h \
 unix {
@@ -57,7 +63,10 @@ SOURCES += src/signalserver/main.cpp \
     src/hardware/eeg_sim_msg_parser.cpp \
     src/signalserver/signalserver.cpp \
     src/hardware/gBSamp_base.cpp \
-    src/hardware/kinect.cpp
+    src/hardware/kinect.cpp \
+    src/filewriter/file_writer.cpp \
+    src/filewriter/file_writer_impl_base.cpp\
+    src/filewriter/gdf_writer_impl.cpp
 #    src/hardware/keylogger_base.cpp
 #    src/hardware/event_listener.cpp \
 unix {

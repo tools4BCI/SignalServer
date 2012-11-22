@@ -75,6 +75,7 @@ HWAccess::HWAccess(boost::asio::io_service& io, XMLParser& parser)
     cout << "HWAccess Constructor" << endl;
   #endif
 
+  bool hw_not_found = false;
   try
   {
     for(unsigned int n = 0; n < parser.getNrOfHardwareElements(); n++)
@@ -87,6 +88,11 @@ HWAccess::HWAccess(boost::asio::io_service& io, XMLParser& parser)
         cout << "    fs: " << thread->getSamplingRate();
         cout << "Hz, nr of channels: " << thread->getNrOfChannels();
         cout << ", blocksize: " << thread->getNrOfBlocks()  << endl;
+      }
+      else
+      {
+        cout << " Warning:  \"" << parser.getHardwareElementName(n) << "\" not supported" << endl;
+        hw_not_found = true;
       }
     }
   }
@@ -101,6 +107,14 @@ HWAccess::HWAccess(boost::asio::io_service& io, XMLParser& parser)
     string ex_str("Error in hardware (TICPP exception)- ");
     ex_str += + e.what();
     throw(std::invalid_argument(ex_str));
+  }
+
+  if(hw_not_found)
+  {
+    cout << " Possible hardware abrevations to be used  with this signal server version:" << endl;
+    std::vector<std::string> hw_names = getPossibleHardwareNames();
+    for(unsigned int n = 0; n < hw_names.size(); n++)
+      cout << "   * " << hw_names[n] << endl;
   }
 
   buildDataInfoMap();

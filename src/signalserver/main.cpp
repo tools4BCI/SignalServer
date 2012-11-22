@@ -50,6 +50,7 @@
 #include "version.h"
 #include "config/xml_parser.h"
 #include "signalserver/signalserver.h"
+#include "config/xml_tags.h"
 
 using namespace std;
 using namespace tobiss;
@@ -97,6 +98,28 @@ int main(int argc, const char* argv[])
     {
       XMLParser config(config_file);
 
+      std::map<std::string,std::string> server_settings = config.parseServerSettings();
+
+      if(server_settings.find(xmltags::file_exists) != server_settings.end())
+         if( server_settings[xmltags::file_exists] == xmltags::file_exists_overwrite )
+         {
+           std::string s;
+           std::cout << std::endl;
+           std::cout << "   ***  WARNING: Filesaving set to OVERWRITE!" << std::endl;
+           std::cout << "     -- Do you want to proceed? [y/N]" << std::endl;
+
+           char c;
+           while(cin.get(c) )
+           {
+             if(c == 'y' )
+               break;
+             else
+             {
+               cout << endl << "     ... Aborting" << std::endl;
+               return -1;
+             }
+           }
+         }
 
       tobiss::SignalServer sig_server(config, use_new_tia);
       boost::thread* sig_server_ptr = 0;

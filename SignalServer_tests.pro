@@ -25,8 +25,7 @@ CONFIG( debug, debug|release ) {
 #QMAKE_LFLAGS += -fprofile-arcs -ftest-coverage
 #LIBS += -lgcov
 
-QMAKE_CXXFLAGS_WARN_ON = -Wall \
-    -pedantic
+QMAKE_CXXFLAGS_WARN_ON += -Wall -pedantic
 
 # ---------------------------
 
@@ -37,6 +36,10 @@ SOURCES += \
     tests/main.cpp \
     tests/sampleblock_tests.cpp\
     src/hardware/hw_thread.cpp \
+    tests/filewriter_test.cpp \
+    src/filewriter/file_writer.cpp\
+    src/filewriter/file_writer_impl_base.cpp\
+    src/filewriter/gdf_writer_impl.cpp
 
 win32 {
     SOURCES += tests/nirscout_tests.cpp\
@@ -55,14 +58,20 @@ LIBS += -lboost_thread \
 HARDWARE_PLATFORM = $$system(uname -m)
   contains( HARDWARE_PLATFORM, x86_64 )::{
   # 64-bit Linux
-  LIBS += -Lextern/lib/ticpp/linux  -lticpp_64 \
-                -Lextern/lib/tia/linux/amd64 -ltia
+    LIBS += -Lextern/lib/ticpp/linux  -lticpp_64 \
+                -Lextern/lib/tia/linux/amd64 -ltia \
+                -Wl,-rpath=$$PWD/extern/lib/tia/linux/amd64
+
+    LIBS += -Lextern/lib/libgdf/linux/amd64 -lGDF
 
   }else::{
 
   # 32-bit Linux
-  LIBS += -Lextern/lib/ticpp/linux  -lticpp \
-                -Lextern/lib/tia/linux/x86 -ltia
+    LIBS += -Lextern/lib/ticpp/linux  -lticpp \
+                -Lextern/lib/tia/linux/x86 -ltia \
+                -Wl,-rpath=$$PWD/extern/lib/tia/linux/x86
+
+    LIBS += -Lextern/lib/libgdf/linux/x86 -lGDF
   }
 
 

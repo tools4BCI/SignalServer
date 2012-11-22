@@ -37,26 +37,18 @@
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
 
-
-
 namespace TiD
 {
   class TiDServer;
 }
-
-
-#ifdef USE_GDF_SAVER
-  namespace gdf
-  {
-    class Writer;
-  }
-#endif
 
 namespace tia
 {
   class TiAServer;
   class DataPacket;
 }
+
+class IDMessage;
 
 namespace tobiss
 {
@@ -80,9 +72,8 @@ class SignalServer
     static std::vector<std::string> getPossibleHardwareNames();
 
   private:
-    void initGdf(); ///< Initialize writing acquired data into a .gdf file.
-
-    void fustyReadPackets();
+    void storeData(tia::DataPacket* packet, std::vector<IDMessage>* msgs);
+    void processStoreFileTiDMsgs(std::vector<IDMessage>* msgs);
 
     HWAccess*                   hw_access_;
     tia::TiAServer*             tia_server_;
@@ -97,7 +88,7 @@ class SignalServer
     XMLParser&                  config_parser_;
 
     bool                                stop_reading_;
-    bool                                write_file_;
+
     boost::uint32_t                     master_blocksize_;
     boost::uint32_t                     master_samplingrate_;
     std::map<std::string,std::string>   subject_info_;
@@ -105,18 +96,21 @@ class SignalServer
     std::map<boost::uint32_t, std::vector<std::string> >    channels_per_sig_type_;
     std::vector<boost::uint32_t>                            sampling_rate_per_sig_type_;
 
-    tia::DataPacket*                                        packet_;
+    tia::DataPacket*                    packet_;
 
     EventSource*                        event_source_;
+
     FileWriter*                         file_writer_;
-    
-    
+    bool                                write_file_;
+    bool                                use_continous_saving_;
+
+    boost::chrono::high_resolution_clock::time_point  current_timestamp_;
+    boost::chrono::high_resolution_clock::time_point  last_timestamp_;
+
+    boost::uint64_t                                   last_block_nr_;
+
+
     TiD::TiDServer*                     tid_server_;
-
-
-    #ifdef USE_GDF_SAVER
-      gdf::Writer*                gdf_writer_;
-    #endif
 };
 
 //-----------------------------------------------------------------------------

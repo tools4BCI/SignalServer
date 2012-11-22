@@ -38,7 +38,6 @@
 
 
 #include "hardware/mouse_win.h"
-#include "tia/constants.h"
 #include "boost/filesystem.hpp"
 
 #define ACYNC_DATA_RECV_SIZE 16
@@ -68,7 +67,6 @@ Mouse::Mouse(ticpp::Iterator<ticpp::Element> hw)
     std::cout <<  BOOST_CURRENT_FUNCTION << std::endl;
   #endif
 
-  tia::Constants cst;
   ticpp::Iterator<ticpp::Element> ds(hw->FirstChildElement(hw_devset_, true));
 
   std::string name("Mouse");

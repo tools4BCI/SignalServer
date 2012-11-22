@@ -34,7 +34,6 @@
 #include "hardware/gBSamp_unix.h"
 
 #include "hardware/hw_thread_builder.h"
-#include "tia/constants.h"
 
 #include <comedilib.h>
 #include <boost/cstdint.hpp>

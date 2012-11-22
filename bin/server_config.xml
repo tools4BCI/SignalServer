@@ -18,8 +18,7 @@
   <server_settings>
     <ctl_port> 9000 </ctl_port>
     <udp_port> 9998 </udp_port>
-    <tid_port> 9001</tid_port>
-    <udp_bc_addr> 192.168.1.255 </udp_bc_addr>
+    <udp_bc_addr> 127.0.0.1 </udp_bc_addr>
     
     <tid_port>  9100  </tid_port>
 
@@ -36,9 +35,9 @@
    <hardware name="sinegenerator" version="1.0" serial="">
     <mode> master </mode>
     <device_settings>
-      <sampling_rate> 600 </sampling_rate>
+      <sampling_rate> 400 </sampling_rate>
       <measurement_channels nr="16" names="eeg" type="eeg" />
-      <blocksize> 10 </blocksize>
+      <blocksize> 1 </blocksize>
     </device_settings>
 
   </hardware>

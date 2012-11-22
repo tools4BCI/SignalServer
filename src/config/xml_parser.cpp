@@ -35,6 +35,7 @@
 * @file xml_parser.cpp
 **/
 
+#include <config/xml_tags.h>
 #include "config/xml_parser.h"
 #include <boost/algorithm/string.hpp>
 
@@ -57,14 +58,14 @@ using boost::algorithm::to_lower_copy;
 //---------------------------------------------------------------------------------------
 
 XMLParser::XMLParser(string xml_file)
-  : doc_(xml_file), external_data_file_(0)
+  : doc_(xml_file)
 {
   #ifdef DEBUG
     cout << "XMLParser: Constructor" << endl;
   #endif
 
   doc_.LoadFile();
-  ticpp::Iterator<ticpp::Element> config(doc_.FirstChildElement(cst_.tobi, true));
+  ticpp::Iterator<ticpp::Element> config(doc_.FirstChildElement(xmltags::sigserver_config , true));
 
   //    Filereader part  --> TODO and move to other file
   //  file_reader_ = config->FirstChildElement(cst_.file_reader, false);
@@ -81,26 +82,22 @@ XMLParser::XMLParser(string xml_file)
   //  }
 
 
-  server_settings_ = config->FirstChildElement(cst_.ss, true);
+  server_settings_ = config->FirstChildElement(xmltags::server_settings, true);
   for(ticpp::Iterator<ticpp::Element> it(server_settings_); ++it != it.end(); )
-    if(it->Value() == cst_.ss)
+    if(it->Value() == xmltags::server_settings)
       throw(ticpp::Exception("Error -- Multiple server settings found!"));
 
-  if(external_data_file_)
-    return;
 
-  subject_ = config->FirstChildElement(cst_.subject, true);
+  subject_ = config->FirstChildElement(xmltags::subject, true);
   for(ticpp::Iterator<ticpp::Element> it(subject_); ++it != it.end(); )
-    if(it->Value() == cst_.subject)
+    if(it->Value() == xmltags::subject)
       throw(ticpp::Exception("Error -- Only one subject definition allowed!"));
 
 
-  // FIXME  -- hardcoded strings  --> shifted to HWThread
-
   ticpp::Iterator< ticpp::Attribute > attribute;
-  for(ticpp::Iterator<ticpp::Element> it(config->FirstChildElement("hardware", true));
+  for(ticpp::Iterator<ticpp::Element> it(config->FirstChildElement(xmltags::hardware, true));
       it != it.end(); it++)
-      if(it->Value() == "hardware")
+      if(it->Value() == xmltags::hardware)
     {
       map<string, string> m;
       for(attribute = attribute.begin(it.Get()); attribute != attribute.end();
@@ -108,7 +105,7 @@ XMLParser::XMLParser(string xml_file)
         m.insert(pair<string, string>(attribute->Name(), attribute->Value()));
       checkHardwareAttributes(m);
 
-      hardware_.push_back(make_pair(m.find("name")->second,it));
+      hardware_.push_back(make_pair(m.find(xmltags::hardware_name)->second,it));
     }
 }
 
@@ -116,9 +113,9 @@ XMLParser::XMLParser(string xml_file)
 
 bool XMLParser::equalsYesOrNo(const std::string& s)
 {
-  if(to_lower_copy(s) == "yes"  || s == "1")
+  if(to_lower_copy(s) == "yes"  || s == "1" || s == "on")
     return(true);
-  if(to_lower_copy(s) == "no" || s == "0")
+  if(to_lower_copy(s) == "no" || s == "0" || s == "off")
     return(false);
   else
   {
@@ -135,29 +132,27 @@ map<string,string> XMLParser::parseSubject()
     cout << "XMLParser: parseSubject" << endl;
   #endif
 
-  if(external_data_file_)
-    return(subject_map_);
-
   map<string, string>& m = subject_map_;
-  ticpp::Iterator<ticpp::Element> elem(subject_->FirstChildElement(cst_.s_id,true));
+  ticpp::Iterator<ticpp::Element> elem(subject_->FirstChildElement(xmltags::subject_id,true));
   m.insert(pair<string, string>(elem->Value(), elem->GetText(false)));
 
-  elem = subject_->FirstChildElement(cst_.s_first_name, true);
+  elem = subject_->FirstChildElement(xmltags::subject_firstname, true);
   m.insert(pair<string, string>(elem->Value(), elem->GetText(false)));
 
-  elem = subject_->FirstChildElement(cst_.s_surname, true);
+  elem = subject_->FirstChildElement(xmltags::subject_surname, true);
   m.insert(pair<string, string>(elem->Value(), elem->GetText(false)));
 
-  elem = subject_->FirstChildElement(cst_.s_birthday, true);
+  elem = subject_->FirstChildElement(xmltags::subject_birthday, true);
   m.insert(pair<string, string>(elem->Value(), elem->GetText(false)));
 
-  elem = subject_->FirstChildElement(cst_.s_sex, true);
+  elem = subject_->FirstChildElement(xmltags::subject_sex, true);
   m.insert(pair<string, string>(elem->Value(), elem->GetText(false)));
 
   for(elem = subject_->FirstChildElement(true) ; elem != elem.end(); elem++)
   {
     string tmp(elem->Value());
-    if(tmp == cst_.s_id || tmp == cst_.s_first_name || tmp == cst_.s_surname || tmp == cst_.s_birthday || tmp == cst_.s_sex)
+    if(tmp == xmltags::subject_id || tmp == xmltags::subject_firstname ||
+       tmp == xmltags::subject_surname || tmp == xmltags::subject_birthday || tmp == xmltags::subject_sex)
       continue;
     if(elem->GetText(false) != "")
       m.insert(pair<string, string>(elem->Value(), elem->GetText(false)));
@@ -180,39 +175,71 @@ map<string,string> XMLParser::parseServerSettings()
 
   map<string, string>& m = server_settings_map_;
 
-  ticpp::Iterator<ticpp::Element> elem(server_settings_->FirstChildElement(cst_.ss_ctl_port, true));
+  ticpp::Iterator<ticpp::Element> elem(server_settings_->FirstChildElement(xmltags::ctl_port, true));
   m.insert(pair<string, string>(elem->Value(), elem->GetText(false)));
 
-  elem = server_settings_->FirstChildElement(cst_.ss_udp_bc_addr, true);
+  elem = server_settings_->FirstChildElement(xmltags::udp_bc_addr, true);
   m.insert(pair<string, string>(elem->Value(), elem->GetText(false)));
 
-  elem = server_settings_->FirstChildElement(cst_.ss_udp_port, true);
+  elem = server_settings_->FirstChildElement(xmltags::udp_port, true);
   m.insert(pair<string, string>(elem->Value(), elem->GetText(false)));
 
-  elem = server_settings_->FirstChildElement(cst_.ss_tid_port, true);
+  elem = server_settings_->FirstChildElement( xmltags::tid_port, true);
   m.insert(pair<string, string>(elem->Value(), elem->GetText(false)));
 
 
   for(elem = server_settings_->FirstChildElement(true) ; elem != elem.end(); elem++)
   {
     string tmp(elem->Value());
-    if(tmp == cst_.ss_ctl_port || tmp == cst_.ss_udp_bc_addr || tmp == cst_.ss_udp_port
-       || tmp == cst_.ss_tid_port)
+    if(tmp == xmltags::ctl_port || tmp == xmltags::udp_bc_addr || tmp == xmltags::udp_port
+       || tmp == xmltags::tid_port)
       continue;
 
-    //    Save as gdf part
-    if(tmp == cst_.ss_store_data) ///< TODO: and move to other file
+    //  Store data
+    if(tmp == xmltags::store_data)
     {
-      parseFileLocation(elem, m);
+      ticpp::Iterator< ticpp::Attribute > attribute;
+      attribute = attribute.begin(elem.Get());
 
-      string overwrite(cst_.ss_file_overwrite_default);
-      ticpp::Iterator<ticpp::Element>  child = elem->FirstChildElement(cst_.ss_file_overwrite, false);
+      bool store = 0;
+      if(attribute->Name() == xmltags::store_data_value)
+      {
+        store = equalsYesOrNo( attribute->Value());
 
-      if(child != child.end())
-        overwrite = lexical_cast<string>( equalsYesOrNo(child->GetText(false)) );
+        if(store)
+        {
+          parseFileLocation(elem, m);
 
-      m.insert(pair<string, string>(cst_.ss_file_overwrite, overwrite));
+          string file_exists(xmltags::file_exists_new_file);
+          ticpp::Iterator<ticpp::Element>  child = elem->FirstChildElement(xmltags::file_exists, false);
 
+          if(child != child.end())
+            file_exists = lexical_cast<string>( child->GetText(false) );
+
+          if(!( (file_exists == xmltags::file_exists_new_file)
+              || (file_exists == xmltags::file_exists_overwrite)) )
+          {
+            throw(std::invalid_argument( "Error in xml file: " + xmltags::file_exists + " -- allowed options: "
+                                         + xmltags::file_exists_new_file + " or " + xmltags::file_exists_overwrite));
+          }
+
+          m.insert(pair<string, string>(xmltags::file_exists, file_exists));
+
+          string append_str(xmltags::append_to_filename_default);
+          child = elem->FirstChildElement(xmltags::append_to_filename, false);
+          if(child != child.end())
+            append_str = lexical_cast<string>( child->GetText(false) );
+          m.insert(pair<string, string>(xmltags::append_to_filename, append_str));
+
+          bool cont_sav = 0;
+          child = elem->FirstChildElement(xmltags::continous_saving, false);
+          if(child != child.end())
+            cont_sav = equalsYesOrNo( child->GetText(false) );
+          m.insert(pair<string, string>(xmltags::continous_saving,  lexical_cast<string>(cont_sav) ));
+        }
+      }
+
+      m.insert(std::make_pair(xmltags::store_data, lexical_cast<string>( store )));
       continue;
     }
 
@@ -235,57 +262,17 @@ void XMLParser::checkHardwareAttributes(std::map<std::string,std::string>& m)
     cout << "XMLParser: checkHardwareAttributes" << endl;
   #endif
 
-  // FIXME  -- hardcoded strings  --> shifted to HWThread
-
   map<string,string>::iterator it;
   string error;
-  if( (it = m.find("name")) == m.end())
+  if( (it = m.find(xmltags::hardware_name)) == m.end())
   {
-    throw(ticpp::Exception("Error in hardware -- Device name not specified!"));
+    throw(std::invalid_argument("Error in hardware -- Device name not specified!"));
   }
   if(it->second.empty() || it->second == " ")
   {
-    throw(ticpp::Exception("Error in hardware -- Device has to be named!"));
+    throw(std::invalid_argument("Error in hardware -- Device has to be named!"));
   }
 }
-
-//---------------------------------------------------------------------------------------
-
-//void XMLParser::parseFileReader()
-//{
-//
-//  //   ticpp::Iterator<ticpp::Element> elem(server_settings_->FirstChildElement(cst_.ss_ctl_port, true));
-//
-//  parseFileLocation(file_reader_, file_reader_map_);
-//
-//  string speedup = "0";
-//  ticpp::Iterator<ticpp::Element>  child = file_reader_->FirstChildElement(cst_.fr_speedup, false);
-//
-//  if(child != child.end())
-//    speedup = lexical_cast<string>( child->GetText(false) );
-//
-//  file_reader_map_.insert(pair<string, string>(cst_.fr_speedup, speedup));
-//
-//
-//  string stop_end = "1";
-//  child = file_reader_->FirstChildElement(cst_.fr_stop, false);
-//
-//  if(child != child.end())
-//    stop_end = lexical_cast<string>( cst_.equalsYesOrNo(child->GetText(false)) );
-//
-//  file_reader_map_.insert(pair<string, string>(cst_.fr_stop, stop_end));
-//
-//
-//  // parse subject info from file
-//
-//
-//  // parse signal info from file
-//
-//
-////   map<string,string>::iterator it(file_reader_map_.begin());
-////   for( ; it != file_reader_map_.end(); it++)
-////     cout << "First: " << it->first << ";  Second: " << it->second << endl;
-//}
 
 //---------------------------------------------------------------------------------------
 
@@ -294,13 +281,13 @@ void XMLParser::parseFileLocation(ticpp::Iterator<ticpp::Element> elem, map<stri
 
   string filename;
   string filetype;
-  string filepath(cst_.ss_filepath_default);
+  string filepath(xmltags::filepath_default);
   string tmp_filetype;
 
-  ticpp::Iterator<ticpp::Element> child(elem->FirstChildElement(cst_.ss_filename, true));
+  ticpp::Iterator<ticpp::Element> child(elem->FirstChildElement(xmltags::filename, true));
   filename = child->GetText(false);
 
-  child = elem->FirstChildElement(cst_.ss_filepath, false);
+  child = elem->FirstChildElement(xmltags::filepath, false);
   if(child != child.end())
     filepath = child->GetText(false);
 
@@ -309,7 +296,7 @@ void XMLParser::parseFileLocation(ticpp::Iterator<ticpp::Element> elem, map<stri
   if(pos != string::npos)
     tmp_filetype = to_lower_copy(filename.substr(pos + 1, filename.length()-pos ));
 
-  child = elem->FirstChildElement(cst_.ss_filetype, false);
+  child = elem->FirstChildElement(xmltags::filetype, false);
   if(child != child.end())
     filetype = to_lower_copy(child->GetText(false));
 
@@ -320,13 +307,13 @@ void XMLParser::parseFileLocation(ticpp::Iterator<ticpp::Element> elem, map<stri
 
 
   if(filename == "")
-    throw(ticpp::Exception("Error in " + cst_.ss + " -- No filename given!"));
+    throw(ticpp::Exception("Error in " + xmltags::server_settings + " -- No filename given!"));
   if(filetype == "")
-    throw(ticpp::Exception("Error in " + cst_.ss + " -- No filetype given!"));
+    throw(ticpp::Exception("Error in " + xmltags::server_settings + " -- No filetype given!"));
 
-  m.insert(pair<string, string>(cst_.ss_filename, filename));
-  m.insert(pair<string, string>(cst_.ss_filetype, filetype));
-  m.insert(pair<string, string>(cst_.ss_filepath, filepath));
+  m.insert(pair<string, string>(xmltags::filename, filename));
+  m.insert(pair<string, string>(xmltags::filetype, filetype));
+  m.insert(pair<string, string>(xmltags::filepath, filepath));
 }
 
 } // Namespace tobiss

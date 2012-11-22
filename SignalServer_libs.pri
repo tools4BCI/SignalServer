@@ -8,6 +8,7 @@ unix {
         -lboost_system \
         -lboost_filesystem \
         -lboost_program_options\
+        -lboost_chrono\
         -lSDL \
         -lusb-1.0 \
         -lcomedi\
@@ -23,7 +24,7 @@ unix {
                 -Lextern/lib/tobiid/linux/amd64 -ltobiid \
                 -Lextern/lib/libtid/linux/amd64 -ltid
 
-        contains( DEFINES, USE_GDF_SAVER )::LIBS += extern/lib/libgdf/linux/libGDF_64.a
+        LIBS += -Lextern/lib/libgdf/linux/amd64 -lGDF
 
     }else::{
 
@@ -34,7 +35,7 @@ unix {
                 -Lextern/lib/tobiid/linux/x86 -ltobiid \
                 -Lextern/lib/libtid/linux/x86 -ltid
 
-        contains( DEFINES, USE_GDF_SAVER )::LIBS += extern/lib/libgdf/linux/libGDF_32.a
+        LIBS += -Lextern/lib/libgdf/linux/x86 -lGDF
     }
 }
 

@@ -519,17 +519,17 @@ from the BrainAmp Series are supported.
 
           <lowpass_250Hz>
             <ch nr="1" value="on"/>
-            <ch nr="16" value="off"/>
+            <ch nr="4" value="off"/>
           </lowpass_250Hz>
 
           <dc_coupling>
             <ch nr="1" value="on"/>
-            <ch nr="16" value="off"/>
+            <ch nr="3" value="off"/>
           </dc_coupling>
 
           <resolution>
             <ch nr="1" value="100nV"/>
-            <ch nr="16" value="152muV"/>
+            <ch nr="4" value="152muV"/>
           </resolution>
 
         </channel_settings>

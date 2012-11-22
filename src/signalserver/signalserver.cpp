@@ -38,16 +38,19 @@
 #include <boost/filesystem.hpp>
 
 #include "tia/tia_server.h"
+#include "tia/constants.h"
 #include "tia/data_packet_interface.h"
+
 #include "hardware/hw_access.h"
 #include "config/xml_parser.h"
-
+#include "config/xml_tags.h"
 
 #include "tobiid/IDMessage.hpp"
 #include "libtid/tid_server.h"
 
+#include "filewriter/file_writer.h"
 
-//#include "libgdf/GDF/Writer.h"
+
 
 namespace tobiss
 {
@@ -56,12 +59,12 @@ namespace tobiss
 SignalServer::SignalServer(XMLParser& config_parser, bool use_new_tia)
   : hw_access_(0), tia_server_(0), tia_io_service_thread_(0),hw_access_io_service_thread_(0),
     config_parser_(config_parser),
-    stop_reading_(false), write_file_(false),
+    stop_reading_(false),
     master_blocksize_( 0 ),
-    master_samplingrate_( 0 ) ,tid_server_(0)
-    #ifdef USE_GDF_SAVER
-      ,gdf_writer_(0)
-    #endif
+    master_samplingrate_( 0 ),
+    packet_(0), event_source_(0), file_writer_(0), write_file_(false), use_continous_saving_(0),
+    last_block_nr_(0),
+    tid_server_(0)
 {
   #ifdef DEBUG
     std::cout << BOOST_CURRENT_FUNCTION <<  std::endl;
@@ -93,27 +96,55 @@ SignalServer::SignalServer(XMLParser& config_parser, bool use_new_tia)
   packet_->reset();
 
   tid_server_ = new TiD::TiDServer();
-  tid_server_->bind ( boost::lexical_cast<unsigned int>(server_settings_[tia::Constants::ss_tid_port]));
-  tid_server_->reserveNrOfMsgs(1024);
+  tid_server_->bind ( boost::lexical_cast<unsigned int>(server_settings_[xmltags::tid_port]));
+  tid_server_->reserveNrOfMsgs(2048);
   tid_server_->start();
 
+  last_timestamp_ = boost::chrono::high_resolution_clock::now();
+  current_timestamp_ = boost::chrono::high_resolution_clock::now();
 
-  #ifdef USE_GDF_SAVER
-    try
+  if(server_settings_[xmltags::store_data] == "1")
+  {
+    file_writer_ = new FileWriter( server_settings_[xmltags::filetype] );
+
+    if(server_settings_.find(xmltags::filepath) != server_settings_.end())
+      file_writer_->setFilepath( server_settings_[xmltags::filepath] );
+
+    if(server_settings_.find(xmltags::append_to_filename) != server_settings_.end())
+      file_writer_->setNewFileAppendString( server_settings_[xmltags::append_to_filename] );
+
+    if(server_settings_.find(xmltags::file_exists) != server_settings_.end())
     {
-      if(server_settings_[tia::Constants::ss_filetype] == "gdf")
+      if( server_settings_[xmltags::file_exists] == xmltags::file_exists_new_file )
+        file_writer_->setBehaviourIfFileExists( FileWriter::NewFile );
+      else
+        file_writer_->setBehaviourIfFileExists( FileWriter::OverWrite );
+
+    }
+    else
+      file_writer_->setBehaviourIfFileExists( FileWriter::NewFile );
+
+    std::map<uint32_t, std::vector<std::string> >::iterator it(channels_per_sig_type_.begin());
+    tia::Constants cst;
+
+    std::string label;
+    for(uint32_t m = 0 ; it != channels_per_sig_type_.end(); it++, m++)
+      for(uint32_t n = 0; n < it->second.size(); n++)
       {
-        gdf_writer_ = new gdf::Writer();
-        initGdf();
-        write_file_ = true;
+        label = cst.getSignalName(it->first) + ":" + it->second[n];
+        file_writer_->addNewChannel(label, FileWriterDataTypes::FLOAT,
+                                    boost::numeric_cast<double>(sampling_rate_per_sig_type_[m]));
       }
-    }
-    catch( std::exception &e )
+
+    if(server_settings_.find(xmltags::continous_saving) != server_settings_.end())
     {
-      std::cerr << "  -- Caught exception from GDF writer!"  << std::endl;
-      throw;
+      write_file_ = true;
+      use_continous_saving_ = true;
+
+      file_writer_->setFilename( server_settings_[xmltags::filename] );
+      file_writer_->open();
     }
-  #endif
+  }
 
   hw_access_->startDataAcquisition();
   hw_access_io_service_thread_ = new boost::thread(boost::bind(&boost::asio::io_service::run,
@@ -121,13 +152,13 @@ SignalServer::SignalServer(XMLParser& config_parser, bool use_new_tia)
   tia_io_service_thread_ = new boost::thread(boost::bind(&boost::asio::io_service::run,
                                                                &tia_io_service_));
 
-#ifdef WIN32
-  SetPriorityClass(tia_io_service_thread_->native_handle(), REALTIME_PRIORITY_CLASS);
-  SetThreadPriority(tia_io_service_thread_->native_handle(), THREAD_PRIORITY_TIME_CRITICAL );
+  #ifdef WIN32
+    SetPriorityClass(tia_io_service_thread_->native_handle(), REALTIME_PRIORITY_CLASS);
+    SetThreadPriority(tia_io_service_thread_->native_handle(), THREAD_PRIORITY_TIME_CRITICAL );
 
-  SetPriorityClass(hw_access_io_service_thread_->native_handle(), REALTIME_PRIORITY_CLASS);
-  SetThreadPriority(hw_access_io_service_thread_->native_handle(), THREAD_PRIORITY_TIME_CRITICAL );
-#endif
+    SetPriorityClass(hw_access_io_service_thread_->native_handle(), REALTIME_PRIORITY_CLASS);
+    SetThreadPriority(hw_access_io_service_thread_->native_handle(), THREAD_PRIORITY_TIME_CRITICAL );
+  #endif
 }
 
 //-----------------------------------------------------------------------------
@@ -137,7 +168,7 @@ SignalServer::~SignalServer()
   #ifdef DEBUG
     std::cout << BOOST_CURRENT_FUNCTION <<  std::endl;
   #endif
-    
+
   if( !stop_reading_ )
     stop();
 
@@ -147,25 +178,16 @@ SignalServer::~SignalServer()
   if(tia_server_)
     delete(tia_server_);
 
-
   if(hw_access_io_service_thread_)
     delete(hw_access_io_service_thread_);
 
   if(hw_access_)
     delete(hw_access_);
 
-
   if(tid_server_)
     delete(tid_server_);
-
-
-  #ifdef USE_GDF_SAVER
-    if(gdf_writer_)
-    {
-      gdf_writer_->close();
-      delete gdf_writer_;
-    }
-  #endif
+  if(file_writer_)
+    delete file_writer_;
 }
 
 //-----------------------------------------------------------------------------
@@ -189,6 +211,9 @@ void SignalServer::stop()
   tid_server_->stop();
 
   hw_access_->stopDataAcquisition();
+  write_file_ = 0;
+  if(file_writer_)
+    file_writer_->close();
 }
 
 //-----------------------------------------------------------------------------
@@ -199,28 +224,185 @@ void SignalServer::readPackets()
     std::cout << BOOST_CURRENT_FUNCTION <<  std::endl;
   #endif
 
-  boost::uint64_t sample_count = 0;
-
   std::vector<IDMessage> msgs;
   msgs.reserve(100);
 
   while (!stop_reading_)
   {
-    sample_count += master_blocksize_;
-       
+    last_timestamp_ = current_timestamp_;
     hw_access_->fillDataPacket(packet_);
+    current_timestamp_ = boost::chrono::high_resolution_clock::now();
+
     tid_server_->update(packet_->getTimestamp(),packet_->getPacketID());
+
     tia_server_->sendDataPacket();
 
     if(tid_server_->newMessagesAvailable())
-    {
       tid_server_->getLastMessages(msgs);
-      msgs.clear();
-    }
+
+
+    if(file_writer_)
+      storeData(packet_, &msgs);
+
+    msgs.clear();
   }
 }
 
 //-----------------------------------------------------------------------------
+
+std::vector<std::string> SignalServer::getPossibleHardwareNames()
+{
+  #ifdef DEBUG
+    std::cout << BOOST_CURRENT_FUNCTION << std::endl;
+  #endif
+
+  return(HWAccess::getPossibleHardwareNames());
+}
+
+//---------------------------------------------------------------------------------------------
+
+void SignalServer::storeData(tia::DataPacket* packet, std::vector<IDMessage>* msgs)
+{
+  #ifdef DEBUG
+    std::cout << BOOST_CURRENT_FUNCTION << std::endl;
+  #endif
+
+  if(!use_continous_saving_)
+    processStoreFileTiDMsgs(msgs);
+
+  if(write_file_)
+  {
+    uint32_t nr_values = 0;
+    uint32_t nr_blocks = 0;
+    uint32_t nr_channels = 0;
+    std::vector<double> v;
+    uint32_t ch_start = 0;
+
+    for(std::map<uint32_t, std::vector<std::string> >::iterator it(channels_per_sig_type_.begin());
+      it != channels_per_sig_type_.end();  it++)
+    {
+      try
+      {
+        v = packet_->getSingleDataBlock(it->first);
+        nr_values = packet_->getNrOfSamples(it->first);
+        nr_channels = packet_->getNrOfChannels(it->first);
+        nr_blocks = nr_values/nr_channels;
+
+        for(uint32_t n = 0; n < nr_values/nr_blocks; n++)
+          for(uint32_t m = 0; m < nr_blocks; m++)
+            file_writer_->addSample<double>(ch_start + n, v[ (n*nr_blocks) + m]);
+
+      }
+      catch( std::exception& e )
+      {
+        std::cerr << "  Caught exception from File writer: " << e.what() << std::endl;
+        //        throw;
+        write_file_ = 0;
+        file_writer_->close();
+      }
+      ch_start += it->second.size();
+    }
+
+    last_block_nr_ += master_blocksize_;
+
+    std::vector<IDMessage> messages(*msgs);
+    for(unsigned int n = 0; n < messages.size(); n++)
+    {
+      if(messages[n].GetFamilyType() == IDMessage::FamilyBiosig)
+      {
+
+        IDMessage* cur_msg = &(messages[n]);
+
+        if(cur_msg->GetBlockIdx() != IDMessage::BlockIdxUnset)
+          file_writer_->addEvent(cur_msg->GetBlockIdx()*master_blocksize_, cur_msg->GetEvent() );
+        else
+        {
+          TCTimestamp ts(cur_msg->absolute);
+          boost::chrono::high_resolution_clock::time_point msg_time(
+                boost::chrono::seconds(ts.timestamp.tv_sec) +
+                boost::chrono::microseconds(ts.timestamp.tv_usec) );
+
+          boost::chrono::duration<double> diff = current_timestamp_ - last_timestamp_;
+          boost::chrono::duration<double> sample_time = diff/double(master_blocksize_);
+
+          boost::chrono::duration<double> ev_diff = current_timestamp_ - msg_time;
+          boost::chrono::duration<double> shift_tmp = ev_diff/sample_time.count();
+
+          unsigned int shift = round(shift_tmp.count());
+
+
+          file_writer_->addEvent(last_block_nr_ - shift, cur_msg->GetEvent() );
+        }
+      }
+    }
+  }
+}
+
+//---------------------------------------------------------------------------------------------
+
+void SignalServer::processStoreFileTiDMsgs(std::vector<IDMessage>* msgs)
+{
+
+  std::vector<IDMessage> messages(*msgs);
+  IDMessage msg;
+
+  for(std::vector<IDMessage>::iterator it(messages.begin()); it != messages.end(); it++ )
+  {
+    msg = *it;
+    //std::cout << " -->  " << msg.GetDescription() << "; " << msg.GetFamily() << " : " << msg.GetFamilyType() << std::endl << std::flush;
+
+    if( (msg.GetFamilyType() == IDMessage::FamilyCustom) && (msg.GetDescription() == "StopRecording") )
+    {
+      //std::cerr << "  *** StopRecMsg received!" << std::endl << std::flush;
+
+      if(!file_writer_->isopen())
+        std::cerr << "  *** Error: StopRecording Event received  --  not recording right now!" << std::endl;
+      else
+      {
+        write_file_ = false;
+        file_writer_->close();
+      }
+    }
+
+    if( (msg.GetFamilyType() == IDMessage::FamilyCustom) && (msg.GetDescription() == "StartRecording") )
+    {
+      //std::cerr << "  ***  StartRecMsg received!" << std::endl << std::flush;
+
+      if(file_writer_->isopen())
+        std::cerr << "  *** Error: StartRecording Event received  --  already recording right now!" << std::endl;
+      else
+      {
+        try
+        {
+          file_writer_->setFilename( server_settings_[xmltags::filename] );
+          file_writer_->open();
+          write_file_ = true;
+          last_block_nr_ = 0;
+        }
+        catch( std::exception& e )
+        {
+          std::cerr << "  Error during opening -- caught exception from File writer: " << e.what() << std::endl;
+          write_file_ = 0;
+          file_writer_->close();
+        }
+      }
+    }
+  }
+}
+
+//---------------------------------------------------------------------------------------------
+
+//---------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+#ifdef OBSOLOLETE_CODE
 
 void SignalServer::fustyReadPackets()
 {
@@ -244,12 +426,12 @@ void SignalServer::fustyReadPackets()
     hw_access_->fillDataPacket(packet_);
     tia_server_->sendDataPacket();
 
-    #ifdef USE_TID_SERVER
+//    #ifdef USE_TID_SERVER
     if(tid_server_->newMessagesAvailable())
       tid_server_->getLastMessages(msgs);
-    #endif
+//    #endif
 
-    #ifdef USE_GDF_SAVER
+//    #ifdef USE_GDF_SAVER
     if(write_file_)
     {
       uint32_t nr_values = 0;
@@ -282,7 +464,7 @@ void SignalServer::fustyReadPackets()
         ch_start += it->second.size();
       }
 
-      #ifdef USE_TID_SERVER
+//      #ifdef USE_TID_SERVER
       for(unsigned int n = 0; n < msgs.size(); n++)
       {
         if(msgs[n].GetFamilyType() == IDMessage::FamilyBiosig)
@@ -322,20 +504,20 @@ void SignalServer::fustyReadPackets()
           events_file << "0" << std::endl;
         }
       }
-      #endif
+//      #endif
     }
-    #endif
+//    #endif
 
-    #ifdef USE_TID_SERVER
+//    #ifdef USE_TID_SERVER
       if(msgs.size())
         msgs.clear();
-    #endif
+//    #endif
   }
 
-  #ifdef USE_TID_SERVER
+//  #ifdef USE_TID_SERVER
     if(!events_file.is_open())
       events_file.close();
-  #endif
+//  #endif
 
 }
 
@@ -344,8 +526,6 @@ void SignalServer::fustyReadPackets()
 void SignalServer::initGdf()
 {
   std::map<uint32_t, std::vector<std::string> >::iterator it(channels_per_sig_type_.begin());
-
-  tia::Constants cst;
 
   for(uint32_t m = 0 ; it != channels_per_sig_type_.end(); it++, m++)
   {
@@ -391,16 +571,7 @@ void SignalServer::initGdf()
 }
 #endif
 
-//-----------------------------------------------------------------------------
-
-std::vector<std::string> SignalServer::getPossibleHardwareNames()
-{
-  #ifdef DEBUG
-    std::cout << "SignalServer: getPossibleHardwareNames" << std::endl;
-  #endif
-
-  return(HWAccess::getPossibleHardwareNames());
-}
+#endif
 
 //-----------------------------------------------------------------------------
 
