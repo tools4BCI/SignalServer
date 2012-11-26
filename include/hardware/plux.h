@@ -39,9 +39,9 @@
 #ifndef PLUX_H
 #define PLUX_H
 
-#ifdef _WIN64 || __GNUC__
+#ifdef __GNUC__
   #define DISABLE_PLUX_COMPILE
-  #define DISABLE_PLUX_REASON "The BioPlux API is only available for 32 bit Windows."
+  #define DISABLE_PLUX_REASON "The BioPlux API is only available for MS Windows."
 #endif
 
 #include "hw_thread.h"

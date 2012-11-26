@@ -164,7 +164,7 @@
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>GDF.lib;SDL.lib;libusb0.lib;tobiid.lib;tobicore.lib;libtid.lib;tiad.lib;libticppd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GDF.lib;SDL.lib;libusb0.lib;tobiid.lib;tobicore.lib;libtid.lib;tiad.lib;libticppd.lib;BioPlux.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(SolutionDir)extern\lib\ticpp\win\$(Platform);$(SolutionDir)extern\lib\tia\win\$(Platform);$(SolutionDir)extern\lib\sdl\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\libusb\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\tobicore\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\tobiid\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\libtid\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\plux\win\$(Platform);$(SolutionDir)extern\lib\libgdf\win\$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -271,7 +271,7 @@
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>GDF.lib;SDL.lib;libusb0.lib;tobiid.lib;tobicore.lib;libtid.lib;tia.lib;libticpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GDF.lib;SDL.lib;libusb0.lib;tobiid.lib;tobicore.lib;libtid.lib;tia.lib;libticpp.lib;BioPlux.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(SolutionDir)extern\lib\ticpp\win\$(Platform);$(SolutionDir)extern\lib\tia\win\$(Platform);$(SolutionDir)extern\lib\sdl\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\libusb\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\tobicore\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\tobiid\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\libtid\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\plux\win\$(Platform);$(SolutionDir)extern\lib\libgdf\win\$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
