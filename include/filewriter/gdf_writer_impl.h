@@ -30,8 +30,8 @@ class GdfWriterImpl : public FileWriterImplBase
 
     virtual size_t addNewChannel(std::string label, FileWriterDataTypes::ChannelDataType type,
                                  double sampling_rate,
-                                 double dig_min = NAN, double dig_max = NAN,
-                                 double phys_min = NAN, double phys_max = NAN);
+                                 double dig_min = std::numeric_limits<double>::quiet_NaN(), double dig_max = std::numeric_limits<double>::quiet_NaN(),
+                                 double phys_min = std::numeric_limits<double>::quiet_NaN(), double phys_max = std::numeric_limits<double>::quiet_NaN());
 
     // single samples
     virtual void addSample(const size_t channel_idx, const float value);

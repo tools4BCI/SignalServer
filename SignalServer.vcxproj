@@ -289,6 +289,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\filewriter\file_writer.cpp" />
+    <ClCompile Include="src\filewriter\file_writer_impl_base.cpp" />
+    <ClCompile Include="src\filewriter\gdf_writer_impl.cpp" />
     <ClCompile Include="src\hardware\brainampseries.cpp" />
     <ClCompile Include="src\hardware\dataq.cpp" />
     <ClCompile Include="src\hardware\eeg_sim_msg_parser.cpp" />
@@ -317,6 +320,11 @@
     <ClCompile Include="src\signalserver\signalserver.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\config\xml_tags.h" />
+    <ClInclude Include="include\filewriter\file_writer.h" />
+    <ClInclude Include="include\filewriter\file_writer_data_types.h" />
+    <ClInclude Include="include\filewriter\file_writer_impl_base.h" />
+    <ClInclude Include="include\filewriter\gdf_writer_impl.h" />
     <ClInclude Include="include\hardware\artificial_signal_source.h" />
     <ClInclude Include="include\hardware\brainampseries.h" />
     <ClInclude Include="include\hardware\dataq.h" />

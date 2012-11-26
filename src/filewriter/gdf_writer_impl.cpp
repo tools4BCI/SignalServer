@@ -3,6 +3,7 @@
 #include "extern/include/libgdf/GDF/Writer.h"
 
 #include <boost/current_function.hpp>
+#include <boost/math/special_functions.hpp>
 #include <iostream>
 #include <algorithm>
 #include <utility>
@@ -179,7 +180,8 @@ size_t GdfWriterImpl::addNewChannel(std::string label, FileWriterDataTypes::Chan
   }
   else
   {
-    if( isnan(dig_min) || isnan(dig_max) || isnan(phys_min) || isnan(phys_max) )
+    if( boost::math::isnan(dig_min)  || boost::math::isnan(dig_max) ||
+        boost::math::isnan(phys_min) || boost::math::isnan(phys_max) )
       throw(std::invalid_argument( std::string(BOOST_CURRENT_FUNCTION) + " -- Error: digital or physical min/max is not correctly set!" ));
 
     gdf_writer_->getSignalHeader(idx).set_digmin( dig_min );
