@@ -34,8 +34,10 @@
 #include "signalserver/signalserver.h"
 
 #include <fstream>
+
 #include <boost/date_time.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/math/special_functions.hpp>
 
 #include "tia/tia_server.h"
 #include "tia/constants.h"
@@ -269,7 +271,7 @@ void SignalServer::storeData(tia::DataPacket* packet, std::vector<IDMessage>* ms
 
   if(!use_continous_saving_)
     processStoreFileTiDMsgs(msgs);
-
+  
   if(write_file_)
   {
     uint32_t nr_values = 0;
@@ -328,7 +330,7 @@ void SignalServer::storeData(tia::DataPacket* packet, std::vector<IDMessage>* ms
           boost::chrono::duration<double> ev_diff = current_timestamp_ - msg_time;
           boost::chrono::duration<double> shift_tmp = ev_diff/sample_time.count();
 
-          unsigned int shift = round(shift_tmp.count());
+          unsigned int shift = boost::numeric_cast<unsigned int>( boost::math::round(shift_tmp.count()) );
 
 
           file_writer_->addEvent(last_block_nr_ - shift, cur_msg->GetEvent() );

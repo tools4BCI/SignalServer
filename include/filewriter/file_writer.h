@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <limits>
 #include <cmath>
 
 #include <boost/cstdint.hpp>
@@ -42,8 +43,8 @@ class FileWriter
 
     size_t addNewChannel(std::string label, FileWriterDataTypes::ChannelDataType type,
                          double sampling_rate,
-                         double dig_min = NAN, double dig_max = NAN,
-                         double phys_min = NAN, double phys_max = NAN);
+                         double dig_min = std::numeric_limits<double>::quiet_NaN(), double dig_max = std::numeric_limits<double>::quiet_NaN(),
+                         double phys_min = std::numeric_limits<double>::quiet_NaN(), double phys_max = std::numeric_limits<double>::quiet_NaN());
 
     template<typename T> void addSample(const size_t channel_idx, const T value);
     template<typename T> void addSamples(const size_t channel_idx, const std::vector<T> values);
