@@ -88,6 +88,9 @@ Plux::Plux(ticpp::Iterator<ticpp::Element> hw)
 #ifdef DISABLE_PLUX_COMPILE
     throw std::runtime_error( std::string("BioPlux support is disabled in this build of SignalServer: ") + DISABLE_PLUX_REASON );
 #else
+  #ifdef DEBUG
+    cout << "Plux: Creating Device..." << endl;
+  #endif
     device_ = BP::Device::Create( devstr_ );
 #endif
 
@@ -101,6 +104,9 @@ Plux::Plux(ticpp::Iterator<ticpp::Element> hw)
 
   if( !device_ )
     throw std::runtime_error( "Error during BioPlux Device Initialization." );
+  #ifdef DEBUG
+    cout << "Plux: Device successfully created." << endl;
+  #endif
 
   // Set statistics output interval, or disable the output.
   it = m_.find( "statoutput" );
@@ -118,6 +124,10 @@ Plux::Plux(ticpp::Iterator<ticpp::Element> hw)
   cout << endl;
   cout << " BioPlux Device: ";
   cout << devstr_ << " - " << devinfo_ << endl;
+
+  #ifdef DEBUG
+    cout << "Plux: Leaving Constructor." << endl;
+  #endif
 }
 
 //-----------------------------------------------------------------------------
