@@ -64,7 +64,7 @@ SignalServer::SignalServer(XMLParser& config_parser, bool use_new_tia)
     stop_reading_(false),
     master_blocksize_( 0 ),
     master_samplingrate_( 0 ),
-    packet_(0), event_source_(0), file_writer_(0), write_file_(false), use_continous_saving_(0),
+    packet_(0), event_source_(0), file_writer_(0), write_file_(false), use_continous_saving_(false),
     last_block_nr_(0),
     tid_server_(0)
 {
@@ -102,8 +102,8 @@ SignalServer::SignalServer(XMLParser& config_parser, bool use_new_tia)
   tid_server_->reserveNrOfMsgs(2048);
   tid_server_->start();
 
-  last_timestamp_ = boost::chrono::high_resolution_clock::now();
-  current_timestamp_ = boost::chrono::high_resolution_clock::now();
+  last_timestamp_ = boost::chrono::system_clock::now();
+  current_timestamp_ = boost::chrono::system_clock::now();
 
   if(server_settings_[xmltags::store_data] == "1")
   {
@@ -140,11 +140,14 @@ SignalServer::SignalServer(XMLParser& config_parser, bool use_new_tia)
 
     if(server_settings_.find(xmltags::continous_saving) != server_settings_.end())
     {
-      write_file_ = true;
-      use_continous_saving_ = true;
+      if( server_settings_[xmltags::continous_saving] == "1" )
+      {
+          write_file_ = true;
+          use_continous_saving_ = true;
 
-      file_writer_->setFilename( server_settings_[xmltags::filename] );
-      file_writer_->open();
+          file_writer_->setFilename( server_settings_[xmltags::filename] );
+          file_writer_->open();
+      }
     }
   }
 
@@ -233,7 +236,7 @@ void SignalServer::readPackets()
   {
     last_timestamp_ = current_timestamp_;
     hw_access_->fillDataPacket(packet_);
-    current_timestamp_ = boost::chrono::high_resolution_clock::now();
+    current_timestamp_ = boost::chrono::system_clock::now();
 
     tid_server_->update(packet_->getTimestamp(),packet_->getPacketID());
 
@@ -271,7 +274,7 @@ void SignalServer::storeData(tia::DataPacket* packet, std::vector<IDMessage>* ms
 
   if(!use_continous_saving_)
     processStoreFileTiDMsgs(msgs);
-  
+
   if(write_file_)
   {
     uint32_t nr_values = 0;
@@ -320,20 +323,31 @@ void SignalServer::storeData(tia::DataPacket* packet, std::vector<IDMessage>* ms
         else
         {
           TCTimestamp ts(cur_msg->absolute);
-          boost::chrono::high_resolution_clock::time_point msg_time(
+          boost::chrono::system_clock::time_point msg_time(
                 boost::chrono::seconds(ts.timestamp.tv_sec) +
                 boost::chrono::microseconds(ts.timestamp.tv_usec) );
 
           boost::chrono::duration<double> diff = current_timestamp_ - last_timestamp_;
           boost::chrono::duration<double> sample_time = diff/double(master_blocksize_);
 
+
+
           boost::chrono::duration<double> ev_diff = current_timestamp_ - msg_time;
           boost::chrono::duration<double> shift_tmp = ev_diff/sample_time.count();
 
-          unsigned int shift = boost::numeric_cast<unsigned int>( boost::math::round(shift_tmp.count()) );
+          //           std::cout << msg_time << "; "<< std::endl << std::flush;
+          //           std::cout << current_timestamp_ << "; "<< std::endl << std::flush;
+          //           std::cout << diff << "; "<< std::endl << std::flush;
+          //           std::cout << sample_time << "; "<< std::endl << std::flush;
+          //           std::cout << ev_diff << "; "<< std::endl << std::flush;
+          //           std::cout << shift_tmp << "; "<< std::endl << std::flush;
+          //           std::cout << boost::math::round(shift_tmp.count())<< std::endl << std::flush;
+          //           std::cout << std::endl << std::flush;
 
+          int shift = boost::numeric_cast<int>( boost::math::round(shift_tmp.count()) );
 
           file_writer_->addEvent(last_block_nr_ - shift, cur_msg->GetEvent() );
+          // file_writer_->addEvent(last_block_nr_, cur_msg->GetEvent() );
         }
       }
     }

@@ -105,8 +105,8 @@ class SignalServer
     bool                                write_file_;
     bool                                use_continous_saving_;
 
-    boost::chrono::high_resolution_clock::time_point  current_timestamp_;
-    boost::chrono::high_resolution_clock::time_point  last_timestamp_;
+    boost::chrono::system_clock::time_point  current_timestamp_;
+    boost::chrono::system_clock::time_point  last_timestamp_;
 
     boost::uint64_t                                   last_block_nr_;
 

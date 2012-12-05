@@ -476,7 +476,7 @@ void GdfWriterImpl::addEvent(const size_t position, const double type)
 
   try
   {
-    gdf::int16 type_tmp = boost::numeric_cast<gdf::int16>(type);
+    gdf::uint16 type_tmp = boost::numeric_cast<gdf::uint16>(type);
     gdf_writer_->addEvent(position, type_tmp);
   }
   catch(boost::numeric::bad_numeric_cast& e)
@@ -495,7 +495,7 @@ void GdfWriterImpl::addEvent(const size_t position, const int type)
 
   try
   {
-    gdf::int16 type_tmp = boost::numeric_cast<gdf::int16>(type);
+    gdf::uint16 type_tmp = boost::numeric_cast<gdf::uint16>(type);
     gdf_writer_->addEvent(position, type_tmp);
   }
   catch(boost::numeric::bad_numeric_cast& e)
@@ -514,7 +514,7 @@ void GdfWriterImpl::addEvent(const size_t position, const unsigned int type)
 
   try
   {
-    gdf::int16 type_tmp = boost::numeric_cast<gdf::int16>(type);
+    gdf::uint16 type_tmp = boost::numeric_cast<gdf::uint16>(type);
     gdf_writer_->addEvent(position, type_tmp);
   }
   catch(boost::numeric::bad_numeric_cast& e)
