@@ -52,10 +52,11 @@
 
 #include "filewriter/file_writer.h"
 
-
+#include <sys/timeb.h>
 
 namespace tobiss
 {
+
 //-----------------------------------------------------------------------------
 
 SignalServer::SignalServer(XMLParser& config_parser, bool use_new_tia)
@@ -69,12 +70,11 @@ SignalServer::SignalServer(XMLParser& config_parser, bool use_new_tia)
     tid_server_(0)
 {
   #ifdef DEBUG
-    std::cout << BOOST_CURRENT_FUNCTION <<  std::endl;
+    std::cout << BOOST_CURRENT_FUNCTION << std::endl << std::flush;
   #endif
 
   tia_server_ = new tia::TiAServer(tia_io_service_, use_new_tia);
   hw_access_ = new HWAccess(hw_access_io_service_, config_parser_);
-
   master_blocksize_ =  hw_access_->getMastersBlocksize();
   master_samplingrate_ = hw_access_->getMastersSamplingRate();
 
@@ -97,13 +97,38 @@ SignalServer::SignalServer(XMLParser& config_parser, bool use_new_tia)
   packet_ = tia_server_->getEmptyDataPacket();
   packet_->reset();
 
-  tid_server_ = new TiD::TiDServer();
-  tid_server_->bind ( boost::lexical_cast<unsigned int>(server_settings_[xmltags::tid_port]));
-  tid_server_->reserveNrOfMsgs(2048);
-  tid_server_->start();
+  if(server_settings_.find(xmltags::tid_use) != server_settings_.end())
+  {
+    if( config_parser.equalsYesOrNo( server_settings_[xmltags::tid_use]))
+    {
+      tid_server_ = new TiD::TiDServer();
+      unsigned int port = boost::lexical_cast<unsigned int>(server_settings_[xmltags::tid_port]);
+      tid_server_->bind ( port );
+      tid_server_->reserveNrOfMsgs(2048);
 
-  last_timestamp_ = boost::chrono::system_clock::now();
-  current_timestamp_ = boost::chrono::system_clock::now();
+      bool zero_delay = false;
+      if(server_settings_.find(xmltags::tid_assume_zero_network_delay) != server_settings_.end())
+        zero_delay = config_parser.equalsYesOrNo( server_settings_[xmltags::tid_assume_zero_network_delay]);
+
+      tid_server_->assumeZeroNetworkDelay( zero_delay );
+      tid_server_->start();
+
+      std::cout << std::endl << " * TiD Server successfully listening on port " << port;
+      if(zero_delay)
+        std::cout << "  --  NOTICE: Assuming zero network delay! ";
+      std::cout << std::endl;
+    }
+  }
+  else
+    tid_server_ = 0;
+
+  timeval tv;
+  gettimeofday(&tv, NULL);
+
+  last_timestamp_ = boost::chrono::system_clock::time_point(
+                      boost::chrono::seconds(tv.tv_sec) + boost::chrono::microseconds(tv.tv_usec) );
+
+  current_timestamp_ = last_timestamp_;
 
   if(server_settings_[xmltags::store_data] == "1")
   {
@@ -149,6 +174,9 @@ SignalServer::SignalServer(XMLParser& config_parser, bool use_new_tia)
           file_writer_->open();
       }
     }
+
+    std::cout << std::endl << " * Storing data " << std::endl;
+
   }
 
   hw_access_->startDataAcquisition();
@@ -213,7 +241,8 @@ void SignalServer::stop()
   tia_io_service_thread_->interrupt();
   tia_io_service_thread_->join();
 
-  tid_server_->stop();
+  if(tid_server_)
+    tid_server_->stop();
 
   hw_access_->stopDataAcquisition();
   write_file_ = 0;
@@ -236,15 +265,23 @@ void SignalServer::readPackets()
   {
     last_timestamp_ = current_timestamp_;
     hw_access_->fillDataPacket(packet_);
-    current_timestamp_ = boost::chrono::system_clock::now();
 
-    tid_server_->update(packet_->getTimestamp(),packet_->getPacketID());
+    timeval tv;
+    gettimeofday(&tv, NULL);
+    current_timestamp_ = boost::chrono::system_clock::time_point(
+                          boost::chrono::seconds(tv.tv_sec) + boost::chrono::microseconds(tv.tv_usec) );
 
-    tia_server_->sendDataPacket();
+    //current_timestamp_ = boost::chrono::system_clock::now();
 
-    if(tid_server_->newMessagesAvailable())
-      tid_server_->getLastMessages(msgs);
+    if(tid_server_)
+    {
+      tid_server_->update(packet_->getTimestamp(),packet_->getPacketID());
 
+      tia_server_->sendDataPacket();
+
+      if(tid_server_->newMessagesAvailable())
+        tid_server_->getLastMessages(msgs);
+    }
 
     if(file_writer_)
       storeData(packet_, &msgs);
@@ -288,9 +325,9 @@ void SignalServer::storeData(tia::DataPacket* packet, std::vector<IDMessage>* ms
     {
       try
       {
-        v = packet_->getSingleDataBlock(it->first);
-        nr_values = packet_->getNrOfSamples(it->first);
-        nr_channels = packet_->getNrOfChannels(it->first);
+        v = packet->getSingleDataBlock(it->first);
+        nr_values = packet->getNrOfSamples(it->first);
+        nr_channels = packet->getNrOfChannels(it->first);
         nr_blocks = nr_values/nr_channels;
 
         for(uint32_t n = 0; n < nr_values/nr_blocks; n++)
@@ -330,19 +367,20 @@ void SignalServer::storeData(tia::DataPacket* packet, std::vector<IDMessage>* ms
           boost::chrono::duration<double> diff = current_timestamp_ - last_timestamp_;
           boost::chrono::duration<double> sample_time = diff/double(master_blocksize_);
 
-
-
           boost::chrono::duration<double> ev_diff = current_timestamp_ - msg_time;
           boost::chrono::duration<double> shift_tmp = ev_diff/sample_time.count();
 
-          //           std::cout << msg_time << "; "<< std::endl << std::flush;
-          //           std::cout << current_timestamp_ << "; "<< std::endl << std::flush;
-          //           std::cout << diff << "; "<< std::endl << std::flush;
-          //           std::cout << sample_time << "; "<< std::endl << std::flush;
-          //           std::cout << ev_diff << "; "<< std::endl << std::flush;
-          //           std::cout << shift_tmp << "; "<< std::endl << std::flush;
-          //           std::cout << boost::math::round(shift_tmp.count())<< std::endl << std::flush;
-          //           std::cout << std::endl << std::flush;
+          //std::cout << ts.timestamp.tv_sec << std::endl << std::flush;
+          //std::cout << ts.timestamp.tv_usec << std::endl << std::flush;
+          //std::cout << msg_time << "; "<< std::endl << std::flush;
+          //std::cout << current_timestamp_ << "; "<< std::endl << std::flush;
+          //std::cout << diff << "; "<< std::endl << std::flush;
+          //std::cout << sample_time << "; "<< std::endl << std::flush;
+          //std::cout << ev_diff << "; "<< std::endl << std::flush;
+          //std::cout << shift_tmp << "; "<< std::endl << std::flush;
+          //std::cout << boost::math::round(shift_tmp.count())<< std::endl << std::flush;
+          //std::cout << "------" << std::endl << std::flush;
+          //std::cout << std::endl << std::flush;
 
           int shift = boost::numeric_cast<int>( boost::math::round(shift_tmp.count()) );
 

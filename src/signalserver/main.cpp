@@ -107,15 +107,14 @@ int main(int argc, const char* argv[])
            std::cout << std::endl;
            std::cout << "   ***  WARNING: Filesaving set to OVERWRITE!" << std::endl;
            std::cout << "     -- Do you want to proceed? [y/N]" << std::endl;
-
-           char c;
+           char c = 0;
            while(cin.get(c) )
            {
              if(c == 'y' )
                break;
              else
              {
-               cout << endl << "     ... Aborting" << std::endl;
+               cout << endl << "     ... Aborting" << std::endl << std::flush;
                return -1;
              }
            }
@@ -123,7 +122,6 @@ int main(int argc, const char* argv[])
 
       tobiss::SignalServer sig_server(config, use_new_tia);
       boost::thread* sig_server_ptr = 0;
-
       sig_server_ptr = new boost::thread(boost::bind(&SignalServer::readPackets, &sig_server));
 
       #ifdef WIN32

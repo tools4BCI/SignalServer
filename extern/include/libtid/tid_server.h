@@ -59,6 +59,8 @@ class TiDServer : public TCPServer
     void stop();
     void update(boost::uint64_t rel_timestamp, boost::uint64_t packet_nr);
 
+    void assumeZeroNetworkDelay(bool val);
+
   protected:
     /**
      * @brief Handles a new client connection
@@ -87,6 +89,8 @@ class TiDServer : public TCPServer
     boost::uint64_t             current_rel_timestamp_;
     boost::uint64_t             current_packet_nr_;
     TCTimeval                   current_timeval_;
+
+    bool                        assume_zero_network_delay_;
 };
 
 } // Namespace TiD

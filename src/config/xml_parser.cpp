@@ -184,18 +184,20 @@ map<string,string> XMLParser::parseServerSettings()
   elem = server_settings_->FirstChildElement(xmltags::udp_port, true);
   m.insert(pair<string, string>(elem->Value(), elem->GetText(false)));
 
-  elem = server_settings_->FirstChildElement( xmltags::tid_port, true);
-  m.insert(pair<string, string>(elem->Value(), elem->GetText(false)));
+  //elem = server_settings_->FirstChildElement( xmltags::tid_port, true);
+  //m.insert(pair<string, string>(elem->Value(), elem->GetText(false)));
+
+
 
 
   for(elem = server_settings_->FirstChildElement(true) ; elem != elem.end(); elem++)
   {
     string tmp(elem->Value());
-    if(tmp == xmltags::ctl_port || tmp == xmltags::udp_bc_addr || tmp == xmltags::udp_port
-       || tmp == xmltags::tid_port)
+    if(tmp == xmltags::ctl_port || tmp == xmltags::udp_bc_addr || tmp == xmltags::udp_port)
       continue;
 
     //  Store data
+    /// TODO: Write seperate function for filesaving
     if(tmp == xmltags::store_data)
     {
       ticpp::Iterator< ticpp::Attribute > attribute;
@@ -242,6 +244,16 @@ map<string,string> XMLParser::parseServerSettings()
       m.insert(std::make_pair(xmltags::store_data, lexical_cast<string>( store )));
       continue;
     }
+
+    if(tmp == xmltags::tid_server)
+    {
+      ticpp::Iterator< ticpp::Attribute > attribute;
+      attribute = attribute.begin(elem.Get());
+      for(attribute = attribute.begin(elem.Get()); attribute != attribute.end();
+          attribute++)
+        m.insert(pair<string, string>(attribute->Name(), attribute->Value()));
+    }
+
 
     if(elem->GetText(false) != "")
       m.insert(pair<string, string>(elem->Value(), elem->GetText(false)));

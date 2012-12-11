@@ -169,6 +169,9 @@ class XMLParser
     //    { return(file_reader_map_); }
 
 
+
+    bool equalsYesOrNo(const std::string& s);
+
 //-----------------------------------------------
 
   private:
@@ -189,8 +192,6 @@ class XMLParser
 
       return true;
     }
-
-    bool equalsYesOrNo(const std::string& s);
 
     /**
     * @brief Parse filename, path, and extension

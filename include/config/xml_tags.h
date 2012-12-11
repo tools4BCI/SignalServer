@@ -54,10 +54,15 @@ namespace xmltags
 {
 static const std::string sigserver_config("tobi-config");
 static const std::string server_settings("server_settings");
-static const std::string tid_port("tid_port");
+
 static const std::string ctl_port("ctl_port");
 static const std::string udp_bc_addr("udp_bc_addr");
 static const std::string udp_port("udp_port");
+
+static const std::string tid_server("tid_server");
+static const std::string tid_use("tid_use");
+static const std::string tid_port("tid_port");
+static const std::string tid_assume_zero_network_delay("assume_zero_network_delay");
 
 static const std::string subject = "subject";
 static const std::string subject_id = "id";
