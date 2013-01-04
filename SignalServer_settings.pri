@@ -28,11 +28,16 @@ INCLUDEPATH += . \
     extern/include/LptTools \
     extern/include/libgdf
 
+
 DEPENDPATH += $$INCLUDEPATH
 INCLUDEPATH += extern/include\
                extern/include/TiDlib
 
 win32:INCLUDEPATH += extern/include/SDL-1.2.14-VC8
+
+unix {
+     QMAKE_CXXFLAGS += $$system(pkg-config libusb-1.0 --cflags)
+}
 
 #unix {
 #    QMAKE_CXXFLAGS += -pedantic

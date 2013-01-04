@@ -39,8 +39,8 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/thread.hpp>
 
-#include <usb.h>
-#include <libusb-1.0/libusb.h>
+//#include <usb.h>
+#include <libusb.h>
 //#include "extern/include/libusb/libusb.h"
 
 #include <X11/Xlib.h>
