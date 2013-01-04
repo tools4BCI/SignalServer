@@ -1,6 +1,6 @@
 #include "filewriter/gdf_writer_impl.h"
 
-#include "extern/include/libgdf/GDF/Writer.h"
+#include "GDF/Writer.h"
 
 #include <boost/current_function.hpp>
 #include <boost/math/special_functions.hpp>
