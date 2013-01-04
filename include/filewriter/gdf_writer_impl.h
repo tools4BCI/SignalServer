@@ -4,7 +4,7 @@
 #include "filewriter/file_writer.h"
 #include "filewriter/file_writer_impl_base.h"
 #include <map>
-#include "extern/include/libgdf/GDF/Types.h"
+#include "GDF/Types.h"
 
 namespace gdf
 {

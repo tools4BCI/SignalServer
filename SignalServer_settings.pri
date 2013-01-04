@@ -25,7 +25,8 @@ DESTDIR = bin
 OBJECTS_DIR = tmp
 INCLUDEPATH += . \
     include \
-    extern/include/LptTools
+    extern/include/LptTools \
+    extern/include/libgdf
 
 DEPENDPATH += $$INCLUDEPATH
 INCLUDEPATH += extern/include\
