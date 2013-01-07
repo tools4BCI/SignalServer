@@ -34,7 +34,7 @@
 #include <boost/thread.hpp>
 #include <iomanip>
 
-#include "extern\include\libusb\usb.h"
+#include "usb.h"
 
 
 #include "hardware/mouse_win.h"
