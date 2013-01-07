@@ -50,7 +50,7 @@
 #include "misc/statistics.h"
 #include "misc/databuffer.h"
 
-#include "extern/include/plux/BioPlux.h"
+#include "plux/BioPlux.h"
 
 #include <boost/chrono.hpp>
 #include <boost/thread.hpp>

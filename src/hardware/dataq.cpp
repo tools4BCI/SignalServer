@@ -36,7 +36,7 @@
 **/
 
 #include "hardware/dataq.h"
-#include "extern/include/dataq/err_codes.h"
+#include "dataq/err_codes.h"
 
 
 #include <boost/asio/error.hpp>
