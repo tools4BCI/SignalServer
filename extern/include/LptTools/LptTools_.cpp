@@ -1,5 +1,5 @@
 #ifdef UNICODE
 	#include "LptToolsANSI.cpp"
-#elif
+#else
 	#include "LptTools.cpp"
 #endif
