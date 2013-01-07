@@ -29,7 +29,7 @@
 #include "hardware/hw_thread.h"
 #include "hardware/hw_thread_builder.h"
 
-#include "extern/include/NIRScout/TomographyAPI.h"
+#include "NIRScout/TomographyAPI.h"
 
 namespace tobiss
 {
