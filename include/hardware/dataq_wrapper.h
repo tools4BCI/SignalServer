@@ -43,7 +43,7 @@
 #include <string>
 #include <iostream>
 
-#include "extern/include/dataq/hdrdef32.h"
+#include "dataq/hdrdef32.h"
 namespace tobiss
 {
 
