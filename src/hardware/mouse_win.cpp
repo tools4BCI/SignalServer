@@ -31,13 +31,13 @@
     Contact: SignalServer@tobi-project.org
 */
 
+#include "hardware/mouse_win.h"
+
 #include <boost/thread.hpp>
 #include <iomanip>
 
 #include "usb.h"
 
-
-#include "hardware/mouse_win.h"
 #include "boost/filesystem.hpp"
 
 #define ACYNC_DATA_RECV_SIZE 16
