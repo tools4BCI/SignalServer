@@ -39,6 +39,9 @@
 * @brief This file includes a class to gain access to the devices from brainproducts brainamp series.
 **/
 
+#include "hardware/hw_thread.h"
+#include "hardware/hw_thread_builder.h"
+
 #include <string>
 
 #include <boost/cstdint.hpp>
@@ -48,11 +51,8 @@
 #include <conio.h>
 #include <WinIoCtl.h>
 
-#include "hardware/hw_thread.h"
-#include "hardware/hw_thread_builder.h"
-
-#include "extern/include/brainproducts/BrainAmpIoCtl.h"
-#include "extern/include/FilterTools/iirbutterlpf.h"
+#include "brainproducts/BrainAmpIoCtl.h"
+#include "filterTools/iirbutterlpf.h"
 
 namespace tobiss
 {
