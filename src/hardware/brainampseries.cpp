@@ -499,7 +499,7 @@ void BrainAmpSeries::checkHighestChannelNr(std::vector<AmpType> amps)
 
 	int highest_ch = 0;
 	for(int i = 0; i < brainamp_settings_.nChannels; i++)
-		highest_ch = max(brainamp_settings_.nChannelList[i], highest_ch);
+		highest_ch = std::max<int>(brainamp_settings_.nChannelList[i], highest_ch);
 
 	int max_nr_ch = 0;
 	std::map<AmpType, std::pair<std::string, unsigned int> >::iterator it;
