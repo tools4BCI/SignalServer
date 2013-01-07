@@ -111,9 +111,6 @@ typedef uInt32             CalHandle;
  #define NULL            (0L)
 #endif
 
-#ifndef CALLBACK
- #define CALLBACK __stdcall
-#endif
 
 /******************************************************************************
  *** NI-DAQmx Attributes ******************************************************

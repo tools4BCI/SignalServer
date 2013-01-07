@@ -39,8 +39,8 @@
 #include <boost/cstdint.hpp>
 
 #include "hardware/gBsamp_base.h"
-#include "hardware/nidaqmx_wrapper.h"
 #include "hardware/hw_thread_builder.h"
+#include "hardware/nidaqmx_wrapper.h"
 
 namespace tobiss
 {
