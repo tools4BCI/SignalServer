@@ -36,7 +36,7 @@
 * @file statistics.cpp
 **/
 
-#include "include/misc/statistics.h"
+#include "misc/statistics.h"
 
 #include <boost/current_function.hpp>
 #include <functional>
