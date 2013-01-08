@@ -277,11 +277,11 @@ void SignalServer::readPackets()
     {
       tid_server_->update(packet_->getTimestamp(),packet_->getPacketID());
 
-      tia_server_->sendDataPacket();
-
       if(tid_server_->newMessagesAvailable())
         tid_server_->getLastMessages(msgs);
     }
+
+    tia_server_->sendDataPacket();
 
     if(file_writer_)
       storeData(packet_, &msgs);
