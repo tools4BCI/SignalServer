@@ -25,7 +25,7 @@
 #define IDTYPES_FAMILY_CUSTOM		"custom"
 
 #define IDMESSAGE_VERSION_SUPPORTED 			"0.0.2.1"
-#define IDMESSAGE_VERSION 			"0.1.0.0"
+#define IDMESSAGE_VERSION 			"0.2.0.0"
 
 #define IDMESSAGE_ROOTNODE 			"tobiid"
 #define IDMESSAGE_VERSIONNODE		"version"
@@ -36,6 +36,7 @@
 #define IDMESSAGE_DESCRIPTIONNODE	"description"
 #define IDMESSAGE_FAMILYNODE		"family"
 #define IDMESSAGE_EVENTNODE 		"event"
+#define IDMESSAGE_VALUENODE 		"value"
 #define IDMESSAGE_TIMESTAMPNODE		"timestamp"
 #define IDMESSAGE_REFERENCENODE		"reference"
 
@@ -61,5 +62,11 @@ typedef std::string IDFvalue;
  * \ingroup tobiid
  */
 typedef int IDevent;
+
+/*! \brief TOBI iD value
+ *
+ * \ingroup tobiid
+ */
+typedef float IDvalue;
 
 #endif
