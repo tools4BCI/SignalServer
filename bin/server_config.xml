@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tobi-config version="1.0">
 
-	<subject>
-		<id>asd52</id>
-		<first_name>Nobody</first_name>
+  <subject>
+    <id>asd52</id>
+    <first_name>Nobody</first_name>
     <surname>Nowhereman</surname>
-		<sex>m </sex>
+    <sex>m </sex>
     <birthday>31.12.1900 </birthday>
-		<handedness>r </handedness>
-		<medication>none</medication>
+    <handedness>r </handedness>
+    <medication>none</medication>
 
     <optional glasses="yes" smoker="no" />
-	</subject>
+  </subject>
 
 <!-- =============================================================================== -->
 
@@ -19,15 +19,19 @@
     <ctl_port> 9000 </ctl_port>
     <udp_port> 9998 </udp_port>
     <udp_bc_addr> 127.0.0.1 </udp_bc_addr>
-    
-    <tid_port>  9100  </tid_port>
 
-     <store-data>
-      <filepath> way_to_files </filepath>
-      <filename> hugo.gdf </filename>
+    <tid_server tid_use="on" tid_port="9500" assume_zero_network_delay="on" />
+
+    <store-data value="on">
+      <filepath> /tmp/ </filepath>
+      <filename> hugo </filename>
       <filetype> gdf </filetype>
-      <overwrite> yes </overwrite>
+
+      <file_exists> new_file </file_exists>   <!--new_file or overwrite-->
+      <append_to_filename> _r_ </append_to_filename>
+      <continous_saving> no </continous_saving>
     </store-data>
+    
   </server_settings>
 
 <!-- =============================================================================== -->
@@ -95,7 +99,7 @@
       </common_reference>
       <driven_right_leg> no </driven_right_leg>
     </device_settings>
-	</hardware>-->
+  </hardware>-->
 
 <!-- =============================================================================== -->
 
@@ -142,7 +146,7 @@
       <measurement_channels nr="1" names="eeg" type="eeg" />
       <blocksize> 1 </blocksize>
     </device_settings>
-    
+
     <channel_settings>
       <selection>
         <ch nr="01" name="eeg" type="eeg" />
