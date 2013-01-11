@@ -370,6 +370,7 @@ void SignalServer::storeData(tia::DataPacket* packet, std::vector<IDMessage>* ms
           boost::chrono::duration<double> ev_diff = current_timestamp_ - msg_time;
           boost::chrono::duration<double> shift_tmp = ev_diff/sample_time.count();
 
+          //cur_msg->Dump();
           //std::cout << ts.timestamp.tv_sec << std::endl << std::flush;
           //std::cout << ts.timestamp.tv_usec << std::endl << std::flush;
           //std::cout << msg_time << "; "<< std::endl << std::flush;
@@ -382,7 +383,17 @@ void SignalServer::storeData(tia::DataPacket* packet, std::vector<IDMessage>* ms
           //std::cout << "------" << std::endl << std::flush;
           //std::cout << std::endl << std::flush;
 
-          int shift = boost::numeric_cast<int>( boost::math::round(shift_tmp.count()) );
+          int shift = 0;
+
+          try
+          {
+            shift = boost::numeric_cast<int>( boost::math::round(shift_tmp.count()) );
+          }
+          catch(boost::numeric::bad_numeric_cast& e)
+          {
+            std::cerr << BOOST_CURRENT_FUNCTION << std::endl;
+            std::cerr << "  Error: " << e.what() << " -- Shift of: " << boost::math::round(shift_tmp.count()) << std::endl;
+          }
 
           file_writer_->addEvent(last_block_nr_ - shift, cur_msg->GetEvent() );
           // file_writer_->addEvent(last_block_nr_, cur_msg->GetEvent() );
