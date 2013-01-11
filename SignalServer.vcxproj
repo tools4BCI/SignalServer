@@ -96,7 +96,7 @@
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>.;include;extern\include;extern\include\SDL-1.2.14-VC8;extern\include\filterTools\spuc\generic;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;include;extern\include;extern\include\SDL-1.2.14-VC8;extern\include\filterTools\spuc\generic;extern\include\libgdf;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;TIXML_USE_TICPP;_WIN32_WINNT=0x0501;_CONSOLE;_USE_MATH_DEFINES;WIN32_LEAN_AND_MEAN;VC_EXTRALEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <PreprocessSuppressLineNumbers>false</PreprocessSuppressLineNumbers>
@@ -117,10 +117,10 @@
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>GDF.lib;SDL.lib;libusb0.lib;tobiid.lib;tobicore.lib;libtid.lib;tiad.lib;libticppd.lib;BioPlux_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GDF.lib;SDL.lib;libusb0.lib;tobiid.lib;tobicore.lib;libtid.lib;tia.lib;libticpp.lib;BioPlux.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>$(SolutionDir)extern\lib\ticpp\win\$(Platform);$(SolutionDir)extern\lib\tia\win\$(Platform);$(SolutionDir)extern\lib\sdl\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\libusb\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\tobicore\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\tobiid\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\libtid\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\plux\win\$(Platform);$(SolutionDir)extern\lib\libgdf\win\$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)extern\lib\ticpp\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\tia\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\sdl\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\libusb\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\tobicore\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\tobiid\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\libtid\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\plux\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\libgdf\win\$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -134,6 +134,11 @@
       <EntryPointSymbol>
       </EntryPointSymbol>
     </Link>
+    <PostBuildEvent>
+      <Command>copy /Y "$(SolutionDir)extern\lib\libusb\win\$(Platform)\$(Configuration)\*.dll" "$(OutDir)\"
+copy /Y "$(SolutionDir)extern\lib\sdl\win\$(Platform)\$(Configuration)\*.dll" "$(OutDir)\"
+copy /Y "$(SolutionDir)bin\server_config*.xml" "$(OutDir)\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Midl>
@@ -147,7 +152,7 @@
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>.;include;extern\include;extern\include\SDL-1.2.14-VC8;extern\include\filterTools\spuc\generic;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;include;extern\include;extern\include\SDL-1.2.14-VC8;extern\include\filterTools\spuc\generic;extern\include\libgdf;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;TIXML_USE_TICPP;_WIN32_WINNT=0x0501;_CONSOLE;_USE_MATH_DEFINES;WIN32_LEAN_AND_MEAN;VC_EXTRALEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <PreprocessSuppressLineNumbers>false</PreprocessSuppressLineNumbers>
@@ -168,10 +173,10 @@
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>GDF.lib;SDL.lib;libusb0.lib;tobiid.lib;tobicore.lib;libtid.lib;tiad.lib;libticppd.lib;BioPlux.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GDF.lib;SDL.lib;libusb0.lib;tobiid.lib;tobicore.lib;libtid.lib;tia.lib;libticpp.lib;BioPlux.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>$(SolutionDir)extern\lib\ticpp\win\$(Platform);$(SolutionDir)extern\lib\tia\win\$(Platform);$(SolutionDir)extern\lib\sdl\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\libusb\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\tobicore\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\tobiid\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\libtid\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\plux\win\$(Platform);$(SolutionDir)extern\lib\libgdf\win\$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)extern\lib\ticpp\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\tia\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\sdl\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\libusb\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\tobicore\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\tobiid\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\libtid\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\plux\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\libgdf\win\$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -185,6 +190,11 @@
       <EntryPointSymbol>
       </EntryPointSymbol>
     </Link>
+    <PostBuildEvent>
+      <Command>copy /Y "$(SolutionDir)extern\lib\libusb\win\$(Platform)\$(Configuration)\*.dll" "$(OutDir)\"
+copy /Y "$(SolutionDir)extern\lib\sdl\win\$(Platform)\$(Configuration)\*.dll" "$(OutDir)\"
+copy /Y "$(SolutionDir)bin\server_config*.xml" "$(OutDir)\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Midl>
@@ -201,7 +211,7 @@
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>.;include;extern\include;extern\include\SDL-1.2.14-VC8;extern\include\filterTools\spuc\generic;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;include;extern\include;extern\include\SDL-1.2.14-VC8;extern\include\filterTools\spuc\generic;extern\include\libgdf;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;TIXML_USE_TICPP;_WIN32_WINNT=0x0501;_CONSOLE;_USE_MATH_DEFINES;WIN32_LEAN_AND_MEAN;VC_EXTRALEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <PreprocessSuppressLineNumbers>false</PreprocessSuppressLineNumbers>
@@ -225,7 +235,7 @@
       <AdditionalDependencies>GDF.lib;SDL.lib;libusb0.lib;tobiid.lib;tobicore.lib;libtid.lib;tia.lib;libticpp.lib;BioPlux.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>$(SolutionDir)extern\lib\ticpp\win\$(Platform);$(SolutionDir)extern\lib\tia\win\$(Platform);$(SolutionDir)extern\lib\sdl\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\libusb\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\tobicore\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\tobiid\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\libtid\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\plux\win\$(Platform);$(SolutionDir)extern\lib\libgdf\win\$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)extern\lib\ticpp\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\tia\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\sdl\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\libusb\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\tobicore\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\tobiid\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\libtid\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\plux\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\libgdf\win\$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -238,6 +248,11 @@
       <EntryPointSymbol>
       </EntryPointSymbol>
     </Link>
+    <PostBuildEvent>
+      <Command>copy /Y "$(SolutionDir)extern\lib\libusb\win\$(Platform)\$(Configuration)\*.dll" "$(OutDir)\"
+copy /Y "$(SolutionDir)extern\lib\sdl\win\$(Platform)\$(Configuration)\*.dll" "$(OutDir)\"
+copy /Y "$(SolutionDir)bin\server_config*.xml" "$(OutDir)\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Midl>
@@ -254,7 +269,7 @@
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>.;include;extern\include;extern\include\SDL-1.2.14-VC8;extern\include\filterTools\spuc\generic;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;include;extern\include;extern\include\SDL-1.2.14-VC8;extern\include\filterTools\spuc\generic;extern\include\libgdf;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;TIXML_USE_TICPP;_WIN32_WINNT=0x0501;_CONSOLE;_USE_MATH_DEFINES;WIN32_LEAN_AND_MEAN;VC_EXTRALEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <PreprocessSuppressLineNumbers>false</PreprocessSuppressLineNumbers>
@@ -278,7 +293,7 @@
       <AdditionalDependencies>GDF.lib;SDL.lib;libusb0.lib;tobiid.lib;tobicore.lib;libtid.lib;tia.lib;libticpp.lib;BioPlux.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>$(SolutionDir)extern\lib\ticpp\win\$(Platform);$(SolutionDir)extern\lib\tia\win\$(Platform);$(SolutionDir)extern\lib\sdl\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\libusb\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\tobicore\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\tobiid\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\libtid\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\plux\win\$(Platform);$(SolutionDir)extern\lib\libgdf\win\$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)extern\lib\ticpp\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\tia\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\sdl\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\libusb\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\tobicore\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\tobiid\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\libtid\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\plux\win\$(Platform)\$(Configuration)\;$(SolutionDir)extern\lib\libgdf\win\$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -291,6 +306,11 @@
       <EntryPointSymbol>
       </EntryPointSymbol>
     </Link>
+    <PostBuildEvent>
+      <Command>copy /Y "$(SolutionDir)extern\lib\libusb\win\$(Platform)\$(Configuration)\*.dll" "$(OutDir)\"
+copy /Y "$(SolutionDir)extern\lib\sdl\win\$(Platform)\$(Configuration)\*.dll" "$(OutDir)\"
+copy /Y "$(SolutionDir)bin\server_config*.xml" "$(OutDir)\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\filewriter\file_writer.cpp" />

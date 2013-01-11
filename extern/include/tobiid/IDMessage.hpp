@@ -52,7 +52,7 @@ class IDMessage : public TCBlock {
     /*! \brief Prints internal data
      */
     virtual void Dump(void) const;
-    static const IDFtype FamilyType(IDFvalue family);
+    IDFtype FamilyType(IDFvalue family);
   private:
     virtual void Init(void);
 

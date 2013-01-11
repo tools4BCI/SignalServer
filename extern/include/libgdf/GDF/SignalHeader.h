@@ -84,7 +84,7 @@ namespace gdf
         }
 
         /// get value of a string item
-        std::string getString( std::string item )
+        std::string getString( std::string item ) const
         {
             if( item == "label" ) return get_label( );
             else if( item == "transducer_type" ) return get_transducer_type( );
@@ -102,7 +102,7 @@ namespace gdf
             else if( item == "digmin" ) set_digmin( numeric_cast<float64>(value) );
             else if( item == "digmax" ) set_digmax( numeric_cast<float64>(value) );
             else if( item == "lowpass" ) set_lowpass( numeric_cast<float32>(value) );
-            else if( item == "highpass" ) set_highpassh( numeric_cast<float32>(value) );
+            else if( item == "highpass" ) set_highpass( numeric_cast<float32>(value) );
             else if( item == "notch" ) set_notch( numeric_cast<float32>(value) );
             else if( item == "datatype" ) set_datatype( numeric_cast<uint32>(value) );
             else if( item == "sensor_info" ) set_sensor_info( numeric_cast<float32>(value) );
@@ -110,7 +110,7 @@ namespace gdf
         }
 
         /// get value of a numeric item
-        template<typename T> T getNumeric( std::string item )
+        template<typename T> T getNumeric( std::string item ) const
         {
             using boost::numeric_cast;
             if( item == "physical_dimension_code" ) return numeric_cast<T>(get_physical_dimension_code( ));

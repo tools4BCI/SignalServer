@@ -153,9 +153,18 @@ class CustomSignalInfo
 
   public:
 
-#ifdef signals
-    #define SIGNAL_INFO_HELPER signals
+#ifdef TIA_BRUTEFORCE_SIGNALHACK
     #undef signals
+#else
+    #ifdef TIA_PRAGMA_SIGNALHACK
+        #pragma push_macro("signals")
+        #undef signals
+    #else
+        #ifdef signals
+            #define SIGNAL_INFO_HELPER signals
+            #undef signals
+        #endif
+    #endif
 #endif
 
     const CustomSignalMap& signals() const { return signals_; }
@@ -165,9 +174,15 @@ class CustomSignalInfo
   private:
     CustomSignalMap signals_;                       ///<
 
-#ifdef SIGNAL_INFO_HELPER
-    #define signals SIGNAL_INFO_HELPER
-    #undef SIGNAL_INFO_HELPER
+#ifndef TIA_BRUTEFORCE_SIGNALHACK
+    #ifdef TIA_PRAGMA_SIGNALHACK
+        #pragma pop_macro("signals")
+    #else
+        #ifdef SIGNAL_INFO_HELPER
+            #define signals SIGNAL_INFO_HELPER
+            #undef SIGNAL_INFO_HELPER
+        #endif
+    #endif
 #endif
 };
 

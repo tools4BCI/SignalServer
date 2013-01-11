@@ -20,6 +20,7 @@
 #define __WRITER_H_INCLUDED__
 
 #include "RecordBuffer.h"
+#include "RecordFullHandler.h"
 #include "EventHeader.h"
 #include "GDFHeaderAccess.h"
 #include <string>
@@ -41,7 +42,7 @@ namespace gdf
         in a separate file named \e filename.events. Thus, information may be recovered after computer
         crashes during long online recordings. The user may chose to buffer events in memory instead (see open()).
     */
-    class Writer : public RecordBuffer::RecordFullHandler
+    class Writer : public RecordFullHandler
     {
     public:
         /// Constructor
