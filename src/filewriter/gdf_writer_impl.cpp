@@ -93,7 +93,8 @@ void GdfWriterImpl::open()
   if(gdf_writer_->isOpen())
     return;
 
-//  gdf_writer_->getHeaderAccess().setRecordDuration( 2* max_sampling_rate_, 2*max_sampling_rate_ );
+  //  gdf_writer_->getHeaderAccess().setRecordDuration( 2* max_sampling_rate_, 2*max_sampling_rate_ );
+  gdf_writer_->getHeaderAccess().getEventHeader().clear();
   gdf_writer_->setEventMode( 1 );     // FIXME: 1 ... EventMode 1 (gdf)
 
 

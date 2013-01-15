@@ -204,40 +204,43 @@ map<string,string> XMLParser::parseServerSettings()
       attribute = attribute.begin(elem.Get());
 
       bool store = 0;
-      if(attribute->Name() == xmltags::store_data_value)
+      if(attribute != attribute.end())
       {
-        store = equalsYesOrNo( attribute->Value());
-
-        if(store)
+        if(attribute->Name() == xmltags::store_data_value)
         {
-          parseFileLocation(elem, m);
+          store = equalsYesOrNo( attribute->Value());
 
-          string file_exists(xmltags::file_exists_new_file);
-          ticpp::Iterator<ticpp::Element>  child = elem->FirstChildElement(xmltags::file_exists, false);
-
-          if(child != child.end())
-            file_exists = lexical_cast<string>( child->GetText(false) );
-
-          if(!( (file_exists == xmltags::file_exists_new_file)
-              || (file_exists == xmltags::file_exists_overwrite)) )
+          if(store)
           {
-            throw(std::invalid_argument( "Error in xml file: " + xmltags::file_exists + " -- allowed options: "
-                                         + xmltags::file_exists_new_file + " or " + xmltags::file_exists_overwrite));
+            parseFileLocation(elem, m);
+
+            string file_exists(xmltags::file_exists_new_file);
+            ticpp::Iterator<ticpp::Element>  child = elem->FirstChildElement(xmltags::file_exists, false);
+
+            if(child != child.end())
+              file_exists = lexical_cast<string>( child->GetText(false) );
+
+            if(!( (file_exists == xmltags::file_exists_new_file)
+                  || (file_exists == xmltags::file_exists_overwrite)) )
+            {
+              throw(std::invalid_argument( "Error in xml file: " + xmltags::file_exists + " -- allowed options: "
+                                           + xmltags::file_exists_new_file + " or " + xmltags::file_exists_overwrite));
+            }
+
+            m.insert(pair<string, string>(xmltags::file_exists, file_exists));
+
+            string append_str(xmltags::append_to_filename_default);
+            child = elem->FirstChildElement(xmltags::append_to_filename, false);
+            if(child != child.end())
+              append_str = lexical_cast<string>( child->GetText(false) );
+            m.insert(pair<string, string>(xmltags::append_to_filename, append_str));
+
+            bool cont_sav = 0;
+            child = elem->FirstChildElement(xmltags::continous_saving, false);
+            if(child != child.end())
+              cont_sav = equalsYesOrNo( child->GetText(false) );
+            m.insert(pair<string, string>(xmltags::continous_saving,  lexical_cast<string>(cont_sav) ));
           }
-
-          m.insert(pair<string, string>(xmltags::file_exists, file_exists));
-
-          string append_str(xmltags::append_to_filename_default);
-          child = elem->FirstChildElement(xmltags::append_to_filename, false);
-          if(child != child.end())
-            append_str = lexical_cast<string>( child->GetText(false) );
-          m.insert(pair<string, string>(xmltags::append_to_filename, append_str));
-
-          bool cont_sav = 0;
-          child = elem->FirstChildElement(xmltags::continous_saving, false);
-          if(child != child.end())
-            cont_sav = equalsYesOrNo( child->GetText(false) );
-          m.insert(pair<string, string>(xmltags::continous_saving,  lexical_cast<string>(cont_sav) ));
         }
       }
 

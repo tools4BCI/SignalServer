@@ -54,7 +54,7 @@
 #include <boost/shared_ptr.hpp>
 
 // local
-#include "tia/constants.h"
+//#include "tia/constants.h"
 #include "tia/ss_meta_info.h"
 
 
@@ -239,7 +239,7 @@ class TiAServer : boost::noncopyable
     DataPacketImpl*                     work_data_packet_impl_;
     DataPacket3Impl*                    work_data_packet_3_impl_;
 
-    Constants                           cst_; ///<
+//    Constants                           cst_; ///<
 
 
 #ifdef TIMING_TEST

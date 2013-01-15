@@ -80,7 +80,6 @@ class TiDServer : public TCPServer
     TiDConnHandlers             connections_;  ///< list holding handlers for each connected client
     boost::mutex                dispatch_mutex_;
     boost::mutex                erase_mutex_;
-    boost::asio::io_service     io_sevice_;
     std::vector< IDMessage >    messages_;
 
     TiDMessageBuilder*          msg_builder_;
