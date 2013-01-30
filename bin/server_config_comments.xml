@@ -28,15 +28,18 @@
     <udp_port>9001</udp_port>
 
     <!-- The port (TCP) TiD clients connect to.   -->
-    <tid_port>  9100  </tid_port>
+    <tid_server tid_use="on" tid_port="9500" assume_zero_network_delay="on" />
 
     <!--  Information if a the recorded data should be saved into a file.
           NOTE: only gdf supported yet; still in testing phase! -->
-    <store-data>
-      <filepath> way_to_files </filepath>
-      <filename> hugo.gdf </filename>
+    <store-data value="on">
+      <filepath> tmp </filepath>
+      <filename> hugo </filename>
       <filetype> gdf </filetype>
-      <overwrite> yes </overwrite>
+
+      <file_exists> new_file </file_exists>   <!--new_file or overwrite-->
+      <append_to_filename> _r_ </append_to_filename>
+      <continous_saving> no </continous_saving>
     </store-data>
 
   </server_settings>
@@ -89,7 +92,7 @@
     <!-- master or slave  ...  important if combined with different amplifiers
             only one master device allowed -->
     <mode> master </mode>
-    <global_settings>
+    <device_settings>
       <sampling_rate fs="512"/>
       <!--possible rates: 32, 64, 128, 256, 512, 600, 1200, 2400, 4800, 9600 ... -->
       <measurement_channels nr="1" names="eeg" type="eeg" />
@@ -132,7 +135,7 @@
         <!-- multiple usbamps: master or slave device  ...  important if connected with other USBamps
         through SYNC-Plugs   ->   only one master device allowed -->
 
-    </global_settings>
+    </device_settings>
 
 
     <!--   Define indiviual settings for single channels inside this section; configuration done
