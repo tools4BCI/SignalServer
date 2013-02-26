@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tobi-config version="1.0">
+	<subject>
+		<id>007</id>
+		<first_name>James</first_name>
+		<surname>Bond</surname>
+		<sex>m</sex>
+		<birthday>02.02.1953</birthday>
+	</subject>
+
+<!-- =============================================================================== -->
+
+	<server_settings>
+		<tcp_port>9998</tcp_port>
+		<ctl_port>9000</ctl_port>
+		<udp_port>9998</udp_port>
+		<tid_server tid_use="on" tid_port="9500" assume_zero_network_delay="on" />
+		<udp_bc_addr>127.0.0.1</udp_bc_addr>
+		
+ 		<store-data value="on">
+			<filepath>raw</filepath>
+			<filename>raweeg</filename>
+			<filetype>gdf</filetype>
+			<file_exists> new_file </file_exists>
+			<append_to_filename> _r_ </append_to_filename>
+			<continous_saving> no </continous_saving>
+		</store-data>
+		
+	</server_settings>
+
+<!-- =============================================================================== -->
+
+  <hardware name="imu" version="1.0" serial="">
+    <mode> master </mode>
+    <device_settings>
+      <sampling_rate> 50 </sampling_rate>
+      <blocksize> 5 </blocksize>
+	  <port> 9123 </port>
+	  
+      <measurement_channels nr="9" names="eeg" type="eeg" />
+	  
+      <filter type="chebyshev" order="8" f_low="0.5" f_high="100"/>      
+      <notch f_center="50"/> 
+      <operation_mode> normal </operation_mode>
+      <shortcut> off </shortcut>
+      <trigger_line> off </trigger_line>
+      <usbamp_master> yes </usbamp_master>
+	  <common_ground>
+        <gnd block="a" value="1" />
+        <gnd block="b" value="1" />
+        <gnd block="c" value="1" />
+        <gnd block="d" value="1" />
+      </common_ground>
+      <common_reference>
+        <cr block="a" value="1" />
+        <cr block="b" value="1" />
+        <cr block="c" value="1" />
+        <cr block="d" value="1" />
+      </common_reference>
+    </device_settings>
+
+    <channel_settings>
+      <selection>
+        <ch nr="01" name="AFz"  type="eeg" />
+        <ch nr="02" name="FC3"  type="eeg" />
+        <ch nr="03" name="FCz"  type="eeg" />
+        <ch nr="04" name="FC4"  type="eeg" />
+        <ch nr="05" name="C3"   type="eeg" />
+        <ch nr="06" name="Cz"   type="eeg" />
+        <ch nr="07" name="C4"   type="eeg" />
+        <ch nr="08" name="CP3"  type="eeg" />
+        <ch nr="09" name="CPz"  type="eeg" />
+        <ch nr="10" name="CP4"  type="eeg" />
+        <ch nr="11" name="PO3"   type="eeg" />
+        <ch nr="12" name="POz"   type="eeg" />
+        <ch nr="13" name="PO4"   type="eeg" />
+        <ch nr="14" name="O1"   type="eeg" />
+        <ch nr="15" name="Oz"   type="eeg" />
+        <ch nr="16" name="O2"   type="eeg" />
+      </selection>
+    </channel_settings>
+  </hardware>
+
+</tobi-config>
