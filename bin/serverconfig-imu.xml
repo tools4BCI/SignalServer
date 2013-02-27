@@ -23,7 +23,7 @@
 			<filetype>gdf</filetype>
 			<file_exists> new_file </file_exists>
 			<append_to_filename> _r_ </append_to_filename>
-			<continous_saving> no </continous_saving>
+			<continous_saving> yes </continous_saving>
 		</store-data>
 		
 	</server_settings>
@@ -37,7 +37,7 @@
       <blocksize> 5 </blocksize>
 	  <port> 9123 </port>
 	  
-      <measurement_channels nr="9" names="eeg" type="eeg" />
+      <measurement_channels nr="19" names="abc" type="sensor" />
 	  
       <filter type="chebyshev" order="8" f_low="0.5" f_high="100"/>      
       <notch f_center="50"/> 
@@ -61,22 +61,25 @@
 
     <channel_settings>
       <selection>
-        <ch nr="01" name="AFz"  type="eeg" />
-        <ch nr="02" name="FC3"  type="eeg" />
-        <ch nr="03" name="FCz"  type="eeg" />
-        <ch nr="04" name="FC4"  type="eeg" />
-        <ch nr="05" name="C3"   type="eeg" />
-        <ch nr="06" name="Cz"   type="eeg" />
-        <ch nr="07" name="C4"   type="eeg" />
-        <ch nr="08" name="CP3"  type="eeg" />
-        <ch nr="09" name="CPz"  type="eeg" />
-        <ch nr="10" name="CP4"  type="eeg" />
-        <ch nr="11" name="PO3"   type="eeg" />
-        <ch nr="12" name="POz"   type="eeg" />
-        <ch nr="13" name="PO4"   type="eeg" />
-        <ch nr="14" name="O1"   type="eeg" />
-        <ch nr="15" name="Oz"   type="eeg" />
-        <ch nr="16" name="O2"   type="eeg" />
+        <ch nr="01" name="X0"  type="sensor" />
+        <ch nr="02" name="X1"  type="sensor" />
+        <ch nr="03" name="X2"  type="sensor" />
+        <ch nr="04" name="Y0"  type="sensor" />
+        <ch nr="05" name="Y1"  type="sensor" />
+        <ch nr="06" name="Y2"  type="sensor" />
+        <ch nr="07" name="Z0"  type="sensor" />
+        <ch nr="08" name="Z1"  type="sensor" />
+        <ch nr="09" name="Z2"  type="sensor" />
+        <ch nr="10" name="accX"  type="sensor" />
+        <ch nr="11" name="accY"  type="sensor" />
+        <ch nr="12" name="accZ"  type="sensor" />
+        <ch nr="13" name="gyrX"  type="sensor" />
+        <ch nr="14" name="gyrY"  type="sensor" />
+        <ch nr="15" name="gyrZ"  type="sensor" />
+        <ch nr="16" name="magX"  type="sensor" />
+        <ch nr="17" name="magY"  type="sensor" />
+        <ch nr="18" name="magZ"  type="sensor" />
+        <ch nr="19" name="temp"  type="sensor" />
       </selection>
     </channel_settings>
   </hardware>

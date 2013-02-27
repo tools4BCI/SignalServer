@@ -42,7 +42,7 @@
 #include <boost/date_time.hpp>
 #include <iostream>
 
-#import "D:\ABC\IMU-integration\Prueba_SDK_IMU\Prueba SDK\SDK_imu_cs.tlb"
+#import "D:\ABC\IMU-integration\SDK_IMU\SDK_imu_x86.tlb"
 
 namespace tobiss
 {
@@ -81,6 +81,7 @@ struct IMUs::ImplDetails
 	  if (port_com == SDK_MCS_Studio2::FUNCTION_RESULT_FunctionOK){
 		  std::cout << ">> Port detected for IMU device.\n" << std::endl;
 	  }else{
+		  CoUninitialize();
       throw std::runtime_error( "Could not detect IMU Port." );
 	  }
 
@@ -88,11 +89,14 @@ struct IMUs::ImplDetails
     FUNCTION_RESULT result = imu->Connect();
 	  if (result == SDK_MCS_Studio2::FUNCTION_RESULT_FunctionOK){
 		  std::cout << ">> IMU connected.\n" << std::endl; 
-	  }else {	
+	  }else {
+		  CoUninitialize();
       throw std::runtime_error( "Could not connect IMU." );
 	  }
 
-    sensors.push_back( imu->getSensor( ) );
+    // HUB:
+    //  sensors.resize( hub->getNumSensors() );
+    sensors.resize( 1 );
 
     last_num_frames = 0;
 	}
@@ -100,14 +104,29 @@ struct IMUs::ImplDetails
   ~ImplDetails( )
   {
 
+    // Stop capture if it's still running.
+    CAPTURE_STEP cs = imu->getCaptureStep( );
+    if( cs != CAPTURE_STEP_Stoped )
+    {
+      FUNCTION_RESULT result = imu->StopCapture( );
+      if( result != SDK_MCS_Studio2::FUNCTION_RESULT_FunctionOK )
+      {
+        std::cout << "Could not stop capturing from IMU." << endl;
+      }
+    }
+
+
     // Disconnect IMU
-    imu->Disconnect();
-	  if (imu->IsConnect()){
-		  //it never happens, unless hub->Disconnect() fails
-      throw std::runtime_error( "Error while disconnecting IMU. Still connected." );
-	  }else{
-		  std::cout << ">> IMU was Disconnected.\n" << std::endl;
-	  }
+    if (imu->IsConnect())
+    {
+      imu->Disconnect();
+	    if (imu->IsConnect()){
+		    //it never happens, unless hub->Disconnect() fails
+        std::cout << "Error while disconnecting IMU. Still connected." << endl;
+	    }else{
+		    std::cout << ">> IMU was Disconnected.\n" << std::endl;
+	    }
+    }
 
 		CoUninitialize();
   }
@@ -205,8 +224,8 @@ IMUs::~IMUs( )
     cout << "IMUs: Destructor" << endl;
   #endif
 
-  if( !isMaster() )
-    stopAsyncAquisition( true );
+/*  if( !isMaster() )
+    stopAsyncAquisition( true );*/
 
   if( impl )
     delete impl;
@@ -287,17 +306,10 @@ void IMUs::setChannelSettings(ticpp::Iterator<ticpp::Element>const &father )
 
 //---------------------------------------------------------------------------------------
 
-void IMUs::getNextFrame( int bidx )
+void IMUs::waitForNewFrame( )
 {
-  //frametype frame;
-
-  boost::posix_time::ptime now =  boost::posix_time::microsec_clock::local_time();
-
   long num_frames;
 
-  impl->sensors[0] = impl->imu->getSensor();
-
-  // wait for a new frame
   do
   {
     boost::this_thread::sleep(boost::posix_time::microseconds(1000)); /// @todo don't hardcode sleep time
@@ -305,60 +317,98 @@ void IMUs::getNextFrame( int bidx )
   } while( num_frames <= impl->last_num_frames );                     // loop until number of frames changed
 
   impl->last_num_frames = num_frames;
+}
 
-  impl->orientation_frame = impl->sensors[0]->getOrientationFrame( num_frames - 1 );
-  impl->physical_frame = impl->sensors[0]->getPhysicalFrame( num_frames - 1 );
-  
-  IORIENTATION_AXISPtr orientation_axis_x = impl->orientation_frame->GetsX( );
-  IORIENTATION_AXISPtr orientation_axis_y = impl->orientation_frame->GetsY( );
-  IORIENTATION_AXISPtr orientation_axis_z = impl->orientation_frame->GetsZ( );
-  
-  IPHYSICAL_AXISPtr acceleration_axis = impl->physical_frame->GetAcce( );
-  IPHYSICAL_AXISPtr gyro_axis = impl->physical_frame->GetGyro( );
-  IPHYSICAL_AXISPtr magnetic_axis = impl->physical_frame->GetMagn( );
+void IMUs::getDataFrame( int bidx )
+{
+  //frametype frame;
 
-  float temperature = impl->physical_frame->GetTemp( );
+  boost::posix_time::ptime now =  boost::posix_time::microsec_clock::local_time();
 
-  //cout << oa->GetX() << ", " << oa->GetY() << ", " << oa->GetZ() << endl;
-  
+  long num_frames = impl->sensors[0]->getCountPhysicalFrames();
 
-  int scount = 0;
-  std::map<boost::uint16_t, std::pair<std::string, boost::uint32_t> >::const_iterator channel = channel_info_.begin( );
-  for( int i=0; channel != channel_info_.end(); channel++, i++ )
+  static long last_num = 0; // just for debugging. remove later.
+
+  if( num_frames == 0 || num_frames == last_num )
   {
-    double value;
-    switch( channel->first )
+    int scount = 0;
+    std::map<boost::uint16_t, std::pair<std::string, boost::uint32_t> >::const_iterator channel = channel_info_.begin( );
+    for( int i=0; channel != channel_info_.end(); channel++, i++ )
     {
-    case 1 : value = orientation_axis_x->GetX( ); break;
-    case 2 : value = orientation_axis_x->GetY( ); break;
-    case 3 : value = orientation_axis_x->GetZ( ); break;
-    case 4 : value = orientation_axis_y->GetX( ); break;
-    case 5 : value = orientation_axis_y->GetY( ); break;
-    case 6 : value = orientation_axis_y->GetZ( ); break;
-    case 7 : value = orientation_axis_z->GetX( ); break;
-    case 8 : value = orientation_axis_z->GetY( ); break;
-    case 9 : value = orientation_axis_z->GetZ( ); break;
-      
-    case 10 : value = acceleration_axis->GetX( ); break;
-    case 11 : value = acceleration_axis->GetY( ); break;
-    case 12 : value = acceleration_axis->GetZ( ); break;
-      
-    case 13 : value = gyro_axis->GetX( ); break;
-    case 14 : value = gyro_axis->GetY( ); break;
-    case 15 : value = gyro_axis->GetZ( ); break;
-      
-    case 16 : value = magnetic_axis->GetX( ); break;
-    case 17 : value = magnetic_axis->GetY( ); break;
-    case 18 : value = magnetic_axis->GetZ( ); break;
-
-    case 19 : value = temperature; break;
-
-    default: throw std::invalid_argument( "Invalid channel number." );  break;
+      samples_[scount++] = 0;
     }
-    samples_[scount++] = value;
+  }
+  else
+  {
+    const long ch_per_sensor = 19;
+    
+    int scount = 0;
+
+    //HUB:
+    // long num_sensors = impl->hub->getNumSensors();
+    long num_sensors = 1;
+    for( long sensor=0; sensor<num_sensors; sensor++ )
+    {
+      impl->orientation_frame = impl->sensors[sensor]->getOrientationFrame( num_frames - 1 );
+      impl->physical_frame = impl->sensors[sensor]->getPhysicalFrame( num_frames - 1 );
+  
+      IORIENTATION_AXISPtr orientation_axis_x = impl->orientation_frame->GetsX( );
+      IORIENTATION_AXISPtr orientation_axis_y = impl->orientation_frame->GetsY( );
+      IORIENTATION_AXISPtr orientation_axis_z = impl->orientation_frame->GetsZ( );
+  
+      IPHYSICAL_AXISPtr acceleration_axis = impl->physical_frame->GetAcce( );
+      IPHYSICAL_AXISPtr gyro_axis = impl->physical_frame->GetGyro( );
+      IPHYSICAL_AXISPtr magnetic_axis = impl->physical_frame->GetMagn( );
+
+      float temperature = impl->physical_frame->GetTemp( );
+
+      //cout << oa->GetX() << ", " << oa->GetY() << ", " << oa->GetZ() << endl;
+  
+
+      std::map<boost::uint16_t, std::pair<std::string, boost::uint32_t> >::const_iterator channel = channel_info_.begin( );
+      for( int i=0; channel != channel_info_.end(); channel++, i++ )
+      {
+        bool add_to_block = true;
+        double value;
+        switch( channel->first - sensor * ch_per_sensor )
+        {
+        case 1 : value = orientation_axis_x->GetX( ); break;
+        case 2 : value = orientation_axis_x->GetY( ); break;
+        case 3 : value = orientation_axis_x->GetZ( ); break;
+        case 4 : value = orientation_axis_y->GetX( ); break;
+        case 5 : value = orientation_axis_y->GetY( ); break;
+        case 6 : value = orientation_axis_y->GetZ( ); break;
+        case 7 : value = orientation_axis_z->GetX( ); break;
+        case 8 : value = orientation_axis_z->GetY( ); break;
+        case 9 : value = orientation_axis_z->GetZ( ); break;
+      
+        case 10 : value = acceleration_axis->GetX( ); break;
+        case 11 : value = acceleration_axis->GetY( ); break;
+        case 12 : value = acceleration_axis->GetZ( ); break;
+      
+        case 13 : value = gyro_axis->GetX( ); break;
+        case 14 : value = gyro_axis->GetY( ); break;
+        case 15 : value = gyro_axis->GetZ( ); break;
+      
+        case 16 : value = magnetic_axis->GetX( ); break;
+        case 17 : value = magnetic_axis->GetY( ); break;
+        case 18 : value = magnetic_axis->GetZ( ); break;
+
+        case 19 : value = temperature; break;
+
+        default: add_to_block = false;  break;
+        }
+        if( add_to_block)
+        {
+          samples_[scount++] = value;
+        }
+      }
+    }
   }
 
   data_.appendBlock( samples_, 1 );
+
+  last_num = num_frames;
 
   statistics_.rate_statistics_.update( (now - last_time_).total_microseconds() );
   last_time_ = now;
@@ -378,7 +428,8 @@ SampleBlock<double> IMUs::getSyncData()
 
   for( int i=0; i<blocks_; i++ )
   {
-    getNextFrame( i );
+    waitForNewFrame( );
+    getDataFrame( i );
   }
   
   /*num_frames_total_ += blocks_;
@@ -419,42 +470,26 @@ void IMUs::asyncAcquisitionThread( )
 
 SampleBlock<double> IMUs::getAsyncData()
 {
-  /*#ifdef DEBUG
+  #ifdef DEBUG
     cout << "IMUs: getAsyncData" << endl;
   #endif
+  
+  data_.reset( );
+  samples_.resize( data_.getNrOfChannels( ) );
 
   for( int i=0; i<blocks_; i++ )
   {
-    frametype frame;
-    if( async_buffer_.getNext_substituting( &frame ) )
-    {
-      statistics_.frames_repeated_++;
-    }
-
-    // record statistics of how long samples remained in the buffer
-    boost::posix_time::time_duration diff = boost::posix_time::microsec_clock::local_time() - last_frame_.time;
-    statistics_.time_statistics_.update( diff.total_milliseconds() );
-
-    frames_[i] = frame.frame;
+    getDataFrame( i );
   }
-
-  num_frames_total_ += blocks_;
-  
-  printStatistics( );
-
-  convertFrames2SampleBlock( );*/
-
-  
-  cout << "IMUs::getAsyncData() - not implemented!" << endl;
 
   return data_;
 }
 
 //-----------------------------------------------------------------------------
 
-void IMUs::startAsyncAquisition( )
+/*void IMUs::startAsyncAquisition( )
 {
-  /*async_buffer_.resize( buffersize_ );
+  async_buffer_.resize( buffersize_ );
 
   // Start the acquisition thread
   async_acquisition_thread_ = thread( &IMUs::asyncAcquisitionThread, this );
@@ -465,21 +500,21 @@ void IMUs::startAsyncAquisition( )
 
   // Wait until the thread starts producing data
   async_buffer_.blockWhileEmpty( );
-  cout << "In Buffer: " << async_buffer_.getNumAvail( ) << endl;*/
+  cout << "In Buffer: " << async_buffer_.getNumAvail( ) << endl;
   
   cout << "IMUs::startAsyncAquisition() - not implemented!" << endl;
-}
+}*/
 
 //-----------------------------------------------------------------------------
 
-void IMUs::stopAsyncAquisition( bool blocking )
+/*void IMUs::stopAsyncAquisition( bool blocking )
 {
   async_acquisition_thread_.interrupt( );
   if( blocking )
     async_acquisition_thread_.join( );
   
   cout << "IMUs::stopAsyncAquisition() - not implemented!" << endl;
-}
+}*/
 
 //-----------------------------------------------------------------------------
 
@@ -579,10 +614,18 @@ void IMUs::run()
     throw std::runtime_error( "Could not start capturing from IMU." );
   }
 
-  if( !isMaster() )
+  // Get sensor(s) for later access.
+  // HUB:
+  //for( int i=0; i<impl->hub->getNumSensors();  i++ )
+  //{
+  //  impl->sensors[i] = impl->hub->getSensor( i );
+  //}
+  impl->sensors[0] = impl->imu->getSensor();
+
+  /*if( !isMaster() )
   {
     startAsyncAquisition( );
-  }
+  }*/
 
   cout << " * " << devinfo_ << " (" << devstr_ << ") sucessfully started." << endl;
 }
@@ -597,8 +640,8 @@ void IMUs::stop()
 
   cout << "Stopping " << devinfo_ << " (" << devstr_ << ") .";
 
-  if( !isMaster() )
-    stopAsyncAquisition( );
+/*  if( !isMaster() )
+    stopAsyncAquisition( );*/
 
   FUNCTION_RESULT result = impl->imu->StopCapture( );
 

@@ -40,9 +40,9 @@
 
     <channel_settings>
       <selection>
-        <ch nr="01" name="plux X" type="eeg" />
-        <ch nr="03" name="plux Y" type="eeg" />
-        <ch nr="05" name="plux Z" type="eeg" />
+        <ch nr="01" name="plux X" type="sensor" />
+        <ch nr="03" name="plux Y" type="sensor" />
+        <ch nr="05" name="plux Z" type="sensor" />
       </selection>
     </channel_settings>
   </hardware>
@@ -60,9 +60,16 @@
 
     <channel_settings>
       <selection>
-        <ch nr="10" name="accX"  type="sensor" />
-        <ch nr="11" name="accY"  type="sensor" />
-        <ch nr="12" name="accZ"  type="sensor" />
+        <!-- Get Orientation-matrix element X0 of 1st sensor -->
+        <ch nr="1" name="S0_X0"  type="sensor" />
+        <!-- Get Accelaration axis X,Y,Z of 1st sensor -->
+        <ch nr="10" name="S0_accX"  type="sensor" />
+        <ch nr="11" name="S0_accY"  type="sensor" />
+        <ch nr="12" name="S0_accZ"  type="sensor" />
+
+        <!-- Example (Hub): Get X0 and Accelaration axis X of 2nd sensor -->
+        <!-- --><ch nr="20" name="S0_X0"  type="sensor" /> -->
+        <!-- <ch nr="29" name="S1_accX"  type="sensor" /> --> 
       </selection>
     </channel_settings>
   </hardware>

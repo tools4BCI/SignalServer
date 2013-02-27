@@ -326,6 +326,7 @@ copy /Y "$(SolutionDir)bin\server_config*.xml" "$(OutDir)\"</Command>
     <ClCompile Include="src\hardware\gBSamp_base.cpp" />
     <ClCompile Include="src\hardware\gBSamp_win.cpp" />
     <ClCompile Include="src\hardware\g_mobilab.cpp" />
+    <ClCompile Include="src\hardware\imus.cpp" />
     <ClCompile Include="src\hardware\keylogger_base.cpp" />
     <ClCompile Include="src\hardware\keylogger_win.cpp" />
     <ClCompile Include="src\hardware\kinect.cpp" />
@@ -367,6 +368,7 @@ copy /Y "$(SolutionDir)bin\server_config*.xml" "$(OutDir)\"</Command>
     <ClInclude Include="include\hardware\hw_thread.h" />
     <ClInclude Include="include\hardware\hw_thread_builder.h" />
     <ClInclude Include="include\hardware\hw_thread_factory.h" />
+    <ClInclude Include="include\hardware\imus.h" />
     <ClInclude Include="include\hardware\jstick.h" />
     <ClInclude Include="include\hardware\keylogger_base.h" />
     <ClInclude Include="include\hardware\keylogger_win.h" />

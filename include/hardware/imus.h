@@ -122,13 +122,13 @@ private:
     * This essentially launches a thread that uses blocking data acquisition to write
     * Data to async_buffer_.
     */
-    void startAsyncAquisition( );
+    //void startAsyncAquisition( );
 
    /**
     * @brief Stop async acquisition.
     * @param[in] blocking bool True causes the function to block until the thread is stopped.
     */
-    void stopAsyncAquisition( bool blocking = true );
+    //void stopAsyncAquisition( bool blocking = true );
 
     /**
     * @brief Print statistics about data acquisition.
@@ -225,10 +225,12 @@ private:
 
 	ImplDetails *impl;
 
+    void waitForNewFrame( );
+    
     /**
-    * @brief Read next data frame and put it into the SampleBlock (data_) at position bidx.
+    * @brief Read most recent data frame and put it into the SampleBlock (data_) at position bidx.
     */
-    void getNextFrame( int bidx );
+    void getDataFrame( int bidx );
 
     static const HWThreadBuilderTemplateRegistratorWithoutIOService<IMUs> FACTORY_REGISTRATOR_;
 
