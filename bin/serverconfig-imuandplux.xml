@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tobi-config version="1.0">
+	<subject>
+		<id>007</id>
+		<first_name>James</first_name>
+		<surname>Bond</surname>
+		<sex>m</sex>
+		<birthday>02.02.1953</birthday>
+	</subject>
+
+<!-- =============================================================================== -->
+
+	<server_settings>
+		<tcp_port>9998</tcp_port>
+		<ctl_port>9000</ctl_port>
+		<udp_port>9998</udp_port>
+		<tid_server tid_use="on" tid_port="9500" assume_zero_network_delay="on" />
+		<udp_bc_addr>127.0.0.1</udp_bc_addr>
+		
+ 		<store-data value="on">
+			<filepath>raw</filepath>
+			<filename>raweeg</filename>
+			<filetype>gdf</filetype>
+			<file_exists> new_file </file_exists>
+			<append_to_filename> _r_ </append_to_filename>
+			<continous_saving> yes </continous_saving>
+		</store-data>
+		
+	</server_settings>
+
+<!-- =============================================================================== -->
+
+  <hardware name="bioplux" mac="00:07:80:4B:2C:A2" statoutput="0" version="1.0" serial="">
+    <mode> slave </mode>
+    <device_settings>
+      <sampling_rate> 200 </sampling_rate>
+      <blocksize> 1 </blocksize>
+      <buffersize> 1 </buffersize>
+    </device_settings>
+
+    <channel_settings>
+      <selection>
+        <ch nr="01" name="plux X" type="eeg" />
+        <ch nr="03" name="plux Y" type="eeg" />
+        <ch nr="05" name="plux Z" type="eeg" />
+      </selection>
+    </channel_settings>
+  </hardware>
+
+  <hardware name="imu" version="1.0" serial="">
+    <mode> master </mode>
+    <device_settings>
+      <sampling_rate> 200 </sampling_rate>
+      <blocksize> 1 </blocksize>
+	  <port> 9123 </port>
+	  
+    <measurement_channels nr="19" names="abc" type="sensor" />
+	  
+    </device_settings>
+
+    <channel_settings>
+      <selection>
+        <ch nr="10" name="accX"  type="sensor" />
+        <ch nr="11" name="accY"  type="sensor" />
+        <ch nr="12" name="accZ"  type="sensor" />
+      </selection>
+    </channel_settings>
+  </hardware>
+
+</tobi-config>
