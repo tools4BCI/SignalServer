@@ -537,7 +537,12 @@ void EEGSimulator::handleAsyncRead(const boost::system::error_code& ec,
   try
   {
     if(ec)
-      throw(std::runtime_error("EEGSimulator::handleAsyncRead() -- Error handling async read -- bytes transferred: " + bytes_transferred));
+    {
+      std::string err_str("EEGSimulator::handleAsyncRead() -- Error handling async read: ");
+      err_str += ec.message();
+      err_str = err_str + std::string("-- bytes transferred: ") + boost::lexical_cast<std::string>(bytes_transferred);
+      throw(std::runtime_error(err_str));
+    }
 
     str_buffer_.clear();
     std::istream is(&message_buffer_);
@@ -644,7 +649,7 @@ void EEGSimulator::updateEEGConfig(std::map<boost::uint16_t, EEGSimMsgParser::EE
   boost::unique_lock<boost::shared_mutex> lock(rw_);
 
   // TODO: modify sine- or eeg config maps
-  std::cout << "updateEEGConfig" << std::endl;
+  std::cout << "   --  EEGSimulator: updateEEGConfig" << std::endl;
   eeg_config_ = eeg;
   lock.unlock();
 
@@ -658,7 +663,7 @@ void EEGSimulator::updateSineConfig(std::multimap<boost::uint16_t, EEGSimMsgPars
   boost::unique_lock<boost::shared_mutex> lock(rw_);
 
   // TODO: modify sine- or eeg config maps
-  std::cout << "updateSineConfig" << std::endl;
+  std::cout << "   --  EEGSimulator: updateSineConfig" << std::endl;
   sine_configs_ = sine;
   lock.unlock();
 

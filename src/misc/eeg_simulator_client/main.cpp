@@ -79,7 +79,7 @@ void plot(  std::map<boost::uint16_t, EEGSimMsgParser::EEGConfig> eeg,
 int main(int argc, const char* argv[])
 {
   std::string ip = "127.0.0.1";
-  int port = 9125;
+  int port = 9999;
 
   if(argc == 3)
   {
