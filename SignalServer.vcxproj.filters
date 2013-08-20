@@ -122,6 +122,9 @@
     <ClCompile Include="src\filewriter\gdf_writer_impl.cpp">
       <Filter>Source Files\misc</Filter>
     </ClCompile>
+    <ClCompile Include="src\hardware\tmsi.cpp">
+      <Filter>Source Files\hardware</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\hardware\artificial_signal_source.h">
@@ -228,6 +231,9 @@
     </ClInclude>
     <ClInclude Include="include\config\xml_tags.h">
       <Filter>Header Files\config</Filter>
+    </ClInclude>
+    <ClInclude Include="include\hardware\tmsi.h">
+      <Filter>Header Files\hardware</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
