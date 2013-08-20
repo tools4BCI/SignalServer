@@ -326,6 +326,7 @@ copy /Y "$(SolutionDir)bin\server_config*.xml" "$(OutDir)\"</Command>
     <ClCompile Include="src\hardware\keylogger_win.cpp" />
     <ClCompile Include="src\hardware\kinect.cpp" />
     <ClCompile Include="src\hardware\plux.cpp" />
+    <ClCompile Include="src\hardware\tmsi.cpp" />
     <ClCompile Include="src\misc\statistics.cpp" />
     <ClCompile Include="src\signalserver\main.cpp" />
     <ClCompile Include="src\hardware\artificial_signal_source.cpp" />
@@ -373,6 +374,7 @@ copy /Y "$(SolutionDir)bin\server_config*.xml" "$(OutDir)\"</Command>
     <ClInclude Include="include\hardware\plux.h" />
     <ClInclude Include="include\hardware\serial_port_base.h" />
     <ClInclude Include="include\hardware\sine_generator.h" />
+    <ClInclude Include="include\hardware\tmsi.h" />
     <ClInclude Include="include\hardware\usbamp.h" />
     <ClInclude Include="include\misc\databuffer.h" />
     <ClInclude Include="include\misc\statistics.h" />
