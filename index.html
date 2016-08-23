@@ -48,12 +48,11 @@
 <li>BrainProducts amplifiers</li>
 <li>Tunable EEG simulator</li>
 <li>TiD integration</li>
-<li>Data storage to .gdf</li>
-</ul>
+<li>
+<p>Data storage to .gdf</p>
 
-<p>[//]: ### Documentation and User Manual
-[//]: User manual (howto run and configure the SignalServer): online, pdf
-[//]: Doxygen doku (for SignalServer development)</p>
+</li>
+</ul>
 
 <h3>
 <a id="code" class="anchor" href="#code" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Code</h3>
@@ -68,27 +67,23 @@ To get r/w access to the SignalServer repository, please get in touch with: Chri
 <h4>
 <a id="linux--co" class="anchor" href="#linux--co" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Linux &amp; Co.</h4>
 
-<p>Under a Linux or Unix based distribution, the SignalServer utilizes the qmake build system from the Qt library. The respective '.pro' and '.pri' files (qmake config files) are included in the SignalServer repo. It is suggested to use the Qt Creater as an IDE under Linux, as it fully supports qmake. Simply press the build button in Qt Creator or run 'qmake SignalServer.pro' and 'make' afterwards in the command line.</p>
+<p>Under a Linux or Unix based distribution, the SignalServer utilizes the <a href="http://qt-project.org/doc/qt-4.8/qmake-manual.html">qmake</a> build system from the <a href="https://www.qt.io/">Qt</a> library. The respective '.pro' and '.pri' files (qmake config files) are included in the SignalServer repo. It is suggested to use the <a href="http://qt.nokia.com/products/developer-tools">Qt Creater</a> as an IDE under Linux, as it fully supports qmake. Simply press the build button in Qt Creator or run 'qmake SignalServer.pro' and 'make' afterwards in the command line.</p>
 
 <p><strong><em>Important:</em></strong> Don't use shadow-builds (Qt Creator - "Projects" button - Shadow Build checkbox) unless you know what you're doing (the external folder is not copied during a shadow build, leading to likner errors)!</p>
-
-<p><strong>Required libraries:</strong>
-boost-libs: system, thread, filesystem, program_options, date_time
-SDL (simple direct media layer), libusb, comedi
-Using Linux, those libraries are usually included in the repositories of the respective distributions.
-<em>Remark:</em> The SignalServer additionally utilizes TinyXML for C++ aka. TiCPP for xml parsing, which is statically linked against the SignalServer. For convenience, pre-built library files are uploaded to the git repository. The respective files are located in the 'external' subfolder. In case of linker errors, please rebuild the TiCPP lib by yourself and replace the respective files in the 'external' folder.</p>
 
 <h4>
 <a id="windows" class="anchor" href="#windows" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Windows</h4>
 
 <p>The SignalServer source is shipped with a Microsoft Visual C++ 2010 solution file (.sln) and the required project files (.vcxproj) to build the SignalServer. These solution files are also suitable for the Visual C++ Express Edition.</p>
 
-<p><strong><em>Important:</em></strong> To successfully start the SignalServer under Windows, the appropriate Microsoft Visual C++ 2010 Redistributable Package has to be installed (not needed if Microsoft Visual C++ 2010 is already installed on the system): 32 bit Windows(x86), 64 bit Windows(x64)</p>
+<p><strong><em>Important:</em></strong> To successfully start the SignalServer under Windows, the appropriate Microsoft Visual C++ 2010 Redistributable Package has to be installed (not needed if Microsoft Visual C++ 2010 is already installed on the system): <a href="http://www.microsoft.com/download/en/details.aspx?id=5555">32 bit Windows(x86)</a>, <a href="http://www.microsoft.com/download/en/details.aspx?id=14632">64 bit Windows(x64)</a></p>
 
 <p><strong>Required libraries:</strong>
-boost-libs (pre-compiled libs available at boost-pro): system, thread, filesystem, program_options, date_time, regex
-SDL (simple direct media layer), libusb, comedi
-Remark: The SignalServer utilizes TinyXML for C++ aka. TiCPP for xml parsing, SDL, and libsub, which are statically linked against the SignalServer. For convenience, pre-built library files are uploaded to the git repository. The respective files are located in the 'external' subfolder. In case of linker errors, please rebuild the respective library by yourself and replace the respective files in the 'external' folder.</p>
+<a href="http://www.boost.org">boost-libs</a> (pre-compiled libs available <a href="https://sourceforge.net/projects/boost/files/boost-binaries">here</a>): system, thread, filesystem, program_options, date_time, regex
+<a href="http://www.libsdl.org/">SDL</a> (simple direct media layer), <a href="http://www.libusb.org">libusb</a>, <a href="http://www.comedi.org">comedi</a>
+Remark: The SignalServer utilizes TinyXML for C++ aka. <a href="http://code.google.com/p/ticpp">TiCPP</a> (for xml parsing), SDL, and libsub, which are statically linked against the SignalServer. For convenience, pre-built library files are uploaded to the git repository. The respective files are located in the 'external' subfolder. In case of linker errors, please rebuild the respective library by yourself and replace the respective files in the 'external' folder.</p>
+
+<p><em>Using Linux, those libraries are usually included in the repositories of the respective distributions.</em></p>
 
 <p><em>General Remark:</em>
 Changes in the Linux build environment are currently added to the Windows environment manually and vice versa. Thus, potential compile errors might happen, as a result of missing files in the configuration files. In this case, please submit a ticket or get in touch with one of the developers.</p>
@@ -96,7 +91,7 @@ Changes in the Linux build environment are currently added to the Windows enviro
 <h3>
 <a id="licencing" class="anchor" href="#licencing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Licencing</h3>
 
-<p>The signalServer is dual-licenced under the GPL version 3.0 and under the Graz University of Technology Commercial License Agreement provided with the Software or, alternatively, in accordance with the terms contained in a written agreement between you and Graz University of Technology. </p>
+<p>The signalServer is dual-licenced under the <a href="http://www.gnu.org/copyleft/gpl.html">GPL version 3.0</a> and under the Graz University of Technology Commercial License Agreement provided with the Software or, alternatively, in accordance with the terms contained in a written agreement between you and Graz University of Technology. </p>
       </section>
     </div>
 
