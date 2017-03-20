@@ -86,7 +86,10 @@ class TCPServer
   protected:
     boost::asio::io_service         io_service_; ///<
     boost::asio::ip::tcp::acceptor  acceptor_;   ///<
-    boost::thread*                  io_service_thread_;
+    //boost::thread*                  io_service_thread_;
+
+    boost::thread_group*             io_service_thread_pool_;
+
 };
 
 } // Namespace TiD

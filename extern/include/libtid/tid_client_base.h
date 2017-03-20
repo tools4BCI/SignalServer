@@ -1,3 +1,23 @@
+/*
+    This file is part of TOBI Interface D (TiD).
+
+    TOBI Interface D (TiD) is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    TOBI Interface D (TiD) is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TOBI Interface D (TiD).  If not, see <http://www.gnu.org/licenses/>.
+
+    Copyright 2012 Christian Breitwieser
+    Contact: c.breitwieser@tugraz.at
+*/
+
 #ifndef TID_CLIENT_BASE_H
 #define TID_CLIENT_BASE_H
 
@@ -51,6 +71,8 @@ class TiDClientBase
     void getLastMessagesContexts( std::vector< IDMessage >& messages  );
     void clearMessages();
 
+    IDMessage wait4NewTiDMessage();
+
   protected:
     /**
      * @brief Handle completion of a receive operation.
@@ -80,12 +102,12 @@ class TiDClientBase
 
     ConnectionState                                   state_;
     std::string                                       xml_string_;
-    std::vector <IDMessage>                           messages_;
+    std::vector <IDMessage>                           messages_from_net_;
     //IDMessage                                         msg_;
 
     boost::asio::ip::tcp::socket*                      socket_;
     boost::asio::io_service*                           io_service_;
-    boost::mutex                                      mutex_;
+    boost::mutex                                      mutex_net_msgs_;
     boost::mutex                                      state_mutex_;
 
     InputStream*                                      input_stream_;

@@ -92,9 +92,6 @@
     <ClCompile Include="src\hardware\kinect.cpp">
       <Filter>Source Files\hardware</Filter>
     </ClCompile>
-    <ClCompile Include="src\hardware\plux.cpp">
-      <Filter>Source Files\hardware</Filter>
-    </ClCompile>
     <ClCompile Include="src\misc\statistics.cpp">
       <Filter>Source Files\misc</Filter>
     </ClCompile>
@@ -121,9 +118,6 @@
     </ClCompile>
     <ClCompile Include="src\filewriter\gdf_writer_impl.cpp">
       <Filter>Source Files\misc</Filter>
-    </ClCompile>
-    <ClCompile Include="src\hardware\tmsi.cpp">
-      <Filter>Source Files\hardware</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -190,9 +184,6 @@
     <ClInclude Include="include\hardware\kinect.h">
       <Filter>Header Files\hardware</Filter>
     </ClInclude>
-    <ClInclude Include="include\hardware\plux.h">
-      <Filter>Header Files\hardware</Filter>
-    </ClInclude>
     <ClInclude Include="include\misc\databuffer.h">
       <Filter>Header Files\misc</Filter>
     </ClInclude>
@@ -231,9 +222,6 @@
     </ClInclude>
     <ClInclude Include="include\config\xml_tags.h">
       <Filter>Header Files\config</Filter>
-    </ClInclude>
-    <ClInclude Include="include\hardware\tmsi.h">
-      <Filter>Header Files\hardware</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

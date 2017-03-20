@@ -67,7 +67,7 @@ class TiAClientDataReader
         t_max_total_ (0, 0, 0),
         t_min_last_ (10, 0, 0),
         t_max_last_ (0, 0, 0),
-        t_var_(0)
+        t_var_(0), show_data_(0)
     {
       packet_ = client_.getEmptyDataPacket();
     }
@@ -75,6 +75,11 @@ class TiAClientDataReader
     void stop()
     {
       running_ = 0;
+    }
+
+    void toggleShow()
+    {
+      show_data_ = !show_data_;
     }
 
     void readData()
@@ -102,8 +107,29 @@ class TiAClientDataReader
 
           if(running_ && client_.receiving())
           {
-            try {
+            try 
+            {
               client_.getDataPacket(*packet_);
+
+              if (show_data_)
+              {
+                v = packet_->getSingleDataBlock(SIG_EEG);
+                cout << "EEG: ";
+                for(unsigned int n = 0; n < v.size(); n++)
+                {
+                  cout << n << ";";
+                }
+                cout << endl;
+                
+                v = packet_->getSingleDataBlock(SIG_EMG);
+                cout << "EMG: ";
+                for (unsigned int n = 0; n < v.size(); n++)
+                {
+                  cout << n << ";";
+                }
+                cout << endl;
+
+              }
 
               if(packet_->hasFlag(SIG_AXIS))
               {
@@ -207,6 +233,8 @@ class TiAClientDataReader
     boost::posix_time::time_duration t_max_last_;
     vector<boost::posix_time::time_duration> t_diffs_;
     boost::int64_t t_var_;
+
+    bool show_data_;
 //     boost::posix_time::time_duration t_var_;
 };
 
@@ -287,7 +315,8 @@ int main(int argc, const char* argv[])
   known_commands.insert(make_pair("stop",     "Stops the data transmission"));
   known_commands.insert(make_pair("q",        "Quits the client."));
   known_commands.insert(make_pair("help",     "Prints this help text."));
-  known_commands.insert(make_pair("state", "Get the data receiving state of the client"));
+  known_commands.insert(make_pair("state",    "Get the data receiving state of the client"));
+  known_commands.insert(make_pair("s",        "Toggle showing acquired data"));
 
   string command;
   cout << endl << ">>";
@@ -329,6 +358,10 @@ int main(int argc, const char* argv[])
             cout << "receiving data" << endl;
         else
             cout << "not receiving data" << endl;
+    }
+    else if (command == "s")
+    {
+      reader.toggleShow();
     }
     else if (command == "starttcp" || command == "startudp")
     {

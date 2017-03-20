@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with libGDF.  If not, see <http://www.gnu.org/licenses/>.
 //
-// Copyright 2010 Martin Billinger
+// Copyright 2010, 2013 Martin Billinger, Owen Kelly
 
 #ifndef __WRITER_H_INCLUDED__
 #define __WRITER_H_INCLUDED__
@@ -248,6 +248,18 @@ namespace gdf
 
         /// get reference to a signal's header
         SignalHeader &getSignalHeader( size_t idx ) { return m_header.getSignalHeader(idx); }
+
+		/// Converts from sample to event
+		/** @throws exception::event_conversion_error
+        */
+		void sampleToEvent( const double sample_time_sec, const double sample_physical_value, const uint16 channel, Mode3Event& ev );
+
+        /// Format an existing Mode 1 event (TYP, POS) to represent the given string (TYP) at the given time (POS).
+        void makeFreeTextEvent( double noteTimeSec, const std::string str, EventDescriptor & ev_desc, Mode1Event & e );
+
+        /// Format an existing Mode 3 event (TYP, POS, CHN, DUR) to represent the given string (TYP) at the given time (POS).
+        //  Separately, the string may be associated to a particular channel using event.CHN.
+        void makeFreeTextEvent( double noteTimeSec, const std::string str, EventDescriptor & ev_desc, Mode3Event & e );
 
     private:
 

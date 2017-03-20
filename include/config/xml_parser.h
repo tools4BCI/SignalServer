@@ -172,6 +172,11 @@ class XMLParser
 
     bool equalsYesOrNo(const std::string& s);
 
+    bool forceConstantBlockSize()
+    {
+      return force_constant_block_size_;
+    }
+
 //-----------------------------------------------
 
   private:
@@ -208,6 +213,8 @@ class XMLParser
 
     std::map<std::string, std::string> subject_map_;
     std::map<std::string, std::string> server_settings_map_;
+
+    bool force_constant_block_size_;
 
     /**
     * @brief A vector containing iterators to the respective \<hardware> tags.

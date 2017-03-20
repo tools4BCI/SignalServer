@@ -50,12 +50,18 @@
 #include "tobiid/IDMessage.hpp"
 #include "libtid/tid_server.h"
 
+#include "tobiic/ICSerializerRapid.hpp"
+#include "tobicore/TCException.hpp"
+
 #include "filewriter/file_writer.h"
 
-
+#include <sys/timeb.h>
 
 namespace tobiss
 {
+
+static const int SOCKET_BUFFER_SIZE = 65536;
+
 //-----------------------------------------------------------------------------
 
 SignalServer::SignalServer(XMLParser& config_parser, bool use_new_tia)
@@ -64,17 +70,17 @@ SignalServer::SignalServer(XMLParser& config_parser, bool use_new_tia)
     stop_reading_(false),
     master_blocksize_( 0 ),
     master_samplingrate_( 0 ),
-    packet_(0), event_source_(0), file_writer_(0), write_file_(false), use_continous_saving_(0),
+    packet_(0), event_source_(0), file_writer_(0), write_file_(false), use_continous_saving_(false),
     last_block_nr_(0),
-    tid_server_(0)
+    tid_server_(0),
+    tic_thread_(0), tic_socket_(0)
 {
   #ifdef DEBUG
-    std::cout << BOOST_CURRENT_FUNCTION <<  std::endl;
+    std::cout << BOOST_CURRENT_FUNCTION << std::endl << std::flush;
   #endif
 
   tia_server_ = new tia::TiAServer(tia_io_service_, use_new_tia);
   hw_access_ = new HWAccess(hw_access_io_service_, config_parser_);
-
   master_blocksize_ =  hw_access_->getMastersBlocksize();
   master_samplingrate_ = hw_access_->getMastersSamplingRate();
 
@@ -97,13 +103,78 @@ SignalServer::SignalServer(XMLParser& config_parser, bool use_new_tia)
   packet_ = tia_server_->getEmptyDataPacket();
   packet_->reset();
 
-  tid_server_ = new TiD::TiDServer();
-  tid_server_->bind ( boost::lexical_cast<unsigned int>(server_settings_[xmltags::tid_port]));
-  tid_server_->reserveNrOfMsgs(2048);
-  tid_server_->start();
 
-  last_timestamp_ = boost::chrono::high_resolution_clock::now();
-  current_timestamp_ = boost::chrono::high_resolution_clock::now();
+  // TiD
+  if(server_settings_.find(xmltags::tid_use) != server_settings_.end())
+  {
+    if( config_parser.equalsYesOrNo( server_settings_[xmltags::tid_use]))
+    {
+      tid_server_ = new TiD::TiDServer();
+      unsigned int port = boost::lexical_cast<unsigned int>(server_settings_[xmltags::tid_port]);
+      tid_server_->bind ( port );
+      tid_server_->reserveNrOfMsgs(2048);
+
+      bool zero_delay = false;
+      if(server_settings_.find(xmltags::tid_assume_zero_network_delay) != server_settings_.end())
+        zero_delay = config_parser.equalsYesOrNo( server_settings_[xmltags::tid_assume_zero_network_delay]);
+
+      tid_server_->assumeZeroNetworkDelay( zero_delay );
+      tid_server_->start();
+
+      std::cout << std::endl << " * TiD Server successfully listening on port " << port;
+      if(zero_delay)
+        std::cout << "  --  NOTICE: Assuming zero network delay! ";
+      std::cout << std::endl;
+    }
+  }
+  else
+    tid_server_ = 0;
+  //----------------------------
+
+
+  // TiC
+  if(server_settings_.find(xmltags::tic_use) != server_settings_.end())
+  {
+    if( config_parser.equalsYesOrNo( server_settings_[xmltags::tic_use]))
+    {
+      unsigned short port = boost::lexical_cast<unsigned int>(server_settings_[xmltags::tic_port]);
+      std::string ip = server_settings_[xmltags::tic_ip];
+
+      std::string classes = server_settings_[xmltags::tic_classifier];
+
+      size_t del = classes.find_first_of(";");
+      size_t pos = 0;
+      while(del != std::string::npos)
+      {
+        std::string substr = classes.substr(0, del);
+        classes.erase(0,del+1);
+
+        pos = substr.find_first_of(":");
+        tic_classes_.push_back( std::make_pair(substr.substr(0,pos), substr.substr(pos+1,std::string::npos)) );
+        del = classes.find_first_of(";");
+      }
+      pos = classes.find_first_of(":");
+      tic_classes_.push_back( std::make_pair(classes.substr(0,pos), classes.substr(pos+1,std::string::npos)) );
+
+      tic_values_.resize(tic_classes_.size());
+
+      tic_socket_ = new boost::asio::ip::tcp::socket(tic_io_service_);
+      tic_thread_ = new boost::thread(boost::bind( &SignalServer::runTiCClient, this, ip, port));
+
+      std::cout << std::endl << " * TiC client waiting to connect to " << ip << ":" << port;
+    }
+  }
+  else
+    tic_socket_ = 0;
+  //----------------------------
+
+  timeval tv;
+  gettimeofday(&tv, NULL);
+
+  last_timestamp_ = boost::chrono::system_clock::time_point(
+                      boost::chrono::seconds(tv.tv_sec) + boost::chrono::microseconds(tv.tv_usec) );
+
+  current_timestamp_ = last_timestamp_;
 
   if(server_settings_[xmltags::store_data] == "1")
   {
@@ -129,23 +200,38 @@ SignalServer::SignalServer(XMLParser& config_parser, bool use_new_tia)
     std::map<uint32_t, std::vector<std::string> >::iterator it(channels_per_sig_type_.begin());
     tia::Constants cst;
 
+    double max_fs = 0;
     std::string label;
     for(uint32_t m = 0 ; it != channels_per_sig_type_.end(); it++, m++)
       for(uint32_t n = 0; n < it->second.size(); n++)
       {
         label = cst.getSignalName(it->first) + ":" + it->second[n];
-        file_writer_->addNewChannel(label, FileWriterDataTypes::FLOAT,
-                                    boost::numeric_cast<double>(sampling_rate_per_sig_type_[m]));
+        double fs = boost::numeric_cast<double>(sampling_rate_per_sig_type_[m]);
+        file_writer_->addNewChannel(label, FileWriterDataTypes::FLOAT, fs);
+        max_fs = std::max(max_fs, fs);
       }
+    file_writer_->setEventSamplingRate(max_fs);
+
+    for(uint32_t m = 0 ; m < tic_classes_.size(); m++)
+    {
+      label = tic_classes_[m].first + ":" + tic_classes_[m].second;
+      file_writer_->addNewChannel(label, FileWriterDataTypes::FLOAT, max_fs);
+    }
 
     if(server_settings_.find(xmltags::continous_saving) != server_settings_.end())
     {
-      write_file_ = true;
-      use_continous_saving_ = true;
+      if( server_settings_[xmltags::continous_saving] == "1" )
+      {
+          write_file_ = true;
+          use_continous_saving_ = true;
 
-      file_writer_->setFilename( server_settings_[xmltags::filename] );
-      file_writer_->open();
+          file_writer_->setFilename( server_settings_[xmltags::filename] );
+          file_writer_->open();
+      }
     }
+
+    std::cout << std::endl << " * Storing data " << std::endl;
+
   }
 
   hw_access_->startDataAcquisition();
@@ -210,7 +296,8 @@ void SignalServer::stop()
   tia_io_service_thread_->interrupt();
   tia_io_service_thread_->join();
 
-  tid_server_->stop();
+  if(tid_server_)
+    tid_server_->stop();
 
   hw_access_->stopDataAcquisition();
   write_file_ = 0;
@@ -233,15 +320,23 @@ void SignalServer::readPackets()
   {
     last_timestamp_ = current_timestamp_;
     hw_access_->fillDataPacket(packet_);
-    current_timestamp_ = boost::chrono::high_resolution_clock::now();
 
-    tid_server_->update(packet_->getTimestamp(),packet_->getPacketID());
+    timeval tv;
+    gettimeofday(&tv, NULL);
+    current_timestamp_ = boost::chrono::system_clock::time_point(
+                          boost::chrono::seconds(tv.tv_sec) + boost::chrono::microseconds(tv.tv_usec) );
+
+    //current_timestamp_ = boost::chrono::system_clock::now();
+
+    if(tid_server_)
+    {
+      tid_server_->update(packet_->getTimestamp(),packet_->getPacketID());
+
+      if(tid_server_->newMessagesAvailable())
+        tid_server_->getLastMessages(msgs);
+    }
 
     tia_server_->sendDataPacket();
-
-    if(tid_server_->newMessagesAvailable())
-      tid_server_->getLastMessages(msgs);
-
 
     if(file_writer_)
       storeData(packet_, &msgs);
@@ -271,7 +366,7 @@ void SignalServer::storeData(tia::DataPacket* packet, std::vector<IDMessage>* ms
 
   if(!use_continous_saving_)
     processStoreFileTiDMsgs(msgs);
-  
+
   if(write_file_)
   {
     uint32_t nr_values = 0;
@@ -285,15 +380,29 @@ void SignalServer::storeData(tia::DataPacket* packet, std::vector<IDMessage>* ms
     {
       try
       {
-        v = packet_->getSingleDataBlock(it->first);
-        nr_values = packet_->getNrOfSamples(it->first);
-        nr_channels = packet_->getNrOfChannels(it->first);
+        v = packet->getSingleDataBlock(it->first);
+        nr_values = packet->getNrOfSamples(it->first);
+        nr_channels = packet->getNrOfChannels(it->first);
         nr_blocks = nr_values/nr_channels;
 
         for(uint32_t n = 0; n < nr_values/nr_blocks; n++)
           for(uint32_t m = 0; m < nr_blocks; m++)
             file_writer_->addSample<double>(ch_start + n, v[ (n*nr_blocks) + m]);
 
+        tic_mutex_.lock();
+
+        //std::cout << "Nr values: " << nr_values << ";  " << "Nr TiC msgs: " << tic_values_.size() << std::endl;
+
+        for(uint32_t m = 0 ; m < tic_values_.size(); m++)
+        {
+          for(std::list<double>::iterator it = tic_values_[m].begin();
+              it != tic_values_[m].end(); it++)
+          {
+            file_writer_->addSample<double>(nr_channels + m, *it );
+          }
+          tic_values_[m].clear();
+        }
+        tic_mutex_.unlock();
       }
       catch( std::exception& e )
       {
@@ -310,7 +419,7 @@ void SignalServer::storeData(tia::DataPacket* packet, std::vector<IDMessage>* ms
     std::vector<IDMessage> messages(*msgs);
     for(unsigned int n = 0; n < messages.size(); n++)
     {
-      if(messages[n].GetFamilyType() == IDMessage::FamilyBiosig)
+      if(messages[n].GetFamily() == IDMessage::TxtFamilyCustom)
       {
 
         IDMessage* cur_msg = &(messages[n]);
@@ -320,7 +429,7 @@ void SignalServer::storeData(tia::DataPacket* packet, std::vector<IDMessage>* ms
         else
         {
           TCTimestamp ts(cur_msg->absolute);
-          boost::chrono::high_resolution_clock::time_point msg_time(
+          boost::chrono::system_clock::time_point msg_time(
                 boost::chrono::seconds(ts.timestamp.tv_sec) +
                 boost::chrono::microseconds(ts.timestamp.tv_usec) );
 
@@ -330,10 +439,33 @@ void SignalServer::storeData(tia::DataPacket* packet, std::vector<IDMessage>* ms
           boost::chrono::duration<double> ev_diff = current_timestamp_ - msg_time;
           boost::chrono::duration<double> shift_tmp = ev_diff/sample_time.count();
 
-          unsigned int shift = boost::numeric_cast<unsigned int>( boost::math::round(shift_tmp.count()) );
+          //cur_msg->Dump();
+          //std::cout << ts.timestamp.tv_sec << std::endl << std::flush;
+          //std::cout << ts.timestamp.tv_usec << std::endl << std::flush;
+          //std::cout << msg_time << "; "<< std::endl << std::flush;
+          //std::cout << current_timestamp_ << "; "<< std::endl << std::flush;
+          //std::cout << diff << "; "<< std::endl << std::flush;
+          //std::cout << sample_time << "; "<< std::endl << std::flush;
+          //std::cout << ev_diff << "; "<< std::endl << std::flush;
+          //std::cout << shift_tmp << "; "<< std::endl << std::flush;
+          //std::cout << boost::math::round(shift_tmp.count())<< std::endl << std::flush;
+          //std::cout << "------" << std::endl << std::flush;
+          //std::cout << std::endl << std::flush;
 
+          int shift = 0;
+
+          try
+          {
+            shift = boost::numeric_cast<int>( boost::math::round(shift_tmp.count()) );
+          }
+          catch(boost::numeric::bad_numeric_cast& e)
+          {
+            std::cerr << BOOST_CURRENT_FUNCTION << std::endl;
+            std::cerr << "  Error: " << e.what() << " -- Shift of: " << boost::math::round(shift_tmp.count()) << std::endl;
+          }
 
           file_writer_->addEvent(last_block_nr_ - shift, cur_msg->GetEvent() );
+          // file_writer_->addEvent(last_block_nr_, cur_msg->GetEvent() );
         }
       }
     }
@@ -353,7 +485,7 @@ void SignalServer::processStoreFileTiDMsgs(std::vector<IDMessage>* msgs)
     msg = *it;
     //std::cout << " -->  " << msg.GetDescription() << "; " << msg.GetFamily() << " : " << msg.GetFamilyType() << std::endl << std::flush;
 
-    if( (msg.GetFamilyType() == IDMessage::FamilyCustom) && (msg.GetDescription() == "StopRecording") )
+    if( (msg.GetFamily() == IDMessage::TxtFamilyCustom) && (msg.GetDescription() == "StopRecording") )
     {
       //std::cerr << "  *** StopRecMsg received!" << std::endl << std::flush;
 
@@ -366,9 +498,9 @@ void SignalServer::processStoreFileTiDMsgs(std::vector<IDMessage>* msgs)
       }
     }
 
-    if( (msg.GetFamilyType() == IDMessage::FamilyCustom) && (msg.GetDescription() == "StartRecording") )
+    if( (msg.GetFamily() == IDMessage::TxtFamilyCustom) && (msg.GetDescription() == "StartRecording") )
     {
-      //std::cerr << "  ***  StartRecMsg received!" << std::endl << std::flush;
+      std::cerr << "  ***  StartRecMsg received!" << std::endl << std::flush;
 
       if(file_writer_->isopen())
         std::cerr << "  *** Error: StartRecording Event received  --  already recording right now!" << std::endl;
@@ -378,18 +510,150 @@ void SignalServer::processStoreFileTiDMsgs(std::vector<IDMessage>* msgs)
         {
           file_writer_->setFilename( server_settings_[xmltags::filename] );
           file_writer_->open();
+          tic_mutex_.lock();
+
+          std::cerr << "  ***  Clearing TiC Values!" << std::endl << std::flush;
+          for(unsigned int x = 0; x < tic_values_.size(); x++)
+//            for(std::list<double>::iterator it = tic_values_[x].begin();
+//                it != tic_values_[x].end(); it++)
+            {
+              tic_values_[x].clear();
+            }
+
           write_file_ = true;
+
+          std::cerr << "  ***  TiC Values cleared!" << std::endl << std::flush;
+
+          tic_mutex_.unlock();
           last_block_nr_ = 0;
         }
         catch( std::exception& e )
         {
           std::cerr << "  Error during opening -- caught exception from File writer: " << e.what() << std::endl;
+          tic_mutex_.lock();
           write_file_ = 0;
+          for(unsigned int x = 0; x < tic_values_.size(); x++)
+//            for(std::list<double>::iterator it = tic_values_[x].begin();
+//                it != tic_values_[x].end(); it++)
+            {
+              tic_values_[x].clear();
+            }
+
+          tic_mutex_.unlock();
           file_writer_->close();
         }
       }
     }
   }
+}
+
+//---------------------------------------------------------------------------------------------
+
+void SignalServer::runTiCClient(std::string ip, unsigned short port)
+{
+  boost::system::error_code ec;
+  boost::asio::ip::tcp::endpoint peer(boost::asio::ip::address::from_string(ip),port );
+  boost::asio::streambuf b;
+  std::string delimiter("</tobiic>");
+  ICSerializerRapid recv_serializer;
+  ICMessage msg;
+
+  std::string xml_str;
+  std::string tmp_str;
+  std::string str_buffer;
+
+  bool running = 1;
+  std::cout << "  ***  Trying to connect to TiC Server ..." << std::endl << std::flush;
+
+  while(running)
+  {
+
+    tic_socket_->connect(peer, ec);
+    if(ec)
+    {
+      //std::cerr << "TiCClient::connect -- " << ec.message() << std::endl;
+      boost::this_thread::sleep(boost::posix_time::millisec(1));
+      continue;
+    }
+    else
+      std::cout << "  ***  TiC Client connected ..." << std::endl << std::flush;
+    ec.clear();
+
+    boost::asio::socket_base::send_buffer_size send_buffer_option(SOCKET_BUFFER_SIZE);
+    tic_socket_->set_option(send_buffer_option);
+    boost::asio::socket_base::receive_buffer_size recv_buffer_option(SOCKET_BUFFER_SIZE);
+    tic_socket_->set_option(recv_buffer_option);
+    boost::asio::ip::tcp::no_delay delay(true);
+    tic_socket_->set_option(delay);
+    boost::asio::socket_base::linger linger(false, 0);
+    tic_socket_->set_option(linger);
+
+    while(running)
+    {
+      std::istream is(&b);
+      boost::asio::read_until(*tic_socket_, b, delimiter, ec);
+
+      if(ec)
+      {
+        //        for(unsigned int x = 0; x < tic_values_.size(); x++)
+        //        {
+        //          for(std::list<double>::iterator it = tic_values_[x].begin();
+        //              it != tic_values_[x].end(); it++)
+        //          {
+        //            std::cout << *it << ", ";
+        //          }
+
+        //          std::cout << std::endl;
+        //        }
+
+        tic_socket_->cancel();
+        tic_socket_->close();
+        ec.clear();
+        std::cout << "  ***  Trying to connect to TiC Server ..." << std::endl << std::flush;
+        break;
+      }
+
+      if(str_buffer.size())
+      {
+        std::getline(is, tmp_str);
+        str_buffer.append(tmp_str);
+      }
+      else
+        std::getline(is, str_buffer);
+
+      size_t pos = str_buffer.find(delimiter);
+      while(pos != std::string::npos)
+      {
+        xml_str = str_buffer.substr(0, pos+delimiter.size() );
+        str_buffer.erase(0, pos+delimiter.size());
+
+        recv_serializer.SetMessage(&msg);
+        recv_serializer.Deserialize(&xml_str);
+
+        double val = 0;
+        for(unsigned int x = 0; x < tic_classes_.size(); x++)
+        {
+          try
+          {
+            val = msg.GetValue(tic_classes_[x].first, tic_classes_[x].second);
+          }
+          catch(TCException& e)
+          {
+            val = 0;
+          }
+
+          tic_mutex_.lock();
+          if(write_file_)
+            tic_values_[x].push_back(val);
+          tic_mutex_.unlock();
+        }
+
+        pos = str_buffer.find(delimiter);
+      }
+    }
+  }
+
+
 }
 
 //---------------------------------------------------------------------------------------------

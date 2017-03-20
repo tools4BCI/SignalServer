@@ -140,6 +140,14 @@ void FileWriter::flush()
 
 //-----------------------------------------------------------------------------
 
+void FileWriter::setEventSamplingRate(double fs)
+{
+  impl_->setEventSampingRate(fs);
+}
+
+
+//-----------------------------------------------------------------------------
+
 size_t FileWriter::addNewChannel(std::string label, FileWriterDataTypes::ChannelDataType type,
                                  double sampling_rate,
                                  double dig_min, double dig_max,

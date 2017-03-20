@@ -58,7 +58,7 @@ using boost::algorithm::to_lower_copy;
 //---------------------------------------------------------------------------------------
 
 XMLParser::XMLParser(string xml_file)
-  : doc_(xml_file)
+  : doc_(xml_file), force_constant_block_size_(0)
 {
   #ifdef DEBUG
     cout << "XMLParser: Constructor" << endl;
@@ -196,6 +196,11 @@ map<string,string> XMLParser::parseServerSettings()
     if(tmp == xmltags::ctl_port || tmp == xmltags::udp_bc_addr || tmp == xmltags::udp_port)
       continue;
 
+    if (tmp == xmltags::force_constant_block_size)
+    {
+      force_constant_block_size_ = equalsYesOrNo(elem->GetText(false));
+    }
+
     //  Store data
     /// TODO: Write seperate function for filesaving
     if(tmp == xmltags::store_data)
@@ -257,6 +262,40 @@ map<string,string> XMLParser::parseServerSettings()
         m.insert(pair<string, string>(attribute->Name(), attribute->Value()));
     }
 
+    // TiC Client
+    if(tmp == xmltags::tic_client)
+    {
+      bool use = equalsYesOrNo( elem->GetAttribute(xmltags::tic_use) );
+      std::string port =  elem->GetAttribute(xmltags::tic_port);
+      std::string ip =  elem->GetAttribute(xmltags::tic_ip);
+
+      m.insert(std::make_pair(xmltags::tic_port, port));
+      m.insert(std::make_pair(xmltags::tic_ip, ip));
+
+      ticpp::Iterator< ticpp::Attribute > attribute;
+      attribute = attribute.begin(elem.Get());
+      if(use)
+      {
+        ticpp::Iterator<ticpp::Element>  child = 0;
+
+        std::string cl_names;
+        for(child = elem->FirstChildElement(xmltags::tic_classifier, false); child != child.end(); child++)
+        {
+          if(child->Value() != xmltags::tic_classifier)
+            break;
+          std::string name = child->GetAttribute(xmltags::tic_classifier_name);
+          std::string cl = child->GetAttribute(xmltags::tic_class);
+
+          cl_names += (name + ":" + cl + ";");
+        }
+
+        cl_names.erase(--cl_names.end(), cl_names.end());
+        m.insert(pair<string, string>( xmltags::tic_classifier, cl_names ));
+
+        m.insert(std::make_pair(xmltags::tic_use, lexical_cast<string>( use )));
+        continue;
+      }
+    }
 
     if(elem->GetText(false) != "")
       m.insert(pair<string, string>(elem->Value(), elem->GetText(false)));

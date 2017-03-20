@@ -36,6 +36,7 @@
 
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
+#include <boost/thread/mutex.hpp>
 #include <boost/chrono.hpp>
 
 namespace TiD
@@ -76,6 +77,8 @@ class SignalServer
     void storeData(tia::DataPacket* packet, std::vector<IDMessage>* msgs);
     void processStoreFileTiDMsgs(std::vector<IDMessage>* msgs);
 
+    void runTiCClient(std::string ip, unsigned short port);
+
     HWAccess*                   hw_access_;
     tia::TiAServer*             tia_server_;
 
@@ -105,13 +108,21 @@ class SignalServer
     bool                                write_file_;
     bool                                use_continous_saving_;
 
-    boost::chrono::high_resolution_clock::time_point  current_timestamp_;
-    boost::chrono::high_resolution_clock::time_point  last_timestamp_;
+    boost::chrono::system_clock::time_point  current_timestamp_;
+    boost::chrono::system_clock::time_point  last_timestamp_;
 
     boost::uint64_t                                   last_block_nr_;
 
 
     TiD::TiDServer*                     tid_server_;
+
+    boost::asio::io_service             tic_io_service_;
+    boost::thread*                      tic_thread_;
+    boost::asio::ip::tcp::socket*       tic_socket_;
+    boost::mutex                        tic_mutex_;
+
+    std::vector< std::pair<std::string, std::string> >  tic_classes_;
+    std::vector< std::list<double> >    tic_values_;
 };
 
 //-----------------------------------------------------------------------------

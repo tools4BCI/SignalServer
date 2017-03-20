@@ -69,7 +69,7 @@ using std::dec;
 //-----------------------------------------------------------------------------
 
 HWAccess::HWAccess(boost::asio::io_service& io, XMLParser& parser)
-  : master_(0), acqu_running_(0)
+  : master_(0), acqu_running_(0), force_constant_block_size_(0)
 {
   #ifdef DEBUG
     cout << "HWAccess Constructor" << endl;
@@ -78,6 +78,8 @@ HWAccess::HWAccess(boost::asio::io_service& io, XMLParser& parser)
   bool hw_not_found = false;
   try
   {
+    force_constant_block_size_ = parser.forceConstantBlockSize();
+
     for(unsigned int n = 0; n < parser.getNrOfHardwareElements(); n++)
     {
       HWThread* thread = HWThreadFactory::instance().createHWThread (parser.getHardwareElementName(n), io, parser.getHardwareElement(n));
@@ -397,14 +399,23 @@ void HWAccess::fillDataPacket(tia::DataPacket* packet)
 
   for (unsigned int n=0; n < slaves_.size(); n++)
   {
-    if(sample_it_[n] == fs_ratio_[n])
+    if (!force_constant_block_size_)
     {
       sb = slaves_[n]->getAsyncData();
-      for(int j = 0; j < sb.getNrOfSignalTypes() ; j++)
+      for (int j = 0; j < sb.getNrOfSignalTypes(); j++)
         packet->insertDataBlock(sb.getSignalByNr(j), sb.getFlagByNr(j), sb.getNrOfBlocks());
-      sample_it_[n] = 0;
     }
-    sample_it_[n]++;
+    else
+    {
+      if (sample_it_[n] == fs_ratio_[n])
+      {
+        sb = slaves_[n]->getAsyncData();
+        for (int j = 0; j < sb.getNrOfSignalTypes(); j++)
+          packet->insertDataBlock(sb.getSignalByNr(j), sb.getFlagByNr(j), sb.getNrOfBlocks());
+        sample_it_[n] = 0;
+      }
+      sample_it_[n]++;
+    }
   }
 
   for (unsigned int n=0; n < aperiodics_.size(); n++)

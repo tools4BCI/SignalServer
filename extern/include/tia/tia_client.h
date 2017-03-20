@@ -103,12 +103,18 @@ class SSConfig;
 */
 class DECL_EXPORT TiAClient
 {
+    /** \example tia-custom-configuration-example.cpp
+    *   This is an example, showing how a connection to a TOBI SignalServer is created and
+    *   how a custom configuration is requested.
+    */
+
 public:
   /**
    * @brief Default Constructor
    * Call connect() to establish a connection to a TOBI SignalServer.
    * @throws
    */
+
   TiAClient( bool use_new_tia);
   /**
    * @brief Destructor
